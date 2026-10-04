@@ -922,6 +922,11 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
     classNames,
     style,
     src,
+    srcSet,
+    sizes,
+    loading,
+    decoding,
+    fetchPriority,
     onLoad,
     onError,
     onContextMenu,
@@ -1027,8 +1032,6 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
    * the one case that really is still waiting. A `srcSet` is a source: a
    * picture given only that is as complete as one given a `src`.
    */
-  const srcSet = props.srcSet;
-
   React.useEffect(() => {
     const node = pictureRef.current;
     const settled: Phase | null =
@@ -1095,10 +1098,38 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
       }
     : null;
 
+  // A caller on React 18 may have written the lower-case spelling to keep it
+  // quiet, and that is an attribute written out as much as the other one.
+  const urgency =
+    fetchPriority ??
+    (props as { fetchpriority?: string }).fetchpriority ??
+    (priority ? 'high' : undefined);
+
+  /*
+   * When the file is asked for, and which one: always the last attributes on
+   * the element, with `src` the very last. React 18 sets a DOM element's
+   * attributes in the order its props were written, and Firefox and Safari
+   * start the request the moment `src` is set, so a `loading="lazy"`, a
+   * `srcset` or a `crossorigin` set after it arrives too late and the file is
+   * already on its way. React 19 moves `src` and `srcSet` to the end itself;
+   * the peer range still promises 18.
+   *
+   * They are taken out of the spread for the same reason. A key in an object
+   * spread keeps the place it was first written in, so a caller's `srcSet`
+   * passed through it would have put the source back in front of `sizes`.
+   */
+  const request = {
+    loading: loading ?? (priority ? 'eager' : undefined),
+    decoding,
+    ...(urgency === undefined ? null : { [FETCH_PRIORITY]: urgency }),
+    sizes,
+    srcSet,
+    src
+  } as React.ImgHTMLAttributes<HTMLImageElement>;
+
   const picture = (
     <img
       ref={attach}
-      src={src}
       alt={alt}
       width={width}
       height={height}
@@ -1167,25 +1198,14 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
         onDragStart?.(event);
       }}
       draggable={noDrag ? false : draggable}
-      {...(priority
-        ? ({
-            loading: 'eager',
-            [FETCH_PRIORITY]: 'high'
-          } as React.ImgHTMLAttributes<HTMLImageElement>)
-        : null)}
       {...props}
+      {...request}
     />
   );
 
+  // The request comes last here too, for the reason given above `request`.
   const backdrop = blurred ? (
     <img
-      src={src}
-      srcSet={props.srcSet}
-      sizes={props.sizes}
-      loading={props.loading}
-      decoding={props.decoding}
-      crossOrigin={props.crossOrigin}
-      referrerPolicy={props.referrerPolicy}
       alt=""
       aria-hidden="true"
       draggable={false}
@@ -1199,6 +1219,13 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
         objectPosition: placed,
         filter: `${tint === 'none' ? '' : `${tint} `}blur(${LETTERBOX_BLUR}px)`
       }}
+      crossOrigin={props.crossOrigin}
+      referrerPolicy={props.referrerPolicy}
+      loading={loading}
+      decoding={decoding}
+      sizes={sizes}
+      srcSet={srcSet}
+      src={src}
     />
   ) : null;
 
@@ -1490,12 +1517,8 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
                   referrer rule was asked for without it. `sizes` stays behind
                   on purpose. It describes the thumbnail, and a preview exists
                   to be bigger, so the browser chooses a candidate for the
-                  dialog instead. */}
+                  dialog instead. The sources come last, as on the picture. */}
               <img
-                src={src}
-                srcSet={props.srcSet}
-                crossOrigin={props.crossOrigin}
-                referrerPolicy={props.referrerPolicy}
                 alt={alt}
                 className={cx(
                   sideways
@@ -1507,6 +1530,10 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
                 onContextMenu={guarded?.onContextMenu}
                 onDragStart={guarded?.onDragStart}
                 draggable={guarded?.draggable}
+                crossOrigin={props.crossOrigin}
+                referrerPolicy={props.referrerPolicy}
+                srcSet={srcSet}
+                src={src}
               />
               {mark}
             </span>

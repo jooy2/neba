@@ -487,7 +487,6 @@ function LinkPreview({ preview, locale }: { preview: ChatBubbleLinkPreview; loca
       {image ? (
         // Decorative: everything the picture is saying is written underneath it.
         <img
-          src={image}
           alt=""
           // A thread scrolls, and a preview is never the thing a reader is
           // looking at when the page arrives. This is also the one `<img>` in
@@ -495,6 +494,10 @@ function LinkPreview({ preview, locale }: { preview: ChatBubbleLinkPreview; loca
           loading="lazy"
           decoding="async"
           className="block h-28 w-full object-cover"
+          // Last: React 18 sets attributes in the order they are written, and
+          // Firefox and Safari start the request when `src` is set, before a
+          // `loading` written after it is read.
+          src={image}
         />
       ) : null}
       <div className="flex flex-col gap-0.5 p-2">

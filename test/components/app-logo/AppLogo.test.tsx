@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { renderToString } from 'react-dom/server';
 import { render } from 'vitest-browser-react';
 import { AppLogo } from 'neba';
 
@@ -34,6 +35,29 @@ describe('AppLogo', () => {
 
       await expect.element(image).toHaveClass('grayscale');
       await expect.element(image).toHaveClass('object-contain');
+    });
+
+    // React 18 sets attributes in the order they are written, and Firefox and
+    // Safari start the request when `src` is set, so whatever `imageProps`
+    // says about the request has to come before it. A server render writes
+    // them in that same order.
+    it('writes the sources after everything in imageProps', () => {
+      const html = renderToString(
+        <AppLogo
+          src="/logo.png"
+          srcSet="/logo@2x.png 2x"
+          name="Neba"
+          imageProps={{ loading: 'lazy', sizes: '120px', crossOrigin: 'anonymous' }}
+        />
+      );
+      const names =
+        new DOMParser()
+          .parseFromString(html, 'text/html')
+          .querySelector('img')
+          ?.getAttributeNames() ?? [];
+
+      expect(names.slice(-2)).toEqual(['srcset', 'src']);
+      expect(names).toEqual(expect.arrayContaining(['loading', 'sizes', 'crossorigin']));
     });
 
     it('prefers markup to a file, so a project can inline its own mark', async () => {

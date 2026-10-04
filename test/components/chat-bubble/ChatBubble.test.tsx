@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { renderToString } from 'react-dom/server';
 import { render } from 'vitest-browser-react';
 import { Avatar, ChatBubble } from 'neba';
 import { ja, ko, registerMessages } from 'neba/locales';
@@ -223,6 +224,25 @@ describe('ChatBubble', () => {
       // And says so: a window changing under the reader is invisible until it
       // has happened.
       expect(screen.getByRole('link').element().textContent).toMatch(/\(opens in a new tab\)$/);
+    });
+
+    // React 18 sets attributes in the order they are written, and Firefox and
+    // Safari start the request when `src` is set, so a `loading="lazy"` after
+    // it came too late. A server render writes them in that same order.
+    it("writes the card image's src after its loading", () => {
+      const html = renderToString(
+        <ChatBubble preview={{ url: 'https://example.com', title: 'Post', image: PIXEL }}>
+          Read this
+        </ChatBubble>
+      );
+      const names =
+        new DOMParser()
+          .parseFromString(html, 'text/html')
+          .querySelector('img')
+          ?.getAttributeNames() ?? [];
+
+      expect(names.at(-1)).toBe('src');
+      expect(names).toContain('loading');
     });
 
     // A preview is built from a message somebody else sent, and React 18 writes

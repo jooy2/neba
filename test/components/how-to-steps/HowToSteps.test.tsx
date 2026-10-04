@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+import { renderToString } from 'react-dom/server';
 import { render } from 'vitest-browser-react';
 import { userEvent } from 'vitest/browser';
 import { HowToSteps } from 'neba';
@@ -137,6 +138,25 @@ describe('HowToSteps', () => {
       );
 
       await expect.element(screen.getByRole('img', { name: 'Open the panel' })).toBeInTheDocument();
+    });
+  });
+
+  describe('the step image', () => {
+    // React 18 sets attributes in the order they are written, and Firefox and
+    // Safari start the request when `src` is set. A server render writes them
+    // in the same order, where React 19 cannot reorder them out of sight.
+    it('writes src after the attributes that shape the request', () => {
+      const html = renderToString(
+        <HowToSteps steps={[{ title: 'Open the panel', image: '/panel.png' }]} />
+      );
+      const names =
+        new DOMParser()
+          .parseFromString(html, 'text/html')
+          .querySelector('img')
+          ?.getAttributeNames() ?? [];
+
+      expect(names.at(-1)).toBe('src');
+      expect(names).toContain('loading');
     });
   });
 

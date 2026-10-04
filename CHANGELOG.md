@@ -34,6 +34,8 @@
 
 - **An `Image` or a `Gallery` with `preview` no longer suspends in a server render.** The lazy Dialog was rendered from the start, so `renderToString` gave up on its boundary and React logged a recoverable error at hydration. The viewer is now mounted by the first press that opens it, and its chunk is fetched earlier, when a pointer, the focus or a finger first reaches the picture or the gallery, so that first press does not wait on the network.
 
+- **`Image`, `AppLogo`, a `HowToSteps` step and a `ChatBubble` card write `src` as the last attribute of their `<img>`.** React 18 sets attributes in the order they are written, and Firefox and Safari start the request when `src` is set, so `loading="lazy"`, `srcset` and `sizes` arrived too late: a lazy picture was fetched at once, and a responsive one fetched `src` before choosing a candidate. React 19 was not affected.
+
 - **`colorSchemeScript`, `formatFileSize` and `registerLanguage` can be called from a Server Component.** They were exported from client modules, so in Next.js the `<head>` of `app/layout.tsx` — where the provider page says to call `colorSchemeScript()` — received a client reference, and calling it threw. Each is in a module of its own now.
 
 - **React 18 no longer prints a `useLayoutEffect` warning for Neba components on a server.** Fifteen modules measured themselves in a layout effect, which React 18's server renderer warns about once per component per request; they skip it on a server now, as three already did.

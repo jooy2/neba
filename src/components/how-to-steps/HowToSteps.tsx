@@ -616,7 +616,6 @@ export const HowToSteps = React.forwardRef<HTMLDivElement, HowToStepsProps>(
 
               {item.image ? (
                 <img
-                  src={item.image}
                   alt={item.imageAlt ?? plainTitle(item.title)}
                   // Every step's picture is in the document at once so the panel
                   // can keep the height of the tallest, and they share one grid
@@ -627,6 +626,10 @@ export const HowToSteps = React.forwardRef<HTMLDivElement, HowToStepsProps>(
                   loading="lazy"
                   decoding="async"
                   className={cx('mb-3 max-h-72 w-full object-contain', radiusClasses[size])}
+                  // Last: React 18 sets attributes in the order they are
+                  // written, and Firefox and Safari start the request when
+                  // `src` is set, before a `loading` written after it is read.
+                  src={item.image}
                 />
               ) : null}
 

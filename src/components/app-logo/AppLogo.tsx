@@ -342,8 +342,6 @@ export const AppLogo = React.forwardRef<HTMLElement, AppLogoProps>(function AppL
     >
       {artwork === 'image' ? (
         <img
-          src={src}
-          srcSet={srcSet}
           // Empty rather than absent whenever the name is being said
           // somewhere else: `alt` left off is what makes a screen reader read
           // the file name out instead.
@@ -361,6 +359,12 @@ export const AppLogo = React.forwardRef<HTMLElement, AppLogoProps>(function AppL
             inset ? 'h-[72%] max-w-[72%]' : 'h-full max-w-full',
             imageProps?.className
           )}
+          // The sources last, after everything in `imageProps`: React 18 sets
+          // attributes in the order they are written, and Firefox and Safari
+          // start the request when `src` is set, before a `loading`, a `sizes`
+          // or a `crossOrigin` written after it is read.
+          srcSet={srcSet}
+          src={src}
         />
       ) : (
         (artwork ?? (logotype ? name : letters))

@@ -18,6 +18,16 @@ const OK = 'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAA
 const BROKEN = 'data:image/gif;base64,not-a-picture';
 
 /**
+ * The names of an element's attributes in some server HTML, in the order they
+ * were written. A server render writes them in the order the props were, which
+ * is the order React 18 sets them in the browser — and React 19 reorders `src`
+ * there itself, so the browser's own DOM would hide what this looks for.
+ */
+const attributesIn = (html: string, selector: string) =>
+  new DOMParser().parseFromString(html, 'text/html').querySelector(selector)?.getAttributeNames() ??
+  [];
+
+/**
  * Renders something only once the render that hydrated it is over, the way
  * `useHydrated` answers — so a test can wait for the render after hydration
  * rather than for an arbitrary amount of time.
@@ -1388,6 +1398,69 @@ describe('Image', () => {
       } finally {
         page.done();
       }
+    });
+  });
+
+  /*
+   * React 18 sets an element's attributes in the order its props were
+   * written, and Firefox and Safari start the request the moment `src` is set:
+   * a `loading="lazy"`, a `srcset` or a `crossorigin` written after it is read
+   * too late, and the full file is already on its way.
+   */
+  describe('the order of the request', () => {
+    const lazy = {
+      src: '/ridge.jpg',
+      srcSet: '/ridge-640.jpg 640w, /ridge-1280.jpg 1280w',
+      sizes: '50vw',
+      loading: 'lazy',
+      decoding: 'async',
+      fetchPriority: 'low',
+      crossOrigin: 'anonymous',
+      referrerPolicy: 'no-referrer'
+    } as const;
+
+    const expectSourcesLast = (names: string[], before: string[]) => {
+      expect(names.at(-1)).toBe('src');
+      expect(names.at(-2)).toBe('srcset');
+
+      for (const name of before) {
+        expect(names, name).toContain(name);
+        expect(names.indexOf(name), name).toBeLessThan(names.indexOf('srcset'));
+      }
+    };
+
+    it('writes src last on the picture, after everything that shapes the request', () => {
+      const html = renderToString(<Image {...lazy} alt="A ridge" />);
+
+      expectSourcesLast(attributesIn(html, 'img[alt="A ridge"]'), [
+        'loading',
+        'decoding',
+        'fetchpriority',
+        'sizes',
+        'crossorigin',
+        'referrerpolicy'
+      ]);
+    });
+
+    // Written whether the caller spelled them out or `priority` implied them.
+    it('writes src last on a priority picture', () => {
+      const html = renderToString(
+        <Image src="/ridge.jpg" srcSet="/ridge.jpg 1x" alt="A ridge" priority />
+      );
+
+      expectSourcesLast(attributesIn(html, 'img[alt="A ridge"]'), ['loading', 'fetchpriority']);
+    });
+
+    it('writes src last on the blurred copy', () => {
+      const html = renderToString(<Image {...lazy} alt="A ridge" fit="contain" letterbox="blur" />);
+
+      expectSourcesLast(attributesIn(html, 'img[alt=""]'), [
+        'loading',
+        'decoding',
+        'sizes',
+        'crossorigin',
+        'referrerpolicy'
+      ]);
     });
   });
 
