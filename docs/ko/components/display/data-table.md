@@ -50,6 +50,8 @@ const rowKey = (row: Build) => row.id;
 
 `height`(또는 `maxHeight`)를 주면 본문이 스크롤되고 보이는 행만 DOM에 남습니다. 높이가 없으면 기준으로 잴 것이 없으므로 `virtual`이 무엇이든 모든 행이 그려집니다. `virtual={false}`는 DOM 개수보다 페이지 내 찾기가 더 중요한 작은 표에서 이 기능을 끕니다.
 
+`virtual`이 켜져 있어도 `height`와 `maxHeight`가 모두 없거나 `groupBy`가 있으면 가상 스크롤은 동작하지 않습니다. 그런 표가 행을 500개 넘게 그리면 개발 빌드에서 표마다 한 번 콘솔에 경고합니다. 모든 행을 그리려던 것이라면 `virtual={false}`를 넘기세요.
+
 모든 행은 `rowHeight`만큼 높고 셀은 줄바꿈 없이 잘립니다. 셀에 Avatar나 두 줄짜리 텍스트가 들어간다면 `rowHeight`를 올리세요.
 
 <Demo src="data-table/virtual" minHeight="400">

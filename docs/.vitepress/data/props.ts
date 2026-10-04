@@ -6539,8 +6539,8 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       default: 'true',
       description: {
-        ko: '화면 밖 행을 DOM에서 뺍니다. height 또는 maxHeight가 있어야 동작합니다',
-        en: 'Leaves off-screen rows out of the DOM. Needs a height or a maxHeight to do anything'
+        ko: '화면 밖 행을 DOM에서 뺍니다. height 또는 maxHeight가 있어야 동작하고, groupBy가 있으면 꺼집니다',
+        en: 'Leaves off-screen rows out of the DOM. Needs a height or a maxHeight to do anything, and is off with a groupBy'
       }
     },
     {

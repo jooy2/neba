@@ -279,7 +279,9 @@ export interface DataTableProps<Row>
   /**
    * Leaves the rows that are off screen out of the DOM. Needs a `height` or a
    * `maxHeight` to have anything to measure against; without one every row is
-   * rendered whatever this says.
+   * rendered whatever this says, and so is every row of a grouped table. A
+   * development build says so in the console when either draws more than 500
+   * rows; `false` says that every row is meant to be drawn.
    * @default true
    */
   virtual?: boolean;
@@ -565,6 +567,17 @@ const resizeHandleClasses =
 
 /** How far one arrow key press moves a column's boundary. The Sidebar's step. */
 const KEYBOARD_STEP = 16;
+
+/** Replaced by the consumer's bundler, as it is in React and Base UI. */
+declare const process: { env: { NODE_ENV?: string } };
+
+/**
+ * How many rows a table may draw in full before a development build says that
+ * virtual scrolling is not on. Below it, every row in the DOM costs less than a
+ * reader would notice; well above it, the first render and every re-render
+ * are the time a table of that size takes.
+ */
+const UNWINDOWED_ROWS = 500;
 
 /** What moves a column along the row from its heading. */
 const MOVE_SHORTCUTS = 'Alt+ArrowLeft Alt+ArrowRight';
@@ -1545,6 +1558,34 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
   // grouped table renders all of its rows, which is the honest trade — the two
   // are for different sizes of table anyway.
   const virtualized = virtual && bounded && paged.length > 0 && !groupBy;
+
+  /*
+   * `virtual` is on by default and does nothing without a bound or with a
+   * `groupBy`, so a table of ten thousand rows that draws every one of them
+   * looks, from its props, like a table that does not. Nothing on the screen
+   * says why the page is slow, so the developer is told in the console, once
+   * per table, and a production build says nothing. A caller who turned
+   * `virtual` off has already said that every row is meant to be drawn.
+   */
+  const unwindowed = virtual && !virtualized && paged.length > UNWINDOWED_ROWS ? paged.length : 0;
+  const warnedUnwindowed = React.useRef(false);
+
+  React.useEffect(() => {
+    if (process.env.NODE_ENV === 'production' || unwindowed === 0 || warnedUnwindowed.current) {
+      return;
+    }
+
+    warnedUnwindowed.current = true;
+    console.warn(
+      `Neba: a DataTable is drawing ${unwindowed} rows at once, because ${
+        grouped ? 'a grouped table is never virtual' : 'nothing bounds its height'
+      }. ${
+        grouped
+          ? 'Page it with paging="pages", or leave groupBy off and give it a height or a maxHeight'
+          : 'Give it a height or a maxHeight to draw only the rows on screen, or page it with paging="pages"'
+      }. Pass virtual={false} if every row is meant to be drawn.`
+    );
+  }, [unwindowed, grouped]);
 
   useLayoutEffectOnClient(() => {
     const node = viewportRef.current;

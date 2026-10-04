@@ -18,6 +18,8 @@
 
 - **`imageWidth`, `imageHeight` and `imageLoading` on a `HowToSteps` step.** The dimensions are written on the step's `<img>`, so the browser reserves the picture's proportion and the panel no longer grows as pictures arrive. `imageLoading: 'eager'` is for a guide at the top of a page.
 
+- **`DataTable` warns in a development build when it draws more than 500 rows with virtual scrolling off by accident**: `virtual` is on but there is no `height` or `maxHeight` for it to work with, or there is a `groupBy`. `virtual={false}` says it was meant, and does not warn.
+
 - **`NebaProvider` warns in a development build when its `direction` disagrees with the `dir` on `<html>` at mount.** A right-to-left page whose server HTML has no `dir="rtl"` is drawn left to right until the provider sets it.
 
 ### Changed

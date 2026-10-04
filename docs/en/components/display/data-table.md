@@ -50,6 +50,8 @@ Define `headers`, `getRowKey`, `filter` and `manual` outside the component, or m
 
 Set a `height` (or a `maxHeight`) and the body scrolls with only the visible rows in the DOM. Without one there is nothing to measure against, so every row is rendered whatever `virtual` says, and `virtual={false}` turns it off for a table small enough that find-in-page matters more than the DOM count.
 
+A development build warns in the console, once per table, when more than 500 rows are drawn while `virtual` is on and has nothing to work with: no `height` or `maxHeight`, or a `groupBy`. Pass `virtual={false}` when drawing every row is what you meant.
+
 Every row is `rowHeight` tall, and cells truncate rather than wrap. Raise `rowHeight` for cells holding an Avatar or two lines.
 
 <Demo src="data-table/virtual" minHeight="400">

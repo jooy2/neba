@@ -737,6 +737,95 @@ describe('DataTable', () => {
 
       expect(bodyRows(screen.container)).toHaveLength(120);
     });
+
+    describe('saying that it is off', () => {
+      const tableWarnings = (warn: { mock: { calls: unknown[][] } }) =>
+        warn.mock.calls
+          .map((call) => String(call[0]))
+          .filter((message) => message.startsWith('Neba: a DataTable'));
+
+      // `virtual` is on by default and does nothing without a height, so a
+      // long table drew every row with nothing to say why.
+      it('warns once in development when a long table has no height', async () => {
+        const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+        try {
+          const screen = await render(
+            <DataTable headers={HEADERS} items={manyItems(600)} getRowKey={key} />
+          );
+
+          await expect.poll(() => tableWarnings(warn)).toHaveLength(1);
+          expect(tableWarnings(warn)[0]).toContain('nothing bounds its height');
+          expect(tableWarnings(warn)[0]).toContain('600 rows');
+
+          await screen.rerender(
+            <DataTable headers={HEADERS} items={manyItems(700)} getRowKey={key} />
+          );
+
+          expect(bodyRows(screen.container)).toHaveLength(700);
+          expect(tableWarnings(warn)).toHaveLength(1);
+        } finally {
+          warn.mockRestore();
+        }
+      });
+
+      it('says that a grouped table is never virtual, height or not', async () => {
+        const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+        try {
+          await render(
+            <DataTable
+              headers={HEADERS}
+              items={manyItems(600)}
+              getRowKey={key}
+              height={200}
+              groupBy={(row) => String(row.score % 3)}
+            />
+          );
+
+          await expect.poll(() => tableWarnings(warn)).toHaveLength(1);
+          expect(tableWarnings(warn)[0]).toContain('a grouped table is never virtual');
+        } finally {
+          warn.mockRestore();
+        }
+      });
+
+      it('says nothing with a height, with few rows, or with virtual turned off', async () => {
+        const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+        try {
+          const bounded = await render(
+            <DataTable headers={HEADERS} items={manyItems(600)} getRowKey={key} height={200} />
+          );
+
+          await expect.poll(() => bodyRows(bounded.container).length).toBeLessThan(60);
+          await bounded.unmount();
+
+          const capped = await render(
+            <DataTable headers={HEADERS} items={manyItems(600)} getRowKey={key} maxHeight={200} />
+          );
+
+          await expect.poll(() => bodyRows(capped.container).length).toBeLessThan(60);
+          await capped.unmount();
+
+          const short = await render(
+            <DataTable headers={HEADERS} items={manyItems(500)} getRowKey={key} />
+          );
+
+          expect(bodyRows(short.container)).toHaveLength(500);
+          await short.unmount();
+
+          const chosen = await render(
+            <DataTable headers={HEADERS} items={manyItems(600)} getRowKey={key} virtual={false} />
+          );
+
+          expect(bodyRows(chosen.container)).toHaveLength(600);
+          expect(tableWarnings(warn)).toHaveLength(0);
+        } finally {
+          warn.mockRestore();
+        }
+      });
+    });
   });
 
   describe('selection', () => {
