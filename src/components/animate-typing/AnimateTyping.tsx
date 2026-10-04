@@ -72,6 +72,12 @@ export interface AnimateTypingProps
  * Only text is typed. Pass a string, or strings; an element among the children
  * contributes its text and nothing about its markup, because there is no honest
  * way to reveal half of a link.
+ *
+ * The clipped string is the only text the element holds. What has been typed,
+ * and a caret given as a string, are drawn as generated content off a data
+ * attribute, as the box's sample already was, so a copy, a crawler and
+ * `textContent` read the line once — not the line and then its typed copy
+ * again, nor with a `|` on the end.
  */
 export const AnimateTyping = React.forwardRef<HTMLElement, AnimateTypingProps>(
   function AnimateTyping(
@@ -292,6 +298,19 @@ export const AnimateTyping = React.forwardRef<HTMLElement, AnimateTypingProps>(
       [ref, runRef]
     );
 
+    // A caret given as a string is drawn the way the line is. One that is a node
+    // is the caller's own and is rendered as one: there is nothing to put in an
+    // attribute.
+    const caretMark =
+      typeof caretChar === 'string' || typeof caretChar === 'number' ? (
+        <span
+          data-text={caretChar}
+          className="neba-typing-caret before:content-[attr(data-text)]"
+        />
+      ) : (
+        <span className="neba-typing-caret">{caretChar}</span>
+      );
+
     return useRender({
       render: render ?? <span />,
       ref: attach,
@@ -305,9 +324,12 @@ export const AnimateTyping = React.forwardRef<HTMLElement, AnimateTypingProps>(
         children: (
           <>
             <span className={srOnlyClasses}>{source}</span>
-            <span aria-hidden="true" className="whitespace-pre-wrap [grid-area:1/1]">
-              {graphemes.slice(0, shown).join('')}
-              {caret ? <span className={cx('neba-typing-caret')}>{caretChar}</span> : null}
+            <span
+              aria-hidden="true"
+              data-text={graphemes.slice(0, shown).join('')}
+              className="whitespace-pre-wrap [grid-area:1/1] before:content-[attr(data-text)]"
+            >
+              {caret ? caretMark : null}
             </span>
             {/* The final string, laid out underneath and drawn by nobody, so the box
                 takes its size from what the line will be rather than from what

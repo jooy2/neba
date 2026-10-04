@@ -45,7 +45,10 @@ Every piece is an `inline-block` (an inline box cannot be translated up), and ea
 
 Which language the text is in, for finding the boundaries. A word boundary is not a space in Japanese, Thai or Chinese, and splitting those on whitespace produces one piece holding the whole sentence.
 
+Browsers do not agree on those boundaries, so on a server-rendered page the server and the browser's first render cut the line by a rule every browser shares, and the line is cut by `locale` once the page has hydrated. For a line of words separated by spaces the two cuts are the same; a line in Japanese or Thai starts with a piece per character and its pieces are joined into words after hydration.
+
 ## Accessibility
 
 - The whole line is in the document once for a screen reader, in a clipped box, and the pieces are hidden from it. Without that a sentence is read as a list of forty-six separate letters and a find-in-page matches nothing.
+- The pieces are drawn rather than written into the document, so the element's text is the sentence once, with its spaces: what a search engine reads, what a copy picks up and what `textContent` returns.
 - A reduced-motion preference cuts the animation to its last frame, and the line is drawn whole.

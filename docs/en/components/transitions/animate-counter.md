@@ -27,7 +27,7 @@ It pairs with [Statistic](../charts/statistic), whose `value` takes a node for e
 
 ### format and locale
 
-`Intl.NumberFormat` options, so a currency, a percentage or a compact `1.2M` is a prop rather than a `format` callback: the same prop [Statistic](../charts/statistic) and the progress indicators take. While it counts, the number keeps the decimal places of `value` or `from`, whichever has more, so a count to a whole number shows only whole numbers, and every figure is set at the same width. A counter with no `locale` writes its number in the language of wherever it renders, so on a server-rendered page pass `locale`, or the server's `1,234.5` and the reader's `1.234,5` may disagree when the page hydrates.
+`Intl.NumberFormat` options, so a currency, a percentage or a compact `1.2M` is a prop rather than a `format` callback: the same prop [Statistic](../charts/statistic) and the progress indicators take. While it counts, the number keeps the decimal places of `value` or `from`, whichever has more, so a count to a whole number shows only whole numbers, and every figure is set at the same width. The box is as wide as the wider of `value` and `from` from the first frame, so the words after it stay where they are while it gains digits. A counter with no `locale` writes its number in the language of wherever it renders, so on a server-rendered page pass `locale`, or the server's `1,234.5` and the reader's `1.234,5` may disagree when the page hydrates.
 
 <Demo src="animate-counter/formats" minHeight="240">
 
@@ -46,4 +46,5 @@ It pairs with [Statistic](../charts/statistic), whose `value` takes a node for e
 ## Accessibility
 
 - The finished number is in the document from the first frame, in a clipped box for a screen reader; what counts is a visible copy that is `aria-hidden`. A reader who cannot see the count is told the answer rather than a hundred intermediate ones.
+- The count is drawn rather than written into the document, so the element's text is the answer once: what a search engine reads, what a copy picks up and what `textContent` returns, on a server-rendered page and after the count alike.
 - A reduced-motion preference shows the answer straight away, including before a `trigger` has fired.

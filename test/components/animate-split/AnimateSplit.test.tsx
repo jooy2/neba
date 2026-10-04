@@ -1,5 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { userEvent } from 'vitest/browser';
+import { renderToString } from 'react-dom/server';
+import { hydrateRoot } from 'react-dom/client';
 import { render } from 'vitest-browser-react';
 import { AnimateSplit } from 'neba';
 
@@ -7,6 +9,14 @@ import { AnimateSplit } from 'neba';
 function pieces(container: HTMLElement): HTMLElement[] {
   return [...container.querySelectorAll<HTMLElement>('[aria-hidden="true"] .neba-anim')];
 }
+
+/** What each piece draws. It is drawn off an attribute, so it is not text. */
+function drawn(container: HTMLElement): string[] {
+  return pieces(container).map((piece) => piece.getAttribute('data-text') ?? '');
+}
+
+/** Lets a hydration commit, and the render that follows it, run. */
+const settle = () => new Promise((resolve) => setTimeout(resolve, 60));
 
 describe('AnimateSplit', () => {
   // A `<div>` by default, which is not allowed inside a paragraph.
@@ -24,11 +34,7 @@ describe('AnimateSplit', () => {
     it('cuts the line into words by default', async () => {
       const screen = await render(<AnimateSplit>One two three</AnimateSplit>);
 
-      expect(pieces(screen.container).map((piece) => piece.textContent)).toEqual([
-        'One ',
-        'two ',
-        'three'
-      ]);
+      expect(drawn(screen.container)).toEqual(['One ', 'two ', 'three']);
     });
 
     // A piece keeps the space that followed it, so a line still breaks between
@@ -36,13 +42,13 @@ describe('AnimateSplit', () => {
     it('leaves each word the space after it', async () => {
       const screen = await render(<AnimateSplit>One two</AnimateSplit>);
 
-      expect(pieces(screen.container)[0].textContent).toBe('One ');
+      expect(drawn(screen.container)[0]).toBe('One ');
     });
 
     it('cuts it into characters when asked', async () => {
       const screen = await render(<AnimateSplit by="character">abc</AnimateSplit>);
 
-      expect(pieces(screen.container).map((piece) => piece.textContent)).toEqual(['a', 'b', 'c']);
+      expect(drawn(screen.container)).toEqual(['a', 'b', 'c']);
     });
 
     // A character piece is an inline block, and a line may break between any
@@ -50,28 +56,24 @@ describe('AnimateSplit', () => {
     it('keeps the characters of a word together on one line', async () => {
       const screen = await render(<AnimateSplit by="character">ab cd</AnimateSplit>);
       const copy = screen.container.querySelector('[aria-hidden="true"]') as HTMLElement;
-      const words = [...copy.children] as HTMLElement[];
+      const [first, gap, second] = [...copy.children] as HTMLElement[];
 
-      expect(words.map((word) => word.textContent)).toEqual(['ab', 'cd']);
-      expect(words.every((word) => word.classList.contains('whitespace-nowrap'))).toBe(true);
-      // The space between them is text, which is where the line breaks.
-      expect(copy.textContent).toBe('ab cd');
-      expect(pieces(screen.container).map((piece) => piece.textContent)).toEqual([
-        'a',
-        'b',
-        'c',
-        'd'
-      ]);
+      expect(copy.children).toHaveLength(3);
+      expect(first).toHaveClass('whitespace-nowrap');
+      expect(second).toHaveClass('whitespace-nowrap');
+      expect(drawn(first)).toEqual(['a', 'b']);
+      expect(drawn(second)).toEqual(['c', 'd']);
+      // The space between them sits outside both, which is where the line
+      // breaks, and is drawn like the pieces rather than written.
+      expect(gap).not.toHaveClass('whitespace-nowrap');
+      expect(gap).toHaveAttribute('data-text', ' ');
+      expect(copy.textContent).toBe('');
     });
 
     it('takes the text as a prop over the children', async () => {
       const screen = await render(<AnimateSplit text="from the prop">ignored</AnimateSplit>);
 
-      expect(
-        pieces(screen.container)
-          .map((piece) => piece.textContent)
-          .join('')
-      ).toBe('from the prop');
+      expect(drawn(screen.container).join('')).toBe('from the prop');
     });
   });
 
@@ -182,6 +184,127 @@ describe('AnimateSplit', () => {
       expect(
         pieces(screen.container).every((piece) => piece.classList.contains('inline-block'))
       ).toBe(true);
+    });
+  });
+
+  /*
+   * The pieces were text beside the clipped line, so the HTML a server sent
+   * read "A line arriving a word at a time Alinearrivingawordatatime". They are
+   * drawn now, and the line is in the element once, with its spaces.
+   */
+  describe('its text', () => {
+    const line = 'A line arriving a word at a time';
+
+    it.each(['word', 'character'] as const)(
+      'is the line once in the HTML a server sends, split by %s',
+      (by) => {
+        const host = document.createElement('div');
+
+        host.innerHTML = renderToString(<AnimateSplit by={by}>{line}</AnimateSplit>);
+        document.body.append(host);
+
+        try {
+          expect(host.textContent).toBe(line);
+          expect(host.innerText).toBe(line);
+        } finally {
+          host.remove();
+        }
+      }
+    );
+
+    it.each(['word', 'character'] as const)(
+      'is the line once in the browser, split by %s',
+      async (by) => {
+        const screen = await render(
+          <AnimateSplit by={by} data-testid="split">
+            {line}
+          </AnimateSplit>
+        );
+
+        expect(screen.getByTestId('split').element().textContent).toBe(line);
+      }
+    );
+  });
+
+  /*
+   * `Intl.Segmenter` cuts a line differently on different engines, so a server
+   * and a browser that disagreed rendered a different number of pieces, and
+   * React threw the server's line away and drew it again.
+   *
+   * The stand-in below is two engines in one: while the "server" renders it
+   * cuts as the real segmenter does, and afterwards it cuts every character
+   * into a word of its own. It decides when it is used rather than when it is
+   * built, because the library keeps one segmenter per locale, and one built
+   * during the server render is the one the browser would be handed.
+   */
+  describe('hydration', () => {
+    it('hydrates the pieces the server sent, whatever the segmenter says', async () => {
+      const scope = Intl as unknown as { Segmenter: typeof Intl.Segmenter };
+      const Segmenter = scope.Segmenter;
+      let server = true;
+
+      scope.Segmenter = class {
+        real: Intl.Segmenter;
+
+        constructor(locale?: string, options?: Intl.SegmenterOptions) {
+          this.real = new Segmenter(locale, options);
+        }
+
+        segment(text: string) {
+          if (server) {
+            return this.real.segment(text);
+          }
+
+          return [...text].map((segment, index) => ({
+            segment,
+            index,
+            input: text,
+            isWordLike: segment.trim() !== ''
+          }));
+        }
+      } as unknown as typeof Intl.Segmenter;
+
+      // A locale nothing else asks for, so the stand-in is the only segmenter
+      // ever built for it.
+      const element = <AnimateSplit locale="tlh">One two three</AnimateSplit>;
+      const host = document.createElement('div');
+
+      try {
+        host.innerHTML = renderToString(element);
+      } finally {
+        server = false;
+      }
+
+      document.body.append(host);
+
+      const first = host.querySelector('.neba-anim');
+      const recoverable: unknown[] = [];
+      const root = hydrateRoot(host, element, {
+        onRecoverableError: (error) => recoverable.push(error)
+      });
+
+      try {
+        await settle();
+
+        expect(recoverable).toEqual([]);
+        // The first piece is the element the server sent, not one drawn again.
+        expect(host.querySelector('.neba-anim')).toBe(first);
+        // And once it has hydrated, the line is cut the browser's way.
+        await expect
+          .poll(() => drawn(host))
+          .toEqual(['O', 'n', 'e ', 't', 'w', 'o ', 't', 'h', 'r', 'e', 'e']);
+        expect(host.textContent).toBe('One two three');
+      } finally {
+        scope.Segmenter = Segmenter;
+        root.unmount();
+        host.remove();
+      }
+    });
+
+    it('cuts a tree that was never server-rendered with the segmenter from the start', async () => {
+      const screen = await render(<AnimateSplit locale="ja">東京都に住んでいます</AnimateSplit>);
+
+      expect(drawn(screen.container).length).toBeLessThan('東京都に住んでいます'.length);
     });
   });
 

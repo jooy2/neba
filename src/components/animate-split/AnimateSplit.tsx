@@ -10,7 +10,13 @@ import {
   transitionParts,
   useAnimationRun
 } from '../../internal/animate.js';
-import { graphemesOf, textOf, wordsOf } from '../../internal/text.js';
+import {
+  graphemesOf,
+  portableGraphemesOf,
+  portableWordsOf,
+  textOf,
+  wordsOf
+} from '../../internal/text.js';
 import { cx, srOnlyClasses } from '../../internal/styles.js';
 import type {
   NebaAnimateProps,
@@ -20,6 +26,7 @@ import type {
   NebaTimelineProps
 } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
+import { useHydrated } from '../../internal/media.js';
 
 /** What a piece is. */
 export type NebaSplitBy = 'word' | 'character';
@@ -88,7 +95,13 @@ export interface AnimateSplitProps
  * inline box cannot be translated up. Each keeps the space that followed it, so
  * a line still breaks between words and never inside the gap. Split by
  * character, the pieces of a word are held in a span that does not wrap, and
- * the space after it is left as text, which is where the line breaks.
+ * the space after it is left outside, which is where the line breaks.
+ *
+ * The clipped string is the only text the element holds. Every piece, and every
+ * space between the words of a line split by character, is drawn as generated
+ * content off a data attribute — as the width sizer draws its samples — so a
+ * copy, a crawler and `textContent` read the sentence once, with its spaces,
+ * rather than the sentence followed by its pieces run together.
  */
 export const AnimateSplit = React.forwardRef<HTMLElement, AnimateSplitProps>(
   function AnimateSplit(rawProps, ref) {
@@ -145,7 +158,27 @@ export const AnimateSplit = React.forwardRef<HTMLElement, AnimateSplitProps>(
     const state = timeline === 'view' ? 'running' : run.state;
 
     const source = text ?? textOf(children);
-    const words = React.useMemo(() => wordsOf(source, locale), [source, locale]);
+
+    /*
+     * Cut the same way on every engine until the page has hydrated, and by the
+     * segmenter after. Every piece is an element, and `Intl.Segmenter` does not
+     * agree with itself across engines — Firefox cuts Japanese and Thai into
+     * other words, and before 125 has no segmenter at all — so a server and a
+     * browser that cut a line differently rendered a different number of
+     * elements, and React threw the server's line away and drew it again. The
+     * portable cut is the same as the segmenter's for a line of spaced words,
+     * so in the usual case nothing changes when the page hydrates. Where it is
+     * not, it is finer, so a line split by word has pieces already on screen
+     * merged rather than arriving a second time; split by character, a letter
+     * that moves into another word's span is a new element and arrives again.
+     * A tree that was never server-rendered is hydrated from its first render,
+     * and only ever meets the segmenter.
+     */
+    const hydrated = useHydrated();
+    const words = React.useMemo(
+      () => (hydrated ? wordsOf(source, locale) : portableWordsOf(source)),
+      [hydrated, source, locale]
+    );
 
     /**
      * The characters of each word, and the space after it, when split by
@@ -154,7 +187,7 @@ export const AnimateSplit = React.forwardRef<HTMLElement, AnimateSplitProps>(
      * A line may break between any two inline blocks, so a word cut into
      * character pieces could end one line and start the next. Each word's
      * pieces go in a span that does not wrap, and the space after it stays
-     * outside as text, where the line can break.
+     * outside, where the line can break.
      */
     const groups = React.useMemo(() => {
       if (by === 'word') {
@@ -165,14 +198,15 @@ export const AnimateSplit = React.forwardRef<HTMLElement, AnimateSplitProps>(
 
       return words.map((word) => {
         const gap = /\s*$/.exec(word)?.[0] ?? '';
-        const letters = graphemesOf(word.slice(0, word.length - gap.length), locale);
+        const stem = word.slice(0, word.length - gap.length);
+        const letters = hydrated ? graphemesOf(stem, locale) : portableGraphemesOf(stem);
         const group = { start, letters, gap };
 
         start += letters.length;
 
         return group;
       });
-    }, [by, words, locale]);
+    }, [by, words, locale, hydrated]);
 
     const pieces = React.useMemo(
       () => (groups ? groups.flatMap((group) => group.letters) : words),
@@ -201,9 +235,11 @@ export const AnimateSplit = React.forwardRef<HTMLElement, AnimateSplitProps>(
       pieces.map((piece, index) => (
         // `pre` rather than `pre-wrap`: the piece is one box, so there is
         // nothing inside it to wrap, and the trailing space has to survive.
-        <span key={index} className="inline-block whitespace-pre">
-          {piece}
-        </span>
+        <span
+          key={index}
+          data-text={piece}
+          className="inline-block whitespace-pre before:content-[attr(data-text)]"
+        />
       )),
       `${animBaseClass} ${animationClasses[effect]}`,
       parts.slots,
@@ -218,7 +254,12 @@ export const AnimateSplit = React.forwardRef<HTMLElement, AnimateSplitProps>(
                 {animated.slice(group.start, group.start + group.letters.length)}
               </span>
             ) : null}
-            {group.gap}
+            {/* Drawn like the pieces, and still where the line breaks: generated
+                content lays out as text does, so the space collapses and wraps
+                as the text node it replaces did. */}
+            {group.gap ? (
+              <span data-text={group.gap} className="before:content-[attr(data-text)]" />
+            ) : null}
           </React.Fragment>
         ))
       : animated;

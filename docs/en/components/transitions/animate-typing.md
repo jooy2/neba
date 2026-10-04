@@ -57,7 +57,7 @@ Milliseconds before it starts. A delay per line is what turns a stack of typewri
 
 ### caret
 
-The block after the text, on by default. `caretChar` is what it is drawn as: `▌`, `_`, anything.
+The block after the text, on by default. `caretChar` is what it is drawn as: `▌`, `_`, anything. A string is drawn without becoming part of the element's text; an element is rendered as given.
 
 ```tsx
 <AnimateTyping caretChar="▌" caret={false}>
@@ -68,6 +68,7 @@ The block after the text, on by default. `caretChar` is what it is drawn as: `�
 ## Accessibility
 
 - The full text is in the document from the first frame, in a clipped box, and the animated copy is `aria-hidden`. A screen reader reads the line once and is not made to sit through the performance.
+- What has been typed and the caret are drawn rather than written into the document, so the element's text is the line once, with no caret on the end.
 - A reduced-motion preference shows the whole string immediately, with no typing at all.
 - The caret keeps blinking after the line has been typed, for as long as it is on the page, and `paused` does not reach it. Pass `caret={false}` where the line sits beside text a reader is working through.
 - The box is laid out from the whole string from the first frame, so the text around it does not reflow as the line types.

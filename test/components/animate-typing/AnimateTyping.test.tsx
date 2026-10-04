@@ -30,9 +30,12 @@ window.matchMedia = (query: string) => {
   });
 };
 
-/** What is actually drawn — the clipped copy for a screen reader is separate. */
+/**
+ * What is actually drawn — the clipped copy for a screen reader is separate.
+ * Drawn off an attribute, so it is not text.
+ */
 function typed(root: Element): string {
-  return root.querySelector('[aria-hidden="true"]')?.textContent ?? '';
+  return root.querySelector('[aria-hidden="true"]')?.getAttribute('data-text') ?? '';
 }
 
 describe('AnimateTyping', () => {
@@ -130,8 +133,42 @@ describe('AnimateTyping', () => {
       );
 
       expect(
-        screen.getByTestId('typing').element().querySelector('.neba-typing-caret')?.textContent
+        screen
+          .getByTestId('typing')
+          .element()
+          .querySelector('.neba-typing-caret')
+          ?.getAttribute('data-text')
       ).toBe('▌');
+    });
+
+    // A caret that is a node has nothing to put in an attribute.
+    it('renders a caret that is a node as it was given', async () => {
+      const screen = await render(
+        <AnimateTyping caretChar={<svg data-testid="caret" />} data-testid="typing">
+          Hello
+        </AnimateTyping>
+      );
+
+      await expect.element(screen.getByTestId('caret')).toBeInTheDocument();
+    });
+
+    /*
+     * The typed copy was text beside the clipped line, and so was the caret, so
+     * the HTML a server sent read "Hello|" and the line read twice once it had
+     * been typed. Both are drawn now, and the line is in the element once.
+     */
+    it('holds the text once, with no caret, in the HTML a server sends', () => {
+      const host = document.createElement('div');
+
+      host.innerHTML = renderToString(<AnimateTyping text="Hello there" />);
+      document.body.append(host);
+
+      try {
+        expect(host.textContent).toBe('Hello there');
+        expect(host.innerText).toBe('Hello there');
+      } finally {
+        host.remove();
+      }
     });
   });
 
@@ -167,6 +204,25 @@ describe('AnimateTyping', () => {
       await vi.runAllTimersAsync();
 
       await expect.poll(() => typed(screen.getByTestId('typing').element())).toBe('Hello');
+    });
+
+    it('holds the text once while it types and after', async () => {
+      const step = 60_000;
+      const screen = await render(
+        <AnimateTyping duration={step * 5} data-testid="typing">
+          Hello
+        </AnimateTyping>
+      );
+      const root = screen.getByTestId('typing').element();
+
+      // The first character is typed once the delay, which is zero, has run.
+      await vi.advanceTimersByTimeAsync(0);
+      await expect.poll(() => typed(root)).toBe('H');
+      expect(root.textContent).toBe('Hello');
+
+      await vi.runAllTimersAsync();
+      await expect.poll(() => typed(root)).toBe('Hello');
+      expect(root.textContent).toBe('Hello');
     });
 
     it('shows nothing at all before it is triggered', async () => {

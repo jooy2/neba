@@ -1,4 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { renderToString } from 'react-dom/server';
+import { hydrateRoot } from 'react-dom/client';
 import { render } from 'vitest-browser-react';
 import { AnimateScramble } from 'neba';
 
@@ -28,8 +30,20 @@ window.matchMedia = (query: string) => {
   });
 };
 
+/** The layer the line is laid out in, a word and a gap at a time. */
+function layer(root: Element): Element[] {
+  return [...(root.querySelector('[aria-hidden="true"]')?.children ?? [])];
+}
+
+/**
+ * What a sighted reader sees: the noise of each word still settling, the final
+ * text of each word that has, and the whitespace between them — all drawn off
+ * attributes, so none of it is text.
+ */
 function shown(root: Element): string {
-  return root.querySelector('[aria-hidden="true"]')?.textContent ?? '';
+  return layer(root)
+    .map((part) => part.getAttribute('data-text') ?? part.getAttribute('data-sample'))
+    .join('');
 }
 
 /*
@@ -58,10 +72,80 @@ describe('AnimateScramble', () => {
     const screen = await render(
       <AnimateScramble text="Hello there" trigger="manual" data-testid="scramble" />
     );
-    const sample = screen.getByTestId('scramble').element().querySelector('[data-sample]');
+    const root = screen.getByTestId('scramble').element();
 
-    expect(sample).toHaveAttribute('data-sample', 'Hello there');
-    expect(sample?.textContent).toBe('');
+    expect(layer(root).map((part) => part.getAttribute('data-sample'))).toEqual([
+      'Hello',
+      ' ',
+      'there'
+    ]);
+    expect(root.querySelector('[aria-hidden="true"]')?.textContent).toBe('');
+  });
+
+  /*
+   * The noise was a text node beside the clipped string, so the HTML a server
+   * sent read "RESOLVING SIGNAL 7@W5#IBM$ KUUWHI". The noise is drawn, not
+   * written, and the text is in the element once.
+   */
+  it('holds the text once, and none of the noise, in the HTML a server sends', () => {
+    const host = document.createElement('div');
+
+    host.innerHTML = renderToString(<AnimateScramble text="RESOLVING SIGNAL" />);
+    document.body.append(host);
+
+    try {
+      expect(host.textContent).toBe('RESOLVING SIGNAL');
+      expect(host.innerText).toBe('RESOLVING SIGNAL');
+      expect(shown(host)).toHaveLength('RESOLVING SIGNAL'.length);
+      expect(shown(host)).not.toBe('RESOLVING SIGNAL');
+    } finally {
+      host.remove();
+    }
+  });
+
+  /*
+   * The noise shared a grid cell with the final text, so the box took the wider
+   * of the two and a heading could gain a line while it settled. Each word's
+   * noise sits over that word now, positioned against it, so only the final
+   * text is laid out.
+   */
+  it('lays the noise over the final text rather than beside it', async () => {
+    const screen = await render(
+      <AnimateScramble text="Hello there" trigger="manual" data-testid="scramble" />
+    );
+    const root = screen.getByTestId('scramble').element();
+    const words = layer(root).filter((part) => part.hasAttribute('data-text'));
+
+    expect(words).toHaveLength(2);
+
+    for (const word of words) {
+      // The noise is the word's own `::after`, positioned against the word.
+      expect(word).toHaveClass('relative', 'after:absolute');
+      expect(word.children).toHaveLength(0);
+      expect(word.getAttribute('data-text')).toHaveLength(
+        word.getAttribute('data-sample')?.length ?? -1
+      );
+    }
+
+    // The clipped copy and the final text: nothing else is laid out in the box.
+    expect(root.children).toHaveLength(2);
+  });
+
+  // A finished line is drawn as the text itself, wherever the browser puts it,
+  // rather than as noise that has come to rest over it.
+  it('draws a word that has settled as the text itself', async () => {
+    const screen = await render(
+      <AnimateScramble text="Hello there" duration={0} data-testid="scramble" />
+    );
+    const root = screen.getByTestId('scramble').element();
+
+    await expect.poll(() => shown(root)).toBe('Hello there');
+
+    for (const part of layer(root)) {
+      expect(part).not.toHaveAttribute('data-text');
+    }
+
+    expect(layer(root)[0]).toHaveClass('visible');
   });
 
   beforeEach(() => {
@@ -221,6 +305,28 @@ describe('AnimateScramble', () => {
     expect(screen.getByTestId('s').element().children[0].textContent).toBe('NEBA');
   });
 
+  it('holds the text once while it settles and after', async () => {
+    const step = 60_000;
+    const screen = await render(
+      <AnimateScramble
+        text="AB CD"
+        characters="#"
+        duration={step * 5}
+        tick={step * 100}
+        data-testid="s"
+      />
+    );
+    const root = screen.getByTestId('s').element();
+
+    await vi.advanceTimersByTimeAsync(step);
+    await expect.poll(() => shown(root)).toBe('A# ##');
+    expect(root.textContent).toBe('AB CD');
+
+    await vi.runAllTimersAsync();
+    await expect.poll(() => shown(root)).toBe('AB CD');
+    expect(root.textContent).toBe('AB CD');
+  });
+
   it('takes the text from its children too', async () => {
     const screen = await render(
       <AnimateScramble duration={60} data-testid="s">
@@ -231,5 +337,71 @@ describe('AnimateScramble', () => {
     await vi.runAllTimersAsync();
 
     await expect.poll(() => shown(screen.getByTestId('s').element())).toBe('Hello');
+  });
+});
+
+/*
+ * The noise is picked per character, and `Intl.Segmenter` counts characters
+ * differently on different engines, so a server and a browser that disagreed
+ * drew two different opening frames. The stand-in is two engines in one: the
+ * real segmenter while the "server" renders, and one that cuts every code
+ * point apart afterwards. It decides when it is used rather than when it is
+ * built, because the library keeps one segmenter per locale.
+ */
+describe('AnimateScramble hydration', () => {
+  it('hydrates the frame the server drew, whatever the segmenter says', async () => {
+    const scope = Intl as unknown as { Segmenter: typeof Intl.Segmenter };
+    const Segmenter = scope.Segmenter;
+    let server = true;
+
+    scope.Segmenter = class {
+      real: Intl.Segmenter;
+
+      constructor(locale?: string, options?: Intl.SegmenterOptions) {
+        this.real = new Segmenter(locale, options);
+      }
+
+      segment(text: string) {
+        if (server) {
+          return this.real.segment(text);
+        }
+
+        return [...text].map((segment, index) => ({ segment, index, input: text }));
+      }
+    } as unknown as typeof Intl.Segmenter;
+
+    const errors = vi.spyOn(console, 'error').mockImplementation(() => {});
+    // A locale nothing else asks for, so the stand-in is the only segmenter
+    // ever built for it.
+    const element = (
+      <AnimateScramble text="é 👩‍👩‍👧 NEBA" locale="tlh" tick={60_000} duration={60_000} />
+    );
+    const host = document.createElement('div');
+
+    try {
+      host.innerHTML = renderToString(element);
+    } finally {
+      server = false;
+    }
+
+    document.body.append(host);
+
+    const recoverable: unknown[] = [];
+    const root = hydrateRoot(host, element, {
+      onRecoverableError: (error) => recoverable.push(error)
+    });
+
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 60));
+
+      expect(recoverable).toEqual([]);
+      expect(errors.mock.calls.flat().join(' ')).not.toMatch(/did ?n.t match/);
+      expect(host.textContent).toBe('é 👩‍👩‍👧 NEBA');
+    } finally {
+      scope.Segmenter = Segmenter;
+      errors.mockRestore();
+      root.unmount();
+      host.remove();
+    }
   });
 });

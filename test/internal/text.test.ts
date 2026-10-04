@@ -14,7 +14,13 @@
  */
 import { createElement } from 'react';
 import { describe, expect, it } from 'vitest';
-import { graphemesOf, textOf, wordsOf } from '../../src/internal/text.js';
+import {
+  graphemesOf,
+  portableGraphemesOf,
+  portableWordsOf,
+  textOf,
+  wordsOf
+} from '../../src/internal/text.js';
 
 describe('textOf', () => {
   it('reads a string and a number', () => {
@@ -104,5 +110,115 @@ describe('wordsOf', () => {
 
   it('has nothing to cut in an empty string', () => {
     expect(wordsOf('')).toEqual([]);
+  });
+});
+
+/*
+ * The portable cuts are what a server render and the render that hydrates it
+ * use, because `Intl.Segmenter` gives different answers on different engines.
+ * Two things are worth holding: that they keep a character together where the
+ * segmenter does, and that a portable word is never coarser than a segmented
+ * one, so cutting a line again after hydration only ever merges pieces.
+ */
+describe('portableGraphemesOf', () => {
+  it('keeps the clusters the segmenter keeps together', () => {
+    for (const text of ['👩‍👩‍👧', '🇰🇷🇯🇵', '한', '한', 'é', '👍🏽', '1️⃣', 'กำลัง']) {
+      expect(portableGraphemesOf(text)).toEqual(graphemesOf(text));
+    }
+  });
+
+  // A virama joins two consonants into one character in Devanagari, which is
+  // the case a regular expression is most likely to cut in two.
+  it('keeps a stacked consonant with the one before it', () => {
+    expect(portableGraphemesOf('क्ष')).toEqual(['क्ष']);
+  });
+
+  it('puts the pieces back together as the original string', () => {
+    const text = 'Ünïcödé 👩‍👩‍👧 한국어 नमस्ते\r\n';
+
+    expect(portableGraphemesOf(text).join('')).toBe(text);
+  });
+
+  it('has nothing to cut in an empty string', () => {
+    expect(portableGraphemesOf('')).toEqual([]);
+  });
+});
+
+describe('portableWordsOf', () => {
+  it('cuts a line of spaced words the way the segmenter does', () => {
+    for (const text of [
+      'A line arriving a word at a time',
+      'Hello, world!',
+      "don't stop",
+      'state-of-the-art',
+      '"Quoted" text',
+      '1,234.5 items',
+      'Привет, мир',
+      '안녕하세요 세계'
+    ]) {
+      expect(portableWordsOf(text)).toEqual(wordsOf(text));
+    }
+  });
+
+  /*
+   * Every place the segmenter cuts, the portable cut cuts too. A Japanese or a
+   * Thai sentence is a piece per character rather than a piece per word, so a
+   * line cut again once the page has hydrated has pieces merged and none added.
+   */
+  it('is never coarser than the segmenter', () => {
+    const boundaries = (pieces: string[]) => {
+      let offset = 0;
+
+      return pieces.map((piece) => {
+        const at = offset;
+
+        offset += piece.length;
+
+        return at;
+      });
+    };
+
+    for (const [text, locale] of [
+      // Chrome cuts these at the full stop and the other engines do not.
+      ['e.g. example.com', 'en'],
+      ['東京都に住んでいます。', 'ja'],
+      ['我爱北京天安门', 'zh'],
+      ['สวัสดีครับ ยินดีต้อนรับ', 'th'],
+      ['AI技術の進歩', 'ja'],
+      ['中文 English 混合', 'zh']
+    ]) {
+      const portable = boundaries(portableWordsOf(text));
+
+      expect(portable).toEqual(expect.arrayContaining(boundaries(wordsOf(text, locale))));
+    }
+  });
+
+  it('puts the pieces back together as the original string', () => {
+    const text = '  「こんにちは」と言った — 50% off! ';
+
+    expect(portableWordsOf(text).join('')).toBe(text);
+  });
+
+  it('has nothing to cut in an empty string', () => {
+    expect(portableWordsOf('')).toEqual([]);
+  });
+});
+
+describe('without Intl.Segmenter', () => {
+  // A Firefox before 125. The fallback is the portable cut, so on that runtime
+  // the line hydrated from the server is the line it keeps.
+  it('falls back to the portable cuts', () => {
+    const scope = Intl as { Segmenter?: unknown };
+    const original = scope.Segmenter;
+
+    delete scope.Segmenter;
+
+    try {
+      expect(graphemesOf('👩‍👩‍👧é')).toEqual(['👩‍👩‍👧', 'é']);
+      expect(wordsOf('東京 and/or more')).toEqual(portableWordsOf('東京 and/or more'));
+      expect(wordsOf('東京 and/or more')).toEqual(['東', '京 ', 'and/', 'or ', 'more']);
+    } finally {
+      scope.Segmenter = original;
+    }
   });
 });

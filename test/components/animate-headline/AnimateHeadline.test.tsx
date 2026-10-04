@@ -104,6 +104,39 @@ describe('AnimateHeadline', () => {
       expect(records.map((record) => record.oldValue)).toEqual(['active']);
     });
 
+    /*
+     * The lines are siblings, and with nothing between them a server-rendered
+     * `<h1>` read "fasterquieteryours" to a crawler, a copy and `textContent`.
+     */
+    it('keeps a space between its lines in the HTML a server sends', () => {
+      const host = document.createElement('div');
+
+      host.innerHTML = renderToString(
+        <AnimateHeadline render={<h1 />}>
+          <span>faster</span>
+          <span>quieter</span>
+          <span>yours</span>
+        </AnimateHeadline>
+      );
+
+      expect(host.textContent).toBe('faster quieter yours');
+    });
+
+    it('keeps a space between its lines in the browser', async () => {
+      const screen = await render(
+        <AnimateHeadline data-testid="headline">
+          {'faster'}
+          {'quieter'}
+          <span>yours</span>
+        </AnimateHeadline>
+      );
+      const root = screen.getByTestId('headline').element();
+
+      expect(root.textContent).toBe('faster quieter yours');
+      // The spaces are text between the lines, not lines of their own.
+      expect(root.children).toHaveLength(3);
+    });
+
     it('keeps a line’s own class names', async () => {
       const screen = await render(
         <AnimateHeadline data-testid="headline">

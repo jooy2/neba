@@ -3,10 +3,11 @@
 import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
 import { isInfinite, useAnimationRun, usePrefersReducedMotion } from '../../internal/animate.js';
-import { graphemesOf, textOf } from '../../internal/text.js';
+import { graphemesOf, portableGraphemesOf, standsAlone, textOf } from '../../internal/text.js';
 import { cx, srOnlyClasses } from '../../internal/styles.js';
 import type { NebaAnimateProps } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
+import { useHydrated } from '../../internal/media.js';
 
 export interface AnimateScrambleProps
   extends
@@ -46,6 +47,13 @@ export interface AnimateScrambleProps
 /** Monospaced-ish and all one height, so the line does not jump as it settles. */
 const DEFAULT_POOL = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#%&$@*';
 
+/** A word that has settled: the final text, drawn where the line puts it. */
+const settledWordClasses = 'visible before:content-[attr(data-sample)]';
+
+/** A word that has not: the final text laid out unseen, and its noise over it. */
+const scramblingWordClasses =
+  'relative before:content-[attr(data-sample)] after:visible after:absolute after:inset-0 after:flex after:items-center after:overflow-x-clip after:whitespace-pre after:content-[attr(data-text)]';
+
 /**
  * Which glyph an unsettled position shows on a given tick.
  *
@@ -77,9 +85,10 @@ function glyphAt(tick: number, index: number, size: number): number {
  * `AnimateTyping`'s sibling: a typewriter reveals a string from an empty line,
  * this one resolves it out of a line that was already the right length. The box
  * is laid out from the final text, so nothing around it reflows and a heading
- * does not push the page down as it lands. In a proportional font the noise can
- * be wider than the text for a moment, and spills past the box without moving
- * anything.
+ * does not push the page down as it lands. Each word's noise is drawn over the
+ * word it settles into, so the line breaks where the final text breaks. In a
+ * proportional font a word's noise can be wider than the word for a moment, and
+ * is cut off at the word's end rather than moving anything.
  *
  * Whitespace is never scrambled. A space that flickers into a letter and back
  * reads as the words having moved, which is the one thing this effect is for
@@ -88,6 +97,11 @@ function glyphAt(tick: number, index: number, size: number): number {
  * The finished string is in the document from the first frame, in a clipped box
  * for a screen reader; the noise is a visible copy that is `aria-hidden`. A
  * reader who has asked for less motion is shown the text.
+ *
+ * That clipped string is the only text the element holds. The noise is drawn
+ * as generated content off a data attribute, as the final string underneath it
+ * already was, so a copy, a crawler and `textContent` read the text once rather
+ * than the text followed by a line of noise.
  */
 export const AnimateScramble = React.forwardRef<HTMLElement, AnimateScrambleProps>(
   function AnimateScramble(rawProps, ref) {
@@ -123,7 +137,14 @@ export const AnimateScramble = React.forwardRef<HTMLElement, AnimateScrambleProp
     const reduced = usePrefersReducedMotion();
 
     const source = text ?? textOf(children);
-    const graphemes = React.useMemo(() => graphemesOf(source, locale), [source, locale]);
+    // Cut the same way on every engine until the page has hydrated: the noise
+    // is picked per character, and a server and a browser that count the
+    // characters differently would draw two different opening frames.
+    const hydrated = useHydrated();
+    const graphemes = React.useMemo(
+      () => (hydrated ? graphemesOf(source, locale) : portableGraphemesOf(source)),
+      [hydrated, source, locale]
+    );
     const total = graphemes.length;
 
     // How many characters have settled, counted from the left.
@@ -218,18 +239,49 @@ export const AnimateScramble = React.forwardRef<HTMLElement, AnimateScrambleProp
     }, [run.started, run.run, paused, reduced, total, settleDelay, tick, delay]);
 
     const pool = characters.length > 0 ? characters : DEFAULT_POOL;
-    const shown = graphemes
-      .map((grapheme, index) => {
-        // A reader who asked for less motion is shown the text, and not the
-        // noise it would have resolved out of — including while it waits for a
-        // trigger that, for `hover` or `manual`, may never come.
-        if (reduced || index < settled || grapheme.trim() === '') {
-          return grapheme;
-        }
 
-        return pool[glyphAt(noise, index, pool.length)];
-      })
-      .join('');
+    /*
+     * The line as words, each with what it shows on this tick and the
+     * whitespace after it.
+     *
+     * Word by word because the noise is laid over the final text rather than
+     * beside it. It shared a grid cell with the final text before, so the box
+     * took the wider of the two and a heading could gain a line while it
+     * settled. One layer of noise over the whole line, at the final text's
+     * width, would wrap its last word early wherever the noise ran wider, and
+     * drop it onto whatever was below. Laid over each word, the noise breaks
+     * where the final text breaks, and the box is only ever the final text's
+     * size. A character of a script written without spaces is a word of its
+     * own: a line may break inside a run of them, and the noise over a word
+     * has to stay on one line.
+     */
+    const words: { text: string; shown: string; gap: string; settled: boolean }[] = [];
+
+    graphemes.forEach((grapheme, index) => {
+      const blank = grapheme.trim() === '';
+      const alone = !blank && standsAlone(grapheme);
+      let word = words[words.length - 1];
+
+      if (!word || (!blank && (word.gap || alone || standsAlone(graphemes[index - 1] ?? '')))) {
+        word = { text: '', shown: '', gap: '', settled: true };
+        words.push(word);
+      }
+
+      if (blank) {
+        word.gap += grapheme;
+
+        return;
+      }
+
+      // A reader who asked for less motion is shown the text, and not the
+      // noise it would have resolved out of — including while it waits for a
+      // trigger that, for `hover` or `manual`, may never come.
+      const done = reduced || index < settled;
+
+      word.text += grapheme;
+      word.shown += done ? grapheme : pool[glyphAt(noise, index, pool.length)];
+      word.settled &&= done;
+    });
 
     return useRender({
       render: render ?? <span />,
@@ -244,19 +296,43 @@ export const AnimateScramble = React.forwardRef<HTMLElement, AnimateScrambleProp
         children: (
           <>
             <span className={srOnlyClasses}>{source}</span>
-            <span aria-hidden="true" className="whitespace-pre-wrap [grid-area:1/1]">
-              {shown}
+            {/* The final string, laid out from the first frame so the box takes
+                its size from what the line will be rather than from what has
+                arrived, and drawn a word at a time as each one settles.
+                Generated content off `data-sample`, as the width sizer draws its
+                samples, so it leaves nothing for a find-in-page or a query for
+                the text to match. Every word and every gap is an inline span, so
+                the line is laid out, broken and ordered exactly as the text
+                itself would be — an inline block per word would put a
+                right-to-left line's words in the wrong order. */}
+            <span aria-hidden="true" className="invisible whitespace-pre-wrap [grid-area:1/1]">
+              {words.map((word, index) => (
+                <React.Fragment key={index}>
+                  {/* A word that has settled is drawn where the line puts it, so
+                      a finished line is plain text in every browser — Safari
+                      places a box positioned against an inline wrongly when a
+                      left-to-right word sits in a right-to-left line. One that
+                      has not draws its noise as its `::after`, positioned over
+                      it and centred on it, which puts its baseline on the
+                      word's: an inline box is the text's own height, and the
+                      line is the same distance taller above it as below. The
+                      noise is cut off at the word's end rather than running
+                      into the next word or the sentence after it — only across,
+                      since a clip down the page would cut the descenders off a
+                      heading set solid. */}
+                  {word.text ? (
+                    <span
+                      data-sample={word.text}
+                      data-text={word.settled ? undefined : word.shown}
+                      className={word.settled ? settledWordClasses : scramblingWordClasses}
+                    />
+                  ) : null}
+                  {word.gap ? (
+                    <span data-sample={word.gap} className="before:content-[attr(data-sample)]" />
+                  ) : null}
+                </React.Fragment>
+              ))}
             </span>
-            {/* The final string, laid out underneath and drawn by nobody, so the box
-                takes its size from what the line will be rather than from what
-                has arrived. Generated content off `data-sample`, as the width
-                sizer draws its samples, so it leaves nothing for a find-in-page
-                or a query for the text to match. */}
-            <span
-              aria-hidden="true"
-              data-sample={source}
-              className="invisible whitespace-pre-wrap [grid-area:1/1] before:content-[attr(data-sample)]"
-            />
           </>
         )
       }

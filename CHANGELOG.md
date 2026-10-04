@@ -8,6 +8,8 @@
 
 - **A run's duration is written in the language of the sentence around it.** `Reasoning`, `ToolCall` and `AgentSteps` wrote the duration in the runtime's language and their own words in English, so a Korean browser read "Thought for 2.4초". With no `locale` the duration is English now, like the words around it; pass `locale` to have both in the reader's language. It is also never different on the server and in the browser.
 
+- **`AnimateCounter`, `AnimateScramble`, `AnimateSplit` and `AnimateTyping` hold their text once.** The animated copy was text in the page beside a hidden copy of the answer, so the server's HTML, `textContent` and a copy read "128K 0", "RESOLVING SIGNAL 7@W5#IBM$ KUUWHI", or a line followed by the same line with its spaces gone — and that is what a crawler indexed. The animated copy is drawn from a `data-text` attribute now, and the answer is the element's only text. The drawn glyphs can no longer be selected; a selection or a copy gets the answer. A test that read the number on screen through `textContent` should read `data-text`.
+
 ### Changed
 
 - **A `Slider`'s labels at `min` and `max` line up inward from their ticks.** Centred, the label at either end hung half its width past the track, and in a narrow column past the edge of the column. Every other mark stays centred, and a vertical slider does the same at its top and bottom.
@@ -25,6 +27,14 @@
 - **`colorSchemeScript`, `formatFileSize` and `registerLanguage` can be called from a Server Component.** They were exported from client modules, so in Next.js the `<head>` of `app/layout.tsx` — where the provider page says to call `colorSchemeScript()` — received a client reference, and calling it threw. Each is in a module of its own now.
 
 - **React 18 no longer prints a `useLayoutEffect` warning for Neba components on a server.** Fifteen modules measured themselves in a layout effect, which React 18's server renderer warns about once per component per request; they skip it on a server now, as three already did.
+
+- **`AnimateCounter` holds its box at the width of the wider of `value` and `from` from the first frame**, so the words after it no longer move as it gains digits, and **`AnimateScramble` keeps its box at the final text's size** while it scrambles: each word's noise is drawn over that word and cut off at its end, instead of widening the box or adding a line.
+
+- **`AnimateSplit` hydrates in every browser.** Engines cut Japanese and Thai into words differently, and a browser without `Intl.Segmenter` cut everything differently, so the browser drew a different number of pieces from the server and React threw the server's HTML away. The server and the hydrating render now cut the text the same way, and the reader's engine takes over after hydration.
+
+- **`AnimateHeadline` puts a space between its lines in the document**, so its text reads "faster quieter yours" rather than one run-together word.
+
+- **On a runtime without `Intl.Segmenter`, `AnimateTyping`, `AnimateScramble` and `AnimateSplit` keep emoji, accents and stacked consonants together**, and cut Chinese, Japanese and Thai per character rather than as one piece.
 
 - **`Slider` reads `locale` from a `NebaProvider`.** It never asked for it, so a `showValue` under `defaults={{ locale }}` was formatted in the runtime's language.
 

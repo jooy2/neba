@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { renderToString } from 'react-dom/server';
 import { render } from 'vitest-browser-react';
 import { AnimateCounter } from 'neba';
 
@@ -28,9 +29,25 @@ window.matchMedia = (query: string) => {
   });
 };
 
-/** What a sighted reader sees. */
+/** What a sighted reader sees: drawn off an attribute, so it is not text. */
 function shown(root: Element): string {
-  return root.querySelector('[aria-hidden="true"]')?.textContent ?? '';
+  return root.querySelector('[data-text]')?.getAttribute('data-text') ?? '';
+}
+
+/** The widths the box is held open at. */
+function samples(root: Element): string[] {
+  return [...root.querySelectorAll('[data-sample]')].map(
+    (sample) => sample.getAttribute('data-sample') ?? ''
+  );
+}
+
+/** A page as a server sent it, read with no script. */
+function serverPage(element: React.ReactElement): HTMLElement {
+  const host = document.createElement('div');
+
+  host.innerHTML = renderToString(element);
+
+  return host;
 }
 
 /** What a screen reader is told. */
@@ -57,6 +74,54 @@ describe('AnimateCounter', () => {
     );
 
     expect(screen.getByTestId('count').element().tagName).toBe('SPAN');
+  });
+
+  /*
+   * The answer was in a clipped box and the count beside it was text as well,
+   * so a server-rendered sentence read "Trusted by 12,0000 teams" and the same
+   * sentence after the count "12,00012,000". The count is drawn, not written.
+   */
+  it('holds its answer as text once, in the HTML a server sends', () => {
+    const host = serverPage(
+      <p>
+        Trusted by <AnimateCounter value={12000} locale="en-US" /> teams
+      </p>
+    );
+
+    document.body.append(host);
+
+    try {
+      expect(host.textContent).toBe('Trusted by 12,000 teams');
+      expect(host.innerText.replace(/\s+/g, ' ')).toBe('Trusted by 12,000 teams');
+    } finally {
+      host.remove();
+    }
+  });
+
+  /*
+   * `tabular-nums` sets every figure at one width, not every number at the
+   * same number of figures, so a count to 12,000 widened the box each time it
+   * gained a digit and pushed the words after it along.
+   */
+  it('holds its box open at both ends of the count from the first frame', async () => {
+    const screen = await render(
+      <AnimateCounter value={12000} trigger="manual" locale="en-US" data-testid="c" />
+    );
+    const root = screen.getByTestId('c').element();
+
+    expect(shown(root)).toBe('0');
+    expect(samples(root)).toEqual(['12,000', '0']);
+    expect(root.querySelector('[aria-hidden="true"]')?.textContent).toBe('');
+  });
+
+  // A count down to 5 kept the room of the number it started from beside the
+  // answer for good.
+  it('lets the start go once the count has landed', async () => {
+    const screen = await render(
+      <AnimateCounter value={5} from={1000} duration={0} locale="en-US" data-testid="c" />
+    );
+
+    await expect.poll(() => samples(screen.getByTestId('c').element())).toEqual(['5']);
   });
 
   // It took `paused` with the props every Animate* shares and ignored it.
@@ -95,6 +160,21 @@ describe('AnimateCounter', () => {
     await vi.runAllTimersAsync();
 
     await expect.poll(() => shown(screen.getByTestId('c').element())).toBe('42');
+  });
+
+  it('holds its answer as text once while it counts and after it lands', async () => {
+    const screen = await render(
+      <AnimateCounter value={12000} duration={4000} locale="en-US" data-testid="c" />
+    );
+    const root = screen.getByTestId('c').element();
+
+    await vi.advanceTimersByTimeAsync(1500);
+    await expect.poll(() => shown(root)).not.toBe('0');
+    expect(root.textContent).toBe('12,000');
+
+    await vi.runAllTimersAsync();
+    await expect.poll(() => shown(root)).toBe('12,000');
+    expect(root.textContent).toBe('12,000');
   });
 
   it('starts from where it was told, and counts from there', async () => {

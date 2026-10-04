@@ -231,32 +231,39 @@ export const AnimateHeadline = React.forwardRef<HTMLElement, AnimateHeadlineProp
         'data-state': run.state,
         ...props,
         ...run.handlers,
-        children: items.map((child, position) => {
-          const state =
-            position === active
-              ? 'active'
-              : position === leaving && !reduced
-                ? 'leaving'
-                : undefined;
+        children: items
+          .map((child, position) => {
+            const state =
+              position === active
+                ? 'active'
+                : position === leaving && !reduced
+                  ? 'leaving'
+                  : undefined;
 
-          const wrap = (content: React.ReactNode, key: React.Key) => (
-            <span key={key} className="neba-headline-item" data-state={state}>
-              {content}
-            </span>
-          );
+            const wrap = (content: React.ReactNode, key: React.Key) => (
+              <span key={key} className="neba-headline-item" data-state={state}>
+                {content}
+              </span>
+            );
 
-          if (!React.isValidElement(child)) {
-            return wrap(child, position);
-          }
+            if (!React.isValidElement(child)) {
+              return wrap(child, position);
+            }
 
-          const childProps = child.props as { className?: string };
+            const childProps = child.props as { className?: string };
 
-          return React.cloneElement(child as React.ReactElement<Record<string, unknown>>, {
-            key: position,
-            className: cx('neba-headline-item', childProps.className),
-            'data-state': state
-          });
-        })
+            return React.cloneElement(child as React.ReactElement<Record<string, unknown>>, {
+              key: position,
+              className: cx('neba-headline-item', childProps.className),
+              'data-state': state
+            });
+          })
+          // A space between two lines, so the element's text reads as words: the
+          // lines are siblings, and without one a crawler, a copy and
+          // `textContent` ran them together as `fasterquieteryours`. A grid does
+          // not lay out a run of whitespace between its items, so nothing on the
+          // screen moves.
+          .flatMap((line, position) => (position === 0 ? [line] : [' ', line]))
       }
     });
   }

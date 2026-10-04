@@ -92,6 +92,12 @@ function decimalsOf(value: number): number {
  * A reader who cannot see the count is told the answer rather than a hundred
  * intermediate ones, and a reader who has asked for less motion is shown the
  * answer too.
+ *
+ * The clipped number is also the only text the element holds. The count is
+ * drawn as generated content off a data attribute, the way the width sizer
+ * draws its samples, so a copy, a crawler and `textContent` read `12,000` once
+ * rather than the answer followed by wherever the count had got to — which, on
+ * a server-rendered page or after the count, was `12,0000` and `12,00012,000`.
  */
 export const AnimateCounter = React.forwardRef<HTMLElement, AnimateCounterProps>(
   function AnimateCounter(rawProps, ref) {
@@ -222,6 +228,23 @@ export const AnimateCounter = React.forwardRef<HTMLElement, AnimateCounterProps>
     // the way to a whole number and changed the width of the line every frame.
     const places = Math.max(decimalsOf(value), decimalsOf(from));
     const counted = Math.round(shown * 10 ** places) / 10 ** places;
+    const answer = formatter.format(value);
+    const start = formatter.format(from);
+    const drawn = reduced ? answer : formatter.format(counted);
+
+    /*
+     * The two ends of the count, laid out under it and drawn by nobody, so the
+     * box is as wide as the wider of them from the first frame. `tabular-nums`
+     * gives every figure one width, but not every number the same number of
+     * figures: a count from 0 to 12,000 gained a digit and a separator on the
+     * way, and pushed the words after it along each time. A number between the
+     * two ends has no more figures than the wider of them; where one is wider
+     * all the same — `999K` on the way to `1M`, or a new `value` counted on
+     * from a longer number on screen — the box grows to fit it, as it always
+     * did. `from` is let go once the count has landed, or a count down to 5
+     * would keep the room of the number it started from beside the answer.
+     */
+    const samples = drawn === answer || start === answer ? [answer] : [answer, start];
 
     return useRender({
       render: render ?? <span />,
@@ -237,8 +260,20 @@ export const AnimateCounter = React.forwardRef<HTMLElement, AnimateCounterProps>
         ...run.handlers,
         children: (
           <>
-            <span className={srOnlyClasses}>{formatter.format(value)}</span>
-            <span aria-hidden="true">{formatter.format(reduced ? value : counted)}</span>
+            <span className={srOnlyClasses}>{answer}</span>
+            <span aria-hidden="true" className="inline-grid">
+              <span
+                data-text={drawn}
+                className="[grid-area:1/1] before:content-[attr(data-text)]"
+              />
+              {samples.map((sample, index) => (
+                <span
+                  key={index}
+                  data-sample={sample}
+                  className="invisible [grid-area:1/1] before:content-[attr(data-sample)]"
+                />
+              ))}
+            </span>
           </>
         )
       }
