@@ -26,6 +26,8 @@
 
 - **An `Image` or a `Gallery` with `preview` fetches its viewer when a pointer, the focus or a finger first reaches it**, and mounts the viewer on the first press, rather than fetching it with the page.
 
+- **A `ScrollZone` with its buttons `inline` keeps both lanes open, with the buttons hidden, until it has measured itself.** The items of a strip that overflows no longer move inward after the first paint. On a server-rendered page, a strip that turns out to fit now loses the lanes at hydration instead.
+
 ### Fixed
 
 - **A Tailwind utility in a `Typography`'s `className` wins over the level's own scale.** The size, leading, tracking, weight, margins and colour were written at two-class strength so that a host's `.prose h2` could not reach them, and that also beat the caller: `className="mb-8"` rendered with no margin and `text-[2.5rem] font-black` at 13px and 400, with no warning. For each property a class sets, with or without a variant, the level now steps down to zero specificity, so the class wins and `md:text-5xl` still has the level's size below `md`. With no class, a Typography inside `.prose` or `.vp-doc` keeps its scale as before, and a `!` class such as `mb-8!` renders as it did. A class that was being ignored now applies, so check a call site that carried one. A class from your own stylesheet is not read and still needs two classes or `!important`.
@@ -45,6 +47,10 @@
 - **`colorSchemeScript`, `formatFileSize` and `registerLanguage` can be called from a Server Component.** They were exported from client modules, so in Next.js the `<head>` of `app/layout.tsx` — where the provider page says to call `colorSchemeScript()` — received a client reference, and calling it threw. Each is in a module of its own now.
 
 - **React 18 no longer prints a `useLayoutEffect` warning for Neba components on a server.** Fifteen modules measured themselves in a layout effect, which React 18's server renderer warns about once per component per request; they skip it on a server now, as three already did.
+
+- **`Panes` draws each pane at its `defaultSize` from the first render**, the server's HTML included, instead of an even split that jumped to the default sizes after the first paint.
+
+- **`PageLayout` reserves room for a `fixed` `Header` from the first render**, at the bar's minimum height for its `size`, so a server-rendered page no longer drops by the header's height when it hydrates. A Header wrapped in a component of your own is still reserved only once it has been measured.
 
 - **`AnimateCounter` holds its box at the width of the wider of `value` and `from` from the first frame**, so the words after it no longer move as it gains digits, and **`AnimateScramble` keeps its box at the final text's size** while it scrambles: each word's noise is drawn over that word and cut off at its end, instead of widening the box or adding a line.
 

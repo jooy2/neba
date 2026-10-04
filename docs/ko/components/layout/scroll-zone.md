@@ -67,6 +67,8 @@ import { ScrollZone } from 'neba';
 
 inline 버튼은 갈 곳이 없을 때에도 자기 자리를 지키므로, 끝에 닿아도 스트립의 너비가 바뀌지 않습니다.
 
+크기를 재기 전까지, 곧 서버에서 렌더한 페이지의 첫 페인트에서는 inline `auto` ScrollZone이 버튼을 숨긴 채 양쪽 자리를 미리 비워 둡니다. 넘치는 스트립이면 그 자리에 버튼만 나타나고, 들어맞는 스트립이면 자리를 거둬들입니다.
+
 <Demo src="scroll-zone/placement" minHeight="280">
 
 <<< @/.vitepress/demos/scroll-zone/placement.tsx

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { Header } from 'neba';
+import { headerFloorSteps } from '../../../src/internal/page-layout.js';
 
 describe('Header', () => {
   describe('rendering', () => {
@@ -117,6 +118,25 @@ describe('Header', () => {
       const screen = await render(<Header position="fixed" />);
 
       expect(screen.getByRole('banner').element()).toHaveClass('fixed', 'top-0');
+    });
+
+    // A PageLayout reserves a fixed bar's floor before it has measured the bar,
+    // out of a table of its own, so the bar has to stand on the same floor.
+    it('stands on the floor a layout reserves for it at every size', async () => {
+      const sizes = Object.keys(headerFloorSteps) as (keyof typeof headerFloorSteps)[];
+      const screen = await render(
+        <>
+          {sizes.map((size) => (
+            <Header key={size} size={size} position="fixed" label={size} />
+          ))}
+        </>
+      );
+
+      for (const size of sizes) {
+        const row = screen.getByRole('banner', { name: size }).element().firstElementChild;
+
+        expect(row).toHaveClass(`min-h-${headerFloorSteps[size]}`);
+      }
     });
   });
 

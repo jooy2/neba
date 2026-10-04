@@ -50,7 +50,7 @@ Every other `<div>` attribute passes through.
 
 ### defaultSize, minSize and maxSize
 
-All three take a number, read as a percentage, or a CSS length: `'240px'`, `'15rem'`, `'20%'`. Panes with no `defaultSize` split whatever is left over equally. A pane's `minSize` is also its neighbour's ceiling, so a drag stops at whichever bound it reaches first.
+All three take a number, read as a percentage, or a CSS length: `'240px'`, `'15rem'`, `'20%'`. Panes with no `defaultSize` split whatever is left over equally. A pane's `minSize` is also its neighbour's ceiling, so a drag stops at whichever bound it reaches first. The default sizes are written into the first render, so a split rendered on the server is drawn at them before any script runs.
 
 `onResize` reports every pane's share in percent while the bar moves; `onResizeEnd` fires once when it is let go.
 

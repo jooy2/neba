@@ -133,6 +133,10 @@ export interface HeaderProps extends Omit<
  * which is the height a site header has had for as long as there have been
  * site headers, and the same floor BottomNavigation uses at the other end of
  * the page.
+ *
+ * A PageLayout reserves this floor for a `fixed` bar until it has measured it,
+ * so `headerFloorSteps` in `internal/page-layout.ts` holds the same numbers.
+ * Change one and change the other.
  */
 const barMinHeightClasses: Record<NebaSize, string> = {
   xs: 'min-h-10',

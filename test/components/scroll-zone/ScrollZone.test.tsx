@@ -1,5 +1,7 @@
 import { createRef } from 'react';
 import { describe, expect, it, vi } from 'vitest';
+import { renderToString } from 'react-dom/server';
+import { hydrateRoot } from 'react-dom/client';
 import { render } from 'vitest-browser-react';
 import { ScrollZone } from 'neba';
 import { ko, registerMessages } from 'neba/locales';
@@ -349,6 +351,141 @@ describe('ScrollZone', () => {
 
       expect(screen.getByTestId('zone').element()).toHaveClass('flex-col');
       expect(screen.getByTestId('zone').element().children).toHaveLength(3);
+    });
+  });
+
+  /*
+   * The lanes used to arrive from an effect, after the first paint, so every
+   * item of a strip that overflowed moved inward by a lane's width and a row of
+   * short chips grew to a button's height.
+   */
+  describe('before it has measured itself', () => {
+    /** The server's HTML for a zone, on the page. */
+    function serverRendered(tree: React.ReactElement) {
+      const host = document.createElement('div');
+
+      host.innerHTML = renderToString(tree);
+      document.body.append(host);
+
+      return host;
+    }
+
+    const named = (host: HTMLElement, name: string) =>
+      host.querySelector<HTMLElement>(`button[aria-label="${name}"]`);
+
+    it('holds both inline lanes open in the server’s HTML, with nothing visible in them', () => {
+      const host = serverRendered(<ScrollZone>{cards}</ScrollZone>);
+
+      try {
+        const root = host.firstElementChild as HTMLElement;
+
+        expect(root.children).toHaveLength(3);
+
+        for (const name of ['Scroll back', 'Scroll forward']) {
+          expect(getComputedStyle(named(host, name) as HTMLElement).visibility).toBe('hidden');
+        }
+      } finally {
+        host.remove();
+      }
+    });
+
+    it('shows the buttons in the lanes it already held once the strip overflows', async () => {
+      const tree = <ScrollZone>{cards}</ScrollZone>;
+      const host = serverRendered(tree);
+      const lane = host.firstElementChild?.firstElementChild;
+      const onRecoverableError = vi.fn();
+      const root = hydrateRoot(host, tree, { onRecoverableError });
+
+      try {
+        await expect
+          .poll(() => getComputedStyle(named(host, 'Scroll forward') as HTMLElement).visibility)
+          .toBe('visible');
+        // The lane the server drew, kept rather than drawn again.
+        expect(host.firstElementChild?.firstElementChild).toBe(lane);
+        expect(named(host, 'Scroll back')).toHaveAttribute('aria-disabled', 'true');
+        expect(named(host, 'Scroll forward')).not.toHaveAttribute('aria-disabled', 'true');
+        expect(onRecoverableError).not.toHaveBeenCalled();
+      } finally {
+        root.unmount();
+        host.remove();
+      }
+    });
+
+    it('gives the lanes back when the strip fits', async () => {
+      const tree = (
+        <ScrollZone>
+          <div>Alone</div>
+        </ScrollZone>
+      );
+      const host = serverRendered(tree);
+      const root = hydrateRoot(host, tree);
+
+      try {
+        await expect.poll(() => host.firstElementChild?.children.length).toBe(1);
+        expect(host.querySelector('button')).toBeNull();
+      } finally {
+        root.unmount();
+        host.remove();
+      }
+    });
+
+    /*
+     * The first measurement is taken with the lanes in place, and a strip that
+     * fits the zone but not the room left between two lanes was kept as a
+     * scroller. No stylesheet is loaded here, so what it would have done to the
+     * root, the lanes and the scroller is written into the page instead.
+     */
+    describe('measured against the room the lanes would give back', () => {
+      function withLayout() {
+        const sheet = document.createElement('style');
+
+        sheet.textContent = [
+          '[data-testid="zone"] { display: flex; width: 400px; column-gap: 8px; }',
+          '[data-testid="zone"] > span { flex: 0 0 40px; }',
+          '[data-testid="zone"] > [role="group"] { flex: 1 1 auto; min-width: 0; overflow-x: auto; }'
+        ].join('\n');
+        document.head.append(sheet);
+
+        return sheet;
+      }
+
+      it('draws no buttons for a strip that fits only without them', async () => {
+        const sheet = withLayout();
+
+        try {
+          // 380 is wider than the 304 left between two lanes, and narrower than 400.
+          const screen = await render(
+            <ScrollZone data-testid="zone">
+              <div style={{ width: 380 }}>Wide</div>
+            </ScrollZone>
+          );
+
+          await expect.element(screen.getByText('Wide')).toBeInTheDocument();
+          expect(screen.getByRole('button').query()).toBeNull();
+          expect(screen.getByTestId('zone').element().children).toHaveLength(1);
+        } finally {
+          sheet.remove();
+        }
+      });
+
+      it('keeps them for a strip wider than the zone', async () => {
+        const sheet = withLayout();
+
+        try {
+          const screen = await render(
+            <ScrollZone data-testid="zone">
+              <div style={{ width: 600 }}>Wider</div>
+            </ScrollZone>
+          );
+
+          await expect
+            .element(screen.getByRole('button', { name: 'Scroll forward' }))
+            .not.toHaveAttribute('aria-disabled', 'true');
+          expect(screen.getByTestId('zone').element().children).toHaveLength(3);
+        } finally {
+          sheet.remove();
+        }
+      });
     });
   });
 

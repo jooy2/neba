@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { layoutMessages, useMessages } from '../../internal/i18n.js';
 import {
+  headerFloor,
   PageLayoutContext,
   SidebarSideContext,
   type PageLayoutCollapse,
@@ -12,10 +13,11 @@ import {
   type SidebarSide,
   PageLayoutSlotContext
 } from '../../internal/page-layout.js';
+import { useLayoutEffectOnClient } from '../../internal/layout-effect.js';
 import { observeResize } from '../../internal/observe.js';
 import { controlSlots, cx, hasContent, insetRingClasses, toLength } from '../../internal/styles.js';
 import type { NebaColor } from '../../types.js';
-import { useStyleDefaults } from '../../internal/defaults.js';
+import { DefaultsContext, useStyleDefaults } from '../../internal/defaults.js';
 import { ScreenContext } from '../../internal/screen.js';
 
 export type {
@@ -213,6 +215,8 @@ export const PageLayout = React.forwardRef<HTMLDivElement, PageLayoutProps>(
     // A picture of a page on a Mockup's screen is not the page, and must not
     // hand the document a second `<main>` or a second `id="main"`.
     const onScreen = React.useContext(ScreenContext);
+    // Read for the header rather than for the layout, which takes no size.
+    const provided = React.useContext(DefaultsContext);
     const landmark = main ?? !onScreen;
 
     const [ownStart, setOwnStart] = React.useState(defaultSidebarOpen);
@@ -314,7 +318,10 @@ export const PageLayout = React.forwardRef<HTMLDivElement, PageLayoutProps>(
       measure();
     }, [measure]);
 
-    React.useEffect(() => {
+    // A layout effect, so a layout rendered in the browser has its bars measured
+    // before it is first painted. A page the server rendered has painted once
+    // already by then, which is what `headerFloor` is for.
+    useLayoutEffectOnClient(() => {
       // The record itself, captured once — it is never reassigned, so this is the
       // same object the cleanup wants and not a value read too early. What the
       // cleanup needs is whatever is being watched *then*, which is what its
@@ -345,6 +352,10 @@ export const PageLayout = React.forwardRef<HTMLDivElement, PageLayoutProps>(
     );
 
     const fills = scroll === 'content';
+
+    // What a `fixed` header is reserved until it has been measured. Read
+    // against the provider's size, since that is the size the Header will take.
+    const floor = headerFloor(header, provided?.size);
 
     // A named height is a class, because both of those are exactly two class
     // names; anything else is a length nobody could have generated one for.
@@ -379,14 +390,26 @@ export const PageLayout = React.forwardRef<HTMLDivElement, PageLayoutProps>(
             // scrolling to whichever region below asks for it.
             fills ? 'overflow-hidden' : '',
             extentClasses,
-            headerSpan === 'full' ? '[padding-top:var(--n-layout-header-inset,0px)]' : '',
+            headerSpan === 'full'
+              ? '[padding-top:var(--n-layout-header-inset,var(--n-layout-header-floor,0px))]'
+              : '',
             footerSpan === 'full' ? '[padding-bottom:var(--n-layout-footer-inset,0px)]' : '',
             className
           )}
           style={
-            extent === undefined
-              ? style
-              : { ...(fills ? { height: extent } : { minHeight: extent }), ...style }
+            {
+              // A slot of its own rather than a first value for the inset: the
+              // inset is written straight to the DOM by `measure`, and a value
+              // React owned as well would be written back over the measurement
+              // whenever it changed.
+              ...(floor === undefined ? undefined : { '--n-layout-header-floor': floor }),
+              ...(extent === undefined
+                ? undefined
+                : fills
+                  ? { height: extent }
+                  : { minHeight: extent }),
+              ...style
+            } as React.CSSProperties
           }
           {...props}
         >
@@ -422,7 +445,9 @@ export const PageLayout = React.forwardRef<HTMLDivElement, PageLayoutProps>(
               className={cx(
                 'flex min-w-0 flex-1 flex-col',
                 fills ? 'min-h-0' : '',
-                headerSpan === 'content' ? '[padding-top:var(--n-layout-header-inset,0px)]' : '',
+                headerSpan === 'content'
+                  ? '[padding-top:var(--n-layout-header-inset,var(--n-layout-header-floor,0px))]'
+                  : '',
                 footerSpan === 'content' ? '[padding-bottom:var(--n-layout-footer-inset,0px)]' : ''
               )}
             >

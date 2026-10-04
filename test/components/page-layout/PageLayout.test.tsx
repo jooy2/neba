@@ -1,7 +1,9 @@
 import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { renderToString } from 'react-dom/server';
+import { hydrateRoot } from 'react-dom/client';
 import { page } from 'vitest/browser';
 import { render } from 'vitest-browser-react';
-import { Footer, Header, Mockup, PageLayout, Sidebar, SidebarTrigger } from 'neba';
+import { Footer, Header, Mockup, NebaProvider, PageLayout, Sidebar, SidebarTrigger } from 'neba';
 import { ko, registerMessages } from 'neba/locales';
 
 registerMessages('ko', ko);
@@ -366,6 +368,129 @@ describe('PageLayout', () => {
 
       expect(root.style.getPropertyValue('--n-layout-footer')).toBe('0px');
       expect(root.style.getPropertyValue('--n-layout-footer-inset')).toBe('0px');
+    });
+  });
+
+  /*
+   * The measured inset reaches the page from an effect, which on a page the
+   * server rendered is after the first paint: everything under a fixed header
+   * was drawn behind it and then dropped by its height.
+   */
+  describe('before the header has been measured', () => {
+    /**
+     * The server's HTML for a layout, on the page.
+     *
+     * The floor is written on Tailwind's spacing step, which no component test
+     * loads, so the host gives it the value the stylesheet would have.
+     */
+    function serverRendered(tree: React.ReactElement) {
+      const host = document.createElement('div');
+
+      host.style.setProperty('--spacing', '0.25rem');
+      host.innerHTML = renderToString(tree);
+      document.body.append(host);
+
+      return host;
+    }
+
+    /** What the reserve before measurement comes to, in pixels. */
+    function reserved(root: HTMLElement) {
+      const probe = document.createElement('div');
+
+      // The same expression the root's own padding is written in.
+      probe.style.height = 'var(--n-layout-header-inset, var(--n-layout-header-floor, 0px))';
+      root.append(probe);
+
+      const height = probe.offsetHeight;
+
+      probe.remove();
+
+      return height;
+    }
+
+    it('reserves room for a fixed header in the server’s HTML', () => {
+      const host = serverRendered(
+        <PageLayout header={<Header position="fixed">Site</Header>}>Page</PageLayout>
+      );
+
+      try {
+        const root = host.firstElementChild as HTMLElement;
+
+        expect(root.className).toContain('var(--n-layout-header-floor');
+        // Nothing has been measured, and the room is there anyway.
+        expect(root.style.getPropertyValue('--n-layout-header-inset')).toBe('');
+        expect(reserved(root)).toBeGreaterThan(0);
+      } finally {
+        host.remove();
+      }
+    });
+
+    it('reserves nothing for a header that stays in the flow', () => {
+      const host = serverRendered(<PageLayout header={<Header>Site</Header>}>Page</PageLayout>);
+
+      try {
+        expect(reserved(host.firstElementChild as HTMLElement)).toBe(0);
+      } finally {
+        host.remove();
+      }
+    });
+
+    it('reserves more for a larger header, whoever set its size', () => {
+      const host = serverRendered(
+        <>
+          <PageLayout data-size="xs" header={<Header position="fixed" size="xs" />}>
+            Page
+          </PageLayout>
+          <PageLayout data-size="xl" header={<Header position="fixed" size="xl" />}>
+            Page
+          </PageLayout>
+          <NebaProvider defaults={{ size: 'xl' }}>
+            <PageLayout data-size="provided" header={<Header position="fixed" />}>
+              Page
+            </PageLayout>
+          </NebaProvider>
+        </>
+      );
+      const of = (size: string) =>
+        reserved(host.querySelector(`[data-size="${size}"]`) as HTMLElement);
+
+      try {
+        expect(of('xl')).toBeGreaterThan(of('xs'));
+        expect(of('provided')).toBe(of('xl'));
+      } finally {
+        host.remove();
+      }
+    });
+
+    it('hands the reserve over to the measured height once it has hydrated', async () => {
+      const tree = (
+        <PageLayout
+          header={
+            <Header position="fixed" style={{ position: 'fixed' }}>
+              Site
+            </Header>
+          }
+        >
+          Page
+        </PageLayout>
+      );
+      const host = serverRendered(tree);
+      const onRecoverableError = vi.fn();
+      const root = hydrateRoot(host, tree, { onRecoverableError });
+
+      try {
+        const layout = host.firstElementChild as HTMLElement;
+        const bar = host.querySelector('header') as HTMLElement;
+
+        await expect
+          .poll(() => layout.style.getPropertyValue('--n-layout-header-inset'))
+          .toBe(`${bar.offsetHeight}px`);
+        expect(reserved(layout)).toBe(bar.offsetHeight);
+        expect(onRecoverableError).not.toHaveBeenCalled();
+      } finally {
+        root.unmount();
+        host.remove();
+      }
     });
   });
 

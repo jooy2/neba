@@ -50,7 +50,7 @@ import { Pane, Panes } from 'neba';
 
 ### defaultSize · minSize · maxSize
 
-셋 다 숫자(퍼센트로 읽습니다)나 CSS 길이(`'240px'`, `'15rem'`, `'20%'`)를 받습니다. `defaultSize`가 없는 pane들은 남은 자리를 똑같이 나눠 갖습니다. 어떤 pane의 `minSize`는 이웃 pane의 최대치이기도 하므로, 끌기는 먼저 닿는 한계에서 멈춥니다.
+셋 다 숫자(퍼센트로 읽습니다)나 CSS 길이(`'240px'`, `'15rem'`, `'20%'`)를 받습니다. `defaultSize`가 없는 pane들은 남은 자리를 똑같이 나눠 갖습니다. 어떤 pane의 `minSize`는 이웃 pane의 최대치이기도 하므로, 끌기는 먼저 닿는 한계에서 멈춥니다. 기본 크기는 첫 렌더에 바로 쓰이므로, 서버에서 렌더한 분할도 스크립트가 실행되기 전부터 그 크기로 그려집니다.
 
 `onResize`는 바가 움직이는 동안 모든 pane의 비율(%)을 알려주고, `onResizeEnd`는 바를 놓았을 때 한 번 호출됩니다.
 

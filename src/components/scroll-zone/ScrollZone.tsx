@@ -6,6 +6,7 @@ import { drawnScale } from '../../internal/drag.js';
 import { spacingValue } from '../../internal/grid.js';
 import { scrollMessages, useMessages } from '../../internal/i18n.js';
 import { ChevronIcon } from '../../internal/icons.js';
+import { useLayoutEffectOnClient } from '../../internal/layout-effect.js';
 import { queryMatches, reducedMotionQuery } from '../../internal/media.js';
 import { observeResize } from '../../internal/observe.js';
 import { cx } from '../../internal/styles.js';
@@ -191,6 +192,35 @@ function scrollBehavior(): ScrollBehavior {
 }
 
 /**
+ * How much of the zone the inline lanes take while they are only held open,
+ * or nothing when they are not.
+ *
+ * Until it has measured itself, an inline `auto` zone draws both lanes with
+ * nothing visible in them, because overflowing is what a strip is there for and
+ * a lane that arrived after the first paint pushed every item inward. But the
+ * question that first measurement answers is still whether the strip overflows
+ * the room it would have *without* them. Asked of the room it has with them, a
+ * strip that fits only once they are gone would keep them and turn into a
+ * scroller.
+ *
+ * The room is the root's, less the scroller's own box: everything else in an
+ * inline root is the two lanes and the gaps beside them.
+ */
+function heldLaneExtent(scroller: HTMLElement, horizontal: boolean): number {
+  const root = scroller.parentElement;
+  // The leading lane is the scroller's previous sibling, and it says whether it
+  // is only held open: `data-held`, which `scrollButton` writes.
+  if (!root || !scroller.previousElementSibling?.hasAttribute('data-held')) return 0;
+
+  const style = getComputedStyle(root);
+  const inner = horizontal
+    ? root.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight)
+    : root.clientHeight - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom);
+
+  return Math.max(0, inner - (horizontal ? scroller.offsetWidth : scroller.offsetHeight));
+}
+
+/**
  * A strip of anything, laid out in one direction and scrolled in it.
  *
  * The mechanism is an ordinary scroll container, and everything the component
@@ -260,8 +290,9 @@ export const ScrollZone = React.forwardRef<HTMLDivElement, ScrollZoneProps>(
     );
 
     /** Whether there is anything left in each direction, as one object so a
-     *  measurement that changed nothing costs no render. */
-    const [reach, setReach] = React.useState({ back: false, forward: false });
+     *  measurement that changed nothing costs no render — or `null` before the
+     *  first measurement, which on a server and while hydrating is always. */
+    const [reach, setReach] = React.useState<{ back: boolean; forward: boolean } | null>(null);
     // The button holding the focus, which an overlaid `auto` button that runs
     // out is kept for: taking it away would take the focus with it.
     const [held, setHeld] = React.useState<'back' | 'forward' | null>(null);
@@ -275,12 +306,13 @@ export const ScrollZone = React.forwardRef<HTMLDivElement, ScrollZoneProps>(
       // `abs`, because a right-to-left container counts its scroll backwards from
       // zero. How far along we are is a distance either way.
       const along = Math.abs(horizontal ? el.scrollLeft : el.scrollTop);
+      const room = extent + heldLaneExtent(el, horizontal);
 
       setReach((previous) => {
         const back = along > 1;
-        const forward = total - extent - along > 1;
+        const forward = total - room - along > 1;
 
-        return previous.back === back && previous.forward === forward
+        return previous?.back === back && previous.forward === forward
           ? previous
           : { back, forward };
       });
@@ -292,8 +324,11 @@ export const ScrollZone = React.forwardRef<HTMLDivElement, ScrollZoneProps>(
      * inside it changing size. The observer covers the last two — including the
      * case that matters most, a zone that mounts inside a closed Accordion or an
      * unselected Tab and is zero wide until it is opened.
+     *
+     * A layout effect, so a zone rendered in the browser has its answer before
+     * it is first painted, and its lanes are already where they will stay.
      */
-    React.useEffect(() => {
+    useLayoutEffectOnClient(() => {
       const el = scrollerRef.current;
       const track = trackRef.current;
       if (!el) return;
@@ -577,12 +612,21 @@ export const ScrollZone = React.forwardRef<HTMLDivElement, ScrollZoneProps>(
       };
     }
 
-    const drawn = buttons !== 'none' && (buttons === 'always' || reach.back || reach.forward);
-
     const inline = buttonPlacement === 'inline';
+    const canGoBack = reach?.back ?? false;
+    const canGoForward = reach?.forward ?? false;
+    // Before its first measurement an inline `auto` zone holds both lanes open
+    // with nothing visible in them, so the server's HTML already has the shape a
+    // strip that overflows will have. What the lanes do from then on is exactly
+    // what they would have done had they not been there first: see
+    // `heldLaneExtent`.
+    const holding = reach === null && inline && buttons === 'auto';
+
+    const drawn =
+      buttons !== 'none' && (buttons === 'always' || holding || canGoBack || canGoForward);
 
     function scrollButton(forward: boolean) {
-      const available = forward ? reach.forward : reach.back;
+      const available = forward ? canGoForward : canGoBack;
       // What `auto` does at an end is decided by what the absence would cost. An
       // overlay button takes no space, so the one with nowhere to go is not drawn
       // at all. An inline one sits in a lane that is kept either way — a lane that
@@ -634,7 +678,17 @@ export const ScrollZone = React.forwardRef<HTMLDivElement, ScrollZoneProps>(
         return button;
       }
 
-      return <span className="flex shrink-0 items-center justify-center">{button}</span>;
+      return (
+        <span
+          data-held={holding ? '' : undefined}
+          className="flex shrink-0 items-center justify-center"
+          // Hidden rather than left out, so the lane is already as wide as it
+          // will be; a hidden button cannot take the focus or be announced.
+          style={holding ? { visibility: 'hidden' } : undefined}
+        >
+          {button}
+        </span>
+      );
     }
 
     return (
@@ -670,7 +724,7 @@ export const ScrollZone = React.forwardRef<HTMLDivElement, ScrollZoneProps>(
           // handler of ours mapping ArrowRight to "forward" would not have been.
           // Only while there is somewhere to go: a row of chips that fits is a
           // tab stop that does nothing, one for every row on the page.
-          tabIndex={reach.back || reach.forward ? 0 : -1}
+          tabIndex={canGoBack || canGoForward ? 0 : -1}
           // Always a group with a name, never a bare focusable `<div>`. A tab
           // stop that announces nothing is worse than one that says only what
           // kind of thing it is. `label` says what is *in* it; the fallback says
@@ -690,7 +744,7 @@ export const ScrollZone = React.forwardRef<HTMLDivElement, ScrollZoneProps>(
             'overscroll-contain',
             snap ? (horizontal ? 'snap-x snap-mandatory' : 'snap-y snap-mandatory') : '',
             scrollbar ? '' : '[scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
-            drag && (reach.back || reach.forward)
+            drag && (canGoBack || canGoForward)
               ? 'cursor-grab data-[dragging]:cursor-grabbing'
               : '',
             'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:[outline-offset:-2px]'

@@ -67,6 +67,8 @@ What a press of a button does. `item` moves to the next child along and `step` s
 
 An inline button keeps its lane while it has nowhere to go, so the strip does not change width when it reaches an end.
 
+Until the zone has measured itself, which on a server-rendered page is the first paint, an inline `auto` zone holds both lanes open with the buttons hidden. A strip that overflows keeps them and its buttons appear in place; a strip that fits gives them back.
+
 <Demo src="scroll-zone/placement" minHeight="280">
 
 <<< @/.vitepress/demos/scroll-zone/placement.tsx

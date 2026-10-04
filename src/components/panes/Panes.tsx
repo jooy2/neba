@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { beginPointerDrag, drawnScale } from '../../internal/drag.js';
+import { useLayoutEffectOnClient } from '../../internal/layout-effect.js';
 import { observeResize } from '../../internal/observe.js';
 import { cx, toPixels, transitionClasses } from '../../internal/styles.js';
 import type { NebaColor, NebaOrientation, NebaSize } from '../../types.js';
@@ -22,11 +23,14 @@ export type PaneSize = number | string;
 
 /** What a Pane is told by the Panes around it. */
 interface PaneContextValue {
-  /** The `flex-basis` this pane has been given, or `null` before measurement. */
-  basis: string | null;
+  /** The `flex` this pane is drawn with, which is where its size is written. */
+  flex: string;
 }
 
-const PaneContext = React.createContext<PaneContextValue>({ basis: null });
+/** A pane with no split around it takes an even share of whatever holds it. */
+const EVEN_SHARE = '1 1 0%';
+
+const PaneContext = React.createContext<PaneContextValue>({ flex: EVEN_SHARE });
 
 export interface PanesProps extends Omit<React.ComponentPropsWithoutRef<'div'>, 'color'> {
   /**
@@ -148,6 +152,48 @@ function initialFractions(
   return resolved.map((size) => size / total);
 }
 
+/** A share of the split as a `flex-basis`, once the handles have been paid for. */
+function shareBasis(fraction: number, gutter: number): string {
+  return `calc((100% - ${gutter}px) * ${fraction.toFixed(6)})`;
+}
+
+/**
+ * Whether a size is a length rather than a share: `'240px'` or `'15rem'`, whose
+ * share of the split depends on how big the split turns out to be. A number
+ * and a percentage are the same share at every size, and a string that is no
+ * length at all is no size, which is how the measurement reads it as well.
+ */
+function isLength(value: PaneSize | undefined): value is string {
+  return (
+    typeof value === 'string' &&
+    !/%\s*$/.test(value) &&
+    toPixels(value, { percentOf: 0, relativeTo: null }) !== undefined
+  );
+}
+
+/**
+ * The `flex` of a pane in a split that has a length in it and has not measured
+ * itself yet, which on a server and in the first client render is always.
+ *
+ * A pane with a size is drawn at that size and the panes without one share what
+ * is left evenly. That is exactly what the measurement then makes of it whenever
+ * the sizes fit, and when they do not, shrinking each sized pane in proportion
+ * to its size is what the measurement does too. So the server's HTML is already
+ * the split it settles into, rather than an even one that jumps.
+ */
+function unmeasuredFlex(value: PaneSize | undefined, gutter: number): string {
+  if (isLength(value)) return `0 1 ${value}`;
+
+  const share =
+    typeof value === 'number'
+      ? value / 100
+      : typeof value === 'string'
+        ? toPixels(value, { percentOf: 1 })
+        : undefined;
+
+  return share === undefined ? EVEN_SHARE : `0 1 ${shareBasis(Math.max(0, share), gutter)}`;
+}
+
 /**
  * A set of panes with draggable handles between them.
  *
@@ -203,15 +249,29 @@ export const Panes = React.forwardRef<HTMLDivElement, PanesProps>(function Panes
 
   // The constraints are read during render and used inside pointer handlers that
   // outlive it, so they go through a ref rather than through the closure.
+  const constraints = items.map((item) => item.props);
   const constraintsRef = React.useRef<PaneProps[]>([]);
-  constraintsRef.current = items.map((item) => item.props);
+  constraintsRef.current = constraints;
+
+  const horizontal = orientation === 'horizontal';
+  const gutter = handleTrackValues[size] * Math.max(0, count - 1);
 
   const [stored, setFractions] = React.useState<number[] | null>(null);
   // A pane added or removed leaves the stored split a render behind the children
   // — the effect below re-splits, but the render in between would be reading a
-  // share off the end of the list. Until the two agree, nobody has a size and
-  // every pane falls back to an even share.
-  const fractions = stored && stored.length === count ? stored : null;
+  // share off the end of the list. Until the two agree, the split is drawn from
+  // the panes' own sizes as though it had never been measured.
+  const measured = stored && stored.length === count ? stored : null;
+  // A split written only in shares — numbers, percentages, and panes with no
+  // size, which take what is left — is the same split at every size, so it is
+  // worked out here without measuring anything, against a stand-in of 100, and
+  // comes out as the very fractions the measurement will. Only a length has to
+  // wait for the split to know how big it is.
+  const fractions =
+    measured ??
+    (constraints.some((pane) => isLength(pane.defaultSize))
+      ? null
+      : initialFractions(constraints, 100, null));
   /*
    * Read when a drag starts, which is a pointer event and never a render.
    * Written in an effect for the reason `useShortcut` states: a ref written
@@ -223,16 +283,18 @@ export const Panes = React.forwardRef<HTMLDivElement, PanesProps>(function Panes
     fractionsRef.current = fractions;
   });
 
-  const horizontal = orientation === 'horizontal';
-  const gutter = handleTrackValues[size] * Math.max(0, count - 1);
-
   /*
    * One measurement, for one purpose: turning a `defaultSize` written as a
    * length into a fraction. It is an observer rather than a single read because
    * a Panes inside a closed Accordion or an unselected Tab is zero wide when it
    * mounts, and dividing by that would put every pane at nothing.
+   *
+   * A layout effect, so a split that is rendered in the browser has its
+   * fractions before it is first painted. The CSS it is drawn with until then
+   * already puts the panes where the fractions will, so on a page the server
+   * rendered nothing moves either.
    */
-  React.useEffect(() => {
+  useLayoutEffectOnClient(() => {
     const root = rootRef.current;
     if (!root) return;
 
@@ -464,9 +526,9 @@ export const Panes = React.forwardRef<HTMLDivElement, PanesProps>(function Panes
 
           <PaneContext.Provider
             value={{
-              basis: fractions
-                ? `calc((100% - ${gutter}px) * ${fractions[index].toFixed(6)})`
-                : null
+              flex: fractions
+                ? `0 0 ${shareBasis(fractions[index], gutter)}`
+                : unmeasuredFlex(item.props.defaultSize, gutter)
             }}
           >
             {item.props.id === undefined ? React.cloneElement(item, { id: paneId(index) }) : item}
@@ -495,15 +557,15 @@ export const Pane = React.forwardRef<HTMLDivElement, PaneProps>(function Pane(
   { defaultSize, minSize, maxSize, className, style, children, ...props },
   ref
 ) {
-  const { basis } = React.useContext(PaneContext);
+  const { flex } = React.useContext(PaneContext);
 
   return (
     <div
       ref={ref}
       className={cx('relative min-h-0 min-w-0 overflow-auto', className)}
-      // `1 1 0%` before the split has measured itself, so a pane renders at an
-      // even share on the first paint instead of at nothing and then jumping.
-      style={{ flex: basis ? `0 0 ${basis}` : '1 1 0%', ...style }}
+      // Sized from the first render, the server's included: the Panes around it
+      // writes a `defaultSize` straight into CSS until it has measured itself.
+      style={{ flex, ...style }}
       {...props}
     >
       {children}

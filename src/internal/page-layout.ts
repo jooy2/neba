@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useMediaQuery, widthBelow } from './media.js';
 import { hiddenBelowClasses, hiddenFromClasses } from './responsive.js';
-import type { NebaBreakpoint, NebaSide } from '../types.js';
+import type { NebaBreakpoint, NebaPosition, NebaSide, NebaSize } from '../types.js';
 
 /**
  * The vocabulary a page's structure is written in, and the context the four
@@ -126,6 +126,60 @@ export const PageLayoutSlotContext = React.createContext<PageLayoutSlot | null>(
  * "nobody said", which a standalone sidebar reads as `start`.
  */
 export const SidebarSideContext = React.createContext<SidebarSide | null>(null);
+
+/**
+ * A Header's floor at each size, in steps of Tailwind's spacing scale.
+ *
+ * The same numbers as Header's `barMinHeightClasses`, which have to stay
+ * literal class names for Tailwind to find them, so the two are kept in step by
+ * hand and `Header.test.tsx` holds them there. They are here because the layout
+ * needs them as a length, for the reason `headerFloor` gives.
+ */
+export const headerFloorSteps: Record<NebaSize, number> = {
+  xs: 10,
+  sm: 12,
+  md: 14,
+  lg: 16,
+  xl: 20
+};
+
+/** The props of a header element that decide how much a `fixed` one takes. */
+interface HeaderFloorProps {
+  position?: NebaPosition;
+  size?: NebaSize;
+  divider?: boolean;
+}
+
+/**
+ * How much a `fixed` header takes off the top of the page before anybody has
+ * measured it, or `undefined` when the header is not one.
+ *
+ * The measured height reaches the page from an effect, which on a page the
+ * server rendered is after the first paint, so everything under a fixed header
+ * would be drawn behind it and then drop by its height. A Header's height is
+ * its floor unless what is in it is taller, and the floor follows from three of
+ * its props — so the layout reads them off the element it was handed, as a
+ * Panes reads its panes' sizes, and reserves that much from the first render.
+ * The measurement then only corrects a bar that came out taller.
+ *
+ * A header wrapped in a component of the caller's own has props this cannot
+ * read, and has its room reserved only once it has been measured.
+ */
+export function headerFloor(
+  header: React.ReactNode,
+  providedSize: NebaSize | undefined
+): string | undefined {
+  if (!React.isValidElement<HeaderFloorProps>(header) || header.props.position !== 'fixed') {
+    return undefined;
+  }
+
+  const steps = headerFloorSteps[header.props.size ?? providedSize ?? 'md'] ?? headerFloorSteps.md;
+
+  // The hairline is a border on the bar itself, so it is part of its height.
+  return header.props.divider === false
+    ? `calc(var(--spacing) * ${steps})`
+    : `calc(var(--spacing) * ${steps} + 1px)`;
+}
 
 /**
  * The five widths as Tailwind variants, for the parts of this that are

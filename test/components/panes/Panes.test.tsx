@@ -1,4 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
+import { renderToString } from 'react-dom/server';
+import { hydrateRoot } from 'react-dom/client';
 import { render } from 'vitest-browser-react';
 import { userEvent } from 'vitest/browser';
 import { Pane, Panes } from 'neba';
@@ -450,6 +452,116 @@ describe('Panes', () => {
       handle.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, pointerId: 1 }));
 
       await expect.poll(() => shares(screen)).toEqual([60]);
+    });
+  });
+
+  /*
+   * A split that measured itself in an effect was drawn as an even split until
+   * then, on the server's HTML and in a client-only app's first frame alike,
+   * and every pane with a `defaultSize` jumped to it after the first paint.
+   */
+  describe('before it has measured itself', () => {
+    /** The server's HTML for a split, in a host of the same size as `Sample`. */
+    function serverRendered(tree: React.ReactElement) {
+      const host = document.createElement('div');
+
+      host.style.width = '408px';
+      host.style.height = '208px';
+      host.innerHTML = renderToString(tree);
+      document.body.append(host);
+
+      return host;
+    }
+
+    const panesIn = (host: HTMLElement) => [...host.querySelectorAll<HTMLElement>('[data-pane]')];
+
+    it('writes a length into the server’s HTML as the pane’s own size', () => {
+      const host = serverRendered(
+        <Panes>
+          <Pane defaultSize="120px" data-pane>
+            One
+          </Pane>
+          <Pane data-pane>Two</Pane>
+        </Panes>
+      );
+
+      try {
+        const [sized, rest] = panesIn(host);
+
+        expect(sized.style.flexBasis).toBe('120px');
+        // What is left over, shared by the panes with no size of their own.
+        expect(rest.style.flexGrow).toBe('1');
+        expect(rest.style.flexBasis).toBe('0%');
+      } finally {
+        host.remove();
+      }
+    });
+
+    // A share needs no measuring, so the server already writes the fraction the
+    // measurement would, and the handle already says what it is.
+    it('writes a split given in shares exactly as it will be measured', () => {
+      const host = serverRendered(
+        <Panes>
+          <Pane defaultSize={25} data-pane>
+            One
+          </Pane>
+          <Pane data-pane>Two</Pane>
+        </Panes>
+      );
+
+      try {
+        const [sized, rest] = panesIn(host);
+
+        expect(sized.style.flex.replace(/\s+/g, '')).toContain('calc(25%-2px)');
+        expect(rest.style.flex.replace(/\s+/g, '')).toContain('calc(75%-6px)');
+        expect(host.querySelector('[role="separator"]')).toHaveAttribute('aria-valuenow', '25');
+      } finally {
+        host.remove();
+      }
+    });
+
+    /*
+     * No stylesheet is loaded, so the two things it would have done are written
+     * here instead: the root is a flex row, and a handle is the 8px track its
+     * class would have made it. With those, the widths are the layout itself.
+     */
+    it('measures itself into the split the server drew', async () => {
+      const tree = (
+        <Panes style={{ display: 'flex', height: '100%' }}>
+          <Pane defaultSize="120px" data-pane>
+            One
+          </Pane>
+          <Pane data-pane>Two</Pane>
+          <Pane defaultSize={20} data-pane>
+            Three
+          </Pane>
+        </Panes>
+      );
+      const track = document.createElement('style');
+
+      track.textContent = '[role="separator"] { flex: 0 0 8px; }';
+      document.head.append(track);
+
+      const host = serverRendered(tree);
+      const widths = () => panesIn(host).map((pane) => Math.round(pane.offsetWidth));
+      const painted = widths();
+      const onRecoverableError = vi.fn();
+      const root = hydrateRoot(host, tree, { onRecoverableError });
+
+      try {
+        // 392 to share once the two handles are paid for: 120, a fifth, and the rest.
+        expect(painted).toEqual([120, 194, 78]);
+
+        await expect
+          .poll(() => host.querySelector('[role="separator"]')?.getAttribute('aria-valuenow'))
+          .toBe('31');
+        expect(widths()).toEqual(painted);
+        expect(onRecoverableError).not.toHaveBeenCalled();
+      } finally {
+        root.unmount();
+        host.remove();
+        track.remove();
+      }
     });
   });
 
