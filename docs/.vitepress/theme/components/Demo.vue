@@ -80,6 +80,16 @@ const { isDark, lang, localeIndex } = useData();
 const locale = localeOf(lang.value);
 const base = basePath(localeIndex.value);
 
+/*
+ * The reserve, as a CSS length. A bare number is pixels whichever way it was
+ * written: `min-height="380"` in Markdown is a static attribute and arrives as
+ * the string "380", which as `min-height: 380` is no length at all — the browser
+ * dropped it, and a hundred and five previews reserved nothing.
+ */
+const reserve = computed(() =>
+  /^\d+(\.\d+)?$/.test(String(props.minHeight)) ? `${props.minHeight}px` : props.minHeight
+);
+
 const host = ref(null);
 const open = ref(false);
 let root = null;
@@ -238,11 +248,7 @@ onBeforeUnmount(() => {
           <path d="M13.4 10.1A5.7 5.7 0 0 1 5.9 2.6a5.7 5.7 0 1 0 7.5 7.5Z" />
         </svg>
       </button>
-      <div
-        ref="host"
-        class="neba-scope neba-demo-mount"
-        :style="{ minHeight: typeof minHeight === 'number' ? `${minHeight}px` : minHeight }"
-      />
+      <div ref="host" class="neba-scope neba-demo-mount" :style="{ minHeight: reserve }" />
     </div>
     <div v-if="$slots.default" class="neba-demo-source">
       <button
