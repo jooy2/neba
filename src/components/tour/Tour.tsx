@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useLayoutEffectOnClient } from '../../internal/layout-effect.js';
 import { Popover as BaseUIPopover } from '@base-ui/react/popover';
 import { Button } from '../button/Button.js';
 import { boxPaddingXClasses, boxPaddingYClasses } from '../box/Box.js';
@@ -293,12 +294,11 @@ export function Tour(rawProps: TourProps) {
    */
   const [anchor, setAnchor] = React.useState<Element | null>(null);
 
-  React.useLayoutEffect(() => {
+  useLayoutEffectOnClient(() => {
     const selector = current?.target;
 
     // The page is the external system: the target is read out of a document
     // React does not own, once per step rather than on every render.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setAnchor(running && selector ? findTarget(selector) : null);
   }, [running, current?.target]);
 

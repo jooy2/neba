@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useLayoutEffectOnClient } from '../../internal/layout-effect.js';
 import { trackPointer } from '../../internal/glow.js';
 import { observeResize } from '../../internal/observe.js';
 import {
@@ -281,7 +282,7 @@ export const Pill = React.forwardRef<HTMLDivElement, PillProps>(function Pill(ra
   // already follows.
   const hasDetails = hasContent(details);
 
-  React.useLayoutEffect(() => {
+  useLayoutEffectOnClient(() => {
     const element = detailsRef.current;
     if (!element) {
       return;

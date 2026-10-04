@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useLayoutEffectOnClient } from './layout-effect.js';
 import { Button } from '../components/button/Button.js';
 import { ChevronIcon } from './icons.js';
 import {
@@ -657,7 +658,7 @@ export function Calendar({
     setFocusedDate((current) => (isSameMonth(current, month) ? current : startOfMonth(month)));
   }, [month]);
 
-  React.useLayoutEffect(() => {
+  useLayoutEffectOnClient(() => {
     if (!pendingFocus.current) {
       return;
     }

@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useLayoutEffectOnClient } from '../../internal/layout-effect.js';
 import { Button } from '../button/Button.js';
 import { boxPaddingClasses } from '../box/Box.js';
 import { CheckIcon, severityIcon } from '../../internal/icons.js';
@@ -234,7 +235,7 @@ export const Approval = React.forwardRef<HTMLDivElement, ApprovalProps>(
     const pressedRef = React.useRef(false);
     const recordRef = React.useRef<HTMLDivElement>(null);
 
-    React.useLayoutEffect(() => {
+    useLayoutEffectOnClient(() => {
       if (!answered || !pressedRef.current) {
         return;
       }

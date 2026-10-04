@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useLayoutEffectOnClient } from '../internal/layout-effect.js';
 import { attachedRef, observeResize } from '../internal/observe.js';
 
 /**
@@ -53,7 +54,7 @@ export function useElementSize<E extends Element = HTMLElement>(): [
   const [ref] = React.useState(() => attachedRef<E>(setElement));
   const [size, setSize] = React.useState<ElementSize>({ width: 0, height: 0 });
 
-  React.useLayoutEffect(() => {
+  useLayoutEffectOnClient(() => {
     if (!element) {
       return undefined;
     }

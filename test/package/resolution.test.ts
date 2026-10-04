@@ -459,6 +459,18 @@ describe('the published package', () => {
   });
 
   describe('works on every React in its peer range', () => {
+    it('reaches for a layout effect only through the helper that skips it on a server', () => {
+      // React 18's server renderer warns once per component per request about a
+      // layout effect, which has nothing to measure there; 19 dropped the
+      // warning, so nothing in this repository would ever print it.
+      const offenders = Object.entries(sources)
+        .filter(([path]) => !path.endsWith('src/internal/layout-effect.ts'))
+        .filter(([, source]) => /React\.useLayoutEffect\b|\buseLayoutEffect\(/.test(source))
+        .map(([path]) => path.replace('../../', ''));
+
+      expect(offenders).toEqual([]);
+    });
+
     it('writes `inert` through the helper that spells it for the running React', () => {
       // React 18 drops a boolean on an attribute it does not know, and `inert`
       // is one; React 19 warns about the string that 18 needs. A bare

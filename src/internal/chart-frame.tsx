@@ -20,6 +20,7 @@
 
 import { useStyleDefaults } from './defaults.js';
 import * as React from 'react';
+import { useLayoutEffectOnClient } from './layout-effect.js';
 import { Box, type BoxProps } from '../components/box/Box.js';
 import {
   alignedScale,
@@ -70,9 +71,6 @@ import type {
  * Measurement
  * ------------------------------------------------------------------------- */
 
-/** A layout read where there is a layout, and a no-op where there is not. */
-const useMeasureEffect = typeof document === 'undefined' ? React.useEffect : React.useLayoutEffect;
-
 /** One array rather than a fresh `[]` per render, for the charts with no marks. */
 const noMarks: readonly ChartMark[] = [];
 
@@ -93,7 +91,7 @@ const noMarks: readonly ChartMark[] = [];
 function useMeasuredWidth(ref: React.RefObject<HTMLElement | null>): number {
   const [width, setWidth] = React.useState(0);
 
-  useMeasureEffect(() => {
+  useLayoutEffectOnClient(() => {
     const host = ref.current;
 
     if (!host) {
@@ -120,7 +118,7 @@ function useMeasuredWidth(ref: React.RefObject<HTMLElement | null>): number {
 function useMeasuredHeight(ref: React.RefObject<HTMLElement | null>, enabled: boolean): number {
   const [height, setHeight] = React.useState(0);
 
-  useMeasureEffect(() => {
+  useLayoutEffectOnClient(() => {
     const host = ref.current;
 
     if (!enabled || !host) {

@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useLayoutEffectOnClient } from '../../internal/layout-effect.js';
 import { useRender } from '@base-ui/react/use-render';
 import { safeHref, safeRel } from '../../internal/link.js';
 import { NewTabNote } from '../../internal/new-tab.js';
@@ -347,7 +348,7 @@ export const Breadcrumb = React.forwardRef<HTMLElement, BreadcrumbProps>(
      */
     const refocus = React.useRef(false);
 
-    React.useLayoutEffect(() => {
+    useLayoutEffectOnClient(() => {
       if (!unfolded || !refocus.current) {
         return;
       }

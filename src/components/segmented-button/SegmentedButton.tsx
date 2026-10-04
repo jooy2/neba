@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useLayoutEffectOnClient } from '../../internal/layout-effect.js';
 import { glowClasses, trackPointer } from '../../internal/glow.js';
 import { Radio as BaseUIRadio } from '@base-ui/react/radio';
 import { RadioGroup as BaseUIRadioGroup } from '@base-ui/react/radio-group';
@@ -345,7 +346,7 @@ export const SegmentedButton = React.forwardRef<HTMLDivElement, SegmentedButtonP
     }, []);
 
     // Before the browser paints, or the tile is visibly at nothing for a frame.
-    React.useLayoutEffect(() => {
+    useLayoutEffectOnClient(() => {
       measure(true);
     }, [measure, value, variant, size, density, fullWidth, disabled, children]);
 

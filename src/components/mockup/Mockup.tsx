@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useLayoutEffectOnClient } from '../../internal/layout-effect.js';
 import { ScreenContext } from '../../internal/screen.js';
 import { useRender } from '@base-ui/react/use-render';
 import { transitionProps } from '../../internal/animate.js';
@@ -166,15 +167,6 @@ export interface MockupProps extends Omit<React.ComponentPropsWithoutRef<'div'>,
 }
 
 /**
- * `useLayoutEffect` where there is a layout, `useEffect` where there is not.
- *
- * The measurement has to happen between layout and paint or the device is drawn
- * at the wrong size for a frame; on a server there is neither, and React warns
- * about the layout form for exactly that reason.
- */
-const useMeasureEffect = typeof document === 'undefined' ? React.useEffect : React.useLayoutEffect;
-
-/**
  * A device with a screen you can put anything on: a phone, a tablet, a monitor
  * or a laptop, with the system's own bars drawn on it.
  *
@@ -261,8 +253,11 @@ export const Mockup = React.forwardRef<HTMLDivElement, MockupProps>(function Moc
    * The box is read as laid out rather than as drawn. The device is scaled
    * inside the box's own coordinates, so inside a scaled ancestor — a zoom
    * entrance, another Mockup — the drawn size would scale it a second time.
+   *
+   * Between layout and paint, or the device is drawn at the wrong size for a
+   * frame.
    */
-  useMeasureEffect(() => {
+  useLayoutEffectOnClient(() => {
     const box = boxRef.current;
     if (!box) return;
 

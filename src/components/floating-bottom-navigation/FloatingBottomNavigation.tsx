@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useLayoutEffectOnClient } from '../../internal/layout-effect.js';
 import { useRender } from '@base-ui/react/use-render';
 import { barMinHeightClasses, BottomNavigationContext } from '../../internal/bottom-navigation.js';
 import type {
@@ -314,7 +315,7 @@ export const FloatingBottomNavigation = React.forwardRef<
   }, []);
 
   // Before the browser paints, or the tile is visibly at nothing for a frame.
-  React.useLayoutEffect(() => {
+  useLayoutEffectOnClient(() => {
     measure(true);
   }, [measure, value, variant, size, density, labels, children]);
 

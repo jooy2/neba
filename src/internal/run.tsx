@@ -20,6 +20,7 @@
  */
 
 import * as React from 'react';
+import { useLayoutEffectOnClient } from './layout-effect.js';
 import { CircleIcon, DangerIcon, SpinnerIcon, SuccessIcon } from './icons.js';
 import { numberFormatter } from './format.js';
 import type { NebaColor, NebaRunStatus } from '../types.js';
@@ -103,13 +104,6 @@ export function formatDuration(ms: number, locale?: string): string {
 }
 
 /**
- * A layout effect in the browser, so the total below replaces the last tick
- * before the frame is painted rather than one frame after it; a plain effect on
- * a server, where a layout effect does nothing but warn.
- */
-const useClockEffect = typeof document === 'undefined' ? React.useEffect : React.useLayoutEffect;
-
-/**
  * How long a run has been going, in milliseconds, or `null`.
  *
  * A `duration` the caller knows wins outright; without one the clock counts,
@@ -158,7 +152,9 @@ export function useElapsed(running: boolean, duration: number | undefined): numb
    */
   const total = React.useRef<number | null>(null);
 
-  useClockEffect(() => {
+  // Layout effects, so the total replaces the last tick before the frame is
+  // painted rather than one frame after it.
+  useLayoutEffectOnClient(() => {
     if (!measure) {
       return undefined;
     }
@@ -173,7 +169,7 @@ export function useElapsed(running: boolean, duration: number | undefined): numb
   }, [measure]);
 
   // Runs after the cleanup above, on the commit where the run ended.
-  useClockEffect(() => {
+  useLayoutEffectOnClient(() => {
     if (measure || total.current === null) {
       return;
     }

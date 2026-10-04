@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useLayoutEffectOnClient } from '../../internal/layout-effect.js';
 import { useDropZone } from '../../internal/drop.js';
 import { glowClasses, spotlightSlot, trackPointer } from '../../internal/glow.js';
 import { CloseIcon } from '../../internal/icons.js';
@@ -395,7 +396,7 @@ export const FilePicker = React.forwardRef<HTMLInputElement, FilePickerProps>(
      */
     const refocusAt = React.useRef<number | null>(null);
 
-    React.useLayoutEffect(() => {
+    useLayoutEffectOnClient(() => {
       const at = refocusAt.current;
 
       if (at === null) {

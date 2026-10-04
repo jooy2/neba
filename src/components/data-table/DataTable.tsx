@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useLayoutEffectOnClient } from '../../internal/layout-effect.js';
 import { Box } from '../box/Box.js';
 import { Button } from '../button/Button.js';
 import { Checkbox } from '../checkbox/Checkbox.js';
@@ -1222,7 +1223,7 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
   // are for different sizes of table anyway.
   const virtualized = virtual && bounded && paged.length > 0 && !groupBy;
 
-  React.useLayoutEffect(() => {
+  useLayoutEffectOnClient(() => {
     const node = viewportRef.current;
 
     if (!node || !virtualized) {
@@ -1489,7 +1490,7 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
     setColumnOrder(keys);
   };
 
-  React.useLayoutEffect(() => {
+  useLayoutEffectOnClient(() => {
     const key = refocusKey.current;
 
     if (key === null) {

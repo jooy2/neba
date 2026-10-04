@@ -14,6 +14,8 @@
 
 - **Classes on a heading passed as a `title` win over the sheet's scale.** `<Card title={<h2 className="text-xl">…</h2>}>` rendered at the Card's 15px, because the reset that takes the browser's 1.5em bold and margins off the heading was written at two-class strength. A heading with a class now gets that reset at zero specificity, and one without keeps it at full strength, so it still holds against `.prose h2`. The same goes for `Alert`, `Empty` and `Toast`.
 
+- **React 18 no longer prints a `useLayoutEffect` warning for Neba components on a server.** Fifteen modules measured themselves in a layout effect, which React 18's server renderer warns about once per component per request; they skip it on a server now, as three already did.
+
 ## 1.17.1 (2026-10-01)
 
 ### Fixed

@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useLayoutEffectOnClient } from '../../internal/layout-effect.js';
 import { IconButton } from '../icon-button/IconButton.js';
 import { useDropZone } from '../../internal/drop.js';
 import { fieldLight, fieldSpotlightSlot, glowClasses } from '../../internal/glow.js';
@@ -269,7 +270,7 @@ export const PromptInput = React.forwardRef<HTMLTextAreaElement, PromptInputProp
       node.style.height = `${node.scrollHeight}px`;
     }, []);
 
-    React.useLayoutEffect(fit, [fit, value, minRows, maxRows]);
+    useLayoutEffectOnClient(fit, [fit, value, minRows, maxRows]);
 
     /*
      * And again when the field's width changes, which the text alone does not

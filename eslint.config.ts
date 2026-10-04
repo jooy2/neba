@@ -43,6 +43,12 @@ export default pluginTypeScriptESLint.config(
         requireConfigFile: false
       }
     },
+    settings: {
+      // `useLayoutEffectOnClient` is `useLayoutEffect` with the server's warning
+      // taken out, so `exhaustive-deps` has to read it as one: without this its
+      // dependency lists went unchecked.
+      'react-hooks': { additionalEffectHooks: '^useLayoutEffectOnClient$' }
+    },
     rules: {
       eqeqeq: 'error',
       'no-unused-vars': 'off',

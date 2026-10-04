@@ -31,6 +31,7 @@
  */
 
 import * as React from 'react';
+import { useLayoutEffectOnClient } from './layout-effect.js';
 import { observeVisibility } from './observe.js';
 import { cx } from './styles.js';
 import type {
@@ -528,7 +529,7 @@ export function useAnimationRun({
   }, []);
 
   // Nothing to rewind on the first pass — the element has only just been drawn.
-  React.useLayoutEffect(() => {
+  useLayoutEffectOnClient(() => {
     const element = node.current;
 
     if (!element || run === 0) {

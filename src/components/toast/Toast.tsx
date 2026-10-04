@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useLayoutEffectOnClient } from '../../internal/layout-effect.js';
 import { Toast as BaseUIToast } from '@base-ui/react/toast';
 import { boxPaddingClasses } from '../box/Box.js';
 import { actionMessages, toastMessages, useMessages } from '../../internal/i18n.js';
@@ -256,7 +257,7 @@ export function useToast() {
    */
   const managerRef = React.useRef(manager);
 
-  React.useLayoutEffect(() => {
+  useLayoutEffectOnClient(() => {
     managerRef.current = manager;
   });
 

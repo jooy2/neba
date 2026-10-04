@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useLayoutEffectOnClient } from '../../internal/layout-effect.js';
 import { useRender } from '@base-ui/react/use-render';
 import { beginPointerDrag, drawnScale } from '../../internal/drag.js';
 import { actionMessages, useMessages, windowMessages } from '../../internal/i18n.js';
@@ -647,7 +648,7 @@ export const WindowPane = React.forwardRef<HTMLDivElement, WindowPaneProps>(
      * the rolled height is measured, so it fell back to the metrics table and
      * the border clipped its title bar. Measured before paint instead.
      */
-    React.useLayoutEffect(() => {
+    useLayoutEffectOnClient(() => {
       if (!minimized || rolled !== null) return;
 
       const root = rootRef.current;

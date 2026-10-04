@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useLayoutEffectOnClient } from '../../internal/layout-effect.js';
 import { Button } from '../button/Button.js';
 import { spoilerMessages, useMessages } from '../../internal/i18n.js';
 import { boxPaddingClasses, boxPaddingXClasses, boxPaddingYClasses } from '../box/Box.js';
@@ -200,7 +201,7 @@ export const Spoiler = React.forwardRef<HTMLDivElement, SpoilerProps>(
      * gets to that, the focus is handed to the half that is now live: the
      * content that was revealed, or the cover's own button.
      */
-    React.useLayoutEffect(() => {
+    useLayoutEffectOnClient(() => {
       const root = contentRef.current?.parentElement;
       const focused = document.activeElement;
 
