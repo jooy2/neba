@@ -35,6 +35,12 @@ import { AppLogo } from 'neba';
 
 </Demo>
 
+파일은 페이지보다 늦게 도착하고, 그때까지 `bare` 마크는 너비가 없어서 파일이 도착하는 순간 옆의 이름이 밀립니다. `imageProps`에 파일 자체의 `width`와 `height`를 주면 마크가 처음부터 제 너비를 차지합니다. 두 값은 비율만 정하고, 그려지는 높이는 여전히 `size`나 `height`가 정합니다.
+
+```tsx
+<AppLogo name="Neba" src="/wordmark.png" imageProps={{ width: 480, height: 128 }} />
+```
+
 ### shape
 
 마크를 두르는 방식입니다. 기본값 `bare`는 준 그대로(`size`가 정한 높이와 그에 따른 너비로) 그리며 배경도 자르기도 여백도 없습니다. `app`은 모서리를 깎은 채워진 타일 안으로 들여넣고, `circle`은 같은 타일을 둥글게 만듭니다. `padded={false}`는 마크가 타일 가장자리까지 닿게 합니다.

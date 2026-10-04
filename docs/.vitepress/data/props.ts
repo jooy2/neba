@@ -2898,8 +2898,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'imageProps',
       type: "Omit<ComponentPropsWithoutRef<'img'>, 'src' | 'srcSet' | 'alt'>",
       description: {
-        ko: 'img에 더 넘길 것들, loading, decoding, crossOrigin',
-        en: 'Anything else the img needs: loading, decoding, crossOrigin'
+        ko: 'img에 더 넘길 것들, loading, decoding, crossOrigin. 파일의 width와 height를 주면 파일이 도착하기 전에도 마크가 제 너비를 차지해 옆의 이름이 밀리지 않습니다. 두 값은 비율만 정하고, 그려지는 높이는 여전히 size가 정합니다',
+        en: "Anything else the img needs: loading, decoding, crossOrigin. Give it the file's width and height and the mark takes its width before the file arrives, so the name beside it does not move. They set a proportion only; the height drawn is still size's"
       }
     },
     {

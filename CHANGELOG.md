@@ -106,6 +106,8 @@
 
 - **The `LineChart` page says what `locale` fixes on a server-rendered page and what it does not**: the time zone a `Date` is written in. The provider page says the same about `direction` and `dir`.
 
+- **The `AppLogo` page says to pass the file's `width` and `height` through `imageProps`**, so a bare mark keeps its width before the file arrives. `imageProps` already accepted them.
+
 ## 1.17.1 (2026-10-01)
 
 ### Fixed

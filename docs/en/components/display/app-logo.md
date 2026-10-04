@@ -35,6 +35,12 @@ Where the artwork comes from. `src` links a file (a PNG, an SVG, whatever the br
 
 </Demo>
 
+A file arrives after the page does, and until then a `bare` mark has no width, so the name beside it moves when the file lands. Give `imageProps` the file's own `width` and `height` and the mark takes its width from the start. They set the proportion only: the height drawn is still the one `size` or `height` asks for.
+
+```tsx
+<AppLogo name="Neba" src="/wordmark.png" imageProps={{ width: 480, height: 128 }} />
+```
+
 ### shape
 
 How the artwork is framed. `bare` (the default) draws it as it was given, at the height `size` asks for and whatever width that comes to: no plate, no crop, no padding. `app` insets it into a filled tile with the corners cut off, and `circle` is the same tile, round. `padded={false}` lets a mark reach the tile's own edges.

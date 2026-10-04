@@ -37,6 +37,20 @@ describe('AppLogo', () => {
       await expect.element(image).toHaveClass('object-contain');
     });
 
+    // Without them the mark is nothing wide until the file arrives, and the
+    // name beside it moves when it does. They are the file's proportion; the
+    // height drawn is still `size`'s.
+    it('passes the dimensions in imageProps to the image', async () => {
+      const screen = await render(
+        <AppLogo src="/logo.svg" name="Neba" imageProps={{ width: 480, height: 128 }} />
+      );
+      const image = screen.getByRole('img', { name: 'Neba' });
+
+      await expect.element(image).toHaveAttribute('width', '480');
+      await expect.element(image).toHaveAttribute('height', '128');
+      await expect.element(image).toHaveClass('h-full', 'w-auto');
+    });
+
     // React 18 sets attributes in the order they are written, and Firefox and
     // Safari start the request when `src` is set, so whatever `imageProps`
     // says about the request has to come before it. A server render writes
