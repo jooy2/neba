@@ -453,6 +453,33 @@ describe('Carousel', () => {
       await vi.waitFor(() => expect(onValueChange).toHaveBeenCalled());
     });
 
+    // A strip scrolled out of view is not being watched, so it holds the slide
+    // it was on and picks up again once it is back. Scrolled inside a box of
+    // its own rather than the window, and out of the pointer's reach: moving
+    // the page under a resting pointer put it over the next test's strip,
+    // which paused that one on hover.
+    it('holds its place while it is scrolled out of view', async () => {
+      const onValueChange = vi.fn();
+      const screen = await render(
+        <div data-testid="frame" style={{ height: 200, overflow: 'auto', pointerEvents: 'none' }}>
+          <div style={{ height: 4000 }} />
+          <Carousel autoPlay interval={60} onValueChange={onValueChange}>
+            {slides}
+          </Carousel>
+        </div>
+      );
+
+      await new Promise((resolve) => setTimeout(resolve, 300));
+
+      expect(onValueChange).not.toHaveBeenCalled();
+
+      const frame = screen.getByTestId('frame').element();
+
+      frame.scrollTop = frame.scrollHeight;
+
+      await vi.waitFor(() => expect(onValueChange).toHaveBeenCalled());
+    });
+
     // A keyboard reader inside the strip is reading it, and a mouse passing over
     // the page on its way somewhere else is not a reason to start it again.
     it('stays held by the focus when the pointer passes over and leaves', async () => {

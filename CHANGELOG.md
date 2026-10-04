@@ -48,6 +48,8 @@
 
 - **`CodeBlock` colours a block once it is within a screen's height of the view**, one block per task, instead of colouring every block on the page in one long task. A block off screen still fetches its grammar straight away.
 
+- **`Carousel` pauses `autoPlay` while it is scrolled out of view**, and holds the slide for a full `interval` when it comes back.
+
 - **An `Image` or a `Gallery` with `preview` fetches its viewer when a pointer, the focus or a finger first reaches it**, and mounts the viewer on the first press, rather than fetching it with the page.
 
 - **A `ScrollZone` with its buttons `inline` keeps both lanes open, with the buttons hidden, until it has measured itself.** The items of a strip that overflows no longer move inward after the first paint. On a server-rendered page, a strip that turns out to fit now loses the lanes at hydration instead.

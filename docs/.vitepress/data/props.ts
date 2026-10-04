@@ -9725,8 +9725,8 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       default: 'false',
       description: {
-        ko: '스스로 넘어갑니다. 기본값은 꺼짐이며, 켜면 hover·포커스·백그라운드 탭에서 멈추고 프레임 아래에 멈춤 버튼이 그려집니다. 모션을 줄이도록 설정한 환경에서는 시작하지 않습니다',
-        en: 'Advances on its own. Off by default and deliberately: a carousel that moves while it is being read is the most complained-about pattern on the web. It pauses on hover, on focus anywhere inside it, and in a background tab, and does not start at all for a reader who asked for reduced motion. Turning it on draws a button that stops it, under the frame'
+        ko: '스스로 넘어갑니다. 기본값은 꺼짐이며, 켜면 hover·포커스·백그라운드 탭에서, 그리고 화면 밖으로 스크롤됐을 때 멈추고 프레임 아래에 멈춤 버튼이 그려집니다. 모션을 줄이도록 설정한 환경에서는 시작하지 않습니다',
+        en: 'Advances on its own. Off by default and deliberately: a carousel that moves while it is being read is the most complained-about pattern on the web. It pauses on hover, on focus anywhere inside it, in a background tab and while it is scrolled out of view, and does not start at all for a reader who asked for reduced motion. Turning it on draws a button that stops it, under the frame'
       }
     },
     {

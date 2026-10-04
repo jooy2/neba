@@ -62,7 +62,7 @@ Controlled, the strip can be driven by something else on the page. `onValueChang
 
 ### autoPlay and interval
 
-`autoPlay` is off by default. With it on, it pauses on hover, on focus anywhere inside, and in a background tab, and it does not start at all under `prefers-reduced-motion`. The live region announcing the current slide stays silent while it runs, and starts again once the slides are stopped.
+`autoPlay` is off by default. With it on, it pauses on hover, on focus anywhere inside, in a background tab and while the carousel is scrolled out of view, and it does not start at all under `prefers-reduced-motion`. Scrolled back into view, it holds the slide it stopped on for a full `interval` before moving on. The live region announcing the current slide stays silent while it runs, and starts again once the slides are stopped.
 
 Turning it on also draws a button that stops the rotation, in the row under the frame beside the dots. It has no prop to remove it, and `pauseLabel` and `playLabel` name it.
 

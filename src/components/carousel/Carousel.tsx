@@ -6,6 +6,7 @@ import { childKey } from '../../internal/children.js';
 import { carouselMessages, fillMessage, useMessages } from '../../internal/i18n.js';
 import { ChevronIcon, PauseIcon, PlayIcon } from '../../internal/icons.js';
 import { usePrefersReducedMotion } from '../../internal/media.js';
+import { observeVisibility } from '../../internal/observe.js';
 import {
   cx,
   radiusClasses,
@@ -44,8 +45,9 @@ export interface CarouselProps
    *
    * Off by default and deliberately so: a carousel that moves while it is being
    * read is the most complained-about pattern on the web. It pauses on hover,
-   * on focus anywhere inside it, while the tab is in the background, and it does
-   * not start at all for a reader who has asked for reduced motion.
+   * on focus anywhere inside it, while the tab is in the background and while
+   * the strip is scrolled out of view, and it does not start at all for a
+   * reader who has asked for reduced motion.
    *
    * Turning it on draws a button that stops it, in the row under the frame
    * beside the dots. There is no prop to take that button away: hover and focus
@@ -326,9 +328,32 @@ export const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
     // happened to re-run the effect.
     const reduced = usePrefersReducedMotion();
 
+    /*
+     * Whether the strip is scrolled out of view. A slide show nobody can see is
+     * one nobody is watching, so the timer is not merely skipped but stopped:
+     * a reader who scrolls back gets a full `interval` on the slide they left,
+     * rather than a strip that has gone round twice or turns the moment it
+     * arrives. Watched only while it would rotate, and `false` until told
+     * otherwise — which is also the answer where there is no observer to ask.
+     */
+    const [offscreen, setOffscreen] = React.useState(false);
+    const watches = autoPlay && !stopped && !reduced && count > 1;
+
+    React.useEffect(() => {
+      const track = trackRef.current;
+
+      if (!watches || !track) {
+        return;
+      }
+
+      // A fresh subscription is told at once where the strip is, so an answer
+      // left over from the last one is corrected before it can hold anything.
+      return observeVisibility(track, 0, (visible) => setOffscreen(!visible)) ?? undefined;
+    }, [watches]);
+
     React.useEffect(() => {
       // A reader who has asked for less motion has asked for this in particular.
-      if (!autoPlay || stopped || paused || reduced || count < 2) {
+      if (!autoPlay || stopped || paused || reduced || offscreen || count < 2) {
         return;
       }
 
@@ -340,7 +365,7 @@ export const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
       }, interval);
 
       return () => window.clearInterval(timer);
-    }, [autoPlay, stopped, paused, reduced, count, interval, index, go]);
+    }, [autoPlay, stopped, paused, reduced, offscreen, count, interval, index, go]);
 
     const atStart = index <= 0;
     const atEnd = index >= count - 1;

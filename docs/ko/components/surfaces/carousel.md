@@ -62,7 +62,7 @@ controlled로 쓰면 페이지의 다른 컨트롤로 슬라이드를 옮길 수
 
 ### autoPlay와 interval
 
-`autoPlay`의 기본값은 꺼짐입니다. 켜더라도 hover, 내부 focus, 백그라운드 탭에서 멈추고, `prefers-reduced-motion`에서는 시작하지 않습니다. 자동 재생 중에는 현재 슬라이드를 알리는 live region도 침묵하고, 멈추면 다시 알립니다.
+`autoPlay`의 기본값은 꺼짐입니다. 켜더라도 hover, 내부 focus, 백그라운드 탭에서, 그리고 Carousel이 화면 밖으로 스크롤됐을 때 멈추고, `prefers-reduced-motion`에서는 시작하지 않습니다. 다시 화면에 들어오면 멈춘 슬라이드를 `interval`만큼 온전히 보여 준 뒤에 넘어갑니다. 자동 재생 중에는 현재 슬라이드를 알리는 live region도 침묵하고, 멈추면 다시 알립니다.
 
 켜면 회전을 멈추는 버튼이 프레임 아래 점 줄 옆에 그려집니다. 이 버튼을 없애는 prop은 없으며, 이름은 `pauseLabel`과 `playLabel`로 지정합니다.
 
