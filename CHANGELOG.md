@@ -50,6 +50,8 @@
 
 - **`Carousel` pauses `autoPlay` while it is scrolled out of view**, and holds the slide for a full `interval` when it comes back.
 
+- **`Select` lays out only the labels that could be the widest** to hold its width, rather than one hidden box per option. A Select of 250 countries carried 250 of them.
+
 - **An `Image` or a `Gallery` with `preview` fetches its viewer when a pointer, the focus or a finger first reaches it**, and mounts the viewer on the first press, rather than fetching it with the page.
 
 - **A `ScrollZone` with its buttons `inline` keeps both lanes open, with the buttons hidden, until it has measured itself.** The items of a strip that overflows no longer move inward after the first paint. On a server-rendered page, a strip that turns out to fit now loses the lanes at hydration instead.

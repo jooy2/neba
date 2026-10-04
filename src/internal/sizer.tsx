@@ -1,6 +1,57 @@
 import type * as React from 'react';
 
 /**
+ * Characters drawn about twice as wide as a Latin letter: Hangul, the CJK
+ * blocks and the fullwidth forms. An emoji needs no entry, since it is already
+ * two UTF-16 units long.
+ */
+const wide =
+  /[\u1100-\u115f\u2e80-\ua4cf\uac00-\ud7a3\uf900-\ufaff\ufe30-\ufe4f\uff00-\uff60\uffe0-\uffe6]/g;
+
+/** A string's length, in units of roughly half an em. */
+function roughLength(text: string): number {
+  return text.length + (text.match(wide)?.length ?? 0);
+}
+
+/**
+ * The share of the longest string's length a string has to reach to be laid
+ * out at all.
+ *
+ * A length is not a width, and the gap between the two is what this absorbs.
+ * Capitals take about a third more room per character than lower case, a run
+ * of `i`s and `l`s far less, and a combining mark counts as a character while
+ * taking no room at all. Across the labels a list actually holds, the room one
+ * character takes stays well inside two and a half times what another's does,
+ * so a string under two fifths of the longest one's length is never the widest
+ * — and a box laid out for it reserves nothing another sample has not already
+ * reserved.
+ */
+const CONTENDER = 0.4;
+
+/**
+ * The samples a `WidthSizer` needs, out of all of them.
+ *
+ * Only the widest sample decides the width, so a Select with two hundred and
+ * fifty countries was two hundred and fifty boxes laid out for the sake of one.
+ * A string is kept when it is long enough to be the widest and dropped
+ * otherwise. Anything that is not a string is kept whatever it is, since
+ * nothing short of laying it out says how wide a node is.
+ */
+export function widestSamples(samples: readonly React.ReactNode[]): React.ReactNode[] {
+  let longest = 0;
+
+  for (const sample of samples) {
+    if (typeof sample === 'string') {
+      longest = Math.max(longest, roughLength(sample));
+    }
+  }
+
+  return samples.filter(
+    (sample) => typeof sample !== 'string' || roughLength(sample) >= longest * CONTENDER
+  );
+}
+
+/**
  * Holds a control open at the width of the widest thing it could ever say.
  *
  * A control that is not `fullWidth` is sized by what it is *currently* saying,

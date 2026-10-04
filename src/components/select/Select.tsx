@@ -4,7 +4,7 @@ import * as React from 'react';
 import { Select as BaseUISelect } from '@base-ui/react/select';
 import { Field } from '@base-ui/react/field';
 import { CheckIcon, ChevronIcon } from '../../internal/icons.js';
-import { WidthSizer } from '../../internal/sizer.js';
+import { WidthSizer, widestSamples } from '../../internal/sizer.js';
 import {
   controlTextLeadingClasses,
   cx,
@@ -293,12 +293,18 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
     // pointer that chose it.
     // A resting label stands where the value will be, so it is one of the
     // things the trigger could say.
+    // Only the labels that could be the widest are laid out, since the widest
+    // is the only one that reserves anything. A `fullWidth` select keeps them
+    // too: inside a box sized by its content — a popover, an inline block, an
+    // auto-width table cell — its width is still the widest label's, and
+    // without them it would change with every option chosen.
     const sizerSamples = React.useMemo(
-      () => [
-        ...items.map((item) => item.label ?? String(item.value)),
-        ...(hasContent(placeholder) ? [placeholder] : []),
-        ...(rests ? [label] : [])
-      ],
+      () =>
+        widestSamples([
+          ...items.map((item) => item.label ?? String(item.value)),
+          ...(hasContent(placeholder) ? [placeholder] : []),
+          ...(rests ? [label] : [])
+        ]),
       [items, placeholder, rests, label]
     );
 

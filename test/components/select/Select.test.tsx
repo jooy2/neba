@@ -306,14 +306,45 @@ describe('Select', () => {
     const samplesOf = (root: HTMLElement) =>
       [...sizerOf(root).children].map((child) => child.getAttribute('data-sample'));
 
-    it('reserves room for every label, chosen or not', async () => {
+    it('reserves room for the widest label, chosen or not', async () => {
       const screen = await render(<Select items={CITIES} label="Region" defaultValue="kr" />);
 
+      expect(samplesOf(screen.getByRole('combobox').element() as HTMLElement)).toContain(
+        'Washington DC'
+      );
+    });
+
+    // Only the widest label reserves anything, so a list of two hundred and
+    // fifty countries was two hundred and fifty boxes laid out for one.
+    it('lays out only the labels that could be the widest', async () => {
+      const screen = await render(
+        <Select
+          items={[
+            { value: 'kr', label: 'Korea' },
+            { value: 'bo', label: 'Bolivia (Plurinational State of)' },
+            { value: 'gb', label: 'United Kingdom of Great Britain and Northern Ireland' },
+            { value: 'td', label: 'Chad' }
+          ]}
+          label="Country"
+        />
+      );
+
       expect(samplesOf(screen.getByRole('combobox').element() as HTMLElement)).toEqual([
-        'Seoul',
-        'Washington DC',
-        'de'
+        'Bolivia (Plurinational State of)',
+        'United Kingdom of Great Britain and Northern Ireland'
       ]);
+    });
+
+    // Inside a box sized by its content, a full-width select is still as wide
+    // as its widest label, so it keeps the reservation too.
+    it('keeps reserving the widest label when it is full width', async () => {
+      const screen = await render(
+        <Select items={CITIES} label="Region" defaultValue="kr" fullWidth />
+      );
+
+      expect(samplesOf(screen.getByRole('combobox').element() as HTMLElement)).toContain(
+        'Washington DC'
+      );
     });
 
     it('reserves room for the placeholder too', async () => {
@@ -369,6 +400,23 @@ describe('Select', () => {
       const sizer = sizerOf(screen.getByRole('combobox').element() as HTMLElement);
 
       expect(sizer.textContent).toBe('Seoul');
+    });
+
+    // How wide a node draws is not something a length can say, so a short one
+    // is laid out beside a long string rather than ranked against it.
+    it('keeps a node label however short it looks', async () => {
+      const screen = await render(
+        <Select
+          items={[
+            { value: 'kr', label: <em>Seoul</em> },
+            { value: 'gb', label: 'United Kingdom of Great Britain and Northern Ireland' }
+          ]}
+          label="Region"
+        />
+      );
+      const sizer = sizerOf(screen.getByRole('combobox').element() as HTMLElement);
+
+      expect(sizer.querySelector('em')).toHaveTextContent('Seoul');
     });
 
     it('leaves the column shrinkable, so a narrow container still wins', async () => {
