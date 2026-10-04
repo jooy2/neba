@@ -63,6 +63,23 @@ function relativeSpecifiers(source: string): string[] {
   );
 }
 
+/** The source of the module a relative specifier in `from` names, by its `.ts` or `.tsx` file. */
+function moduleAt(from: string, specifier: string): string | undefined {
+  const parts = from.split('/').slice(0, -1);
+
+  for (const piece of specifier.split('/')) {
+    if (piece === '..') {
+      parts.pop();
+    } else if (piece !== '.') {
+      parts.push(piece);
+    }
+  }
+
+  const base = parts.join('/').replace(/\.js$/, '');
+
+  return sources[`${base}.ts`] ?? sources[`${base}.tsx`];
+}
+
 /**
  * Every JSX opening tag in a module, as text.
  *
@@ -442,6 +459,38 @@ describe('the published package', () => {
         )
         .filter(([, source]) => DIRECTIVE.test(source))
         .map(([path]) => path.replace('../../', ''));
+
+      expect(offenders).toEqual([]);
+    });
+
+    it('exports a plain function or constant only from a module without the directive', () => {
+      // A value exported from a 'use client' module reaches a Server Component
+      // as a client reference, and calling one there throws. A component or a
+      // hook is meant to cross that boundary; a function a server calls is not.
+      // `colorSchemeScript` is the one that taught this: it is called from the
+      // `<head>` of `app/layout.tsx`, which is a Server Component, and it used
+      // to live in `NebaProvider.tsx`.
+      const offenders = Object.entries(sources)
+        .filter(([path]) => /src\/components\/[^/]+\/index\.ts$/.test(path))
+        .flatMap(([path, source]) =>
+          [...source.matchAll(/export\s*\{([^}]*)\}\s*from\s*'([^']+)'/g)].flatMap(
+            ([, names, specifier]) => {
+              const module = moduleAt(path, specifier);
+
+              return names
+                .split(',')
+                .map((name) => name.trim())
+                .filter((name) => name && !name.startsWith('type '))
+                .map((name) => name.split(/\s+as\s+/).at(-1)!)
+                .filter(
+                  (name) =>
+                    (/^[a-z]/.test(name) && !/^use[A-Z]/.test(name)) || /^[A-Z0-9_]+$/.test(name)
+                )
+                .filter(() => module === undefined || DIRECTIVE.test(module))
+                .map((name) => `${path.replace('../../', '')}: ${name}`);
+            }
+          )
+        );
 
       expect(offenders).toEqual([]);
     });

@@ -1,4 +1,5 @@
-export { colorSchemeScript, NebaProvider, useColorScheme } from './NebaProvider.js';
+export { colorSchemeScript } from './colorSchemeScript.js';
+export { NebaProvider, useColorScheme } from './NebaProvider.js';
 export type {
   ColorSchemeState,
   NebaColorScheme,

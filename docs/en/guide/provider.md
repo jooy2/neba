@@ -73,6 +73,8 @@ React runs after the document has been painted once, so a remembered dark page f
 
 Inline it in `<head>`, above everything. It reads the same key and writes the same attribute the provider does, which is why it is a function here rather than a snippet in this page that somebody copies once and never updates.
 
+It is a plain function rather than part of the client module, so a root layout that is a Server Component can call it. The script writes an attribute and a style on `<html>` before React hydrates, so put `suppressHydrationWarning` on that element. [Server rendering](./getting-started#server-rendering) has the whole layout.
+
 ### storageKey
 
 `'neba-color-scheme'` by default. Pass your own, or `false` to apply the scheme for this visit and forget it. Storage is never allowed to throw: a private window that denies the write still gets the scheme, it just does not remember it.

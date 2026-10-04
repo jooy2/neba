@@ -4,6 +4,7 @@ import * as React from 'react';
 import { DirectionProvider, useDirection } from '@base-ui/react/direction-provider';
 import { DefaultsContext, type NebaDefaults } from '../../internal/defaults.js';
 import { useHydrated, useMediaQuery } from '../../internal/media.js';
+import { DEFAULT_STORAGE_KEY } from './colorSchemeScript.js';
 
 /** What a reader asked for. `system` is a deferral, not a third appearance. */
 export type NebaColorScheme = 'light' | 'dark' | 'system';
@@ -76,51 +77,6 @@ function readStored(key: string | false): NebaColorScheme | null {
 }
 
 /**
- * The script to run before the first paint, so a remembered dark page does not
- * flash white on the way in.
- *
- * The one thing a provider cannot do for you: React runs after the document has
- * been painted once, and by then the flash has happened. Inline the string this
- * returns in `<head>`, above everything:
- *
- * ```tsx
- * <script dangerouslySetInnerHTML={{ __html: colorSchemeScript() }} />
- * ```
- *
- * It reads the same key and writes the same attribute and `color-scheme` the
- * provider does, so the two cannot disagree — which is the reason it is here
- * rather than in a documentation snippet somebody copies once and never updates.
- */
-export function colorSchemeScript(
-  options: { storageKey?: string; defaultColorScheme?: NebaColorScheme } = {}
-): string {
-  const key = options.storageKey ?? 'neba-color-scheme';
-  const fallback = options.defaultColorScheme ?? 'system';
-
-  return (
-    `(function(){try{var s=localStorage.getItem(${embed(key)})||${embed(fallback)};` +
-    `if(s==='system'){s=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}` +
-    // `color-scheme` beside the attribute, as the provider writes it: without it
-    // the scrollbars and native controls stay light until the app hydrates.
-    `var d=document.documentElement;d.setAttribute('data-theme',s);d.style.colorScheme=s}catch(e){}})()`
-  );
-}
-
-/**
- * A string, as a literal safe to write inside a `<script>` element.
- *
- * `JSON.stringify` closes the quotes and nothing else, and the browser stops
- * parsing the element at the first `</script` in it however that sequence is
- * quoted — so a `storageKey` holding one would end the tag and hand the rest of
- * this to the HTML parser as markup. `<` is escaped to `\u003c`, which the
- * JavaScript parser reads back as the same character. The same escape
- * `Breadcrumb` writes its `BreadcrumbList` out with, for the same reason.
- */
-function embed(value: string): string {
-  return JSON.stringify(value).replace(/</g, '\\u003c');
-}
-
-/**
  * One place to set what every Neba component under it starts from.
  *
  * Three jobs, and they are together because all three are properties of the
@@ -144,7 +100,7 @@ export function NebaProvider({
   colorScheme: colorSchemeProp,
   defaultColorScheme = 'system',
   onColorSchemeChange,
-  storageKey = 'neba-color-scheme',
+  storageKey = DEFAULT_STORAGE_KEY,
   colorSchemeElement,
   direction
 }: NebaProviderProps) {

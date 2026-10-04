@@ -23,8 +23,6 @@ import {
 import type { NebaColor, NebaDensity, NebaElevation, NebaSize } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
 
-export { registerLanguage } from '../../internal/highlight.js';
-
 /**
  * Which palette the block wears.
  *

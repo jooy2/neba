@@ -73,6 +73,8 @@ React는 문서가 한 번 그려진 다음에 실행되므로, 다크 모드를
 
 `<head>`의 가장 위에 인라인하세요. provider와 같은 키를 읽고 같은 속성을 씁니다. 스니펫을 문서에 적어 두는 대신 함수로 둔 것은, 복사해 붙인 코드가 라이브러리와 함께 갱신되지 않기 때문입니다.
 
+client 모듈이 아닌 일반 함수라서, Server Component인 root layout에서도 호출할 수 있습니다. 이 스크립트는 React가 hydrate하기 전에 `<html>`에 속성과 style을 쓰므로 그 요소에 `suppressHydrationWarning`을 붙이세요. 전체 layout 예시는 [서버 렌더링](./getting-started#서버-렌더링)에 있습니다.
+
 ### storageKey
 
 기본값은 `'neba-color-scheme'`입니다. 직접 정하거나, `false`로 두면 이번 방문에만 적용하고 잊습니다. 저장이 예외를 던지는 일은 없습니다. 쓰기를 거부하는 시크릿 창에서도 스킴은 적용되고, 기억만 안 될 뿐입니다.
