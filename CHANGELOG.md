@@ -102,6 +102,8 @@
 
 ### Documentation
 
+- **Getting started has a section on server rendering**: passing a `locale` for a stable first paint, the time zone a `Date` is written in, `weekStartsOn` for the calendars, calling `colorSchemeScript()` from a root layout with `suppressHydrationWarning` on `<html>`, and putting `dir` in the server's HTML.
+
 - **The `LineChart` page says what `locale` fixes on a server-rendered page and what it does not**: the time zone a `Date` is written in. The provider page says the same about `direction` and `dir`.
 
 ## 1.17.1 (2026-10-01)

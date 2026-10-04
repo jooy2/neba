@@ -130,7 +130,41 @@ export function NebaLocale({ children }: { children: React.ReactNode }) {
 
 ### 그 밖의 환경
 
-`'use client'`는 파일 맨 위에 있는 문자열입니다. Server Components를 구현하지 않는 bundler(Vite, webpack, Remix, Astro, Parcel, 순수 React)는 이를 무시하므로, 위 내용이 그런 프로젝트에서의 동작을 바꾸지는 않습니다.
+`'use client'`는 파일 맨 위에 있는 문자열입니다. Server Components를 구현하지 않는 bundler(Vite, webpack, Remix, Astro, Parcel, 순수 React)는 이를 무시하므로, 위 내용이 그런 프로젝트에서의 동작을 바꾸지는 않습니다. 언어는 서버 렌더링과 브라우저가 함께 불러오는 모듈(둘이 같이 import하는 entry 같은 곳)에서 등록하세요. 그래야 두 쪽이 같은 문구를 그립니다.
+
+## 서버 렌더링
+
+페이지를 서버에서 렌더링하면 React는 브라우저에서 그 결과를 hydrate하면서, 두 쪽이 같은 것을 그렸다고 기대합니다. 몇 가지만 지키면 이 기대가 어긋나지 않습니다.
+
+**`locale`을 넘기세요.** 날짜나 숫자를 쓰는 컴포넌트에 `locale`이 없으면, 서버와 hydration 중에는 `en-US`로 쓰고 그 직후 읽는 사람의 언어로 바꿉니다. 페이지를 버리고 다시 그리는 일은 없지만, 글자가 나타난 직후 한 번 바뀝니다. `NebaProvider`로 처음부터 모든 컴포넌트에 같은 언어를 주세요.
+
+```tsx
+<NebaProvider defaults={{ locale: 'ko-KR' }}>{children}</NebaProvider>
+```
+
+**시간대를 확인하세요.** `locale`은 언어를 정할 뿐 시계를 정하지 않습니다. `Date`는 그것을 렌더링하는 환경의 시간대로 쓰이므로, UTC 서버와 로스앤젤레스의 독자는 `2026-03-03T00:00Z`가 며칠인지 다르게 봅니다. 두 쪽의 시간대가 다를 수 있다면 차트의 categories를 직접 포맷한 문자열로 넘기거나, 그 날짜는 브라우저에서만 렌더링하세요.
+
+**한 주의 시작 요일을 정하세요.** Calendar와 date picker는 한 주가 무슨 요일에 시작하는지 브라우저에 묻는데, 오래된 브라우저는 답하지 못합니다. 서버에서 렌더링하는 페이지에는 `weekStartsOn`을 넘기세요.
+
+**색 스킴은 React보다 먼저 쓰세요.** `colorSchemeScript()`는 일반 함수라서, root layout이 Server Component여도 호출할 수 있습니다. 이 스크립트는 React가 hydrate하기 전에 `<html>`에 속성과 style을 쓰므로, React에 그 사실을 알려 두세요.
+
+```tsx
+// app/layout.tsx
+import { colorSchemeScript } from 'neba';
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="ko" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: colorSchemeScript() }} />
+      </head>
+      <body>{children}</body>
+    </html>
+  );
+}
+```
+
+**`dir`은 HTML에 넣으세요.** `NebaProvider`의 `direction`은 앱이 실행된 뒤에 `<html>`에 `dir`을 씁니다. 오른쪽에서 왼쪽으로 쓰는 페이지라면 서버가 보내는 HTML에 이미 `dir="rtl"`이 있어야 하고, 그렇지 않으면 첫 화면이 왼쪽에서 오른쪽으로 배치됩니다.
 
 ## 다크 모드
 

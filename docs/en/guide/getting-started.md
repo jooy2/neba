@@ -130,7 +130,41 @@ Render that around your app in `app/layout.tsx`.
 
 ### Everywhere else
 
-`'use client'` is a string at the top of a file. Bundlers that do not implement Server Components (Vite, webpack, Remix, Astro, Parcel, plain React) ignore it, so nothing above changes what the package does in those projects.
+`'use client'` is a string at the top of a file. Bundlers that do not implement Server Components (Vite, webpack, Remix, Astro, Parcel, plain React) ignore it, so nothing above changes what the package does in those projects. Register a language in a module that both the server render and the browser load, such as the entry both of them import, so the two render the same words.
+
+## Server rendering
+
+Whatever renders the page on a server, React hydrates it in the browser and expects both to have drawn the same thing. A few habits keep that true.
+
+**Pass a `locale`.** A component that writes a date or a number without one formats as `en-US` on the server and while it hydrates, then switches to the reader's language right after. The page is never thrown away, but the text changes once, a moment after it appears. Give every component the same language from the start with `NebaProvider`:
+
+```tsx
+<NebaProvider defaults={{ locale: 'ko-KR' }}>{children}</NebaProvider>
+```
+
+**Mind the time zone.** A `locale` decides the language, not the clock. A `Date` is written in the time zone of whatever renders it, so a server in UTC and a reader in Los Angeles can disagree about which day `2026-03-03T00:00Z` is. When the two can be in different zones, pass a chart its categories as strings you formatted yourself, or render the date only in the browser.
+
+**Pin the first day of the week.** Calendars and date pickers ask the browser which day a week starts on, and older browsers cannot answer. Pass `weekStartsOn` on a server-rendered page.
+
+**Write the colour scheme before React.** `colorSchemeScript()` is a plain function, so the root layout can call it even where that layout is a Server Component. The script sets an attribute and a style on `<html>` before React hydrates, so tell React to expect that:
+
+```tsx
+// app/layout.tsx
+import { colorSchemeScript } from 'neba';
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: colorSchemeScript() }} />
+      </head>
+      <body>{children}</body>
+    </html>
+  );
+}
+```
+
+**Put `dir` in the HTML.** `NebaProvider`'s `direction` writes `dir` on `<html>` once the app is running. A right-to-left page should already carry `dir="rtl"` in the HTML the server sends, or the first paint is laid out left to right.
 
 ## Dark mode
 
