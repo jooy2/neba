@@ -6,6 +6,9 @@ import { DefaultsContext, type NebaDefaults } from '../../internal/defaults.js';
 import { useHydrated, useMediaQuery } from '../../internal/media.js';
 import { DEFAULT_STORAGE_KEY } from './colorSchemeScript.js';
 
+/** Replaced by the consumer's bundler, as it is in React and Base UI. */
+declare const process: { env: { NODE_ENV?: string } };
+
 /** What a reader asked for. `system` is a deferral, not a third appearance. */
 export type NebaColorScheme = 'light' | 'dark' | 'system';
 
@@ -172,10 +175,36 @@ export function NebaProvider({
     (element as HTMLElement).style.colorScheme = resolved;
   }, [hydrated, resolved, colorSchemeElement, outerScheme]);
 
+  /*
+   * `dir` is written from an effect, which is after the page has been painted
+   * once — on a page the server rendered, after it has been on screen for as
+   * long as the scripts took to arrive. A document that does not already run
+   * the provider's way is therefore drawn the other way round first and mirrors
+   * when this runs. Nothing on the screen says why, so the developer is told in
+   * the console, once per mount, and a production build says nothing. Only the
+   * first run asks: a `direction` that changes later is a page being switched,
+   * not one that loaded the wrong way.
+   */
+  const checkedDirection = React.useRef(false);
+
   React.useEffect(() => {
+    const mounting = !checkedDirection.current;
+    checkedDirection.current = true;
+
     if (!direction) {
       return;
     }
+
+    const served = document.documentElement.dir;
+
+    if (process.env.NODE_ENV !== 'production' && mounting && (served || 'ltr') !== direction) {
+      console.warn(
+        `Neba: a NebaProvider has direction="${direction}", and <html> ${
+          served ? `has dir="${served}"` : 'has no dir'
+        }. The provider sets dir only once it has mounted, so the page is drawn the other way round until then and mirrors when it does. Put dir="${direction}" on <html> in the HTML itself.`
+      );
+    }
+
     document.documentElement.setAttribute('dir', direction);
   }, [direction]);
 

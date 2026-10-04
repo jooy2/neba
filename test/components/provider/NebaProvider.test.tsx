@@ -435,13 +435,20 @@ describe('colour scheme', () => {
 
 describe('direction', () => {
   it('writes it onto the document', async () => {
-    await render(
-      <NebaProvider direction="rtl">
-        <Button>Ship</Button>
-      </NebaProvider>
-    );
+    // A document with no `dir` of its own is what the warning below is about.
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
-    await expect.poll(() => root().getAttribute('dir')).toBe('rtl');
+    try {
+      await render(
+        <NebaProvider direction="rtl">
+          <Button>Ship</Button>
+        </NebaProvider>
+      );
+
+      await expect.poll(() => root().getAttribute('dir')).toBe('rtl');
+    } finally {
+      warn.mockRestore();
+    }
   });
 
   it('leaves a document that already sets its own alone', async () => {
@@ -454,6 +461,98 @@ describe('direction', () => {
     );
 
     expect(root().getAttribute('dir')).toBe('rtl');
+  });
+
+  /*
+   * `dir` is written once the provider has mounted, so a document that does not
+   * already run its way is painted the other way round first, and mirrors when
+   * the page hydrates. Only the HTML itself can prevent that, and only the
+   * developer can put it there.
+   */
+  describe('when the document runs the other way', () => {
+    function watchWarnings() {
+      return vi.spyOn(console, 'warn').mockImplementation(() => {});
+    }
+
+    it('says so, and still writes it', async () => {
+      const warn = watchWarnings();
+
+      try {
+        await render(
+          <NebaProvider direction="rtl">
+            <Button>Ship</Button>
+          </NebaProvider>
+        );
+
+        await expect.poll(() => root().getAttribute('dir')).toBe('rtl');
+        expect(warn).toHaveBeenCalledTimes(1);
+        expect(String(warn.mock.calls[0][0])).toContain('dir="rtl"');
+      } finally {
+        warn.mockRestore();
+      }
+    });
+
+    it('says nothing when the document already runs that way', async () => {
+      root().setAttribute('dir', 'rtl');
+      const warn = watchWarnings();
+
+      try {
+        await render(
+          <NebaProvider direction="rtl">
+            <Button>Ship</Button>
+          </NebaProvider>
+        );
+
+        await expect.poll(() => root().getAttribute('dir')).toBe('rtl');
+        expect(warn).not.toHaveBeenCalled();
+      } finally {
+        warn.mockRestore();
+      }
+    });
+
+    // A document with no `dir` already runs left to right, so nothing turns.
+    it('says nothing for left to right on a document with no dir', async () => {
+      const warn = watchWarnings();
+
+      try {
+        await render(
+          <NebaProvider direction="ltr">
+            <Button>Ship</Button>
+          </NebaProvider>
+        );
+
+        await expect.poll(() => root().getAttribute('dir')).toBe('ltr');
+        expect(warn).not.toHaveBeenCalled();
+      } finally {
+        warn.mockRestore();
+      }
+    });
+
+    // A direction changed later is the page being switched, not one that loaded
+    // the wrong way round.
+    it('asks only when it mounts', async () => {
+      root().setAttribute('dir', 'rtl');
+      const warn = watchWarnings();
+
+      try {
+        const screen = await render(
+          <NebaProvider direction="rtl">
+            <Button>Ship</Button>
+          </NebaProvider>
+        );
+
+        await screen.rerender(
+          <NebaProvider direction="ltr">
+            <Button>Ship</Button>
+          </NebaProvider>
+        );
+
+        await expect.poll(() => root().getAttribute('dir')).toBe('ltr');
+        expect(warn).not.toHaveBeenCalled();
+      } finally {
+        warn.mockRestore();
+      }
+    });
   });
 });
 
@@ -525,6 +624,8 @@ describe('nesting', () => {
 
   // A provider with no `direction` forced left-to-right inside a right-to-left tree.
   it('keeps the outer direction when it has none of its own', async () => {
+    root().setAttribute('dir', 'rtl');
+
     const screen = await render(
       <NebaProvider direction="rtl">
         <NebaProvider defaults={{ size: 'sm' }}>

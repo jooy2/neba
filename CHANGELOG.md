@@ -18,6 +18,8 @@
 
 - **`imageWidth`, `imageHeight` and `imageLoading` on a `HowToSteps` step.** The dimensions are written on the step's `<img>`, so the browser reserves the picture's proportion and the panel no longer grows as pictures arrive. `imageLoading: 'eager'` is for a guide at the top of a page.
 
+- **`NebaProvider` warns in a development build when its `direction` disagrees with the `dir` on `<html>` at mount.** A right-to-left page whose server HTML has no `dir="rtl"` is drawn left to right until the provider sets it.
+
 ### Changed
 
 - **A `Slider`'s labels at `min` and `max` line up inward from their ticks.** Centred, the label at either end hung half its width past the track, and in a narrow column past the edge of the column. Every other mark stays centred, and a vertical slider does the same at its top and bottom.
@@ -64,7 +66,7 @@
 
 ### Documentation
 
-- **The `LineChart` page says what `locale` fixes on a server-rendered page and what it does not**: the time zone a `Date` is written in.
+- **The `LineChart` page says what `locale` fixes on a server-rendered page and what it does not**: the time zone a `Date` is written in. The provider page says the same about `direction` and `dir`.
 
 ## 1.17.1 (2026-10-01)
 
