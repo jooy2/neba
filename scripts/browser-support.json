@@ -25,7 +25,7 @@
     },
     {
       "feature": "css.selectors.dir",
-      "reason": "Swaps ScrollArea's left and right edge fades in a right-to-left layout. Without it the fades are not swapped."
+      "reason": "Swaps ScrollArea's left and right edge fades in a right-to-left layout, and turns the Skeleton and indeterminate ProgressLinear sweeps around in one. Without it the fades are not swapped, and a sweep runs leftwards only inside an element with dir=\"rtl\" — inside an LTR island in such an element as well."
     },
     {
       "feature": "css.properties.scrollbar-width",

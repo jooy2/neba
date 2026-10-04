@@ -2533,23 +2533,32 @@
 /*
  * The indeterminate bar: a short segment crossing the groove.
  *
- * `inset-inline-start` rather than a transform, so it runs the other way under
- * RTL without being told. The cost is a layout pass per frame, confined to a
- * box a few pixels tall — which is the trade that makes the rule affordable
- * here rather than an exception to it.
+ * On `translate`, not on `inset-inline-start`. A box that moves by a layout
+ * property is a layout shift as far as the browser is concerned, reported on
+ * every frame for as long as it runs, and the CLS a consumer's page is scored on
+ * adds them up — a placeholder sweeping on `inset-inline-start` scored 0.27 on
+ * an idle page. `translate` moves the painted box and nothing else, so it is no
+ * shift, and no layout pass either.
+ *
+ * The segment is pinned to the start edge and travels its own width times the
+ * ratio below: from one width before the groove to the far end of it, which is
+ * exactly the path the inset used to take. `translate` is physical, so the
+ * direction comes from `--n-sweep-dir`, set under RTL further down.
  */
 @keyframes neba-sweep {
   from {
-    inset-inline-start: -45%;
+    translate: calc(var(--n-sweep-dir, 1) * -100%) 0;
   }
   to {
-    inset-inline-start: 100%;
+    /* 100% of the groove, in widths of a segment that is 45% of it. */
+    translate: calc(var(--n-sweep-dir, 1) * 222.222%) 0;
   }
 }
 
 .neba-sweep {
   position: absolute;
   inset-block: 0;
+  inset-inline-start: 0;
   inline-size: 45%;
   animation: neba-sweep 1.15s var(--neba-ease) infinite;
 }
@@ -2620,9 +2629,10 @@
 /*
  * The highlight travelling across a placeholder.
  *
- * `inset-inline-start` rather than a transform, the same trade `neba-sweep`
- * makes and for the same reason: it runs the other way under RTL without being
- * told, and the layout pass it costs is confined to a box with nothing in it.
+ * On `translate`, for the reason `neba-sweep` gives. This is the one that
+ * mattered: a placeholder is drawn exactly while a page is loading, and is
+ * often a large box, so the shifts it reported on `inset-inline-start` were the
+ * largest thing in a consumer's CLS.
  *
  * A pseudo-element rather than a child, so a Skeleton is one element per shape
  * and a stack of ten lines is ten nodes rather than twenty. The gradient is
@@ -2630,10 +2640,11 @@
  */
 @keyframes neba-skeleton-sweep {
   from {
-    inset-inline-start: -60%;
+    translate: calc(var(--n-sweep-dir, 1) * -100%) 0;
   }
   to {
-    inset-inline-start: 100%;
+    /* 100% of the placeholder, in widths of a highlight that is 60% of it. */
+    translate: calc(var(--n-sweep-dir, 1) * 166.667%) 0;
   }
 }
 
@@ -2641,9 +2652,36 @@
   content: '';
   position: absolute;
   inset-block: 0;
+  inset-inline-start: 0;
   inline-size: 60%;
   background-image: linear-gradient(90deg, transparent, var(--n-panel-press), transparent);
   animation: neba-skeleton-sweep 1.5s var(--neba-ease) infinite;
+}
+
+/*
+ * Under RTL the start edge is on the right, so both sweeps travel leftwards.
+ *
+ * `:dir()` decides wherever it exists: it resolves the nearest direction, a
+ * `direction` set in CSS included, and the two rules for it come last so they
+ * override the attribute. The attribute rule is for the browsers in the
+ * supported range that have no `:dir()`, which then get every sweep inside a
+ * `dir="rtl"` element running leftwards — an LTR island inside it as well. It
+ * has to be a rule of its own: a selector list with a pseudo-class the browser
+ * does not know is thrown away whole.
+ */
+[dir='rtl'] .neba-sweep,
+[dir='rtl'] .neba-skeleton {
+  --n-sweep-dir: -1;
+}
+
+.neba-sweep:dir(rtl),
+.neba-skeleton:dir(rtl) {
+  --n-sweep-dir: -1;
+}
+
+.neba-sweep:dir(ltr),
+.neba-skeleton:dir(ltr) {
+  --n-sweep-dir: 1;
 }
 
 /* The reduced-motion stand-in: the highlight stops travelling and the whole
