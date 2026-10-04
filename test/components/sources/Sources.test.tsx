@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+import { renderToString } from 'react-dom/server';
 import { render } from 'vitest-browser-react';
 import { Sources } from 'neba';
 
@@ -103,7 +104,37 @@ describe('Sources', () => {
     it('starts closed', async () => {
       const screen = await render(<Sources items={ITEMS} />);
 
-      expect(screen.getByRole('listitem').query()).toBeNull();
+      await expect.element(screen.getByRole('button')).toHaveAttribute('aria-expanded', 'false');
+      // The panel's `hidden` rather than the rows' absence from the role tree:
+      // WebKit's check does not count a `content-visibility: hidden` ancestor,
+      // which is how `hidden="until-found"` hides them.
+      expect(screen.getByText('Breakpoints').element().closest('[hidden]')).not.toBeNull();
+    });
+
+    // In the markup, and so in a server render and a crawler's index, but
+    // hidden until the browser's page search finds something in it.
+    it('keeps a folded list in the document, hidden until it is found', async () => {
+      const screen = await render(<Sources items={ITEMS} />);
+      const row = screen.getByText('Breakpoints').element();
+
+      expect(row.closest('[hidden]')).toHaveAttribute('hidden', 'until-found');
+    });
+
+    it('writes the links of a folded list into a server render', () => {
+      const html = renderToString(<Sources items={ITEMS} />);
+
+      expect(html).toContain('href="https://example.com/design"');
+      expect(html).toContain('href="https://example.com/breakpoints"');
+    });
+
+    it('leaves a folded list out of the document when it is not to be found', async () => {
+      const screen = await render(<Sources items={ITEMS} hiddenUntilFound={false} />);
+
+      await expect.element(screen.getByRole('button')).toHaveAttribute('aria-expanded', 'false');
+      expect(screen.getByText('Breakpoints').query()).toBeNull();
+      expect(renderToString(<Sources items={ITEMS} hiddenUntilFound={false} />)).not.toContain(
+        'https://example.com/design'
+      );
     });
 
     it('opens when the heading is pressed', async () => {
@@ -112,10 +143,23 @@ describe('Sources', () => {
 
       await screen.getByRole('button').click();
 
+      await expect.element(screen.getByRole('button')).toHaveAttribute('aria-expanded', 'true');
       await expect
         .element(screen.getByRole('link', { name: 'Design language', exact: false }))
-        .toBeInTheDocument();
+        .toBeVisible();
+      expect(screen.getByText('Breakpoints').element().closest('[hidden]')).toBeNull();
       expect(onOpenChange).toHaveBeenCalledWith(true);
+    });
+
+    it('folds again when the heading is pressed a second time', async () => {
+      const screen = await render(<Sources items={ITEMS} defaultOpen />);
+
+      await screen.getByRole('button').click();
+
+      await expect.element(screen.getByRole('button')).toHaveAttribute('aria-expanded', 'false');
+      await expect
+        .poll(() => screen.getByText('Breakpoints').element().closest('[hidden]'))
+        .not.toBeNull();
     });
 
     it('is not a disclosure at all when it was told not to be', async () => {

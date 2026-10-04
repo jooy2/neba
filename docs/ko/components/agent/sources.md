@@ -46,6 +46,10 @@ import { Sources } from 'neba';
 
 </Demo>
 
+### hiddenUntilFound
+
+켜져 있습니다. 접힌 목록은 `hidden="until-found"`로 DOM에 남으므로 링크가 서버 렌더에 포함되고, 브라우저의 페이지 내 찾기가 줄을 찾아 목록을 펼칠 수 있습니다. `hiddenUntilFound={false}`를 주면 접힌 목록이 DOM에서 빠집니다.
+
 ### 번호
 
 주어진 순서대로 1부터 번호를 붙입니다. 항목의 `index`가 이를 덮어씁니다. 더 긴 목록 가운데 실제로 인용된 것만 보여 주는 경우에 필요합니다.
@@ -73,3 +77,4 @@ import { Sources } from 'neba';
 - `role="list"`를 명시한 `<ol>`입니다. Tailwind의 reset이 마커를 없앤 뒤에도 Safari가 목록 의미를 유지합니다.
 - 줄 옆의 번호는 `aria-hidden`입니다. 눈을 위한 이정표이고, 그 줄은 이미 번호가 매겨진 목록 안에 있습니다.
 - 목록이 접힐 때 제목은 진짜 버튼이며 Base UI가 패널과 연결합니다.
+- 접힌 목록은 tab 순서에도 accessibility tree에도 없습니다. `hiddenUntilFound`를 끄지 않는 한 브라우저의 페이지 내 찾기는 그 안의 줄을 찾아 목록을 펼칠 수 있습니다.

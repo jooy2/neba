@@ -46,6 +46,10 @@ Off, the heading is a plain line and the list is open. There is no disclosure at
 
 </Demo>
 
+### hiddenUntilFound
+
+On. A folded list stays in the DOM as `hidden="until-found"`, so its links are in a server render, and the browser's own page search can find a row and open the list around it. `hiddenUntilFound={false}` takes a folded list out of the DOM.
+
 ### Numbering
 
 Rows are numbered from one, in the order they were given. A source's own `index` overrides that, which is what a list showing only the sources actually cited — out of a longer set — needs.
@@ -73,3 +77,4 @@ Any `href` whose scheme is not `http`, `https`, `mailto` or `tel` leaves the row
 - An `<ol>` with `role="list"` spelled out, so Safari keeps the list semantics after Tailwind's reset takes the markers off.
 - The number beside a row is `aria-hidden`: it is a pointer for the eye, and the row is already in a numbered list.
 - The heading is a real button when the list folds, wired to the panel by Base UI.
+- A folded list is in neither the tab order nor the accessibility tree. Unless `hiddenUntilFound` is off, the browser's own page search can still find a row in it and open the list.

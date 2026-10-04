@@ -69,6 +69,10 @@ import { ToolCall } from 'neba';
 
 `args`도 `result`도 `error`도 children도 없는 ToolCall은 아예 disclosure가 아닙니다. 헤더 줄만 그리고 누를 것은 없습니다.
 
+### hiddenUntilFound
+
+켜져 있습니다. 닫힌 패널은 `hidden="until-found"`로 DOM에 남으므로 인자와 결과가 서버 렌더에 포함되고, 브라우저의 페이지 내 찾기가 이를 찾아 패널을 열 수 있습니다. 결과가 긴 호출이 많이 쌓이는 transcript라면 `hiddenUntilFound={false}`로 닫힌 패널을 DOM에서 빼세요. 각 패널은 열릴 때 만들어집니다.
+
 ### variant
 
 시트는 `color`의 색을 받지 않으므로 인자와 결과는 평범한 표면 위에 그려집니다. `text`는 시트를 아예 그리지 않으므로, 호출이 길게 쌓인 열에 씁니다.
@@ -82,6 +86,7 @@ import { ToolCall } from 'neba';
 ## 접근성
 
 - 헤더는 진짜 버튼이고, Base UI가 `aria-expanded`와 `aria-controls`로 패널과 연결합니다.
+- 닫힌 패널은 tab 순서에도 accessibility tree에도 없습니다. `hiddenUntilFound`를 끄지 않는 한 브라우저의 페이지 내 찾기는 그 안의 글을 찾아 패널을 열 수 있습니다.
 - 상태는 단어로 쓰여 있어서 스크린 리더가 그 행에 닿으면 읽습니다. 표시는 `aria-hidden`입니다. 모양은 읽히지 않기 때문입니다.
 - 상태가 바뀌어도 저절로 알려지지는 않습니다. 호출이 실패한 순간을 들려주려면 앱이 페이지에 두는 live region, 예컨대 `role="status"` 요소에 그 내용을 쓰세요.
 - 루트에 `data-status`가 붙습니다. 스타일링과, 상태를 확인해야 하는 테스트를 위한 것입니다.

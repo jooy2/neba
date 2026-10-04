@@ -69,6 +69,10 @@ Passing `open` turns that off with everything else: a controlled ToolCall is exa
 
 A ToolCall with no `args`, no `result`, no `error` and no children is not a disclosure at all. It draws the header row and nothing is pressable.
 
+### hiddenUntilFound
+
+On. A closed panel stays in the DOM as `hidden="until-found"`, so the arguments and the result are in a server render, and the browser's own page search can find them and open the panel. In a transcript of many calls with long results, `hiddenUntilFound={false}` takes the closed panels out of the DOM, and each is built only when it is opened.
+
 ### variant
 
 The sheet takes no tint from `color`, so the arguments and the result are drawn on a plain surface. `text` draws no sheet at all, for a long column of calls.
@@ -82,6 +86,7 @@ The sheet takes no tint from `color`, so the arguments and the result are drawn 
 ## Accessibility
 
 - The header is a real button, wired to the panel with `aria-expanded` and `aria-controls` by Base UI.
+- A closed panel is in neither the tab order nor the accessibility tree. Unless `hiddenUntilFound` is off, the browser's own page search can still find text in it and open the panel.
 - The status is written in words, which a screen reader reads when it reaches the row. The mark is `aria-hidden`, because a shape is not read.
 - A change of status is not announced on its own. To have a failed call heard as it happens, write it into a live region the app keeps on the page, such as a `role="status"` element.
 - The root carries `data-status`, for styling and for a test that needs to assert the state.

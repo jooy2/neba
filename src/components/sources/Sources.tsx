@@ -86,6 +86,17 @@ export interface SourcesProps
   /** Called when the heading opens or closes the list. */
   onOpenChange?: (open: boolean) => void;
   /**
+   * Keeps a folded list in the DOM, hidden until the browser's own page search
+   * finds something in it and opens it.
+   *
+   * On by default, as on a [Collapsible](../surfaces/collapsible): a list that
+   * is not in the markup is not in a server render either, and a crawler reads
+   * the server render without opening anything. Turn it off to leave a folded
+   * list out of the DOM.
+   * @default true
+   */
+  hiddenUntilFound?: boolean;
+  /**
    * Numbers the rows, so a citation in the body has something to point at.
    * @default true
    */
@@ -156,6 +167,7 @@ export const Sources = React.forwardRef<HTMLDivElement, SourcesProps>(
       open: openProp,
       defaultOpen = false,
       onOpenChange,
+      hiddenUntilFound = true,
       numbered = true,
       locale,
       labels,
@@ -332,7 +344,10 @@ export const Sources = React.forwardRef<HTMLDivElement, SourcesProps>(
           </span>
         </BaseUICollapsible.Trigger>
 
-        <BaseUICollapsible.Panel className={collapsiblePanelClasses}>
+        <BaseUICollapsible.Panel
+          hiddenUntilFound={hiddenUntilFound}
+          className={collapsiblePanelClasses}
+        >
           {list}
         </BaseUICollapsible.Panel>
       </BaseUICollapsible.Root>

@@ -112,6 +112,17 @@ export interface ToolCallProps
   /** Called when the header opens or closes the panel. */
   onOpenChange?: (open: boolean) => void;
   /**
+   * Keeps a closed panel in the DOM, hidden until the browser's own page search
+   * finds something in it and opens it.
+   *
+   * On by default, as on a [Collapsible](../surfaces/collapsible): a panel that
+   * is not in the markup is not in a server render either. Turn it off for a
+   * transcript of many calls with long results, where the closed panels are
+   * only worth building once they are opened.
+   * @default true
+   */
+  hiddenUntilFound?: boolean;
+  /**
    * Drop shadow depth. `0` (the default) is flat — a tool call belongs to the
    * transcript it sits in rather than floating over it.
    * @default 0
@@ -199,6 +210,7 @@ export const ToolCall = React.forwardRef<HTMLDivElement, ToolCallProps>(
       open: openProp,
       defaultOpen = false,
       onOpenChange,
+      hiddenUntilFound = true,
       locale,
       labels,
       classNames,
@@ -344,7 +356,10 @@ export const ToolCall = React.forwardRef<HTMLDivElement, ToolCallProps>(
           </span>
         </BaseUICollapsible.Trigger>
 
-        <BaseUICollapsible.Panel className={collapsiblePanelClasses}>
+        <BaseUICollapsible.Panel
+          hiddenUntilFound={hiddenUntilFound}
+          className={collapsiblePanelClasses}
+        >
           <div
             className={cx(
               'flex min-w-0 flex-col gap-2 pb-4',

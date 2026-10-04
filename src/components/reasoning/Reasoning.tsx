@@ -74,6 +74,16 @@ export interface ReasoningProps
    * @default true
    */
   autoOpen?: boolean;
+  /**
+   * Keeps a closed panel in the DOM, hidden until the browser's own page search
+   * finds something in it and opens it.
+   *
+   * On by default, as on a [Collapsible](../surfaces/collapsible): a panel that
+   * is not in the markup is not in a server render either. Turn it off to leave
+   * a closed panel out of the DOM.
+   * @default true
+   */
+  hiddenUntilFound?: boolean;
   /** Replaces what the header says. Otherwise it is the `locale`'s sentence. */
   label?: React.ReactNode;
   /**
@@ -146,6 +156,7 @@ export const Reasoning = React.forwardRef<HTMLDivElement, ReasoningProps>(
       defaultOpen = false,
       onOpenChange,
       autoOpen = true,
+      hiddenUntilFound = true,
       label,
       icon,
       locale,
@@ -241,7 +252,10 @@ export const Reasoning = React.forwardRef<HTMLDivElement, ReasoningProps>(
           </span>
         </BaseUICollapsible.Trigger>
 
-        <BaseUICollapsible.Panel className={collapsiblePanelClasses}>
+        <BaseUICollapsible.Panel
+          hiddenUntilFound={hiddenUntilFound}
+          className={collapsiblePanelClasses}
+        >
           {/*
             The rule down the inside edge rather than a second sheet: what is in
             here is prose, and a box around prose inside a box around a message

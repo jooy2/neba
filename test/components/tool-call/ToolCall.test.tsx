@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+import { renderToString } from 'react-dom/server';
 import { render } from 'vitest-browser-react';
 import { NebaProvider, ToolCall } from 'neba';
 
@@ -51,13 +52,53 @@ describe('ToolCall', () => {
       const screen = await render(
         <ToolCall name="search_docs" status="success" args="{ q: 'acrylic' }" result="4 hits" />
       );
+      const header = screen.getByRole('button', { name: 'search_docs', exact: false });
 
+      await expect.element(header).toHaveAttribute('aria-expanded', 'false');
+      expect(screen.getByText('4 hits').element().closest('[hidden]')).not.toBeNull();
+
+      await header.click();
+
+      await expect.element(header).toHaveAttribute('aria-expanded', 'true');
+      await expect.element(screen.getByText('4 hits')).toBeVisible();
+      await expect.element(screen.getByText("{ q: 'acrylic' }")).toBeVisible();
+    });
+
+    it('closes again when the header is pressed a second time', async () => {
+      const screen = await render(
+        <ToolCall name="search_docs" status="success" result="4 hits" defaultOpen />
+      );
+      const header = screen.getByRole('button', { name: 'search_docs', exact: false });
+
+      await header.click();
+
+      await expect.element(header).toHaveAttribute('aria-expanded', 'false');
+      await expect
+        .poll(() => screen.getByText('4 hits').element().closest('[hidden]'))
+        .not.toBeNull();
+    });
+
+    // In the markup, and so in a server render and a crawler's index, but
+    // hidden until the browser's page search finds something in it.
+    it('keeps a closed panel in the document, hidden until it is found', async () => {
+      const screen = await render(<ToolCall name="search_docs" status="success" result="4 hits" />);
+
+      expect(screen.getByText('4 hits').element().closest('[hidden]')).toHaveAttribute(
+        'hidden',
+        'until-found'
+      );
+      expect(
+        renderToString(<ToolCall name="search_docs" status="success" result="4 hits" />)
+      ).toContain('4 hits');
+    });
+
+    it('leaves a closed panel out of the document when it is not to be found', async () => {
+      const screen = await render(
+        <ToolCall name="search_docs" status="success" result="4 hits" hiddenUntilFound={false} />
+      );
+
+      await expect.element(screen.getByRole('button')).toHaveAttribute('aria-expanded', 'false');
       expect(screen.getByText('4 hits').query()).toBeNull();
-
-      await screen.getByRole('button', { name: 'search_docs', exact: false }).click();
-
-      await expect.element(screen.getByText('4 hits')).toBeInTheDocument();
-      await expect.element(screen.getByText("{ q: 'acrylic' }")).toBeInTheDocument();
     });
 
     it('shows the error in place of the result when the call failed', async () => {
@@ -71,7 +112,7 @@ describe('ToolCall', () => {
         />
       );
 
-      await expect.element(screen.getByText('Rate limit exceeded')).toBeInTheDocument();
+      await expect.element(screen.getByText('Rate limit exceeded')).toBeVisible();
       expect(screen.getByText('4 hits').query()).toBeNull();
     });
 
@@ -103,13 +144,14 @@ describe('ToolCall', () => {
         <ToolCall name="deploy" status="running" args="{ env: 'prod' }" />
       );
 
-      expect(screen.getByText("{ env: 'prod' }").query()).toBeNull();
+      await expect.element(screen.getByRole('button')).toHaveAttribute('aria-expanded', 'false');
 
       await screen.rerender(
         <ToolCall name="deploy" status="error" args="{ env: 'prod' }" error="No such environment" />
       );
 
-      await expect.element(screen.getByText('No such environment')).toBeInTheDocument();
+      await expect.element(screen.getByRole('button')).toHaveAttribute('aria-expanded', 'true');
+      await expect.element(screen.getByText('No such environment')).toBeVisible();
     });
 
     it('leaves a controlled ToolCall where its caller put it', async () => {
@@ -135,7 +177,8 @@ describe('ToolCall', () => {
         />
       );
 
-      expect(screen.getByText('No such environment').query()).toBeNull();
+      await expect.element(screen.getByRole('button')).toHaveAttribute('aria-expanded', 'false');
+      expect(screen.getByText('No such environment').element().closest('[hidden]')).not.toBeNull();
       expect(onOpenChange).not.toHaveBeenCalled();
     });
 

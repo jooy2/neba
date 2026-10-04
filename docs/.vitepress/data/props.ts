@@ -15629,6 +15629,15 @@ export const propTables: Record<string, PropRow[]> = {
         en: 'Called when the header opens or closes the panel'
       }
     },
+    {
+      name: 'hiddenUntilFound',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '닫힌 패널을 DOM에 남겨 서버 렌더에 포함되고 브라우저의 페이지 내 찾기가 찾아 열 수 있게 합니다. 결과가 긴 호출이 많은 transcript라면 꺼서 닫힌 패널을 DOM에서 빼세요',
+        en: "Keeps a closed panel in the DOM, so it is in a server render and the browser's own page search can find and open it. Turn it off for a transcript of many calls with long results"
+      }
+    },
     ...sharedProps({
       variant: "'outline'",
       size: "'md'",
@@ -15899,6 +15908,15 @@ export const propTables: Record<string, PropRow[]> = {
       description: {
         ko: '스트림이 도는 동안 열고 끝나면 닫습니다. Collapsible과의 차이가 바로 이것입니다',
         en: 'Opens the panel while the stream runs and closes it when the stream ends'
+      }
+    },
+    {
+      name: 'hiddenUntilFound',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '닫힌 패널을 DOM에 남겨 서버 렌더에 포함되고 브라우저의 페이지 내 찾기가 찾아 열 수 있게 합니다. 끄면 닫힌 패널은 DOM에서 빠집니다',
+        en: "Keeps a closed panel in the DOM, so it is in a server render and the browser's own page search can find and open it. Off, a closed panel is left out of the DOM"
       }
     },
     {
@@ -16336,6 +16354,15 @@ export const propTables: Record<string, PropRow[]> = {
       description: {
         ko: '제목이 목록을 열거나 닫았을 때',
         en: 'Called when the heading opens or closes the list'
+      }
+    },
+    {
+      name: 'hiddenUntilFound',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: '접힌 목록을 DOM에 남겨 서버 렌더와 크롤러에 포함되고 브라우저의 페이지 내 찾기가 찾아 펼칠 수 있게 합니다. 끄면 접힌 목록은 DOM에서 빠집니다',
+        en: "Keeps a folded list in the DOM, so it is in a server render and the browser's own page search can find and open it. Off, a folded list is left out of the DOM"
       }
     },
     {

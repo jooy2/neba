@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+import { renderToString } from 'react-dom/server';
 import { render } from 'vitest-browser-react';
 import { Reasoning } from 'neba';
 
@@ -75,10 +76,39 @@ describe('Reasoning', () => {
   });
 
   describe('the panel', () => {
+    /** Where the thinking is drawn, open or not: a closed panel keeps it, hidden. */
+    function hiddenAround(screen: Awaited<ReturnType<typeof render>>) {
+      return screen.getByText('Weighing two options.').element().closest('[hidden]');
+    }
+
     it('is closed before any stream has run', async () => {
       const screen = await render(<Reasoning>Weighing two options.</Reasoning>);
 
+      await expect.element(screen.getByRole('button')).toHaveAttribute('aria-expanded', 'false');
+      expect(hiddenAround(screen)).not.toBeNull();
+    });
+
+    // In the markup, and so in a server render and a crawler's index, but
+    // hidden until the browser's page search finds something in it.
+    it('keeps a closed panel in the document, hidden until it is found', async () => {
+      const screen = await render(<Reasoning>Weighing two options.</Reasoning>);
+
+      expect(hiddenAround(screen)).toHaveAttribute('hidden', 'until-found');
+      expect(renderToString(<Reasoning>Weighing two options.</Reasoning>)).toContain(
+        'Weighing two options.'
+      );
+    });
+
+    it('leaves a closed panel out of the document when it is not to be found', async () => {
+      const screen = await render(
+        <Reasoning hiddenUntilFound={false}>Weighing two options.</Reasoning>
+      );
+
+      await expect.element(screen.getByRole('button')).toHaveAttribute('aria-expanded', 'false');
       expect(screen.getByText('Weighing two options.').query()).toBeNull();
+      expect(
+        renderToString(<Reasoning hiddenUntilFound={false}>Weighing two options.</Reasoning>)
+      ).not.toContain('Weighing two options.');
     });
 
     it('opens when the stream starts', async () => {
@@ -86,17 +116,28 @@ describe('Reasoning', () => {
 
       await screen.rerender(<Reasoning streaming>Weighing two options.</Reasoning>);
 
-      await expect.element(screen.getByText('Weighing two options.')).toBeInTheDocument();
+      await expect.element(screen.getByRole('button')).toHaveAttribute('aria-expanded', 'true');
+      await expect.element(screen.getByText('Weighing two options.')).toBeVisible();
+      expect(hiddenAround(screen)).toBeNull();
+    });
+
+    it('shows what the stream adds while it is open', async () => {
+      const screen = await render(<Reasoning streaming>Weighing</Reasoning>);
+
+      await screen.rerender(<Reasoning streaming>Weighing two options.</Reasoning>);
+
+      await expect.element(screen.getByText('Weighing two options.')).toBeVisible();
     });
 
     it('folds itself away when the stream ends', async () => {
       const screen = await render(<Reasoning streaming>Weighing two options.</Reasoning>);
 
-      await expect.element(screen.getByText('Weighing two options.')).toBeInTheDocument();
+      await expect.element(screen.getByText('Weighing two options.')).toBeVisible();
 
       await screen.rerender(<Reasoning duration={900}>Weighing two options.</Reasoning>);
 
-      await expect.element(screen.getByText('Weighing two options.')).not.toBeInTheDocument();
+      await expect.element(screen.getByRole('button')).toHaveAttribute('aria-expanded', 'false');
+      await expect.poll(() => hiddenAround(screen)).not.toBeNull();
     });
 
     it('stays where the reader put it when autoOpen is off', async () => {
@@ -108,7 +149,8 @@ describe('Reasoning', () => {
         </Reasoning>
       );
 
-      expect(screen.getByText('Weighing two options.').query()).toBeNull();
+      await expect.element(screen.getByRole('button')).toHaveAttribute('aria-expanded', 'false');
+      expect(hiddenAround(screen)).not.toBeNull();
     });
 
     it('leaves a controlled Reasoning where its caller put it', async () => {
@@ -125,7 +167,8 @@ describe('Reasoning', () => {
         </Reasoning>
       );
 
-      expect(screen.getByText('Weighing two options.').query()).toBeNull();
+      await expect.element(screen.getByRole('button')).toHaveAttribute('aria-expanded', 'false');
+      expect(hiddenAround(screen)).not.toBeNull();
       expect(onOpenChange).not.toHaveBeenCalled();
     });
 
@@ -142,12 +185,12 @@ describe('Reasoning', () => {
           Weighing two options.
         </Reasoning>
       );
-      await expect.element(screen.getByText('Weighing two options.')).toBeInTheDocument();
+      await expect.element(screen.getByRole('button')).toHaveAttribute('aria-expanded', 'true');
 
       await screen.rerender(
         <Reasoning onOpenChange={onOpenChange}>Weighing two options.</Reasoning>
       );
-      await expect.element(screen.getByText('Weighing two options.')).not.toBeInTheDocument();
+      await expect.element(screen.getByRole('button')).toHaveAttribute('aria-expanded', 'false');
 
       expect(onOpenChange).not.toHaveBeenCalled();
     });
@@ -161,7 +204,8 @@ describe('Reasoning', () => {
       await screen.getByRole('button').click();
 
       expect(onOpenChange).toHaveBeenCalledWith(true);
-      await expect.element(screen.getByText('Weighing two options.')).toBeInTheDocument();
+      await expect.element(screen.getByRole('button')).toHaveAttribute('aria-expanded', 'true');
+      await expect.element(screen.getByText('Weighing two options.')).toBeVisible();
     });
   });
 
