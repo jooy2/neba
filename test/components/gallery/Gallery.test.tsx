@@ -233,6 +233,48 @@ describe('Gallery', () => {
         .element(screen.getByRole('img', { name: 'A ridge' }))
         .toHaveClass('object-cover');
     });
+
+    // A gallery above the fold was lazy and faded in, tile by tile, with no way
+    // to say which of its pictures the page is judged by.
+    it('fetches the first tiles early and draws them unhidden when told how many', async () => {
+      const screen = await render(<Gallery items={items} priority={2} />);
+      const pictures = items.map(
+        (item) => screen.getByRole('img', { name: item.alt }).element() as HTMLImageElement
+      );
+
+      for (const picture of pictures.slice(0, 2)) {
+        expect(picture).toHaveAttribute('loading', 'eager');
+        expect(picture.getAttribute('fetchpriority')).toBe('high');
+        expect(picture).toHaveClass('opacity-100');
+      }
+
+      for (const picture of pictures.slice(2)) {
+        expect(picture).toHaveAttribute('loading', 'lazy');
+        expect(picture.getAttribute('fetchpriority')).toBeNull();
+      }
+    });
+
+    it('prioritises nothing by default', async () => {
+      const screen = await render(<Gallery items={items} loading="eager" />);
+
+      for (const picture of screen.container.querySelectorAll('img')) {
+        expect(picture.getAttribute('fetchpriority')).toBeNull();
+      }
+    });
+
+    // A tile drawn 300 pixels wide downloaded the full-size original.
+    it("hands a tile's picture the item's own candidates", async () => {
+      const screen = await render(
+        <Gallery
+          items={[{ ...items[0], srcSet: `${OK} 1x, ${OK} 2x`, sizes: '25vw' }, ...items.slice(1)]}
+        />
+      );
+      const picture = screen.getByRole('img', { name: 'A ridge' }).element();
+
+      expect(picture).toHaveAttribute('srcset', `${OK} 1x, ${OK} 2x`);
+      expect(picture).toHaveAttribute('sizes', '25vw');
+      expect(screen.getByRole('img', { name: 'A cliff' }).element()).not.toHaveAttribute('srcset');
+    });
   });
 
   describe('columns and gap', () => {
@@ -538,6 +580,37 @@ describe('Gallery', () => {
       await vi.waitFor(() =>
         expect(dialog.querySelector('img')?.getAttribute('src')).toBe(`${OK}#full`)
       );
+    });
+
+    // The candidates go with the picture, and the browser picks one for the
+    // viewer's size; the tile's `sizes` would pick the tile's.
+    it("opens a picture from the item's candidates when it names no larger file", async () => {
+      const srcSet = `${OK}#small 1x, ${OK}#large 2x`;
+      const screen = await render(
+        <Gallery
+          items={[
+            { ...items[0], srcSet, sizes: '25vw' },
+            { ...items[1], srcSet, full: `${OK}#full` }
+          ]}
+          preview
+        />
+      );
+
+      await screen.getByRole('button', { name: /A ridge/ }).click();
+
+      const dialog = screen.getByRole('dialog').element();
+
+      await vi.waitFor(() => expect(dialog.querySelector('img')).not.toBeNull());
+      expect(dialog.querySelector('img')).toHaveAttribute('srcset', srcSet);
+      expect(dialog.querySelector('img')).not.toHaveAttribute('sizes');
+
+      dialog.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+
+      // A `full` is the file to show, and a `srcset` beside it would outrank it.
+      await vi.waitFor(() =>
+        expect(dialog.querySelector('img')?.getAttribute('src')).toBe(`${OK}#full`)
+      );
+      expect(dialog.querySelector('img')).not.toHaveAttribute('srcset');
     });
   });
 

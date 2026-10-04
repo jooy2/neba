@@ -67,6 +67,19 @@ export interface NebaGalleryItem {
   /** The second, one step down the scale and muted. */
   description?: React.ReactNode;
   /**
+   * The same picture at other widths, as an `<img>` takes them, so a tile drawn
+   * 300 pixels wide is not sent a 4000-pixel original. The viewer is handed it
+   * too when the item has no `full`, and chooses a candidate for its own size.
+   */
+  srcSet?: string;
+  /**
+   * How wide the tile is drawn, for the browser to choose from `srcSet` by:
+   * `'(min-width: 64rem) 25vw, (min-width: 40rem) 33vw, 50vw'` for the default
+   * columns across the whole page. Left out, the browser assumes the tile is as
+   * wide as the window.
+   */
+  sizes?: string;
+  /**
    * A larger file for the viewer, when the tile is a thumbnail. Falls back to
    * `src`, so a set that has only one size of each picture needs nothing here.
    */
@@ -157,10 +170,21 @@ export interface GalleryProps extends Omit<
    * When the tiles' files load. `lazy` waits until a tile is near the screen,
    * so a wall of forty photographs asks for the few a reader can see rather
    * than all forty at once. Set `eager` when the gallery is the largest thing
-   * above the fold, where a lazy first row arrives later than it should.
+   * above the fold, where a lazy first row arrives later than it should, or
+   * leave this alone and give `priority` the length of that row.
    * @default 'lazy'
    */
   loading?: 'lazy' | 'eager';
+  /**
+   * How many tiles, counted from the first item, are pictures the page is
+   * judged by. Each of them is an Image with `priority`: fetched early and
+   * never lazily whatever `loading` says, and drawn from the first paint with
+   * no fade and no Skeleton. For a gallery whose first row is the largest thing
+   * above the fold, it is the length of that row; the tiles after it keep
+   * `loading`.
+   * @default 0
+   */
+  priority?: number;
   /**
    * Where a tile's `title` and `description` go. `below` puts them under the
    * picture, `overlay` writes them across the foot of it, and `hover` is
@@ -391,6 +415,7 @@ export const Gallery = React.forwardRef<HTMLUListElement, GalleryProps>(
       fit = 'cover',
       letterbox,
       loading = 'lazy',
+      priority = 0,
       caption = 'none',
       hover = 'lift',
       preview = false,
@@ -474,9 +499,15 @@ export const Gallery = React.forwardRef<HTMLUListElement, GalleryProps>(
         total: String(items.length)
       });
 
+      // Counted on the item's place in `items`, which is the order a masonry
+      // deals in as well: its first row is the first items, one per column.
+      const urgent = index < priority;
+
       const picture = (
         <Image
           src={item.src}
+          srcSet={item.srcSet}
+          sizes={item.sizes}
           alt={item.alt}
           /*
            * A contact sheet is a contact sheet: in `grid` every tile takes the
@@ -499,7 +530,10 @@ export const Gallery = React.forwardRef<HTMLUListElement, GalleryProps>(
           rotate={item.rotate}
           flip={item.flip}
           placeholder={item.placeholder}
-          loading={loading}
+          // Left unwritten on an urgent tile, since a `loading` written out
+          // would win over the eager fetch its `priority` asks for.
+          loading={urgent ? undefined : loading}
+          priority={urgent}
           rounded={false}
           filter={filter}
           frame={frame}

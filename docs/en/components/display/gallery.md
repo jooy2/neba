@@ -34,6 +34,8 @@ Every other `<ul>` attribute passes through to the list. The shared axes are def
 
 An item can also carry `rotate`, `flip`, `position` and a `placeholder`, which reach its picture as they do on an [Image](./image), and `rotate` and `flip` follow it into the viewer. `ratio` stays the proportion of the file as stored, so an item turned onto its side is laid out on its side.
 
+`srcSet` and `sizes` reach the tile's `<img>` as they are, so a tile drawn 300 pixels wide is sent a file near that size rather than the original. An item with no `full` hands its `srcSet` to the viewer too, which chooses a candidate for its own size.
+
 ## Examples
 
 ### layout
@@ -69,6 +71,14 @@ An item can also carry `rotate`, `flip`, `position` and a `placeholder`, which r
 <<< @/.vitepress/demos/gallery/fit.tsx
 
 </Demo>
+
+### priority
+
+How many tiles, counted from the first item, are pictures the page is judged by. Those tiles are fetched early whatever `loading` says, and drawn from the first paint with no fade and no Skeleton, as an [Image](./image) with `priority` is. When the gallery is the largest thing above the fold, give it the length of the first row and leave the rest lazy.
+
+```tsx
+<Gallery items={photos} columns={3} priority={3} />
+```
 
 ### caption
 

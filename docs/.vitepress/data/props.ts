@@ -12270,6 +12270,15 @@ export const propTables: Record<string, PropRow[]> = {
       }
     },
     {
+      name: 'priority',
+      type: 'number',
+      default: '0',
+      description: {
+        ko: '첫 항목부터 몇 장이 페이지의 평가 기준이 되는 그림인지. 그 타일들은 priority를 켠 Image처럼 loading과 상관없이 일찍 불러오고, 페이드나 Skeleton 없이 첫 페인트부터 그립니다. 첫 화면의 첫 줄이라면 그 줄의 장수를 주세요',
+        en: 'How many tiles, from the first item, are pictures the page is judged by. Each is an Image with priority: fetched early whatever loading says, and drawn from the first paint with no fade and no Skeleton. For a first row above the fold, give the length of that row'
+      }
+    },
+    {
       name: 'caption',
       type: "'none' | 'below' | 'overlay' | 'hover'",
       default: "'none'",
@@ -12398,6 +12407,22 @@ export const propTables: Record<string, PropRow[]> = {
       description: {
         ko: '두 번째 줄. 한 단계 작고 흐립니다',
         en: 'The second, one step down the scale and muted'
+      }
+    },
+    {
+      name: 'srcSet',
+      type: 'string',
+      description: {
+        ko: '같은 그림의 다른 너비 후보. img에서와 같으며, 300픽셀로 그려지는 타일이 원본 전체를 내려받지 않게 합니다. full이 없으면 크게 보기 화면도 이 후보에서 자기 크기에 맞는 것을 고릅니다',
+        en: 'The same picture at other widths, as on an img, so a tile drawn 300 pixels wide is not sent the full-size original. With no full, the viewer chooses from them for its own size too'
+      }
+    },
+    {
+      name: 'sizes',
+      type: 'string',
+      description: {
+        ko: '타일이 그려지는 너비. 브라우저가 srcSet에서 고를 때 씁니다. 기본 columns로 페이지 전체를 쓰면 (min-width: 64rem) 25vw, (min-width: 40rem) 33vw, 50vw',
+        en: 'How wide the tile is drawn, for the browser to choose from srcSet by. For the default columns across the whole page: (min-width: 64rem) 25vw, (min-width: 40rem) 33vw, 50vw'
       }
     },
     {

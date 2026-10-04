@@ -109,6 +109,11 @@ export function GalleryViewer({
               // load rather than showing the previous file under a new caption.
               key={current.id ?? current.src}
               src={current.full ?? current.src}
+              // The tile's candidates, when there is no larger file named, so
+              // the browser chooses one for the viewer's size. Not its `sizes`,
+              // which describes the tile; and not beside a `full`, which a
+              // `srcSet` would quietly outrank.
+              srcSet={current.full === undefined ? current.srcSet : undefined}
               alt={current.alt}
               ratio={turnedRatio ?? 'auto'}
               fit="contain"

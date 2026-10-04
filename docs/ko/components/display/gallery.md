@@ -34,6 +34,8 @@ import { Gallery } from 'neba';
 
 항목에는 `rotate`, `flip`, `position`, `placeholder`도 줄 수 있고, [Image](./image)에서와 똑같이 그 사진에 전달됩니다. `rotate`와 `flip`은 크게 보기 화면까지 따라갑니다. `ratio`는 저장된 파일의 비율 그대로 두면 되고, 옆으로 돌린 항목은 누운 모양으로 배치됩니다.
 
+`srcSet`과 `sizes`는 타일의 `<img>`에 그대로 전달됩니다. 그래서 300픽셀로 그려지는 타일은 원본 대신 그 크기에 가까운 파일을 받습니다. `full`이 없는 항목은 `srcSet`을 크게 보기 화면에도 넘기고, 화면은 자기 크기에 맞는 후보를 고릅니다.
+
 ## 예시
 
 ### layout
@@ -69,6 +71,14 @@ import { Gallery } from 'neba';
 <<< @/.vitepress/demos/gallery/fit.tsx
 
 </Demo>
+
+### priority
+
+첫 항목부터 몇 장이 페이지의 평가 기준이 되는 그림인지 정합니다. 그 타일들은 `loading`과 상관없이 일찍 불러오고, `priority`를 켠 [Image](./image)처럼 페이드나 Skeleton 없이 첫 페인트부터 그립니다. 갤러리가 첫 화면에서 가장 큰 요소라면 첫 줄의 장수를 주고 나머지는 lazy로 두세요.
+
+```tsx
+<Gallery items={photos} columns={3} priority={3} />
+```
 
 ### caption
 

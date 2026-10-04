@@ -12,6 +12,10 @@
 
 - **`StreamingText` draws text it did not watch arrive as plain text.** A message loaded from history, text rendered on a server and text already there when a stream starts were cut into one element per word and faded in, which for a history of fifty answers was fifteen thousand animations starting at once. Only the words that arrive while `streaming` is on fade now. Turn `streaming` on while the text arrives to keep the fade.
 
+### Added
+
+- **`priority` on `Gallery`, and `srcSet` and `sizes` on a Gallery item.** The first `priority` tiles are fetched eagerly at a high fetch priority and drawn from the first paint, as an `Image` with `priority` is. `srcSet` and `sizes` reach the tile's `<img>`, so a small tile is not sent the full-size original; with no `full`, the viewer chooses from the same `srcSet`.
+
 ### Changed
 
 - **A `Slider`'s labels at `min` and `max` line up inward from their ticks.** Centred, the label at either end hung half its width past the track, and in a narrow column past the edge of the column. Every other mark stays centred, and a vertical slider does the same at its top and bottom.
