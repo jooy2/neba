@@ -251,6 +251,27 @@ interface MarksProps {
 }
 
 /**
+ * How many marks are drawn by one memoised block.
+ *
+ * The pointer moving from one mark to the next changes two of them, and with
+ * the marks in blocks only the block it left and the block it entered are drawn
+ * again. Without them every mark on the plot was — five thousand paths and as
+ * many style objects rebuilt on each move, for two that changed.
+ */
+const markBlock = 128;
+
+/** A run of marks, cut into blocks of `markBlock`. */
+function blocksOf(marks: readonly ChartMark[]): ChartMark[][] {
+  const blocks: ChartMark[][] = [];
+
+  for (let at = 0; at < marks.length; at += markBlock) {
+    blocks.push(marks.slice(at, at + markBlock));
+  }
+
+  return blocks;
+}
+
+/**
  * The marks, and the only part of a ScatterChart that is not the shared frame.
  *
  * Painted largest first, which is the whole of what keeps a bubble chart
@@ -258,18 +279,122 @@ interface MarksProps {
  * is drawn on top of it, and the usual fix — dropping every fill to half alpha
  * — would undo the contrast the palette was solved for. Paint order costs
  * nothing and takes nothing away.
+ *
+ * A chart with no bubbles at all has every mark the same size, so largest first
+ * is the order the data came in, series by series — and each series is then
+ * one group that fades as a whole when the legend points at another, the way a
+ * line does. A mark that fades on its own is a transition of its own: a legend
+ * hover over a plot of three thousand dots started three thousand of them.
+ * Only a chart with bubbles keeps the fade on each mark, since there the paint
+ * order runs across the series and a group per series would reorder them.
  */
 function ScatterMarks({ context, shapeOf }: MarksProps) {
   const { marks, values, colors, hovered, activeMark } = context;
 
-  const painted = React.useMemo(() => [...marks].sort((a, b) => b.r - a.r), [marks]);
+  const bubbles = React.useMemo(
+    () => values.some((row) => row.some((value) => value.z !== undefined)),
+    [values]
+  );
+
+  /* What is drawn, as a group per series or — with bubbles — as one group with
+     no series of its own, which `-1` stands for. */
+  const layers = React.useMemo(() => {
+    const painted = [...marks].sort((a, b) => b.r - a.r);
+
+    if (bubbles) {
+      return [{ series: -1, blocks: blocksOf(painted) }];
+    }
+
+    const bySeries = new Map<number, ChartMark[]>();
+
+    for (const mark of painted) {
+      const run = bySeries.get(mark.series);
+
+      if (run) {
+        run.push(mark);
+      } else {
+        bySeries.set(mark.series, [mark]);
+      }
+    }
+
+    return [...bySeries].map(([series, run]) => ({ series, blocks: blocksOf(run) }));
+  }, [marks, bubbles]);
+
+  /** Which block each mark is drawn by, so the active one's is found at once. */
+  const blockOf = React.useMemo(() => {
+    const map = new Map<ChartMark, ChartMark[]>();
+
+    for (const layer of layers) {
+      for (const block of layer.blocks) {
+        for (const mark of block) {
+          map.set(mark, block);
+        }
+      }
+    }
+
+    return map;
+  }, [layers]);
+
+  const activeBlock = activeMark ? blockOf.get(activeMark) : undefined;
+
+  const drawBlocks = (blocks: readonly ChartMark[][], fading: boolean) =>
+    blocks.map((block, at) => (
+      <MarkBlock
+        key={at}
+        marks={block}
+        values={values}
+        colors={colors}
+        shapeOf={shapeOf}
+        active={block === activeBlock ? activeMark : null}
+        hovered={fading ? hovered : undefined}
+      />
+    ));
 
   return (
     <g>
-      {painted.map((mark) => {
+      {bubbles
+        ? drawBlocks(layers[0]?.blocks ?? [], true)
+        : layers.map((layer) => (
+            <g
+              key={layer.series}
+              opacity={hovered !== null && hovered !== layer.series ? 0.28 : 1}
+              className={markTransitionClasses}
+            >
+              {drawBlocks(layer.blocks, false)}
+            </g>
+          ))}
+    </g>
+  );
+}
+
+interface MarkBlockProps {
+  marks: readonly ChartMark[];
+  values: CartesianContext['values'];
+  colors: readonly string[];
+  shapeOf: (index: number) => MarkShape;
+  /** The mark under the pointer, when it is one of these. */
+  active: ChartMark | null;
+  /**
+   * The series the legend is pointing at, for marks that fade one by one.
+   * Left out where each series fades as a group around them.
+   */
+  hovered?: number | null;
+}
+
+/** A block of marks, drawn again only when something in it changes. */
+const MarkBlock = React.memo(function MarkBlock({
+  marks,
+  values,
+  colors,
+  shapeOf,
+  active,
+  hovered
+}: MarkBlockProps) {
+  return (
+    <>
+      {marks.map((mark) => {
         const value = values[mark.series]?.[mark.index];
-        const dimmed = hovered !== null && hovered !== mark.series;
-        const active = activeMark?.series === mark.series && activeMark?.index === mark.index;
+        const grown = active?.series === mark.series && active?.index === mark.index;
 
         return (
           <path
@@ -281,7 +406,13 @@ function ScatterMarks({ context, shapeOf }: MarksProps) {
             // the hit target rather than only spacing.
             stroke="var(--neba-chart-gap)"
             strokeWidth={markGap}
-            opacity={dimmed ? 0.28 : 1}
+            opacity={
+              hovered === undefined
+                ? undefined
+                : hovered !== null && hovered !== mark.series
+                  ? 0.28
+                  : 1
+            }
             className={markTransitionClasses}
             // A pixel bigger under the crosshair, and the pixel is a `scale`
             // because the size of an arbitrary shape lives inside `d`, which
@@ -293,14 +424,14 @@ function ScatterMarks({ context, shapeOf }: MarksProps) {
             style={{
               transformBox: 'view-box',
               transformOrigin: `${mark.x}px ${mark.y}px`,
-              scale: String(active && mark.r > 0 ? (mark.r + 1) / mark.r : 1)
+              scale: String(grown && mark.r > 0 ? (mark.r + 1) / mark.r : 1)
             }}
           />
         );
       })}
-    </g>
+    </>
   );
-}
+});
 
 interface TableProps {
   id: string;

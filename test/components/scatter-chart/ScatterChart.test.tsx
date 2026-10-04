@@ -552,6 +552,43 @@ describe('ScatterChart', () => {
       expect(mark.style.transformOrigin).not.toBe('');
       expect(mark.style.scale).toBe('1');
     });
+
+    // The marks are drawn in blocks so that a move redraws only the two that
+    // changed, and the mark the pointer left has to shrink back even when the
+    // one it reached is drawn by another block.
+    it('moves the highlight from one mark to the next across a long series', async () => {
+      const screen = await render(
+        <ScatterChart
+          label="Spend"
+          height={240}
+          xAxis={{ hidden: true }}
+          yAxis={{ hidden: true }}
+          series={[
+            {
+              name: 'A',
+              data: Array.from({ length: 200 }, (_, index) => ({ x: index, y: index }))
+            }
+          ]}
+        />
+      );
+
+      const plot = screen.getByRole('img', { name: 'Spend' });
+
+      await expect.element(plot).toBeInTheDocument();
+
+      const paths = () => [
+        ...plot.element().querySelectorAll<SVGPathElement>('path[stroke="var(--neba-chart-gap)"]')
+      ];
+      const centres = markCentres(plot.element());
+
+      await plot.hover({ position: centres[0] });
+      await expect.poll(() => paths()[0].style.scale).not.toBe('1');
+
+      await plot.hover({ position: centres[199] });
+      await expect.poll(() => paths()[199].style.scale).not.toBe('1');
+
+      expect(paths().filter((path) => path.style.scale !== '1')).toHaveLength(1);
+    });
   });
 
   describe('the table', () => {
@@ -915,6 +952,61 @@ describe('ScatterChart', () => {
         .element(screen.getByRole('button', { name: 'Q2' }))
         .toHaveAttribute('aria-pressed', 'false');
       expect(markCount(plot.element())).toBe(4);
+    });
+
+    // A mark that fades on its own is a transition of its own, and a plot of
+    // three thousand dots started three thousand of them on a legend hover.
+    it('fades a series of dots as one group', async () => {
+      const screen = await render(
+        <ScatterChart
+          label="Spend"
+          series={[
+            { name: 'Q1', data: CLOUD },
+            { name: 'Q2', data: CLOUD.map((point) => ({ ...point, y: point.y + 5 })) }
+          ]}
+        />
+      );
+
+      const plot = screen.getByRole('img', { name: 'Spend' });
+
+      await expect.element(plot).toBeInTheDocument();
+      await screen.getByRole('button', { name: 'Q2' }).hover();
+
+      const marks = [...plot.element().querySelectorAll('path[stroke="var(--neba-chart-gap)"]')];
+      const groups = [...new Set(marks.map((mark) => mark.parentElement))];
+
+      await expect
+        .poll(() => groups.map((group) => group?.getAttribute('opacity')))
+        .toEqual(['0.28', '1']);
+      expect(marks.every((mark) => !mark.hasAttribute('opacity'))).toBe(true);
+    });
+
+    // Bubbles are painted largest first across every series, so a group per
+    // series would reorder them; each one keeps its own fade instead.
+    it('fades each mark on its own once the chart has bubbles', async () => {
+      const screen = await render(
+        <ScatterChart
+          label="Spend"
+          series={[
+            { name: 'Q1', data: CLOUD },
+            { name: 'Q2', data: BUBBLES }
+          ]}
+        />
+      );
+
+      const plot = screen.getByRole('img', { name: 'Spend' });
+
+      await expect.element(plot).toBeInTheDocument();
+      await screen.getByRole('button', { name: 'Q2' }).hover();
+
+      const marks = [...plot.element().querySelectorAll('path[stroke="var(--neba-chart-gap)"]')];
+
+      await expect
+        .poll(() => marks.filter((mark) => mark.getAttribute('opacity') === '0.28').length)
+        .toBe(4);
+      expect(new Set(marks.map((mark) => mark.parentElement)).size).toBe(1);
+      // Still largest first.
+      expect(markRadii(plot.element())[0]).toBeGreaterThan(markRadii(plot.element())[6]);
     });
   });
 });

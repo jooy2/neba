@@ -556,6 +556,28 @@ describe('LineChart', () => {
       expect(texts).toContain('100%');
     });
 
+    // A thousand dates have room for a dozen labels, and every one without a
+    // label or a rule was drawn as an empty group all the same.
+    it('draws nothing at all for a category with neither a label nor a rule', async () => {
+      const screen = await render(
+        <LineChart
+          label="Load"
+          series={[{ name: 'Load', data: Array.from({ length: 300 }, (_, index) => index % 7) }]}
+        />
+      );
+
+      const plot = screen.getByRole('img', { name: 'Load' });
+
+      await expect.element(plot).toBeInTheDocument();
+      await expect.poll(() => plot.element().querySelectorAll('text').length).toBeGreaterThan(0);
+
+      const empty = [...plot.element().querySelectorAll('g')].filter(
+        (group) => group.childElementCount === 0
+      );
+
+      expect(empty).toHaveLength(0);
+    });
+
     it('keeps both ends of a pinned scale', async () => {
       const screen = await render(
         <LineChart

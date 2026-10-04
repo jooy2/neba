@@ -68,6 +68,18 @@ export interface LineSeriesProps {
  */
 type Vertex = { x: number; y: number } | null;
 
+/** One series, laid out: where its points are, and the three paths it can draw. */
+interface Traced {
+  tops: Vertex[];
+  area: string | null;
+  gap: string | null;
+  line: string | null;
+  labelled: (index: number) => boolean;
+}
+
+/** Drops the gaps out of a run of vertices, for a series that bridges them. */
+const bridged = (vertices: Vertex[]) => vertices.filter(Boolean) as { x: number; y: number }[];
+
 export function LineSeries({
   context,
   curve,
@@ -84,41 +96,101 @@ export function LineSeries({
 
   const stroke = lineWidths[size];
   const radius = markerRadii[size];
-  /** The band that sits on the axis, and so the one with nothing to be parted from. */
-  const first = visible.indexOf(true);
 
-  /* The running totals each band sits on, one per sign. A positive value
-     stacks up from the zero line and a negative one down from it, which is how
-     `extentOf` sums the axis: added together regardless of sign, a negative
-     series pulled every band above it down, so the top of the stack no longer
-     met the axis and the bands overlapped. Only the visible series contribute:
-     hiding one from the legend has to close the gap it left, or a stacked chart
-     with a series turned off reads as a chart with a hole in it. */
-  const baselines: number[][] = [];
-  const above: number[] = [];
-  const below: number[] = [];
+  /* Every point and every path, worked out once per layout rather than once per
+     render. The pointer moving from one column to the next changes which marker
+     is drawn and nothing else, and tracing three thousand points into path data
+     on each of those moves was most of what the move cost. `point` and
+     `zeroPxOf` keep their identity until the plot itself changes. */
+  const traced = React.useMemo(() => {
+    /** The band that sits on the axis, and so the one with nothing to be parted from. */
+    const first = visible.indexOf(true);
 
-  values.forEach((one, index) => {
-    const under = one.map((value, category) =>
-      (value.value ?? 0) < 0 ? (below[category] ?? 0) : (above[category] ?? 0)
-    );
+    /* The running totals each band sits on, one per sign. A positive value
+       stacks up from the zero line and a negative one down from it, which is
+       how `extentOf` sums the axis: added together regardless of sign, a
+       negative series pulled every band above it down, so the top of the stack
+       no longer met the axis and the bands overlapped. Only the visible series
+       contribute: hiding one from the legend has to close the gap it left, or a
+       stacked chart with a series turned off reads as a chart with a hole in it. */
+    const baselines: number[][] = [];
+    const above: number[] = [];
+    const below: number[] = [];
 
-    baselines.push(under);
+    values.forEach((one, index) => {
+      const under = one.map((value, category) =>
+        (value.value ?? 0) < 0 ? (below[category] ?? 0) : (above[category] ?? 0)
+      );
 
-    if (!stacked || !visible[index]) {
-      return;
-    }
+      baselines.push(under);
 
-    one.forEach((value, category) => {
-      const amount = value.value ?? 0;
-
-      if (amount < 0) {
-        below[category] = (below[category] ?? 0) + amount;
-      } else {
-        above[category] = (above[category] ?? 0) + amount;
+      if (!stacked || !visible[index]) {
+        return;
       }
+
+      one.forEach((value, category) => {
+        const amount = value.value ?? 0;
+
+        if (amount < 0) {
+          below[category] = (below[category] ?? 0) + amount;
+        } else {
+          above[category] = (above[category] ?? 0) + amount;
+        }
+      });
     });
-  });
+
+    return values.map((one, index): Traced | null => {
+      if (!visible[index]) {
+        return null;
+      }
+
+      const tops: Vertex[] = one.map((value, category) => {
+        if (value.value === null) {
+          return null;
+        }
+
+        const total = stacked ? baselines[index][category] + value.value : value.value;
+
+        // The series' index goes with the number: with a second value axis on
+        // the plot, where a value sits is no longer a property of the value
+        // alone. `stacked` and the second axis never both apply.
+        return point(category, total, index);
+      });
+
+      // `connectNulls` drops the gaps rather than bridging them in the path
+      // builder: a bridged segment and a real one have to be the same shape,
+      // and the only way to guarantee that is for the builder never to know
+      // the difference.
+      const line = connectNulls ? bridged(tops) : tops;
+
+      const base = zeroPxOf(index);
+      const under: Vertex[] = one.map((value, category) =>
+        value.value === null
+          ? null
+          : stacked
+            ? point(category, baselines[index][category], index)
+            : { x: point(category, value.value, index).x, y: base }
+      );
+      const floor = connectNulls ? bridged(under) : under;
+
+      // A stacked band's fill *is* its mark, so it does not also get a line
+      // drawn along the top: the band above would then be separated from it
+      // by a coloured stroke, and a stroke between two marks is ink that is
+      // not data. What separates them is the gap below.
+      const banded = filled && stacked;
+
+      return {
+        tops,
+        area: filled ? areaPath(line, floor, curve) : null,
+        // The 2px of surface between this band and the one under it. Drawn on
+        // the *lower* edge so the top of the stack keeps its silhouette, and
+        // skipped on the first band, whose lower edge is the axis.
+        gap: banded && index !== first ? linePath(floor, curve) : null,
+        line: banded ? null : linePath(line, curve),
+        labelled: labelledPoints(one, valueLabels)
+      };
+    });
+  }, [values, visible, stacked, filled, connectNulls, curve, point, zeroPxOf, valueLabels]);
 
   return (
     <g>
@@ -165,58 +237,33 @@ export function LineSeries({
       </defs>
 
       {values.map((one, index) => {
-        if (!visible[index]) {
+        const trace = traced[index];
+
+        if (!trace) {
           return null;
         }
 
+        const { tops, labelled } = trace;
         const color = colors[index];
         const dimmed = hovered !== null && hovered !== index;
 
-        const tops: Vertex[] = one.map((value, category) => {
-          if (value.value === null) {
-            return null;
-          }
-
-          const total = stacked ? baselines[index][category] + value.value : value.value;
-
-          // The series' index goes with the number: with a second value axis
-          // on the plot, where a value sits is no longer a property of the
-          // value alone. `stacked` and the second axis never both apply.
-          return point(category, total, index);
-        });
-
-        // `connectNulls` drops the gaps rather than bridging them in the path
-        // builder: a bridged segment and a real one have to be the same shape,
-        // and the only way to guarantee that is for the builder never to know
-        // the difference.
-        const line = connectNulls ? (tops.filter(Boolean) as { x: number; y: number }[]) : tops;
-
-        const base = zeroPxOf(index);
-        const under: Vertex[] = one.map((value, category) =>
-          value.value === null
-            ? null
-            : stacked
-              ? point(category, baselines[index][category], index)
-              : { x: point(category, value.value, index).x, y: base }
-        );
-
-        // A stacked band's fill *is* its mark, so it does not also get a line
-        // drawn along the top: the band above would then be separated from it by
-        // a coloured stroke, and a stroke between two marks is ink that is not
-        // data. What separates them is the gap below.
-        const banded = filled && stacked;
-
-        const labelled = labelledPoints(one, valueLabels);
+        /* Which points get a dot. All of them, or none but the one under the
+           crosshair — and in the second case only that one is visited, since a
+           walk over every point to draw one of them is the cost the memo above
+           exists to take off a moving pointer. */
+        const everyMarker =
+          markers === 'all' || (markers === 'auto' && one.length <= autoMarkerLimit);
+        const marked = everyMarker
+          ? tops.map((_, category) => category)
+          : activeIndex === null
+            ? []
+            : [activeIndex];
 
         return (
           <g key={index} opacity={dimmed ? 0.28 : 1} className={markTransitionClasses}>
-            {filled ? (
+            {trace.area === null ? null : (
               <path
-                d={areaPath(
-                  line,
-                  connectNulls ? (under.filter(Boolean) as { x: number; y: number }[]) : under,
-                  curve
-                )}
+                d={trace.area}
                 fill={
                   stacked
                     ? `color-mix(in oklab, ${color} 70%, transparent)`
@@ -224,26 +271,20 @@ export function LineSeries({
                 }
                 stroke="none"
               />
-            ) : null}
+            )}
 
-            {/* The 2px of surface between this band and the one under it. Drawn
-                on the *lower* edge so the top of the stack keeps its silhouette,
-                and skipped on the first band, whose lower edge is the axis. */}
-            {banded && index !== first ? (
+            {trace.gap === null ? null : (
               <path
-                d={linePath(
-                  connectNulls ? (under.filter(Boolean) as { x: number; y: number }[]) : under,
-                  curve
-                )}
+                d={trace.gap}
                 fill="none"
                 stroke="var(--neba-chart-gap)"
                 strokeWidth={markGap}
               />
-            ) : null}
+            )}
 
-            {banded ? null : (
+            {trace.line === null ? null : (
               <path
-                d={linePath(line, curve)}
+                d={trace.line}
                 fill="none"
                 stroke={gradient ? `url(#${idPrefix}-stroke-${index})` : color}
                 strokeWidth={stroke}
@@ -252,17 +293,10 @@ export function LineSeries({
               />
             )}
 
-            {tops.map((vertex, category) => {
+            {marked.map((category) => {
+              const vertex = tops[category];
+
               if (!vertex) {
-                return null;
-              }
-
-              const drawn =
-                markers === 'all' ||
-                (markers === 'auto' && one.length <= autoMarkerLimit) ||
-                category === activeIndex;
-
-              if (!drawn) {
                 return null;
               }
 

@@ -372,12 +372,20 @@ function seriesKeys(series: readonly NebaChartSeries[]): string[] {
  * list. A series nobody has toggled follows its own `hidden`, on every render
  * and not only the first. The colours still come off the index the series was
  * passed at, so hiding Europe leaves Asia exactly the colour it was.
+ *
+ * `visible` is the same array until the series or a choice changes. Everything
+ * a chart lays out reads it, and a fresh one per render made every memo keyed on
+ * it miss each time the pointer moved.
  */
 function useVisibility(series: readonly NebaChartSeries[]): Visibility {
   const [chosen, setChosen] = React.useState<ReadonlyMap<string, boolean>>(() => new Map());
   const [hovered, setHovered] = React.useState<number | null>(null);
 
-  const keys = seriesKeys(series);
+  const keys = React.useMemo(() => seriesKeys(series), [series]);
+  const visible = React.useMemo(
+    () => series.map((one, index) => chosen.get(keys[index]) ?? !one.hidden),
+    [series, keys, chosen]
+  );
   const latest = React.useRef({ series, keys });
 
   React.useEffect(() => {
@@ -402,7 +410,7 @@ function useVisibility(series: readonly NebaChartSeries[]): Visibility {
   }, []);
 
   return {
-    visible: series.map((one, index) => chosen.get(keys[index]) ?? !one.hidden),
+    visible,
     hovered,
     toggle,
     setHovered
@@ -1648,13 +1656,12 @@ export function CartesianChart(rawProps: CartesianProps) {
   );
 
   const given = React.useMemo(() => toValues(series), [series]);
-  // Keyed on what is shown rather than on the array, which is a new one on
-  // every render: a pointer crossing the plot must not renormalise the data.
-  const shownKey = visibility.visible.map(Number).join('');
+  // `visible` holds its identity until a series is shown or hidden, so a
+  // pointer crossing the plot does not renormalise the data.
+  const visible = visibility.visible;
   const values = React.useMemo(
-    () => (stackedFull ? toFullShares(given, visibility.visible, formatValue) : given),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [given, stackedFull, shownKey, formatValue]
+    () => (stackedFull ? toFullShares(given, visible, formatValue) : given),
+    [given, stackedFull, visible, formatValue]
   );
   const colors = React.useMemo(() => series.map((one, index) => seriesColor(one, index)), [series]);
 
@@ -1723,7 +1730,6 @@ export function CartesianChart(rawProps: CartesianProps) {
     [twoAxes, farEdge]
   );
 
-  const shownValues = values.filter((_, index) => visibility.visible[index]);
   /* The scale takes the references in. A target drawn off the top of the plot
      is a target nobody can see, and moving every mark down a little to make
      room for it is the cheaper of the two costs. Only the ones read against
@@ -1734,7 +1740,7 @@ export function CartesianChart(rawProps: CartesianProps) {
      every step of the crosshair measured the whole data again. */
   const extent = React.useMemo(() => {
     const measured = extentOf(
-      values.filter((_, index) => visibility.visible[index] && !onSecond(index)),
+      values.filter((_, index) => visible[index] && !onSecond(index)),
       stacked
     );
     const marks = (references ?? []).filter((one) => (one.axis ?? 'value') === 'value');
@@ -1751,43 +1757,43 @@ export function CartesianChart(rawProps: CartesianProps) {
       min: Math.min(measured?.min ?? Infinity, ...numbers),
       max: Math.max(measured?.max ?? -Infinity, ...numbers)
     };
-    // `shownKey` stands for `visibility.visible`, which is a new array each time.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [values, shownKey, onSecond, stacked, references]);
+  }, [values, visible, onSecond, stacked, references]);
   /* And the far edge's own, which never stacks — `twoAxes` is already off
      wherever `stacked` is on. */
   const secondExtent = React.useMemo(
     () =>
       twoAxes
         ? extentOf(
-            values.filter((_, index) => visibility.visible[index] && onSecond(index)),
+            values.filter((_, index) => visible[index] && onSecond(index)),
             false
           )
         : null,
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [twoAxes, values, shownKey, onSecond]
+    [twoAxes, values, visible, onSecond]
   );
-  // Worked out here, beside the extent, rather than where it is drawn: read
-  // after the scales are memoised, the call would count as a possible change to
-  // `shownValues` and cost the compiler every memo below.
-  // With a second axis each is summarised in its own units, and a
-  // `summary` a chart hands in is taken to have said everything already.
+  /* The plot's one-sentence description. With a second axis each is
+     summarised in its own units, and a `summary` a chart hands in is taken to
+     have said everything already. Memoised for the reason the extent is: it is
+     a walk over every value, and nothing the pointer does changes it. */
   const secondFormat = secondaryAxis?.tickFormat;
-  const described =
-    summary ??
-    summarise(
-      twoAxes
-        ? values.filter((_, index) => visibility.visible[index] && !onSecond(index))
-        : shownValues,
-      formatValue
-    );
-  const describedSecond =
-    summary === undefined && twoAxes
-      ? summarise(
-          values.filter((_, index) => visibility.visible[index] && onSecond(index)),
-          secondFormat ? (value) => String(secondFormat(value, 0)) : formatValue
-        )
-      : null;
+  const described = React.useMemo(
+    () =>
+      summary ??
+      summarise(
+        values.filter((_, index) => visible[index] && !onSecond(index)),
+        formatValue
+      ),
+    [summary, values, visible, onSecond, formatValue]
+  );
+  const describedSecond = React.useMemo(
+    () =>
+      summary === undefined && twoAxes
+        ? summarise(
+            values.filter((_, index) => visible[index] && onSecond(index)),
+            secondFormat ? (value) => String(secondFormat(value, 0)) : formatValue
+          )
+        : null,
+    [summary, twoAxes, values, visible, onSecond, secondFormat, formatValue]
+  );
 
   const measuredHeight = useMeasuredHeight(hostRef, typeof height === 'string');
   const plotHeight = chartHeight(height, size, measuredHeight);
@@ -1810,15 +1816,27 @@ export function CartesianChart(rawProps: CartesianProps) {
 
   /* The scales. The value axis is rounded to clean numbers before anything is
      measured, because how much room the axis needs depends on how wide its
-     widest tick prints — which is not knowable until the ticks exist. */
-  const scale =
-    givenScale ??
-    valueScale(extent, {
-      min: valueAxis?.min,
-      max: valueAxis?.max,
-      tickCount: valueAxis?.tickCount,
-      includeZero
-    });
+     widest tick prints — which is not knowable until the ticks exist.
+
+     Every scale, box and band from here to `layout` is memoised on the numbers
+     it is made of. They are what a mark builder and the marks are handed, and
+     a fresh object per render gave every callback built on them a fresh
+     identity too — so a pointer crossing the plot laid every mark out again
+     and rebuilt every path, for a picture that had not moved. */
+  const valueMin = valueAxis?.min;
+  const valueMax = valueAxis?.max;
+  const valueTickCount = valueAxis?.tickCount;
+  const scale = React.useMemo(
+    () =>
+      givenScale ??
+      valueScale(extent, {
+        min: valueMin,
+        max: valueMax,
+        tickCount: valueTickCount,
+        includeZero
+      }),
+    [givenScale, extent, valueMin, valueMax, valueTickCount, includeZero]
+  );
 
   /* The far edge's scale, off its own extent — which is the whole point of the
      prop: a rate between 2% and 4% and a revenue in the millions cannot share
@@ -1826,21 +1844,28 @@ export function CartesianChart(rawProps: CartesianProps) {
      its ticks sits on one of the first axis' gridlines and the two grids are
      one grid rather than two sets of lines crossing each other. A `tickCount`
      of its own is a caller asking for its own grid, and gets `valueScale`'s. */
-  const secondScale =
-    secondExtent === null
-      ? null
-      : secondaryAxis?.tickCount === undefined
-        ? alignedScale(secondExtent, scale.ticks.length - 1, {
-            min: secondaryAxis?.min,
-            max: secondaryAxis?.max,
-            includeZero
-          })
-        : valueScale(secondExtent, {
-            min: secondaryAxis?.min,
-            max: secondaryAxis?.max,
-            tickCount: secondaryAxis.tickCount,
-            includeZero
-          });
+  const secondMin = secondaryAxis?.min;
+  const secondMax = secondaryAxis?.max;
+  const secondTickCount = secondaryAxis?.tickCount;
+  const intervals = scale.ticks.length - 1;
+  const secondScale = React.useMemo(
+    () =>
+      secondExtent === null
+        ? null
+        : secondTickCount === undefined
+          ? alignedScale(secondExtent, intervals, {
+              min: secondMin,
+              max: secondMax,
+              includeZero
+            })
+          : valueScale(secondExtent, {
+              min: secondMin,
+              max: secondMax,
+              tickCount: secondTickCount,
+              includeZero
+            }),
+    [secondExtent, intervals, secondMin, secondMax, secondTickCount, includeZero]
+  );
 
   /* And a second one of the same kind when the categories are numbers rather
      than columns. Zero is deliberately not forced in: what a position along an
@@ -1849,25 +1874,47 @@ export function CartesianChart(rawProps: CartesianProps) {
      already makes, and the opposite of the one a bar's length makes. An x that
      runs from 100 to 140 dragged down to zero is a plot with all of its data in
      one corner. */
-  const spread = xScale === 'value' ? categoryExtent(shownValues, categories) : null;
-  const categoryScale =
-    xScale === 'value'
-      ? valueScale(spread, {
-          min: categoryAxis?.min,
-          max: categoryAxis?.max,
-          tickCount: categoryAxis?.tickCount,
-          includeZero: false
-        })
-      : null;
+  const spread = React.useMemo(
+    () =>
+      xScale === 'value'
+        ? categoryExtent(
+            values.filter((_, index) => visible[index]),
+            categories
+          )
+        : null,
+    [xScale, values, visible, categories]
+  );
+  const categoryMin = categoryAxis?.min;
+  const categoryMax = categoryAxis?.max;
+  const categoryTickCount = categoryAxis?.tickCount;
+  const categoryScale = React.useMemo(
+    () =>
+      xScale === 'value'
+        ? valueScale(spread, {
+            min: categoryMin,
+            max: categoryMax,
+            tickCount: categoryTickCount,
+            includeZero: false
+          })
+        : null,
+    [xScale, spread, categoryMin, categoryMax, categoryTickCount]
+  );
 
-  const tickTexts = scale.ticks.map((tick, index) =>
-    valueAxis?.tickFormat ? String(valueAxis.tickFormat(tick, index)) : formatValue(tick)
+  const valueTickFormat = valueAxis?.tickFormat;
+  const tickTexts = React.useMemo(
+    () =>
+      scale.ticks.map((tick, index) =>
+        valueTickFormat ? String(valueTickFormat(tick, index)) : formatValue(tick)
+      ),
+    [scale, valueTickFormat, formatValue]
   );
 
   /* The category axis writes either its labels or its own ticks. `format`
      belongs to the value axis and is not borrowed for these — a currency
      applied to an axis of years prints `$2,019` — so the fallback is the plain
-     compaction and `xAxis.tickFormat` is how a caller says more. */
+     compaction and `xAxis.tickFormat` is how a caller says more. The labels
+     are the part that grows with the data, and a pointer crossing a plot of ten
+     thousand dates re-renders for every column, so they are written once. */
   const categoryTickFormat = categoryAxis?.tickFormat;
   const rawCategoryTexts = React.useMemo(
     () =>
@@ -1882,12 +1929,7 @@ export function CartesianChart(rawProps: CartesianProps) {
               ? String(categoryTickFormat(category, index))
               : formatCategory(category, intlLocale)
           ),
-    // A value scale's ticks are a handful of numbers rebuilt with the scale, so
-    // only the labels are worth keeping — and the labels are the part that grows
-    // with the data: a pointer crossing a plot of ten thousand dates re-renders
-    // for every column, and formatting all of them each time was most of it.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [categoryScale ? categoryScale.ticks.join(' ') : labels, categoryTickFormat, intlLocale]
+    [categoryScale, labels, categoryTickFormat, intlLocale]
   );
 
   const widestTick = tickTexts.reduce((most, text) => Math.max(most, textWidth(text, fontSize)), 0);
@@ -1895,8 +1937,12 @@ export function CartesianChart(rawProps: CartesianProps) {
   /* The far edge's ticks, written through its own `tickFormat` — which is the
      whole reason it has one: a percentage printed with the other axis' pound
      sign is the mistake a second axis exists to avoid. */
-  const secondTickTexts = (secondScale?.ticks ?? []).map((tick, index) =>
-    secondaryAxis?.tickFormat ? String(secondaryAxis.tickFormat(tick, index)) : formatValue(tick)
+  const secondTickTexts = React.useMemo(
+    () =>
+      (secondScale?.ticks ?? []).map((tick, index) =>
+        secondFormat ? String(secondFormat(tick, index)) : formatValue(tick)
+      ),
+    [secondScale, secondFormat, formatValue]
   );
   const widestSecondTick = secondTickTexts.reduce(
     (most, text) => Math.max(most, textWidth(text, fontSize)),
@@ -2038,18 +2084,23 @@ export function CartesianChart(rawProps: CartesianProps) {
     (horizontal ? secondBand : 0);
 
   const boxHeight = plotHeight;
-  const plot: PlotBox = {
-    left: left + markInset,
-    top: topPad,
-    width: Math.max(0, width - left - markInset - rightPad),
-    height: Math.max(0, boxHeight - topPad - bottom - markInset)
-  };
+  const plotLeft = left + markInset;
+  const plotWidth = Math.max(0, width - left - markInset - rightPad);
+  const plotDepth = Math.max(0, boxHeight - topPad - bottom - markInset);
+  const plot = React.useMemo<PlotBox>(
+    () => ({ left: plotLeft, top: topPad, width: plotWidth, height: plotDepth }),
+    [plotLeft, topPad, plotWidth, plotDepth]
+  );
 
   const categoryLength = horizontal ? plot.height : plot.width;
   // Bars divide the axis into `count` slots and sit in the middle of one; lines
   // divide it into `count - 1` gaps and sit on the joins. Both need a `step`,
   // because the hit target for a category is one step wide either way.
-  const band = bandScale(inset ? Math.max(1, count - 1) : count, categoryLength, bandRatio);
+  const bandCount = inset ? Math.max(1, count - 1) : count;
+  const band = React.useMemo(
+    () => bandScale(bandCount, categoryLength, bandRatio),
+    [bandCount, categoryLength, bandRatio]
+  );
 
   /* A line's first point sits *on* the axis and a bar's first band starts at
      it, which is one half-step apart. `inset` is which of the two this is. */
@@ -2119,33 +2170,63 @@ export function CartesianChart(rawProps: CartesianProps) {
     [onSecond, secondaryTickFormat, formatValue]
   );
 
-  const layout: CartesianLayout = {
-    plot,
-    values,
-    visible: visibility.visible,
-    colors,
-    scale,
-    secondScale,
-    onSecond,
-    band,
-    horizontal,
-    valuePx,
-    categoryPx,
-    point,
-    categoryScale,
-    categoryValuePx,
-    zeroPx,
-    zeroPxOf,
-    categories: labels,
-    format: formatValue,
-    formatFor,
-    size
-  };
+  /* One object for as long as nothing in it changes, which is what lets the
+     mark list below — and anything a chart memoises on the context — hold
+     while the pointer moves. */
+  const layout = React.useMemo<CartesianLayout>(
+    () => ({
+      plot,
+      values,
+      visible,
+      colors,
+      scale,
+      secondScale,
+      onSecond,
+      band,
+      horizontal,
+      valuePx,
+      categoryPx,
+      point,
+      categoryScale,
+      categoryValuePx,
+      zeroPx,
+      zeroPxOf,
+      categories: labels,
+      format: formatValue,
+      formatFor,
+      size
+    }),
+    [
+      plot,
+      values,
+      visible,
+      colors,
+      scale,
+      secondScale,
+      onSecond,
+      band,
+      horizontal,
+      valuePx,
+      categoryPx,
+      point,
+      categoryScale,
+      categoryValuePx,
+      zeroPx,
+      zeroPxOf,
+      labels,
+      formatValue,
+      formatFor,
+      size
+    ]
+  );
 
   /* The marks, laid out once. They are what the pointer is tested against and
      what `children` draws, and they are the same array both times — a chart
-     that placed its dots twice would eventually place them in two places. */
-  const markList = marks ? marks(layout) : noMarks;
+     that placed its dots twice would eventually place them in two places. And
+     the same array from one render to the next while the layout holds, so a
+     chart's own memo of them holds too: a scatter re-sorted and re-pathed every
+     one of its marks on each move of the pointer. */
+  const markList = React.useMemo(() => (marks ? marks(layout) : noMarks), [marks, layout]);
 
   /* What a reference is called and what it says, for the hidden list under the
      table. A value-axis number goes through the chart's own `format`; a
@@ -2860,8 +2941,12 @@ interface AxesProps {
  * off the surface. The category axis casts none by default: a grid in both
  * directions is graph paper, and the vertical rules would be doing the job the
  * crosshair already does under the pointer.
+ *
+ * Memoised, because the category axis is an element per category and nothing
+ * on it moves with the pointer: every prop it takes is a number, an option the
+ * caller passed, or something the frame memoises.
  */
-function ChartAxes({
+const ChartAxes = React.memo(function ChartAxes({
   plot,
   scale,
   horizontal,
@@ -3047,27 +3132,32 @@ function ChartAxes({
           )}
 
           {categoryTexts.map((text, index) => {
-            const along = categoryAlong(index);
             // The grid is drawn at every tick and the labels are thinned, for
             // the same reason the value axis does it: a rule with no number on
             // it is still a rule the eye can measure against.
             const labelled = showsTick(index, categoryTexts.length, stride, lastCategory);
 
+            // A tick with neither is nothing at all, rather than an empty
+            // group: on a thousand dates that was nearly a thousand of them.
+            if (!labelled && (horizontal || !categoryGrid)) {
+              return null;
+            }
+
+            const along = categoryAlong(index);
+
             return horizontal ? (
-              labelled ? (
-                <text
-                  key={index}
-                  x={plot.left - 8}
-                  y={along}
-                  textAnchor="end"
-                  dominantBaseline="central"
-                  fontSize={fontSize}
-                  fill="var(--neba-muted-fg)"
-                  className={categoryScale ? 'tabular-nums' : undefined}
-                >
-                  {text}
-                </text>
-              ) : null
+              <text
+                key={index}
+                x={plot.left - 8}
+                y={along}
+                textAnchor="end"
+                dominantBaseline="central"
+                fontSize={fontSize}
+                fill="var(--neba-muted-fg)"
+                className={categoryScale ? 'tabular-nums' : undefined}
+              >
+                {text}
+              </text>
             ) : (
               <g key={index}>
                 {categoryGrid ? (
@@ -3222,7 +3312,7 @@ function ChartAxes({
       ) : null}
     </g>
   );
-}
+});
 
 /* ---------------------------------------------------------------------------
  * Pieces the non-cartesian charts need too
