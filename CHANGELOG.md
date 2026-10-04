@@ -2,6 +2,10 @@
 
 ## vNext (2026--)
 
+### Breaking changes
+
+- **A date or a number formatted with no `locale` is written in `en-US` on the server and while the page hydrates, and in the reader's language right after.** It was written in whatever the runtime defaulted to, so a server in one language and a browser in another drew two different strings into the same element, and React threw the server's HTML away and rendered the whole tree again in the browser. This covers every component that writes a date or a number: `Calendar` and the pickers, the charts and their hidden tables, `Statistic`, `AnimateCounter`, `Meter`, the progress indicators, `Slider`, `NumberField`, `ContextWindow`, `ColorPicker` and `DataTable`. A page rendered only in the browser formats exactly as before. On a server-rendered page whose server already spoke the reader's language, the text now changes once, just after it appears; pass `locale`, or `defaults.locale` on a `NebaProvider`, to keep it in one language from the first paint. The library's own words are unaffected: with no `locale` they are English, as they were.
+
 ### Changed
 
 - **A `Slider`'s labels at `min` and `max` line up inward from their ticks.** Centred, the label at either end hung half its width past the track, and in a narrow column past the edge of the column. Every other mark stays centred, and a vertical slider does the same at its top and bottom.
@@ -15,6 +19,12 @@
 - **Classes on a heading passed as a `title` win over the sheet's scale.** `<Card title={<h2 className="text-xl">…</h2>}>` rendered at the Card's 15px, because the reset that takes the browser's 1.5em bold and margins off the heading was written at two-class strength. A heading with a class now gets that reset at zero specificity, and one without keeps it at full strength, so it still holds against `.prose h2`. The same goes for `Alert`, `Empty` and `Toast`.
 
 - **React 18 no longer prints a `useLayoutEffect` warning for Neba components on a server.** Fifteen modules measured themselves in a layout effect, which React 18's server renderer warns about once per component per request; they skip it on a server now, as three already did.
+
+- **`Slider` reads `locale` from a `NebaProvider`.** It never asked for it, so a `showValue` under `defaults={{ locale }}` was formatted in the runtime's language.
+
+### Documentation
+
+- **The `LineChart` page says what `locale` fixes on a server-rendered page and what it does not**: the time zone a `Date` is written in.
 
 ## 1.17.1 (2026-10-01)
 

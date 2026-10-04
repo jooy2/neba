@@ -22,6 +22,7 @@ import {
 import { cx, gapClasses, metaTextClasses } from '../../internal/styles.js';
 import type { NebaWeekday } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
+import { useIntlLocale } from '../../internal/media.js';
 
 /**
  * Two ends, either of which may be missing.
@@ -138,7 +139,8 @@ export const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePick
     } = useStyleDefaults(rawProps, ['size', 'density', 'variant', 'locale', 'labelPlacement']);
 
     const labels = usePickerLabels(labelOverrides, locale);
-    const firstDay = weekStartsOn ?? localeWeekStart(locale);
+    const intlLocale = useIntlLocale(locale);
+    const firstDay = weekStartsOn ?? localeWeekStart(intlLocale);
 
     const [uncontrolledValue, setUncontrolledValue] = React.useState<DateRange>(
       defaultValue ?? EMPTY
@@ -241,7 +243,7 @@ export const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePick
 
     const write = (date: Date | null, fallback: React.ReactNode) =>
       isValidDate(date) ? (
-        formatDate(date, locale, format)
+        formatDate(date, intlLocale, format)
       ) : (
         <span className="text-(--neba-muted-fg)">{fallback ?? ''}</span>
       );
@@ -251,7 +253,7 @@ export const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePick
 
     // Every date either half could show, so neither end of the trigger changes
     // width as the range is filled in.
-    const dateSamples = displaySamples(locale, format);
+    const dateSamples = displaySamples(intlLocale, format);
 
     // Which end the next click will fill. The trigger says the same thing with
     // its two halves, but the trigger is behind the popup while the popup is up,

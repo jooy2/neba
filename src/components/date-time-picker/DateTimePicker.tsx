@@ -31,6 +31,7 @@ import {
 import { cx, gapClasses } from '../../internal/styles.js';
 import type { NebaWeekday } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
+import { useIntlLocale } from '../../internal/media.js';
 
 export interface DateTimePickerProps extends PickerShellProps {
   /** The chosen moment. Use with `onValueChange` for a controlled picker. */
@@ -133,8 +134,9 @@ export const DateTimePicker = React.forwardRef<HTMLButtonElement, DateTimePicker
     } = useStyleDefaults(rawProps, ['size', 'density', 'variant', 'locale', 'labelPlacement']);
 
     const labels = usePickerLabels(labelOverrides, locale);
-    const firstDay = weekStartsOn ?? localeWeekStart(locale);
-    const hour12 = hour12Prop ?? isHour12(locale);
+    const intlLocale = useIntlLocale(locale);
+    const firstDay = weekStartsOn ?? localeWeekStart(intlLocale);
+    const hour12 = hour12Prop ?? isHour12(intlLocale);
 
     const [uncontrolledValue, setUncontrolledValue] = React.useState<Date | null>(
       defaultValue ?? null
@@ -223,7 +225,7 @@ export const DateTimePicker = React.forwardRef<HTMLButtonElement, DateTimePicker
 
     // Holds the trigger open at the width of the longest moment it could
     // show, so choosing an earlier one does not shrink the field.
-    const samples = withPlaceholder(displaySamples(locale, format), placeholder);
+    const samples = withPlaceholder(displaySamples(intlLocale, format), placeholder);
 
     return (
       <PickerShell
@@ -237,7 +239,7 @@ export const DateTimePicker = React.forwardRef<HTMLButtonElement, DateTimePicker
         // The calendar glyph alone, not both: a control cannot say two things at
         // once, and the date is the part a reader scans for.
         startIcon={startIcon ?? <CalendarIcon />}
-        display={isValidDate(value) ? formatDate(value, locale, format) : (placeholder ?? '')}
+        display={isValidDate(value) ? formatDate(value, intlLocale, format) : (placeholder ?? '')}
         samples={samples}
         empty={!isValidDate(value)}
         clearable={clearable}

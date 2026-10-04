@@ -53,6 +53,7 @@ import {
   type ValueScale
 } from './chart.js';
 import { numberFormatter } from './format.js';
+import { useIntlLocale } from './media.js';
 import { observeResize } from './observe.js';
 import { chartMessages, emptyMessages, fillMessage, useMessages } from './i18n.js';
 import { cx, hasContent, metaTextClasses, srOnlyClasses, transitionClasses } from './styles.js';
@@ -217,7 +218,13 @@ export interface ChartBaseProps extends Omit<BoxProps, 'children' | 'title'> {
    * four labels of seven digits is a chart with a column of numbers beside it.
    */
   format?: Intl.NumberFormatOptions;
-  /** Which language the chart's own words and dates are in. @default the reader's */
+  /**
+   * Which language the chart's own words, its numbers and its dates are in.
+   * Without it, `en-US` on the server and while the page hydrates, and the
+   * reader's after that. It sets no time zone: a `Date` is written in the zone
+   * of whatever renders it.
+   * @default the reader's
+   */
   locale?: string;
   /**
    * The chart's accessible name — what it is a chart *of*. Read out in place of
@@ -1453,6 +1460,7 @@ export function CartesianChart(rawProps: CartesianProps) {
   const width = useMeasuredWidth(hostRef);
   const messages = useMessages(emptyMessages, locale);
   const chartWords = useMessages(chartMessages, locale);
+  const intlLocale = useIntlLocale(locale);
   const tableId = React.useId();
   const summaryId = React.useId();
 
@@ -1521,9 +1529,9 @@ export function CartesianChart(rawProps: CartesianProps) {
   const formatKey = format ? JSON.stringify(format) : '';
   const formatValue = React.useCallback(
     (value: number) =>
-      format ? numberFormatter(locale, format).format(value) : compactNumber(value, locale),
+      format ? numberFormatter(intlLocale, format).format(value) : compactNumber(value, intlLocale),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [formatKey, locale]
+    [formatKey, intlLocale]
   );
 
   const given = React.useMemo(() => toValues(series), [series]);
@@ -1754,19 +1762,19 @@ export function CartesianChart(rawProps: CartesianProps) {
         ? categoryScale.ticks.map((tick, index) =>
             categoryTickFormat
               ? String(categoryTickFormat(tick, index))
-              : compactNumber(tick, locale)
+              : compactNumber(tick, intlLocale)
           )
         : labels.map((category, index) =>
             categoryTickFormat
               ? String(categoryTickFormat(category, index))
-              : formatCategory(category, locale)
+              : formatCategory(category, intlLocale)
           ),
     // A value scale's ticks are a handful of numbers rebuilt with the scale, so
     // only the labels are worth keeping — and the labels are the part that grows
     // with the data: a pointer crossing a plot of ten thousand dates re-renders
     // for every column, and formatting all of them each time was most of it.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [categoryScale ? categoryScale.ticks.join(' ') : labels, categoryTickFormat, locale]
+    [categoryScale ? categoryScale.ticks.join(' ') : labels, categoryTickFormat, intlLocale]
   );
 
   const widestTick = tickTexts.reduce((most, text) => Math.max(most, textWidth(text, fontSize)), 0);
@@ -2052,7 +2060,7 @@ export function CartesianChart(rawProps: CartesianProps) {
     const write = (value: number) =>
       (one.axis ?? 'value') === 'value'
         ? formatValue(value)
-        : formatCategory(categoryScale ? value : (fullLabels[value] ?? value), locale);
+        : formatCategory(categoryScale ? value : (fullLabels[value] ?? value), intlLocale);
 
     return one.to === undefined ? write(one.value) : `${write(one.value)}–${write(one.to)}`;
   };
@@ -2341,8 +2349,8 @@ export function CartesianChart(rawProps: CartesianProps) {
      through `String`: `24000` under an axis reading `24K`. */
   const markHeading = (category: Parameters<typeof formatCategory>[0]) =>
     typeof category === 'number' && categoryScale
-      ? numberFormatter(locale, {}).format(category)
-      : formatCategory(category, locale);
+      ? numberFormatter(intlLocale, {}).format(category)
+      : formatCategory(category, intlLocale);
 
   const anchorX = activeMark
     ? activeMark.x
@@ -2439,7 +2447,7 @@ export function CartesianChart(rawProps: CartesianProps) {
                 values={fullValues}
                 format={formatValue}
                 formatFor={twoAxes ? formatFor : undefined}
-                locale={locale}
+                locale={intlLocale}
               />
             )}
 
@@ -2662,7 +2670,7 @@ export function CartesianChart(rawProps: CartesianProps) {
             words={{ start: chartWords.start, end: chartWords.end }}
             label={label ?? chartWords.label}
             categories={fullLabels}
-            locale={locale}
+            locale={intlLocale}
             width={width}
           />
         </React.Suspense>
@@ -2675,7 +2683,7 @@ export function CartesianChart(rawProps: CartesianProps) {
         <ChartSummary
           id={summaryId}
           template={chartWords.summary}
-          locale={locale}
+          locale={intlLocale}
           {...described}
           second={
             describedSecond ? { template: chartWords.summarySecondary, ...describedSecond } : null

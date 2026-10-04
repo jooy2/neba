@@ -33,6 +33,7 @@ import type {
   NebaStyleProps
 } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
+import { useIntlLocale } from '../../internal/media.js';
 import { useFieldsetDisabled } from '../../internal/fieldset.js';
 
 /** The names for the parts of the picker that have no text on them. */
@@ -346,12 +347,13 @@ function ColorPanel({
   labels,
   locale
 }: PanelProps) {
+  const intlLocale = useIntlLocale(locale);
   const thumb = thumbSizes[size];
   /* What a screen reader hears for each slider. The platform writes a
      percentage and an angle in the reader's language already, so only the
      square, which has to say which of its two numbers is which, needs words. */
-  const percent = numberFormatter(locale, { style: 'percent', maximumFractionDigits: 0 });
-  const degrees = numberFormatter(locale, {
+  const percent = numberFormatter(intlLocale, { style: 'percent', maximumFractionDigits: 0 });
+  const degrees = numberFormatter(intlLocale, {
     style: 'unit',
     unit: 'degree',
     unitDisplay: 'long',

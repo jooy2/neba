@@ -253,11 +253,19 @@ series는 넘긴 순서대로 팔레트 slot을 가져갑니다. 여덟 개의 �
 
 ### format
 
-`format`은 `Intl.NumberFormat` 옵션을 받아 축과 tooltip, 값 라벨, 표까지 숫자가 나타나는 모든 곳에 적용됩니다. 생략하면 만 이상의 축 눈금은 축약됩니다(`12.4K`). `locale`이 없는 차트는 렌더링되는 곳의 언어와 시간대로 숫자와 날짜를 쓰므로, 서버에서 렌더링하는 페이지라면 `locale`을 넘기세요. 그러지 않으면 서버의 `Mar 3`과 독자의 표기가 하이드레이션할 때 어긋날 수 있습니다.
+`format`은 `Intl.NumberFormat` 옵션을 받아 축과 tooltip, 값 라벨, 표까지 숫자가 나타나는 모든 곳에 적용됩니다. 생략하면 만 이상의 축 눈금은 축약됩니다(`12.4K`).
 
 ```tsx
 <LineChart format={{ style: 'currency', currency: 'KRW', maximumFractionDigits: 0 }} … />
 <LineChart format={{ style: 'percent', maximumFractionDigits: 1 }} … />
+```
+
+서버에서 렌더링하는 페이지라면 `locale`도 넘기세요. 직접 받은 것이든 `NebaProvider`에서 받은 것이든 `locale`이 없는 차트는 서버에서, 그리고 페이지가 하이드레이션되는 동안 숫자와 날짜를 `en-US`로 쓰다가 그 뒤에 읽는 사람의 언어로 바꿉니다. `locale`을 넘기면 첫 렌더링부터 그 언어로 씁니다. 다만 `locale`이 정하는 것은 언어뿐이고 시간대는 아닙니다. `Date`는 렌더링하는 환경의 시간대로 쓰이므로, `new Date('2026-03-03')`은 시간대가 UTC인 서버에서는 `Mar 3`이고 로스앤젤레스의 브라우저에서는 `Mar 2`입니다. 서버와 읽는 사람의 시간대가 다를 수 있다면, 날짜 category를 `timeZone`을 지정해 직접 서식을 적용한 문자열로 넘기세요.
+
+```tsx
+const day = new Intl.DateTimeFormat('ko-KR', { month: 'short', day: 'numeric', timeZone: 'Asia/Seoul' });
+
+<LineChart locale="ko-KR" categories={dates.map((date) => day.format(date))} … />
 ```
 
 ## 접근성

@@ -18,6 +18,7 @@ import type {
   NebaSlots
 } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
+import { useIntlLocale } from '../../internal/media.js';
 
 type BaseSliderProps = Omit<
   React.ComponentPropsWithoutRef<typeof BaseUISlider.Root>,
@@ -293,8 +294,12 @@ export const Slider = React.forwardRef<HTMLDivElement, SliderProps>(function Sli
     'aria-label': ariaLabel,
     'aria-labelledby': ariaLabelledBy,
     'aria-describedby': ariaDescribedBy,
+    locale,
     ...props
-  } = useStyleDefaults(rawProps, ['size']);
+  } = useStyleDefaults(rawProps, ['size', 'locale']);
+  // A locale that is not a plain tag is the caller's own choice and goes through
+  // as it is; only a missing one is pinned while the page hydrates.
+  const unnamedLocale = useIntlLocale(undefined);
 
   const vertical = orientation === 'vertical';
   const descriptionId = React.useId();
@@ -422,6 +427,7 @@ export const Slider = React.forwardRef<HTMLDivElement, SliderProps>(function Sli
   return (
     <BaseUISlider.Root
       ref={ref}
+      locale={locale ?? unnamedLocale}
       orientation={orientation}
       disabled={disabled}
       className={cx(

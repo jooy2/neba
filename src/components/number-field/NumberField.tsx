@@ -40,6 +40,7 @@ import type {
   NebaStyleProps
 } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
+import { useIntlLocale } from '../../internal/media.js';
 import { fieldLight, fieldSpotlightSlot, glowClasses } from '../../internal/glow.js';
 import { useFieldsetDisabled } from '../../internal/fieldset.js';
 
@@ -296,6 +297,7 @@ export const NumberField = React.forwardRef<HTMLInputElement, NumberFieldProps>(
     // `Intl` takes more shapes than a message tag does; only a plain string names
     // anything here, and anything else falls back to English.
     const messages = useMessages(numberMessages, typeof locale === 'string' ? locale : undefined);
+    const unnamedLocale = useIntlLocale(undefined);
     const hasError = hasContent(error);
     const isInvalid = invalid ?? hasError;
     // Invalid re-points the whole slot family at `danger`, so the edge, the ring,
@@ -482,7 +484,7 @@ export const NumberField = React.forwardRef<HTMLInputElement, NumberFieldProps>(
           snapOnStep={snapOnStep}
           allowWheelScrub={wheel}
           format={format}
-          locale={locale}
+          locale={locale ?? unnamedLocale}
           disabled={disabled}
           readOnly={readOnly}
           required={required}

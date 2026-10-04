@@ -15,6 +15,7 @@ import {
 import { cx, gapClasses, metaTextClasses } from '../../internal/styles.js';
 import type { NebaColor, NebaSize } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
+import { useIntlLocale } from '../../internal/media.js';
 
 export interface ProgressCircularProps extends ProgressSharedProps {
   /** Diameter of the ring. Sits just under the control ladder at every step. */
@@ -58,6 +59,7 @@ export const ProgressCircular = React.forwardRef<HTMLDivElement, ProgressCircula
       style,
       ...props
     } = useStyleDefaults(rawProps, ['size', 'locale']);
+    const intlLocale = useIntlLocale(locale);
 
     const fraction = progressFraction(value, min, max);
     const indeterminate = fraction === null;
@@ -91,7 +93,7 @@ export const ProgressCircular = React.forwardRef<HTMLDivElement, ProgressCircula
         min={min}
         max={max}
         format={format}
-        locale={locale}
+        locale={intlLocale}
         getAriaValueText={progressAriaText(fraction, hasFormat)}
         className={cx(
           'inline-flex items-center',

@@ -861,8 +861,8 @@ function chartBaseProps(options: { height: string; size?: string; legend?: false
       name: 'locale',
       type: 'string',
       description: {
-        ko: '차트가 스스로 쓰는 말과 날짜의 언어',
-        en: "The language of the chart's own words and dates"
+        ko: '차트가 스스로 쓰는 말과 숫자, 날짜의 언어. 없으면 provider의 locale을, 그것도 없으면 읽는 사람의 언어를 쓰되, 서버와 하이드레이션 중에는 en-US로 씁니다. 시간대는 정하지 않습니다',
+        en: "The language of the chart's own words, numbers and dates. Falls back to the provider's locale, then to the reader's, which is en-US on the server and while the page hydrates. It does not set the time zone"
       }
     },
     ...(options.legend === false

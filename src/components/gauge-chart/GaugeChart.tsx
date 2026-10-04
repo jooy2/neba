@@ -22,6 +22,7 @@ import { thresholdColor } from '../../internal/progress.js';
 import { cx, hasContent, metaTextClasses } from '../../internal/styles.js';
 import type { NebaThreshold } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
+import { useIntlLocale } from '../../internal/media.js';
 
 /*
  * The three export props go with the legend and the tooltip: a gauge is one
@@ -150,11 +151,12 @@ export function GaugeChart(rawProps: GaugeChartProps) {
   const hostRef = React.useRef<HTMLDivElement>(null);
   const width = useMeasuredWidth(hostRef);
   const messages = useMessages(emptyMessages, locale);
+  const intlLocale = useIntlLocale(locale);
 
   const formatValue = React.useCallback(
     (each: number) =>
-      format ? numberFormatter(locale, format).format(each) : compactNumber(each, locale),
-    [format, locale]
+      format ? numberFormatter(intlLocale, format).format(each) : compactNumber(each, intlLocale),
+    [format, intlLocale]
   );
 
   const span = Math.max(1, Math.min(360, sweep));

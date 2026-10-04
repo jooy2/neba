@@ -43,6 +43,7 @@ import {
 } from '../../internal/styles.js';
 import type { NebaAlign, NebaElevation, NebaStyleProps } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
+import { useIntlLocale } from '../../internal/media.js';
 
 /* ---------------------------------------------------------------------------
  * Vocabulary
@@ -784,6 +785,7 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
 
   const messages = useMessages(tableMessages, locale);
   const emptyText = useMessages(emptyMessages, locale);
+  const intlLocale = useIntlLocale(locale);
   const reactId = React.useId();
 
   const rowHeight = rowHeightProp ?? dataRowHeights[density][size];
@@ -932,8 +934,8 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
    * thousand rows calls it a million times.
    */
   const collator = React.useMemo(
-    () => new Intl.Collator(locale, { numeric: true, sensitivity: 'base' }),
-    [locale]
+    () => new Intl.Collator(intlLocale, { numeric: true, sensitivity: 'base' }),
+    [intlLocale]
   );
 
   const [uncontrolledSort, setUncontrolledSort] = React.useState<readonly DataTableSort[]>(
@@ -2202,7 +2204,7 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
 
   /* -- The footer ---------------------------------------------------------- */
 
-  const number = React.useMemo(() => new Intl.NumberFormat(locale), [locale]);
+  const number = React.useMemo(() => new Intl.NumberFormat(intlLocale), [intlLocale]);
   const showFooter = footer ?? paging === 'pages';
 
   const rangeText = fillMessage(messages.range, {
@@ -2323,7 +2325,7 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
                 ? cellEditor(entry, column)
                 : column.render
                   ? column.render(entry.row, displayOffset + index)
-                  : plainCell((entry.row as Record<string, unknown>)[column.key], locale)}
+                  : plainCell((entry.row as Record<string, unknown>)[column.key], intlLocale)}
             </td>
           );
         })}

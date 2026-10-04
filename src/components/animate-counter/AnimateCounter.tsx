@@ -7,6 +7,7 @@ import { numberFormatter } from '../../internal/format.js';
 import { cx, srOnlyClasses } from '../../internal/styles.js';
 import type { NebaAnimateProps } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
+import { useIntlLocale } from '../../internal/media.js';
 
 export interface AnimateCounterProps
   // `paused` is out with the three a count has no use for: a count is a
@@ -110,6 +111,7 @@ export const AnimateCounter = React.forwardRef<HTMLElement, AnimateCounterProps>
       style,
       ...props
     } = useStyleDefaults(rawProps, ['locale']);
+    const intlLocale = useIntlLocale(locale);
     const run = useAnimationRun({
       caller: props,
       trigger,
@@ -131,9 +133,9 @@ export const AnimateCounter = React.forwardRef<HTMLElement, AnimateCounterProps>
     // And through the library's own cache, so a row of counters in one currency
     // shares one formatter rather than building one each.
     const formatter = React.useMemo(
-      () => numberFormatter(locale, format),
+      () => numberFormatter(intlLocale, format),
       // eslint-disable-next-line react-hooks/exhaustive-deps
-      [locale, key]
+      [intlLocale, key]
     );
 
     /*

@@ -15,6 +15,7 @@ import {
 import { cx, metaTextClasses, stackGapClasses } from '../../internal/styles.js';
 import type { NebaColor, NebaSize } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
+import { useIntlLocale } from '../../internal/media.js';
 
 export interface ProgressBoxProps extends ProgressSharedProps {
   /** Size of one plate. */
@@ -63,6 +64,7 @@ export const ProgressBox = React.forwardRef<HTMLDivElement, ProgressBoxProps>(
       style,
       ...props
     } = useStyleDefaults(rawProps, ['size', 'locale']);
+    const intlLocale = useIntlLocale(locale);
 
     const fraction = progressFraction(value, min, max);
     const indeterminate = fraction === null;
@@ -82,7 +84,7 @@ export const ProgressBox = React.forwardRef<HTMLDivElement, ProgressBoxProps>(
         min={min}
         max={max}
         format={format}
-        locale={locale}
+        locale={intlLocale}
         getAriaValueText={progressAriaText(fraction, hasFormat)}
         className={cx('inline-flex flex-col', stackGapClasses[size], className ?? '')}
         style={{ ...progressSlots(color), ...style }}

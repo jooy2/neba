@@ -14,6 +14,7 @@ import {
 import { cx, metaTextClasses, stackGapClasses } from '../../internal/styles.js';
 import type { NebaColor, NebaSize } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
+import { useIntlLocale } from '../../internal/media.js';
 
 export interface ProgressLinearProps extends ProgressSharedProps {
   /** Thickness of the groove. Nothing else on a bar has a size. */
@@ -66,6 +67,7 @@ export const ProgressLinear = React.forwardRef<HTMLDivElement, ProgressLinearPro
       style,
       ...props
     } = useStyleDefaults(rawProps, ['size', 'locale']);
+    const intlLocale = useIntlLocale(locale);
 
     const fraction = progressFraction(value, min, max);
     const indeterminate = fraction === null;
@@ -81,7 +83,7 @@ export const ProgressLinear = React.forwardRef<HTMLDivElement, ProgressLinearPro
         min={min}
         max={max}
         format={format}
-        locale={locale}
+        locale={intlLocale}
         getAriaValueText={progressAriaText(fraction, hasFormat)}
         className={cx('flex w-full flex-col', stackGapClasses[size], className ?? '')}
         style={{ ...progressSlots(color), ...style }}

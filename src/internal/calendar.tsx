@@ -41,7 +41,7 @@ import {
 } from './date.js';
 import { dateFormatter } from './format.js';
 import { pickerMessages, useMessages, type PickerMessages } from './i18n.js';
-import { useHydrated } from './media.js';
+import { useHydrated, useIntlLocale } from './media.js';
 import type {
   NebaColor,
   NebaDateGranularity,
@@ -574,7 +574,7 @@ export interface CalendarProps {
 export function Calendar({
   size,
   color,
-  locale,
+  locale: callerLocale,
   weekStartsOn,
   month,
   onMonthChange,
@@ -596,6 +596,7 @@ export function Calendar({
   labels,
   className
 }: CalendarProps) {
+  const locale = useIntlLocale(callerLocale);
   const captionId = React.useId();
   const [requestedView, setView] = React.useState<CalendarView>(granularity);
   // Clamped rather than kept in step by an effect: a view finer than the
@@ -1260,7 +1261,7 @@ function revealInColumn(row: HTMLElement) {
 export function TimeGrid({
   size,
   density,
-  locale,
+  locale: callerLocale,
   value,
   referenceDate,
   onChange,
@@ -1274,6 +1275,7 @@ export function TimeGrid({
   labels,
   className
 }: TimeGridProps) {
+  const locale = useIntlLocale(callerLocale);
   const base = value ?? referenceDate;
   const rootRef = React.useRef<HTMLDivElement | null>(null);
   const [am, pm] = React.useMemo(() => meridiemLabels(locale), [locale]);

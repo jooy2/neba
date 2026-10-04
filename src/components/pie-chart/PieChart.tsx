@@ -42,6 +42,7 @@ import type {
   NebaChartTooltip
 } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
+import { useIntlLocale } from '../../internal/media.js';
 
 /** How much of the middle is cut out, per shape, when `hole` says nothing. */
 const holes = { pie: 0, donut: 0.62, semi: 0.62 } as const;
@@ -173,12 +174,13 @@ export function PieChart(rawProps: PieChartProps) {
   const width = useMeasuredWidth(hostRef);
   const messages = useMessages(emptyMessages, locale);
   const chartWords = useMessages(chartMessages, locale);
+  const intlLocale = useIntlLocale(locale);
   const tableId = React.useId();
 
   const formatValue = React.useCallback(
     (value: number) =>
-      format ? numberFormatter(locale, format).format(value) : compactNumber(value, locale),
-    [format, locale]
+      format ? numberFormatter(intlLocale, format).format(value) : compactNumber(value, intlLocale),
+    [format, intlLocale]
   );
 
   const values = React.useMemo(() => data.map(toValue), [data]);
@@ -190,11 +192,11 @@ export function PieChart(rawProps: PieChartProps) {
   const slices = React.useMemo<NebaChartSeries[]>(
     () =>
       values.map((value, index) => ({
-        name: formatCategory(categoryAt(index, categories, [values]), locale),
+        name: formatCategory(categoryAt(index, categories, [values]), intlLocale),
         data: [data[index]],
         color: value.color
       })),
-    [values, categories, data, locale]
+    [values, categories, data, intlLocale]
   );
 
   const visibility = useVisibility(slices);
@@ -339,7 +341,7 @@ export function PieChart(rawProps: PieChartProps) {
             series={[{ name: label, data }]}
             values={[values]}
             format={formatValue}
-            locale={locale}
+            locale={intlLocale}
           />
         )
       }
@@ -527,7 +529,7 @@ export function PieChart(rawProps: PieChartProps) {
         <ChartSummary
           id={summaryId}
           template={chartWords.summary}
-          locale={locale}
+          locale={intlLocale}
           {...summarise(
             values.filter((_, index) => visibility.visible[index]).map((one) => [one]),
             formatValue

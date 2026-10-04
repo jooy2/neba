@@ -23,6 +23,7 @@ import {
 import { cx } from '../../internal/styles.js';
 import type { NebaDateGranularity, NebaWeekday } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
+import { useIntlLocale } from '../../internal/media.js';
 
 /**
  * How the trigger writes a value the caller has not given a `format` for.
@@ -184,7 +185,8 @@ export const DatePicker = React.forwardRef<HTMLButtonElement, DatePickerProps>(
     } = useStyleDefaults(rawProps, ['size', 'density', 'variant', 'locale', 'labelPlacement']);
 
     const labels = usePickerLabels(labelOverrides, locale);
-    const firstDay = weekStartsOn ?? localeWeekStart(locale);
+    const intlLocale = useIntlLocale(locale);
+    const firstDay = weekStartsOn ?? localeWeekStart(intlLocale);
     const displayFormat = format ?? defaultFormats[granularity];
 
     const [uncontrolledValue, setUncontrolledValue] = React.useState<Date | null>(
@@ -266,8 +268,8 @@ export const DatePicker = React.forwardRef<HTMLButtonElement, DatePickerProps>(
     // Holds the trigger open at the width of the longest date it could show, so
     // choosing the 1st after the 28th does not shrink the field.
     const samples = React.useMemo(
-      () => withPlaceholder(displaySamples(locale, displayFormat), placeholder),
-      [locale, displayFormat, placeholder]
+      () => withPlaceholder(displaySamples(intlLocale, displayFormat), placeholder),
+      [intlLocale, displayFormat, placeholder]
     );
 
     return (
@@ -280,7 +282,7 @@ export const DatePicker = React.forwardRef<HTMLButtonElement, DatePickerProps>(
         triggerRef={ref}
         startIcon={startIcon ?? <CalendarIcon />}
         display={
-          isValidDate(value) ? formatDate(value, locale, displayFormat) : (placeholder ?? '')
+          isValidDate(value) ? formatDate(value, intlLocale, displayFormat) : (placeholder ?? '')
         }
         samples={samples}
         empty={!isValidDate(value)}

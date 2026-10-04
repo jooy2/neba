@@ -20,6 +20,7 @@ import {
 } from '../../internal/styles.js';
 import type { NebaColor, NebaSize, NebaSlots, NebaThreshold } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
+import { useIntlLocale } from '../../internal/media.js';
 
 /**
  * What a context window is spent on.
@@ -189,6 +190,7 @@ export const ContextWindow = React.forwardRef<HTMLDivElement, ContextWindowProps
     } = useStyleDefaults(rawProps, ['size', 'locale']);
 
     const messages = useMessages(contextMessages, locale);
+    const intlLocale = useIntlLocale(locale);
     const words = { ...messages, ...labels };
 
     const parts = PARTS.filter(({ key }) => typeof tokens?.[key] === 'number');
@@ -208,8 +210,8 @@ export const ContextWindow = React.forwardRef<HTMLDivElement, ContextWindowProps
     // Compact, because a context window is six digits and "124,000 of 200,000"
     // is two numbers nobody compares. `Intl` knows what compact looks like in
     // each language, which is why none of this is a table in `i18n.ts`.
-    const count = numberFormatter(locale, { notation: 'compact', maximumFractionDigits: 1 });
-    const money = numberFormatter(locale, { style: 'currency', currency });
+    const count = numberFormatter(intlLocale, { notation: 'compact', maximumFractionDigits: 1 });
+    const money = numberFormatter(intlLocale, { style: 'currency', currency });
     const usage = fillMessage(words.usage, {
       used: count.format(total),
       max: count.format(max)

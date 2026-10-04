@@ -27,6 +27,7 @@ import { chartMessages, useMessages } from '../../internal/i18n.js';
 import { srOnlyClasses } from '../../internal/styles.js';
 import type { NebaChartCategory, NebaTimelinePoint, NebaTimelineSeries } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
+import { useIntlLocale } from '../../internal/media.js';
 
 /**
  * `brush` is left out because a timeline cannot honour it: the window is cut
@@ -92,6 +93,7 @@ export function TimelineChart(rawProps: TimelineChartProps) {
     references,
     ...props
   } = useStyleDefaults(rawProps, ['size', 'density', 'locale']);
+  const intlLocale = useIntlLocale(locale);
 
   /* The rows, as instants, in lanes. Done once here rather than in the marks
      builder, because the axis has to be solved before anything can be placed on
@@ -146,8 +148,8 @@ export function TimelineChart(rawProps: TimelineChartProps) {
   );
 
   const tickTexts = React.useMemo(
-    () => formatTimeTicks(scale.ticks, scale.unit, locale),
-    [scale, locale]
+    () => formatTimeTicks(scale.ticks, scale.unit, intlLocale),
+    [scale, intlLocale]
   );
 
   const colors = React.useMemo(() => series.map((row, index) => seriesColor(row, index)), [series]);
@@ -203,10 +205,10 @@ export function TimelineChart(rawProps: TimelineChartProps) {
       ? { count, min: '', max: '' }
       : {
           count,
-          min: formatTimeValue(first, spanUnit(scale.unit), locale, clock),
-          max: formatTimeValue(last, spanUnit(scale.unit), locale, clock)
+          min: formatTimeValue(first, spanUnit(scale.unit), intlLocale, clock),
+          max: formatTimeValue(last, spanUnit(scale.unit), intlLocale, clock)
         };
-  }, [spans, scale.unit, locale, clock]);
+  }, [spans, scale.unit, intlLocale, clock]);
 
   const names = React.useMemo(
     () => series.map((row, index) => row.name ?? `${index + 1}`),
@@ -277,10 +279,10 @@ export function TimelineChart(rawProps: TimelineChartProps) {
           // A duration, which is the one number a span has. It is what a
           // caller's own `tooltip.render` gets handed.
           value: one.to - one.from,
-          formatted: `${formatTimeValue(one.from, spanUnit(scale.unit), locale, clock)} – ${formatTimeValue(
+          formatted: `${formatTimeValue(one.from, spanUnit(scale.unit), intlLocale, clock)} – ${formatTimeValue(
             one.to,
             spanUnit(scale.unit),
-            locale,
+            intlLocale,
             clock
           )}`
         }
@@ -290,7 +292,7 @@ export function TimelineChart(rawProps: TimelineChartProps) {
       // rather than a repeat of the first.
       return { heading: one.span.label ?? names[mark.series], items };
     },
-    [spans, names, colors, scale.unit, locale, clock]
+    [spans, names, colors, scale.unit, intlLocale, clock]
   );
 
   return (
@@ -550,6 +552,7 @@ const TimelineTable = React.memo(function TimelineTable({
   locale
 }: TableProps) {
   const words = useMessages(chartMessages, locale);
+  const intlLocale = useIntlLocale(locale);
   const titled = series.some((row) => row.data.some((span) => span.label !== undefined));
 
   return (
@@ -569,8 +572,8 @@ const TimelineTable = React.memo(function TimelineTable({
             <tr key={`${index}-${at}`}>
               <th scope="row">{names[index]}</th>
               {titled ? <td>{series[index].data[at]?.label ?? ''}</td> : null}
-              <td>{one ? formatTimeValue(one.from, unit, locale, clock) : ''}</td>
-              <td>{one ? formatTimeValue(one.to, unit, locale, clock) : ''}</td>
+              <td>{one ? formatTimeValue(one.from, unit, intlLocale, clock) : ''}</td>
+              <td>{one ? formatTimeValue(one.to, unit, intlLocale, clock) : ''}</td>
             </tr>
           ))
         )}

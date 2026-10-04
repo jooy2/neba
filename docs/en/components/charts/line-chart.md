@@ -253,11 +253,19 @@ Series take palette slots in the order they are passed: eight hues, fixed. From 
 
 ### format
 
-`format` takes `Intl.NumberFormat` options and applies everywhere a number appears: the axis, the tooltip, the value labels, the table. Without it, axis ticks past ten thousand are compacted (`12.4K`). A chart with no `locale` writes its numbers and dates in the language and time zone of wherever it renders, so on a server-rendered page pass `locale`, or the server's `Mar 3` and the reader's may disagree when the page hydrates.
+`format` takes `Intl.NumberFormat` options and applies everywhere a number appears: the axis, the tooltip, the value labels, the table. Without it, axis ticks past ten thousand are compacted (`12.4K`).
 
 ```tsx
 <LineChart format={{ style: 'currency', currency: 'USD', maximumFractionDigits: 0 }} … />
 <LineChart format={{ style: 'percent', maximumFractionDigits: 1 }} … />
+```
+
+On a server-rendered page, pass `locale` too. A chart with no `locale`, its own or a `NebaProvider`'s, writes its numbers and dates in `en-US` on the server and while the page hydrates, then switches to the reader's language; with one, it writes that language from the first render. `locale` fixes the language but not the time zone: a `Date` is written in the time zone of whatever renders it, so `new Date('2026-03-03')` is `Mar 3` on a server running in UTC and `Mar 2` in a browser in Los Angeles. When the server and the readers can be in different time zones, pass date categories as strings you have formatted yourself, with an explicit `timeZone`.
+
+```tsx
+const day = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
+
+<LineChart locale="en-US" categories={dates.map((date) => day.format(date))} … />
 ```
 
 ## Accessibility

@@ -25,6 +25,7 @@ import { chartMessages, useMessages } from '../../internal/i18n.js';
 import { cx, srOnlyClasses } from '../../internal/styles.js';
 import type { NebaChartCategory, NebaChartSeries } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
+import { useIntlLocale } from '../../internal/media.js';
 
 /**
  * How many series the palette can tell apart on a plot where any two marks may
@@ -377,6 +378,7 @@ const ScatterTable = React.memo(function ScatterTable({
   format
 }: TableProps) {
   const words = useMessages(chartMessages, locale);
+  const intlLocale = useIntlLocale(locale);
   const sized = series.some((one) =>
     one.data.some((datum) => typeof datum === 'object' && datum !== null && datum.z !== undefined)
   );
@@ -407,8 +409,8 @@ const ScatterTable = React.memo(function ScatterTable({
                     currency sign on a population. */}
                 <td>
                   {typeof x === 'number'
-                    ? numberFormatter(locale, {}).format(x)
-                    : formatCategory(x, locale)}
+                    ? numberFormatter(intlLocale, {}).format(x)
+                    : formatCategory(x, intlLocale)}
                 </td>
                 {/* A `null` is a gap and prints as an empty cell, exactly as it
                     does on every other chart's table. A zero written here would
@@ -417,7 +419,7 @@ const ScatterTable = React.memo(function ScatterTable({
                 <td>{y === null || !Number.isFinite(y) ? '' : format(y)}</td>
                 {sized ? (
                   <td>
-                    {point?.z === undefined ? '' : numberFormatter(locale, {}).format(point.z)}
+                    {point?.z === undefined ? '' : numberFormatter(intlLocale, {}).format(point.z)}
                   </td>
                 ) : null}
               </tr>

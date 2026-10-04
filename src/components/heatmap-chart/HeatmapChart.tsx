@@ -46,6 +46,7 @@ import type {
 } from '../../types.js';
 import type { ChartBaseProps } from '../../internal/chart-frame.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
+import { useIntlLocale } from '../../internal/media.js';
 
 /** The corner radius of a cell. Small — a tile is a block, not a chip. */
 const cellRadius = 3;
@@ -167,6 +168,7 @@ export function HeatmapChart(rawProps: HeatmapChartProps) {
   const width = useMeasuredWidth(hostRef);
   const messages = useMessages(emptyMessages, locale);
   const chartWords = useMessages(chartMessages, locale);
+  const intlLocale = useIntlLocale(locale);
   const tableId = React.useId();
 
   const [active, setActive] = React.useState<{ row: number; index: number } | null>(null);
@@ -177,8 +179,8 @@ export function HeatmapChart(rawProps: HeatmapChartProps) {
 
   const formatValue = React.useCallback(
     (value: number) =>
-      format ? numberFormatter(locale, format).format(value) : compactNumber(value, locale),
-    [format, locale]
+      format ? numberFormatter(intlLocale, format).format(value) : compactNumber(value, intlLocale),
+    [format, intlLocale]
   );
 
   const values = React.useMemo(() => toValues(series), [series]);
@@ -279,9 +281,9 @@ export function HeatmapChart(rawProps: HeatmapChartProps) {
   const columnTexts = React.useMemo(
     () =>
       labels.map((category, index) =>
-        columnFormat ? String(columnFormat(category, index)) : formatCategory(category, locale)
+        columnFormat ? String(columnFormat(category, index)) : formatCategory(category, intlLocale)
       ),
-    [labels, columnFormat, locale]
+    [labels, columnFormat, intlLocale]
   );
   /* Turned, a name may run as deep as the band will take — capped, because a
      grid that hands two fifths of itself to a column of words has stopped
@@ -387,9 +389,9 @@ export function HeatmapChart(rawProps: HeatmapChartProps) {
     (one: Cell) =>
       formatCategory(
         one.cell.x ?? categories?.[one.index] ?? labels[one.index] ?? one.index,
-        locale
+        intlLocale
       ),
-    [categories, labels, locale]
+    [categories, labels, intlLocale]
   );
 
   /* The hidden table's columns. A grid's are its categories, in place. A
@@ -399,7 +401,7 @@ export function HeatmapChart(rawProps: HeatmapChartProps) {
   const table = React.useMemo(() => {
     if (shape !== 'treemap') {
       return {
-        heads: labels.map((category) => formatCategory(category, locale)),
+        heads: labels.map((category) => formatCategory(category, intlLocale)),
         rows: values.map((row) => labels.map((_, index) => row[index]))
       };
     }
@@ -413,7 +415,7 @@ export function HeatmapChart(rawProps: HeatmapChartProps) {
       row.forEach((cell, index) => {
         const head = formatCategory(
           cell.x ?? categories?.[index] ?? labels[index] ?? index,
-          locale
+          intlLocale
         );
         let column = columnOf.get(head);
 
@@ -430,7 +432,7 @@ export function HeatmapChart(rawProps: HeatmapChartProps) {
     });
 
     return { heads, rows };
-  }, [shape, labels, values, categories, locale]);
+  }, [shape, labels, values, categories, intlLocale]);
 
   const hovered =
     active === null
@@ -805,7 +807,7 @@ export function HeatmapChart(rawProps: HeatmapChartProps) {
         <ChartSummary
           id={summaryId}
           template={chartWords.summary}
-          locale={locale}
+          locale={intlLocale}
           {...summarise(values, formatValue)}
         />
       )}

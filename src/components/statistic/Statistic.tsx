@@ -8,6 +8,7 @@ import { numberFormatter } from '../../internal/format.js';
 import { cx, hasContent, metaTextClasses, sheetSectionGapClasses } from '../../internal/styles.js';
 import type { NebaAlign, NebaSize } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
+import { useIntlLocale } from '../../internal/media.js';
 
 /** Which way a figure moved, and the third case that is neither. */
 type Trend = 'up' | 'down' | 'flat';
@@ -188,13 +189,14 @@ export const Statistic = React.forwardRef<HTMLDivElement, StatisticProps>(
       children,
       ...props
     } = useStyleDefaults(rawProps, ['size', 'density', 'locale']);
+    const intlLocale = useIntlLocale(locale);
 
     // An `Intl.NumberFormat` is expensive to construct and free to reuse, and a
     // dashboard is a page full of these. The cache is keyed on what `format` says
     // rather than on the object it arrived in, so the literal a caller writes
     // inline — which is how that prop is nearly always written — still hits it.
     const numeric = typeof value === 'number' ? value : null;
-    const shown = numeric === null ? value : numberFormatter(locale, format).format(numeric);
+    const shown = numeric === null ? value : numberFormatter(intlLocale, format).format(numeric);
 
     /**
      * The comparison, or `null` when there is nothing to compare.
@@ -218,7 +220,7 @@ export const Statistic = React.forwardRef<HTMLDivElement, StatisticProps>(
         ? difference / Math.abs(previousValue)
         : null;
 
-    const figure = numberFormatter(locale, format);
+    const figure = numberFormatter(intlLocale, format);
 
     /*
      * The direction of what is written, not of the arithmetic under it. A change
@@ -246,7 +248,7 @@ export const Statistic = React.forwardRef<HTMLDivElement, StatisticProps>(
       const percent =
         ratio === null
           ? null
-          : `${sign}${numberFormatter(locale, { style: 'percent', maximumFractionDigits: 1 }).format(Math.abs(ratio))}`;
+          : `${sign}${numberFormatter(intlLocale, { style: 'percent', maximumFractionDigits: 1 }).format(Math.abs(ratio))}`;
 
       deltaText =
         delta === 'absolute'

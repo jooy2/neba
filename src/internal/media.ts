@@ -193,6 +193,32 @@ export function useHydrated(): boolean {
   return React.useSyncExternalStore(subscribeToNothing, pastHydration, duringHydration);
 }
 
+/** What an unnamed locale formats as on the server and in the hydrating render. */
+export const HYDRATION_LOCALE = 'en-US';
+
+/**
+ * The locale an `Intl` formatter is built with.
+ *
+ * A locale the caller left out means "whatever the runtime defaults to", and a
+ * server and the reader's browser rarely default to the same thing: a server in
+ * en-US writes "October 2026", a browser in ko-KR hydrates it as "2026년 10월",
+ * and React throws the server's HTML away and renders the whole tree again. So
+ * the server and the hydrating render both write `en-US`, and every render after
+ * that goes back to the runtime's own answer — which is the only answer a tree
+ * that was never server-rendered ever sees. A locale the caller named is never
+ * touched.
+ *
+ * For `Intl` only. `useMessages` must keep reading the caller's own `locale`: an
+ * unnamed one is the built-in English table, while `en-US` would pick up an
+ * `en` table a consumer registered, and the hydrating render would then disagree
+ * with the server about the library's own words instead.
+ */
+export function useIntlLocale(locale: string | undefined): string | undefined {
+  const hydrated = useHydrated();
+
+  return locale ?? (hydrated ? undefined : HYDRATION_LOCALE);
+}
+
 export function usePrefersReducedMotion(): boolean {
   return React.useSyncExternalStore(subscribeToMotion, readMotion, noMatchOnServer);
 }

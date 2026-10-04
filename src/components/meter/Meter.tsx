@@ -13,6 +13,7 @@ import {
 import { cx, metaTextClasses, stackGapClasses } from '../../internal/styles.js';
 import type { NebaColor, NebaSize, NebaThreshold } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
+import { useIntlLocale } from '../../internal/media.js';
 
 export interface MeterProps extends Omit<
   React.ComponentPropsWithoutRef<'div'>,
@@ -99,6 +100,7 @@ export const Meter = React.forwardRef<HTMLDivElement, MeterProps>(function Meter
     style,
     ...props
   } = useStyleDefaults(rawProps, ['size', 'locale']);
+  const intlLocale = useIntlLocale(locale);
 
   const fraction = progressFraction(value, min, max);
   const family = thresholdColor(value, color, thresholds);
@@ -111,7 +113,7 @@ export const Meter = React.forwardRef<HTMLDivElement, MeterProps>(function Meter
       min={min}
       max={max}
       format={format}
-      locale={locale}
+      locale={intlLocale}
       // The reading announced is the reading drawn. Base UI's own writes the
       // share with `Intl`, which in some languages puts a space before the `%`
       // that the text beside the bar does not have.

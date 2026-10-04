@@ -25,6 +25,7 @@ import {
 } from '../../internal/date.js';
 import { cx } from '../../internal/styles.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
+import { useIntlLocale } from '../../internal/media.js';
 
 /**
  * Which column of the clock a row belongs to. Re-exported so a caller writing a
@@ -136,7 +137,8 @@ export const TimePicker = React.forwardRef<HTMLButtonElement, TimePickerProps>(
     } = useStyleDefaults(rawProps, ['size', 'density', 'variant', 'locale', 'labelPlacement']);
 
     const labels = usePickerLabels(labelOverrides, locale);
-    const hour12 = hour12Prop ?? isHour12(locale);
+    const intlLocale = useIntlLocale(locale);
+    const hour12 = hour12Prop ?? isHour12(intlLocale);
 
     const [uncontrolledValue, setUncontrolledValue] = React.useState<Date | null>(
       defaultValue ?? null
@@ -224,8 +226,8 @@ export const TimePicker = React.forwardRef<HTMLButtonElement, TimePickerProps>(
 
     // Holds the trigger open at the width of the longest time it could show.
     const samples = React.useMemo(
-      () => withPlaceholder(displaySamples(locale, displayFormat), placeholder),
-      [locale, displayFormat, placeholder]
+      () => withPlaceholder(displaySamples(intlLocale, displayFormat), placeholder),
+      [intlLocale, displayFormat, placeholder]
     );
 
     return (
@@ -239,7 +241,7 @@ export const TimePicker = React.forwardRef<HTMLButtonElement, TimePickerProps>(
         triggerRef={ref}
         startIcon={startIcon ?? <ClockIcon />}
         display={
-          isValidDate(value) ? formatDate(value, locale, displayFormat) : (placeholder ?? '')
+          isValidDate(value) ? formatDate(value, intlLocale, displayFormat) : (placeholder ?? '')
         }
         samples={samples}
         empty={!isValidDate(value)}

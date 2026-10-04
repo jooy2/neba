@@ -25,6 +25,7 @@ import type {
   NebaWeekday
 } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
+import { useIntlLocale } from '../../internal/media.js';
 
 /** Both ends of a span. Either may be missing while one is being chosen. */
 export interface CalendarRange {
@@ -151,7 +152,8 @@ export const Calendar = React.forwardRef<HTMLDivElement, CalendarProps>(
     } = useStyleDefaults(rawProps, ['size', 'locale']);
 
     const pickerLabels = usePickerLabels(labelOverrides, locale);
-    const firstDay = weekStartsOn ?? localeWeekStart(locale);
+    const intlLocale = useIntlLocale(locale);
+    const firstDay = weekStartsOn ?? localeWeekStart(intlLocale);
 
     const [uncontrolledValue, setUncontrolledValue] = React.useState(
       () => defaultValue ?? EMPTY[mode]
