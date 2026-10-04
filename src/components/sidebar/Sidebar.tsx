@@ -93,6 +93,19 @@ export interface SidebarProps extends Omit<
   defaultOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
   /**
+   * Keeps the drawer's contents in the DOM while it is closed, once the sidebar
+   * has collapsed into one. A column is always there and this changes nothing
+   * about it.
+   *
+   * The server sends the column, so a crawler that does not run scripts reads
+   * the links either way. One that does run them, at a phone's width, sees the
+   * sidebar become a closed drawer — and a closed drawer that is not in the DOM
+   * takes every link in the navigation with it. Turn this on where those links
+   * are how the site is found.
+   * @default false
+   */
+  keepMounted?: boolean;
+  /**
    * Whether the column holds its place while the page scrolls past it.
    *
    * On inside a PageLayout, where it costs nothing when it is not needed: with
@@ -227,6 +240,7 @@ export const Sidebar = React.forwardRef<HTMLElement, SidebarProps>(function Side
     open: openProp,
     defaultOpen = false,
     onOpenChange,
+    keepMounted = false,
     sticky: stickyProp,
     title,
     variant = 'outline',
@@ -454,6 +468,7 @@ export const Sidebar = React.forwardRef<HTMLElement, SidebarProps>(function Side
         mode="overlay"
         open={open}
         onOpenChange={changeOpen}
+        keepMounted={keepMounted}
         title={title}
         size={size}
         color={color}

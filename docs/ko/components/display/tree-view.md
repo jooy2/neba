@@ -80,9 +80,21 @@ sheet는 색으로 채워지지 않습니다. 이미 표면이 있는 [Card](../
 
 </Demo>
 
+### keepMounted
+
+기본적으로 닫힌 가지는 DOM에 없으므로, 서버 렌더를 읽는 크롤러는 그 안의 링크를 보지 못합니다. `keepMounted`를 주면 닫힌 가지가 모두 접힌 채 `inert`로 DOM에 남아, 내비게이션 트리의 링크가 전부 서버 렌더에 들어갑니다. 닫힌 가지의 행은 tab 순서에도, 방향키가 지나가는 행에도 들어가지 않습니다. 행이 수천 개인 트리라면 그 전부를 첫 렌더에 만듭니다.
+
+```tsx
+<TreeView label="Docs" keepMounted>
+  <TreeItem value="guide" label="Guide" href="/guide">
+    <TreeItem value="install" label="Installation" href="/guide/install" />
+  </TreeItem>
+</TreeView>
+```
+
 ### expandable
 
-닫힌 가지는 DOM에 없으므로, 행을 처음 열 때 자식을 가져오는 트리에는 아직 그릴 것이 없습니다. `expandable`은 그래도 화살표를 그립니다. `onExpandedChange`에서 가져온 뒤, 도착하면 행을 렌더링하세요.
+`keepMounted`를 켜지 않으면 닫힌 가지는 DOM에 없으므로, 행을 처음 열 때 자식을 가져오는 트리에는 아직 그릴 것이 없습니다. `expandable`은 그래도 화살표를 그립니다. `onExpandedChange`에서 가져온 뒤, 도착하면 행을 렌더링하세요.
 
 ```tsx
 <TreeView expanded={expanded} onExpandedChange={load}>
@@ -101,3 +113,4 @@ sheet는 색으로 채워지지 않습니다. 이미 표면이 있는 [Card](../
 - RTL에서는 ArrowLeft와 ArrowRight가 바뀌므로, 전진 방향의 화살표는 언제나 "더 안쪽"을 뜻합니다.
 - `label`을 넘겨 트리에 이름을 주세요. 없으면 screen reader가 이름 없는 트리로 읽습니다.
 - `multiple`은 트리에 `aria-multiselectable`을 붙입니다.
+- `keepMounted`로 DOM에 남은 가지는 닫혀 있는 동안 `inert`입니다. tab 순서와 accessibility tree에서 빠지고, 브라우저의 페이지 내 찾기에도 걸리지 않습니다.

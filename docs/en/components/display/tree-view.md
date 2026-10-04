@@ -80,9 +80,21 @@ A row with an `href` renders as a link, which is what a navigation tree is made 
 
 </Demo>
 
+### keepMounted
+
+A shut branch is not in the DOM by default, so a crawler reading the server render never sees the links inside it. `keepMounted` keeps every shut branch in the DOM, collapsed and `inert`, so a navigation tree has every link in its server render. The rows of a shut branch stay out of the tab order and out of the rows the arrow keys walk. On a tree with thousands of rows, each one is built on the first render.
+
+```tsx
+<TreeView label="Docs" keepMounted>
+  <TreeItem value="guide" label="Guide" href="/guide">
+    <TreeItem value="install" label="Installation" href="/guide/install" />
+  </TreeItem>
+</TreeView>
+```
+
 ### expandable
 
-A shut branch is not in the DOM, so a tree that fetches its children the first time a row is opened has nothing to render yet. `expandable` draws the arrow anyway: fetch in `onExpandedChange`, then render the rows when they arrive.
+A shut branch is not in the DOM unless `keepMounted` is on, so a tree that fetches its children the first time a row is opened has nothing to render yet. `expandable` draws the arrow anyway: fetch in `onExpandedChange`, then render the rows when they arrive.
 
 ```tsx
 <TreeView expanded={expanded} onExpandedChange={load}>
@@ -101,3 +113,4 @@ A shut branch is not in the DOM, so a tree that fetches its children the first t
 - ArrowLeft and ArrowRight swap under RTL, so the forward arrow always means "further in".
 - Pass `label` so the tree has a name; without one, a screen reader announces an unnamed tree.
 - `multiple` sets `aria-multiselectable` on the tree.
+- A branch kept in the DOM by `keepMounted` is `inert` while it is shut, so it is out of the tab order and the accessibility tree, and the browser's page search does not find it.

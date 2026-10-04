@@ -84,6 +84,16 @@ import { Header, PageLayout, Sidebar, SidebarTrigger } from 'neba';
 </PageLayout>;
 ```
 
+### keepMounted
+
+The server sends the column, so a crawler that does not run scripts reads the sidebar's links either way. A crawler that runs them at a phone's width, as Google's does, sees the sidebar collapse into a closed drawer, and a closed drawer is not in the DOM. `keepMounted` keeps the closed drawer's contents in the DOM, hidden, so the links stay on the page. It changes nothing while the sidebar is a column.
+
+```tsx
+<Sidebar collapseBelow="md" keepMounted>
+  <nav>…</nav>
+</Sidebar>
+```
+
 ### sticky
 
 On inside a PageLayout and off outside one, so a standalone Sidebar is not sticky unless `sticky` is set. With the page scrolling it becomes a sticky column as tall as what is left of the window under the header; with only the content scrolling it is already as tall as the layout and this changes nothing.
@@ -92,5 +102,6 @@ On inside a PageLayout and off outside one, so a standalone Sidebar is not stick
 
 - It renders `<aside>`, the `complementary` landmark, and names itself with the `locale`'s word for "Sidebar" unless `label` says otherwise. A page with two sidebars must name both.
 - Collapsed, it is a modal dialog: the focus is held inside it, Escape closes it, and the focus returns to the trigger.
+- A closed drawer kept in the DOM by `keepMounted` is hidden, so its contents are out of the tab order and the accessibility tree, and it holds no focus.
 - The resize handle is a `role="separator"` with `tabindex="0"` and is named by the `locale`. Left and right arrows move it by 16px.
 - `locale` is inherited from the PageLayout, so it is written once per page.

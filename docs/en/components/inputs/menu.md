@@ -120,9 +120,21 @@ From the keyboard it opens with the context-menu key or `Shift+F10` while the ar
 
 `side` and `align` place the popup relative to the trigger. `openOnHover` opens the menu without a click.
 
+### keepMounted
+
+A closed menu's rows are not in the DOM by default. `keepMounted` keeps the popup and its rows in the DOM while the menu is closed, hidden, and every `MenuSubmenu` inside keeps its rows too. Use it for a menu of links that a crawler which runs scripts should find. The popup is portalled, so the rows arrive once the page has hydrated, not in the server's HTML. `ContextMenu` takes the same prop.
+
+```tsx
+<Menu keepMounted trigger={<Button>Docs</Button>}>
+  <MenuItem href="/guide">Guide</MenuItem>
+  <MenuItem href="/changelog">Changelog</MenuItem>
+</Menu>
+```
+
 ## Accessibility
 
 - The `menu` / `menuitem` roles, roving focus with the arrow keys, Home and End, typeahead, Escape, closing on an outside click and restoring focus to the trigger are all handled.
 - Give a destructive row `color="danger"`; the text and the soft background under a highlighted row turn over together.
 - When the label is not a string, give `label` the text typeahead should match against.
+- A closed menu kept in the DOM by `keepMounted` is hidden, so its rows are out of the tab order and the accessibility tree until it opens.
 - A `disabled` row stays listed and findable by typeahead. A row that disappears reads as "there is no such thing" rather than "it is not available here".

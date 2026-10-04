@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+import { renderToString } from 'react-dom/server';
 import { render } from 'vitest-browser-react';
 import { userEvent } from 'vitest/browser';
 import { Tab, TabPanel, Tabs } from 'neba';
@@ -184,6 +185,59 @@ describe('Tabs', () => {
       );
 
       expect(screen.container.innerHTML).toContain('Second');
+    });
+  });
+
+  // What is behind a tab nobody pressed is in a crawler's index only if it is
+  // in the server render.
+  describe('keepMounted on the set', () => {
+    it('leaves the hidden panels out of a server render by default', () => {
+      const html = renderToString(<Basic defaultValue="overview" />);
+
+      expect(html).toContain('What this project is.');
+      expect(html).not.toContain('How much you used.');
+    });
+
+    it('writes every panel into a server render when it is on', () => {
+      const html = renderToString(<Basic defaultValue="overview" keepMounted />);
+
+      expect(html).toContain('What this project is.');
+      expect(html).toContain('How much you used.');
+      expect(html).toContain('What you owe.');
+    });
+
+    it('keeps the hidden panels in the document, hidden', async () => {
+      const screen = await render(<Basic defaultValue="overview" keepMounted />);
+      const hidden = screen.getByText('How much you used.').element();
+
+      expect(hidden.closest('[role="tabpanel"]')).toHaveAttribute('hidden');
+      expect(hidden).not.toBeVisible();
+      await expect.element(screen.getByText('What this project is.')).toBeVisible();
+    });
+
+    it('still switches between the panels', async () => {
+      const screen = await render(<Basic defaultValue="overview" keepMounted />);
+
+      await screen.getByRole('tab', { name: 'Billing' }).click();
+
+      await expect.element(screen.getByText('What you owe.')).toBeVisible();
+      await expect.element(screen.getByText('What this project is.')).not.toBeVisible();
+    });
+
+    it('lets a panel of its own say otherwise', async () => {
+      const screen = await render(
+        <Tabs defaultValue="a" keepMounted>
+          <Tab value="a">Overview</Tab>
+          <Tab value="b">Usage</Tab>
+          <TabPanel value="a">First</TabPanel>
+          <TabPanel value="b" keepMounted={false}>
+            Second
+          </TabPanel>
+        </Tabs>
+      );
+
+      await expect.element(screen.getByText('First')).toBeInTheDocument();
+      expect(screen.container.innerHTML).not.toContain('Second');
     });
   });
 

@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+import { renderToString } from 'react-dom/server';
 import { render } from 'vitest-browser-react';
 import { userEvent } from 'vitest/browser';
 import { Breadcrumb, BreadcrumbItem } from 'neba';
@@ -380,6 +381,131 @@ describe('Breadcrumb', () => {
 
       await expect.element(screen.getByText('Billing')).toBeInTheDocument();
       expect(screen.getByRole('link', { name: 'Billing' }).query()).toBeNull();
+    });
+  });
+
+  // A step that is not in the markup until the `…` is pressed is not in a
+  // server render, and a crawler never presses it.
+  describe('keepMounted', () => {
+    const trail = (props: Partial<React.ComponentProps<typeof Breadcrumb>> = {}) => (
+      <Breadcrumb maxItems={3} {...props}>
+        <BreadcrumbItem href="/">Home</BreadcrumbItem>
+        <BreadcrumbItem href="/a">Projects</BreadcrumbItem>
+        <BreadcrumbItem href="/b">Neba</BreadcrumbItem>
+        <BreadcrumbItem href="/c">Settings</BreadcrumbItem>
+        <BreadcrumbItem>Billing</BreadcrumbItem>
+      </Breadcrumb>
+    );
+
+    /** The steps in document order, with the separators and the fold left out. */
+    function stepsOf(screen: Awaited<ReturnType<typeof render>>) {
+      return Array.from(
+        screen.container.querySelectorAll<HTMLElement>('ol > li:not([aria-hidden])')
+      )
+        .filter((step) => step.querySelector('a, span[aria-current]') !== null)
+        .map((step) => ({ text: step.textContent, hidden: step.hidden }));
+    }
+
+    it('leaves the folded steps out of a server render by default', () => {
+      const html = renderToString(trail());
+
+      expect(html).toContain('href="/"');
+      expect(html).not.toContain('href="/b"');
+    });
+
+    it('writes the folded steps into a server render when it is on', () => {
+      const html = renderToString(trail({ keepMounted: true }));
+
+      expect(html).toContain('href="/a"');
+      expect(html).toContain('href="/b"');
+      expect(html).toContain('href="/c"');
+    });
+
+    it('keeps the folded steps in the document, hidden and in order', async () => {
+      const screen = await render(trail({ keepMounted: true }));
+
+      await expect.element(screen.getByRole('button', { name: 'Show hidden steps' })).toBeVisible();
+      expect(stepsOf(screen)).toEqual([
+        { text: 'Home', hidden: false },
+        { text: 'Projects', hidden: true },
+        { text: 'Neba', hidden: true },
+        { text: 'Settings', hidden: true },
+        { text: 'Billing', hidden: false }
+      ]);
+      expect(screen.getByText('Neba').element()).not.toBeVisible();
+    });
+
+    // Two separators show — either side of the fold — and the folded steps take
+    // theirs along.
+    it('hides the separators of the folded steps with them', async () => {
+      const screen = await render(trail({ keepMounted: true }));
+      const separators = Array.from(
+        screen.container.querySelectorAll<HTMLElement>('ol > li[aria-hidden="true"]')
+      );
+
+      expect(separators.filter((separator) => !separator.hidden)).toHaveLength(2);
+    });
+
+    it('shows them where they are when the fold is pressed', async () => {
+      const screen = await render(trail({ keepMounted: true }));
+
+      await screen.getByRole('button', { name: 'Show hidden steps' }).click();
+
+      await expect.element(screen.getByRole('link', { name: 'Neba' })).toBeVisible();
+      expect(stepsOf(screen).every((step) => !step.hidden)).toBe(true);
+      expect(screen.getByRole('button', { name: 'Show hidden steps' }).query()).toBeNull();
+    });
+
+    it('still hands the focus to the first step the fold was hiding', async () => {
+      const screen = await render(trail({ keepMounted: true }));
+
+      screen.getByRole('button', { name: 'Show hidden steps' }).element().focus();
+      await userEvent.keyboard('{Enter}');
+
+      await expect.element(screen.getByRole('link', { name: 'Projects' })).toHaveFocus();
+    });
+
+    it('marks only the last visible step as the current one', async () => {
+      const screen = await render(trail({ keepMounted: true }));
+      const current = screen.container.querySelectorAll('[aria-current="page"]');
+
+      expect(current).toHaveLength(1);
+      expect(current[0]).toHaveTextContent('Billing');
+    });
+
+    // A trail folded at its very end ends on the `…`, so no step is the page
+    // the reader is on until it is unfolded — kept or not.
+    it('marks no folded step as the current one', async () => {
+      const screen = await render(trail({ keepMounted: true, itemsAfterCollapse: 0 }));
+
+      await expect.element(screen.getByRole('button', { name: 'Show hidden steps' })).toBeVisible();
+      expect(screen.container.querySelector('[aria-current]')).toBeNull();
+
+      await screen.getByRole('button', { name: 'Show hidden steps' }).click();
+
+      await expect
+        .poll(() => screen.container.querySelector('[aria-current="page"]')?.textContent)
+        .toBe('Billing');
+    });
+
+    it('folds again when the steps change', async () => {
+      const leafy = (leaf: string) => (
+        <Breadcrumb maxItems={3} keepMounted>
+          <BreadcrumbItem href="/">Home</BreadcrumbItem>
+          <BreadcrumbItem href="/a">Projects</BreadcrumbItem>
+          <BreadcrumbItem href="/b">Neba</BreadcrumbItem>
+          <BreadcrumbItem>{leaf}</BreadcrumbItem>
+        </Breadcrumb>
+      );
+      const screen = await render(leafy('Billing'));
+
+      await screen.getByRole('button', { name: 'Show hidden steps' }).click();
+      await expect.element(screen.getByRole('link', { name: 'Neba' })).toBeVisible();
+
+      await screen.rerender(leafy('Members'));
+
+      await expect.element(screen.getByText('Members')).toBeInTheDocument();
+      expect(screen.getByText('Neba').element()).not.toBeVisible();
     });
   });
 

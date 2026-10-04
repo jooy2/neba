@@ -121,6 +121,17 @@ import { Tab, TabPanel, Tabs } from 'neba';
 
 `TabPanel`에 지정하면 선택되지 않은 패널의 React 트리를 유지합니다. 그렇지 않으면 선택되지 않은 패널은 DOM에 없으므로 서버 렌더와 크롤러 색인에도 없습니다. 검색에 걸려야 하는 내용이 든 패널에는 `keepMounted`를 주세요.
 
+`Tabs`에 지정하면 모든 패널에 같은 값이 적용되어 패널마다 쓰지 않아도 됩니다. 패널에 직접 준 `keepMounted`가 우선하므로, 한 패널에 `keepMounted={false}`를 주면 그 패널만 빠집니다.
+
+```tsx
+<Tabs defaultValue="overview" keepMounted>
+  <Tab value="overview">Overview</Tab>
+  <Tab value="usage">Usage</Tab>
+  <TabPanel value="overview">…</TabPanel>
+  <TabPanel value="usage">…</TabPanel>
+</Tabs>
+```
+
 ## 접근성
 
 - 탭 바 전체가 tab 정지 하나이고, 그 안에서는 방향키와 Home/End로 이동합니다(roving tab index).

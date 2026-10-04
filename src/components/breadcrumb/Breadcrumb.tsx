@@ -72,6 +72,17 @@ export interface BreadcrumbProps extends Omit<React.ComponentPropsWithoutRef<'na
    */
   expandable?: boolean;
   /**
+   * Keeps the steps a `maxItems` fold hides in the DOM, hidden, rather than
+   * leaving them out until the `…` is pressed. Unfolding then shows them where
+   * they already are.
+   *
+   * A step that is not in the markup is not in a server render either, and a
+   * crawler reads the server render without pressing anything. `structuredData`
+   * already describes the whole path; this puts the links themselves there.
+   * @default false
+   */
+  keepMounted?: boolean;
+  /**
    * Which language the trail names itself in — a BCP 47 tag such as `ko`,
    * `pt-BR` or `zh-Hant`. Unsupported tags fall back to English.
    *
@@ -309,6 +320,7 @@ export const Breadcrumb = React.forwardRef<HTMLElement, BreadcrumbProps>(
       itemsBeforeCollapse = 1,
       itemsAfterCollapse = 1,
       expandable = true,
+      keepMounted = false,
       locale,
       label,
       expandLabel,
@@ -379,13 +391,44 @@ export const Breadcrumb = React.forwardRef<HTMLElement, BreadcrumbProps>(
       // longer than the step it replaced.
       total - itemsBeforeCollapse - itemsAfterCollapse > 1;
 
-    const shown = folding
-      ? [
-          ...steps.slice(0, Math.max(0, itemsBeforeCollapse)),
-          null,
-          ...steps.slice(total - Math.max(0, itemsAfterCollapse))
-        ]
-      : steps;
+    const before = Math.max(0, itemsBeforeCollapse);
+    const after = total - Math.max(0, itemsAfterCollapse);
+
+    /*
+     * What the row holds: every step, or the ends of the trail with the fold
+     * between them. `null` is the `…`. Under `keepMounted` the steps the fold
+     * stands for stay, after it and hidden, so they are in the markup in the
+     * order they belong in and unfolding takes nothing but the `hidden` away.
+     * They keep their keys either way, so a step is never remounted by the
+     * fold opening or closing.
+     */
+    const shown: {
+      step: React.ReactElement<BreadcrumbItemProps> | null;
+      at: number;
+      folded: boolean;
+    }[] = [];
+
+    steps.forEach((step, at) => {
+      const folded = folding && at >= before && at < after;
+
+      if (folding && at === before) {
+        shown.push({ step: null, at: -1, folded: false });
+      }
+
+      if (!folded) {
+        shown.push({ step, at, folded });
+      } else if (keepMounted) {
+        shown.push({ step: React.cloneElement(step, { hidden: true }), at, folded });
+      }
+    });
+
+    // The step the row ends on, as far as a reader can see. A folded step is
+    // passed over, and a trail folded at its very end ends on the `…`, which is
+    // no step at all — exactly as it was before the folded steps were kept.
+    const lastShown = shown.reduce(
+      (latest, entry) => (entry.folded ? latest : entry.step ? entry.at : -1),
+      -1
+    );
 
     const mark = isSeparatorName(separator) ? separatorMark(separator) : separator;
 
@@ -440,12 +483,16 @@ export const Breadcrumb = React.forwardRef<HTMLElement, BreadcrumbProps>(
             trailGapClasses[density][size]
           )}
         >
-          {shown.map((step, index) => (
-            <React.Fragment key={step ? (step.key ?? index) : 'fold'}>
+          {shown.map(({ step, at, folded }, index) => (
+            <React.Fragment key={step ? (step.key ?? at) : 'fold'}>
               {index > 0 ? (
                 <li
                   aria-hidden="true"
-                  className="flex shrink-0 items-center text-(--neba-muted-fg) select-none"
+                  // A folded step takes the mark before it along. `[&[hidden]]`
+                  // because the attribute is only a user-agent rule, which
+                  // `flex` outranks.
+                  hidden={folded || undefined}
+                  className="flex shrink-0 items-center text-(--neba-muted-fg) select-none [&[hidden]]:hidden"
                 >
                   {mark}
                 </li>
@@ -453,7 +500,7 @@ export const Breadcrumb = React.forwardRef<HTMLElement, BreadcrumbProps>(
 
               {step ? (
                 <BreadcrumbContext.Provider
-                  value={{ size, locale, last: !claimed && index === shown.length - 1 }}
+                  value={{ size, locale, last: !claimed && at === lastShown }}
                 >
                   {step}
                 </BreadcrumbContext.Provider>
@@ -569,7 +616,13 @@ export const BreadcrumbItem = React.forwardRef<HTMLLIElement, BreadcrumbItemProp
     });
 
     return (
-      <li ref={ref} className={cx('flex min-w-0 items-center', className)} {...props}>
+      <li
+        ref={ref}
+        // A step a fold is keeping is closed with `hidden`, which is only a
+        // user-agent rule: `flex` outranks it without the doubled selector.
+        className={cx('flex min-w-0 items-center [&[hidden]]:hidden', className)}
+        {...props}
+      >
         {link ? (
           linkElement
         ) : interactive ? (

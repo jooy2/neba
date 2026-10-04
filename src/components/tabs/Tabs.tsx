@@ -44,6 +44,8 @@ interface TabsContextValue {
   orientation: NebaOrientation;
   fullWidth: boolean;
   align: NebaAlign;
+  /** What a TabPanel that says nothing about it does with itself while hidden. */
+  keepMounted: boolean;
 }
 
 const TabsContext = React.createContext<TabsContextValue>({
@@ -52,7 +54,8 @@ const TabsContext = React.createContext<TabsContextValue>({
   density: 'default',
   orientation: 'horizontal',
   fullWidth: false,
-  align: 'center'
+  align: 'center',
+  keepMounted: false
 });
 
 /** A tab's value. The same restraint Select puts on its own — an identifier. */
@@ -165,6 +168,17 @@ export interface TabsProps
    * @default 'center'
    */
   align?: NebaAlign;
+  /**
+   * Keeps every panel in the DOM while it is hidden, rather than only the one
+   * whose tab is chosen.
+   *
+   * A hidden panel that is not in the markup is not in a server render either,
+   * and a crawler reads the server render without pressing a single tab. Turn
+   * this on where what is behind the other tabs is content the page should be
+   * found by. A panel's own `keepMounted` still wins over it.
+   * @default false
+   */
+  keepMounted?: boolean;
   children?: React.ReactNode;
 }
 
@@ -189,7 +203,7 @@ export interface TabPanelProps extends React.ComponentPropsWithoutRef<'div'> {
   /**
    * Keeps the panel in the DOM while it is hidden. For a panel that is expensive
    * to build, or that holds form state which should survive being switched away
-   * from.
+   * from. Left out, it is whatever the Tabs around it says.
    * @default false
    */
   keepMounted?: boolean;
@@ -356,18 +370,22 @@ export const Tab = React.forwardRef<HTMLButtonElement, TabProps>(function Tab(
 
 /** The content behind one tab. */
 export const TabPanel = React.forwardRef<HTMLDivElement, TabPanelProps>(function TabPanel(
-  { value, keepMounted = false, className, children, ...props },
+  { value, keepMounted, className, children, ...props },
   ref
 ) {
-  const { size } = React.useContext(TabsContext);
+  const { size, keepMounted: keepAll } = React.useContext(TabsContext);
 
   return (
     <BaseUITabs.Panel
       ref={ref}
       value={value}
-      keepMounted={keepMounted}
+      keepMounted={keepMounted ?? keepAll}
       className={[
         'min-w-0 flex-1 text-(--neba-fg)',
+        // A panel kept in the DOM is hidden with the `hidden` attribute, which
+        // is only a user-agent rule: a `flex` or a `grid` a caller puts on the
+        // panel would outrank it and draw every panel at once.
+        '[&[hidden]]:hidden',
         // The panel takes focus when it holds nothing focusable of its own, so
         // it is reachable by keyboard — and it gets the house ring rather than
         // the browser's.
@@ -426,6 +444,7 @@ export const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(function Tabs(ra
     wheel = true,
     fullWidth = false,
     align = 'center',
+    keepMounted = false,
     className,
     style,
     children,
@@ -436,8 +455,8 @@ export const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(function Tabs(ra
   const rootRef = React.useRef<HTMLDivElement | null>(null);
   const listRef = React.useRef<HTMLDivElement | null>(null);
   const context = React.useMemo(
-    () => ({ variant, size, density, orientation, fullWidth, align }),
-    [variant, size, density, orientation, fullWidth, align]
+    () => ({ variant, size, density, orientation, fullWidth, align, keepMounted }),
+    [variant, size, density, orientation, fullWidth, align, keepMounted]
   );
 
   // Everything a caller writes between the tags is either a Tab or a Panel, and

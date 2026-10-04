@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+import { renderToString } from 'react-dom/server';
 import { render } from 'vitest-browser-react';
 import { userEvent } from 'vitest/browser';
 import { Button, TreeItem, TreeView } from 'neba';
@@ -224,6 +225,102 @@ describe('TreeView', () => {
       await expect
         .element(screen.getByRole('treeitem', { name: /src/ }))
         .toHaveAttribute('aria-expanded', 'false');
+    });
+  });
+
+  // A tree that is navigation has its links in a crawler's index only if a shut
+  // branch is in the server render.
+  describe('keepMounted', () => {
+    function Docs(props: React.ComponentProps<typeof TreeView>) {
+      return (
+        <TreeView label="Docs" {...props}>
+          <TreeItem value="guide" label="Guide" href="/guide">
+            <TreeItem value="install" label="Installation" href="/guide/install" />
+            <TreeItem value="theming" label="Theming" href="/guide/theming" />
+          </TreeItem>
+          <TreeItem value="faq" label="FAQ" href="/faq" />
+        </TreeView>
+      );
+    }
+
+    /** The track a branch opens on, found from a row inside it. */
+    function trackOf(screen: Awaited<ReturnType<typeof render>>, label: string) {
+      return screen.getByText(label).element().closest('[role="group"]')?.parentElement ?? null;
+    }
+
+    it('leaves a shut branch out of a server render by default', () => {
+      const html = renderToString(<Docs />);
+
+      expect(html).toContain('href="/guide"');
+      expect(html).not.toContain('href="/guide/install"');
+    });
+
+    it('writes the links of a shut branch into a server render when it is on', () => {
+      const html = renderToString(<Docs keepMounted />);
+
+      expect(html).toContain('href="/guide/install"');
+      expect(html).toContain('href="/guide/theming"');
+    });
+
+    it('holds a shut branch in the document, inert and out of the walk', async () => {
+      const screen = await render(<Docs keepMounted />);
+      const track = trackOf(screen, 'Installation');
+
+      await expect
+        .element(screen.getByRole('treeitem', { name: /^Guide/ }))
+        .toHaveAttribute('aria-expanded', 'false');
+      expect(track).toHaveAttribute('inert');
+      expect(track).toHaveAttribute('data-closing');
+    });
+
+    // By the arrow keys rather than a press: the rows here are links, and a
+    // press on one would follow it out of the test page.
+    it('opens and shuts the kept branch in place', async () => {
+      const screen = await render(<Docs keepMounted />);
+      const row = screen.getByRole('treeitem', { name: /^Guide/ });
+
+      row.element().focus();
+      await expect
+        .poll(() => document.activeElement?.getAttribute('data-neba-value'))
+        .toBe('guide');
+      await userEvent.keyboard('{ArrowRight}');
+
+      await expect.element(row).toHaveAttribute('aria-expanded', 'true');
+      await expect.poll(() => trackOf(screen, 'Installation')?.hasAttribute('inert')).toBe(false);
+
+      await userEvent.keyboard('{ArrowLeft}');
+
+      await expect.element(row).toHaveAttribute('aria-expanded', 'false');
+      await expect.poll(() => trackOf(screen, 'Installation')?.hasAttribute('inert')).toBe(true);
+      expect(screen.getByText('Installation').query()).not.toBeNull();
+    });
+
+    it('steps over the rows of a shut branch with the arrow keys', async () => {
+      const screen = await render(<Docs keepMounted />);
+
+      await screen
+        .getByRole('treeitem', { name: /^Guide/ })
+        .element()
+        .focus();
+      await expect
+        .poll(() => document.activeElement?.getAttribute('data-neba-value'))
+        .toBe('guide');
+
+      await userEvent.keyboard('{ArrowDown}');
+
+      await expect.poll(() => document.activeElement?.getAttribute('data-neba-value')).toBe('faq');
+    });
+
+    it('keeps the tab stop off the rows of a shut branch', async () => {
+      const screen = await render(<Docs keepMounted />);
+
+      await expect
+        .poll(() =>
+          Array.from(screen.container.querySelectorAll('[role="treeitem"][tabindex="0"]')).map(
+            (row) => row.getAttribute('data-neba-value')
+          )
+        )
+        .toEqual(['guide']);
     });
   });
 

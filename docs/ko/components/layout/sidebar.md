@@ -84,6 +84,16 @@ import { Header, PageLayout, Sidebar, SidebarTrigger } from 'neba';
 </PageLayout>;
 ```
 
+### keepMounted
+
+서버는 열을 보내므로, 스크립트를 실행하지 않는 크롤러는 어느 쪽이든 사이드바의 링크를 읽습니다. Google처럼 스크립트를 실행하며 휴대폰 너비로 렌더하는 크롤러에게는 사이드바가 닫힌 drawer로 접히고, 닫힌 drawer는 DOM에 없습니다. `keepMounted`를 주면 닫힌 drawer의 내용이 숨겨진 채 DOM에 남아 링크가 페이지에 그대로 있습니다. 사이드바가 열일 때는 아무것도 바꾸지 않습니다.
+
+```tsx
+<Sidebar collapseBelow="md" keepMounted>
+  <nav>…</nav>
+</Sidebar>
+```
+
 ### sticky
 
 PageLayout 안에서는 켜져 있고 밖에서는 꺼져 있으므로, 단독으로 쓴 Sidebar는 `sticky`를 주지 않으면 sticky가 아닙니다. 페이지가 스크롤될 때는 header 아래에서 시작해 남은 창 높이만큼인 sticky 열이 되고, 내용만 스크롤될 때는 이미 레이아웃 높이만큼이라 아무것도 달라지지 않습니다.
@@ -92,5 +102,6 @@ PageLayout 안에서는 켜져 있고 밖에서는 꺼져 있으므로, 단독�
 
 - `<aside>`(`complementary` 랜드마크)를 렌더링하고, `label`이 없으면 `locale`의 "사이드바"에 해당하는 단어로 스스로를 이름 짓습니다. 사이드바가 둘인 페이지는 반드시 둘 다 이름을 주어야 합니다.
 - 접힌 상태는 modal dialog입니다. focus가 안에 갇히고, Escape로 닫히며, focus는 trigger로 돌아갑니다.
+- `keepMounted`로 DOM에 남은 닫힌 drawer는 숨겨져 있으므로, 그 내용은 tab 순서에도 accessibility tree에도 없고 focus를 가두지도 않습니다.
 - 크기 조절 핸들은 `tabindex="0"`인 `role="separator"`이며 `locale`이 이름을 붙입니다. 좌우 화살표가 16px씩 움직입니다.
 - `locale`은 PageLayout에서 물려받으므로 페이지당 한 번만 씁니다.

@@ -375,6 +375,75 @@ describe('Sidebar', () => {
     });
   });
 
+  // A crawler that renders the page at a phone's width sees the sidebar become a
+  // closed drawer, and a closed drawer that is not in the DOM takes every link
+  // in the navigation with it.
+  describe('keepMounted', () => {
+    it('leaves a closed drawer out of the document by default', async () => {
+      await widen(NARROW);
+      const screen = await render(
+        <Sidebar collapseBelow="md">
+          <a href="/docs">Docs</a>
+        </Sidebar>
+      );
+
+      await expect.poll(() => screen.getByRole('complementary').query()).toBeNull();
+      expect(document.querySelector('a[href="/docs"]')).toBeNull();
+    });
+
+    it('keeps the links of a closed drawer in the document, hidden and once', async () => {
+      await widen(NARROW);
+      const screen = await render(
+        <Sidebar collapseBelow="md" keepMounted>
+          <a href="/docs">Docs</a>
+        </Sidebar>
+      );
+
+      await expect.poll(() => screen.getByRole('complementary').query()).toBeNull();
+      await expect.poll(() => document.querySelectorAll('a[href="/docs"]').length).toBe(1);
+      expect(document.querySelector('a[href="/docs"]')).not.toBeVisible();
+      expect(screen.getByRole('dialog').query()).toBeNull();
+    });
+
+    it('opens the kept drawer and closes it again', async () => {
+      await widen(NARROW);
+      const screen = await render(
+        <Sidebar collapseBelow="md" keepMounted open={false} onOpenChange={() => {}}>
+          <a href="/docs">Docs</a>
+        </Sidebar>
+      );
+
+      await screen.rerender(
+        <Sidebar collapseBelow="md" keepMounted open onOpenChange={() => {}}>
+          <a href="/docs">Docs</a>
+        </Sidebar>
+      );
+
+      await expect.element(screen.getByRole('dialog')).toBeVisible();
+      await expect.element(screen.getByRole('link', { name: 'Docs' })).toBeVisible();
+
+      await screen.rerender(
+        <Sidebar collapseBelow="md" keepMounted open={false} onOpenChange={() => {}}>
+          <a href="/docs">Docs</a>
+        </Sidebar>
+      );
+
+      await expect.element(screen.getByRole('dialog')).not.toBeInTheDocument();
+      expect(document.querySelector('a[href="/docs"]')).not.toBeNull();
+    });
+
+    it('changes nothing about the column', async () => {
+      const screen = await render(
+        <Sidebar collapseBelow="md" keepMounted>
+          <a href="/docs">Docs</a>
+        </Sidebar>
+      );
+
+      await expect.element(screen.getByRole('complementary')).toBeVisible();
+      expect(screen.getByRole('link', { name: 'Docs' }).elements()).toHaveLength(1);
+    });
+  });
+
   describe('inside a layout', () => {
     it('takes the side it was handed to, without being told twice', async () => {
       const screen = await render(

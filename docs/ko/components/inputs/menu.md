@@ -120,9 +120,21 @@ import { Button, Menu, MenuItem, MenuSeparator, MenuSubmenu } from 'neba';
 
 `side`와 `align`은 trigger를 기준으로 팝업이 놓일 자리입니다. `openOnHover`는 클릭 없이 hover만으로 열리게 합니다.
 
+### keepMounted
+
+기본적으로 닫힌 메뉴의 행은 DOM에 없습니다. `keepMounted`를 주면 메뉴가 닫혀 있는 동안에도 팝업과 행이 숨겨진 채 DOM에 남고, 안에 든 `MenuSubmenu`의 행도 함께 남습니다. 스크립트를 실행하는 크롤러가 찾아야 하는 링크 메뉴에 쓰세요. 팝업은 portal로 렌더되므로 행은 서버 HTML이 아니라 페이지가 hydration된 뒤에 들어옵니다. `ContextMenu`도 같은 prop을 받습니다.
+
+```tsx
+<Menu keepMounted trigger={<Button>Docs</Button>}>
+  <MenuItem href="/guide">Guide</MenuItem>
+  <MenuItem href="/changelog">Changelog</MenuItem>
+</Menu>
+```
+
 ## 접근성
 
 - `menu` / `menuitem` role, 방향키 roving focus, Home/End, typeahead, Escape, 바깥 클릭으로 닫기, 닫을 때 trigger로 focus 복귀가 모두 처리됩니다.
 - 삭제처럼 파괴적인 행에는 `color="danger"`를 주세요. 글자색과 강조된 행 아래의 옅은 배경이 함께 바뀝니다.
 - 라벨이 문자열이 아니면 `label`에 typeahead가 매칭할 문자열을 주세요.
+- `keepMounted`로 DOM에 남은 닫힌 메뉴는 숨겨져 있으므로, 열리기 전까지 그 행은 tab 순서에도 accessibility tree에도 없습니다.
 - `disabled` 행은 목록에 남고 typeahead에도 걸립니다. 행이 사라지면 "여기서는 쓸 수 없음"이 아니라 "그런 항목이 없음"으로 읽힙니다.

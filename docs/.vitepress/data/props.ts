@@ -2667,6 +2667,15 @@ export const propTables: Record<string, PropRow[]> = {
       }
     },
     {
+      name: 'keepMounted',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: 'drawer로 접힌 뒤 닫힌 drawer의 내용을 숨긴 채 DOM에 남깁니다. 스크립트를 실행하며 좁은 폭으로 렌더하는 크롤러도 링크를 찾습니다. 칼럼일 때는 아무것도 바꾸지 않습니다',
+        en: "Once the sidebar has collapsed into a drawer, keeps the closed drawer's contents in the DOM, hidden, so a crawler that renders the page at a phone's width still finds the links. Changes nothing about the column"
+      }
+    },
+    {
       name: 'sticky',
       type: 'boolean',
       default: {
@@ -8039,6 +8048,15 @@ export const propTables: Record<string, PropRow[]> = {
         en: 'Unavailable. The trigger stops opening anything'
       }
     },
+    {
+      name: 'keepMounted',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '닫힌 메뉴의 popup과 행을 숨긴 채 DOM에 남깁니다. 하위 메뉴도 함께 남습니다. popup은 portal로 렌더되므로 서버 HTML이 아니라 hydration 뒤에 DOM에 들어옵니다',
+        en: "Keeps a closed menu's popup and rows in the DOM, hidden, and its submenus' with them. The popup is portalled, so they arrive once the page has hydrated rather than in the server's HTML"
+      }
+    },
     ...scaleProps("'md'"),
     {
       name: 'density',
@@ -8254,6 +8272,15 @@ export const propTables: Record<string, PropRow[]> = {
       description: {
         ko: '우클릭과 길게 누르기에 반응하지 않게 합니다',
         en: 'Stops it answering a right-click or a long press'
+      }
+    },
+    {
+      name: 'keepMounted',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '닫힌 메뉴의 popup과 행을 숨긴 채 DOM에 남깁니다. Menu와 같습니다',
+        en: "Keeps a closed menu's popup and rows in the DOM, hidden, as on Menu"
       }
     },
     {
@@ -8521,6 +8548,15 @@ export const propTables: Record<string, PropRow[]> = {
       }
     },
     {
+      name: 'keepMounted',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '선택되지 않은 패널을 모두 숨긴 채 DOM에 남겨 서버 렌더와 크롤러에 포함합니다. 패널에 직접 준 keepMounted가 우선합니다',
+        en: "Keeps every unchosen panel in the DOM, hidden, so it is in a server render and a crawler reads it. A panel's own keepMounted still wins"
+      }
+    },
+    {
       name: 'children',
       type: 'ReactNode',
       description: {
@@ -8576,10 +8612,10 @@ export const propTables: Record<string, PropRow[]> = {
     {
       name: 'keepMounted',
       type: 'boolean',
-      default: 'false',
+      default: { ko: 'Tabs의 keepMounted', en: "the Tabs' keepMounted" },
       description: {
-        ko: '숨겨진 동안에도 DOM에 남깁니다. 만들기 비싼 내용, 살아 있어야 하는 폼 상태, 서버 렌더와 크롤러에 포함되어야 하는 내용',
-        en: 'Keeps the panel in the DOM while hidden. For content that is expensive to build, form state that should survive, or content a server render and a crawler should include'
+        ko: '숨겨진 동안에도 DOM에 남깁니다. 만들기 비싼 내용, 살아 있어야 하는 폼 상태, 서버 렌더와 크롤러에 포함되어야 하는 내용. 주지 않으면 Tabs의 값을 따릅니다',
+        en: 'Keeps the panel in the DOM while hidden. For content that is expensive to build, form state that should survive, or content a server render and a crawler should include. Left out, it follows the Tabs'
       }
     },
     {
@@ -10456,6 +10492,15 @@ export const propTables: Record<string, PropRow[]> = {
       }
     },
     {
+      name: 'keepMounted',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '닫힌 가지의 행을 접힌 채 inert로 DOM에 남겨 서버 렌더와 크롤러에 포함합니다. 화살표 키가 지나가는 순서에는 들어가지 않습니다. 내비게이션 트리에 쓰세요',
+        en: 'Keeps the rows of a shut branch in the DOM, collapsed and inert, so they are in a server render and a crawler follows their links. They stay out of the order the arrow keys walk. For a tree that is navigation'
+      }
+    },
+    {
       name: 'children',
       type: 'ReactNode',
       description: { ko: '최상위 TreeItem들', en: 'The top-level TreeItems' }
@@ -11067,6 +11112,15 @@ export const propTables: Record<string, PropRow[]> = {
       }
     },
     {
+      name: 'keepMounted',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: 'maxItems로 접힌 단계를 숨긴 채 DOM에 남겨 서버 렌더와 크롤러에 포함합니다. …를 누르면 그 자리에서 드러납니다',
+        en: 'Keeps the steps a maxItems fold hides in the DOM, hidden, so they are in a server render and a crawler follows them. Pressing the `…` shows them where they are'
+      }
+    },
+    {
       name: 'label',
       type: 'string',
       description: {
@@ -11644,6 +11698,15 @@ export const propTables: Record<string, PropRow[]> = {
       description: {
         ko: '패널이 닿는 화면 가장자리의 safe-area inset만큼 내용을 안쪽으로 둡니다. overlay 전용',
         en: 'Keeps the panel contents inside the screen safe-area insets on the edges it runs to. overlay only'
+      }
+    },
+    {
+      name: 'keepMounted',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: '닫힌 drawer의 패널과 내용을 숨긴 채 DOM에 남깁니다. overlay drawer는 portal로 렌더되므로 hydration 뒤에 들어오고, inline drawer는 서버 HTML에도 들어갑니다',
+        en: "Keeps a closed drawer's panel and contents in the DOM, hidden. An overlay drawer is portalled, so they arrive once the page has hydrated; an inline one is in the server's HTML as well"
       }
     },
     {

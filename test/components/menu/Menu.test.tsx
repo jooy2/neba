@@ -438,6 +438,58 @@ describe('Menu', () => {
     });
   });
 
+  // A menu of links whose rows exist only while it is open has no links in the
+  // page a crawler renders.
+  describe('keepMounted', () => {
+    function Links(props: Partial<React.ComponentProps<typeof Menu>>) {
+      return (
+        <Menu trigger={<Button>Docs</Button>} {...props}>
+          <MenuItem href="/guide">Guide</MenuItem>
+          <MenuSubmenu label="More">
+            <MenuItem href="/changelog">Changelog</MenuItem>
+          </MenuSubmenu>
+        </Menu>
+      );
+    }
+
+    it('builds the rows only on opening by default', async () => {
+      const screen = await render(<Links />);
+
+      await expect.element(screen.getByRole('button', { name: 'Docs' })).toBeInTheDocument();
+      expect(document.querySelector('a[href="/guide"]')).toBeNull();
+    });
+
+    it('keeps the rows of a closed menu in the document, hidden', async () => {
+      const screen = await render(<Links keepMounted />);
+
+      await expect.element(screen.getByRole('button', { name: 'Docs' })).toBeInTheDocument();
+      await expect.poll(() => document.querySelector('a[href="/guide"]')).not.toBeNull();
+      expect(document.querySelector('a[href="/guide"]')).not.toBeVisible();
+      expect(screen.getByRole('menu').query()).toBeNull();
+    });
+
+    // A menu of links kept in the DOM that dropped the links one level down
+    // would have kept half of them.
+    it('keeps the rows of a closed submenu as well', async () => {
+      await render(<Links keepMounted />);
+
+      await expect.poll(() => document.querySelector('a[href="/changelog"]')).not.toBeNull();
+      expect(document.querySelector('a[href="/changelog"]')).not.toBeVisible();
+    });
+
+    it('still opens and closes', async () => {
+      const screen = await render(<Links keepMounted />);
+
+      await screen.getByRole('button', { name: 'Docs' }).click();
+      await expect.element(screen.getByRole('menuitem', { name: 'Guide' })).toBeVisible();
+
+      await userEvent.keyboard('{Escape}');
+
+      await expect.element(screen.getByRole('menuitem', { name: 'Guide' })).not.toBeInTheDocument();
+      expect(document.querySelector('a[href="/guide"]')).not.toBeNull();
+    });
+  });
+
   describe('the keyboard', () => {
     /**
      * A key only reaches the menu once the popup holds focus, and Base UI moves
@@ -581,6 +633,18 @@ describe('ContextMenu', () => {
     const area = screen.getByTestId('area').element();
 
     expect(area.parentElement?.tagName).toBe('SECTION');
+  });
+
+  it('keeps its rows in the document while closed when it is asked to', async () => {
+    const screen = await render(
+      <ContextMenu keepMounted content={<MenuItem href="/guide">Guide</MenuItem>}>
+        <div>Right-click me</div>
+      </ContextMenu>
+    );
+
+    await expect.element(screen.getByText('Right-click me')).toBeInTheDocument();
+    await expect.poll(() => document.querySelector('a[href="/guide"]')).not.toBeNull();
+    expect(document.querySelector('a[href="/guide"]')).not.toBeVisible();
   });
 
   it('opens on a right-click', async () => {

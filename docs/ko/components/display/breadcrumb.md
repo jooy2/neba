@@ -57,6 +57,16 @@ import { Breadcrumb, BreadcrumbItem } from 'neba';
 
 </Demo>
 
+### keepMounted
+
+기본적으로 접힌 단계는 DOM에 없으므로, 서버 렌더를 읽는 크롤러는 그 링크를 보지 못합니다. `keepMounted`를 주면 접힌 단계가 숨겨진 채 DOM에 남고, `…`를 누르면 이미 있던 자리에서 드러납니다. 전체 경로는 어느 쪽이든 `structuredData`가 설명하고, 이 prop은 링크 자체를 마크업에 넣습니다.
+
+```tsx
+<Breadcrumb maxItems={3} keepMounted>
+  …
+</Breadcrumb>
+```
+
 ### 현재 단계
 
 마지막 단계는 지금 보고 있는 페이지이므로, `href`를 주더라도 링크가 되지 않습니다. 앞쪽 단계에 `current`를 붙이면 그 표시가 옮겨 가고, 마지막 단계에서는 걷힙니다.
@@ -107,4 +117,5 @@ import { Breadcrumb, BreadcrumbItem } from 'neba';
 - 현재 단계에는 `aria-current="page"`가 붙고, 한 트레일에서 이것을 가지는 단계는 언제나 하나뿐입니다.
 - 구분자는 `aria-hidden`이므로 screen reader는 단계만 읽고 사이의 기호는 읽지 않습니다.
 - `…`는 `expandLabel`이 이름을 주는 실제 버튼입니다. `expandable={false}`이면 표시일 뿐이며 reader에게는 감춰집니다.
+- `keepMounted`로 DOM에 남은 접힌 단계는 숨겨져 있으므로, 트레일이 펼쳐지기 전까지 tab 순서에도 accessibility tree에도 없습니다.
 - nav 이름과 `…` 버튼의 이름을 `locale`이 정합니다. `label`과 `expandLabel`로 직접 쓸 수도 있습니다.

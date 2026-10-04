@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+import { renderToString } from 'react-dom/server';
 import { render } from 'vitest-browser-react';
 import { Button, Drawer, DrawerClose } from 'neba';
 import { ko, registerMessages } from 'neba/locales';
@@ -426,6 +427,97 @@ describe('Drawer', () => {
       await expect.element(screen.getByRole('heading', { name: 'Filters' })).toBeInTheDocument();
       expect(panel).not.toBeNull();
       expect(panel?.getAttribute('aria-describedby')).toBe('hint');
+    });
+  });
+
+  // What is in a drawer nobody opened is in a crawler's render only if it is in
+  // the DOM.
+  describe('keepMounted', () => {
+    it('builds an overlay drawer only on opening by default', async () => {
+      const screen = await render(
+        <Drawer trigger={<Button>Menu</Button>} title="Navigation">
+          <a href="/guide">Guide</a>
+        </Drawer>
+      );
+
+      await expect.element(screen.getByRole('button', { name: 'Menu' })).toBeInTheDocument();
+      expect(document.querySelector('a[href="/guide"]')).toBeNull();
+    });
+
+    it('keeps a closed overlay drawer in the document, hidden', async () => {
+      const screen = await render(
+        <Drawer keepMounted trigger={<Button>Menu</Button>} title="Navigation">
+          <a href="/guide">Guide</a>
+        </Drawer>
+      );
+
+      await expect.element(screen.getByRole('button', { name: 'Menu' })).toBeInTheDocument();
+      await expect.poll(() => document.querySelector('a[href="/guide"]')).not.toBeNull();
+      expect(document.querySelector('a[href="/guide"]')).not.toBeVisible();
+      expect(screen.getByRole('dialog').query()).toBeNull();
+    });
+
+    // A closed drawer that held the focus, or kept the page behind it inert,
+    // would be a drawer the reader cannot see and cannot get past.
+    it('leaves the page usable while the kept drawer is closed', async () => {
+      const screen = await render(
+        <>
+          <Button>Elsewhere</Button>
+          <Drawer keepMounted title="Navigation">
+            <a href="/guide">Guide</a>
+          </Drawer>
+        </>
+      );
+      const elsewhere = screen.getByRole('button', { name: 'Elsewhere' });
+
+      await expect.poll(() => document.querySelector('a[href="/guide"]')).not.toBeNull();
+      await elsewhere.click();
+
+      await expect.element(elsewhere).toHaveFocus();
+      expect(elsewhere.element().closest('[inert]')).toBeNull();
+    });
+
+    it('opens and closes the kept drawer', async () => {
+      const screen = await render(
+        <Drawer keepMounted modal="trap-focus" trigger={<Button>Menu</Button>} title="Navigation">
+          <a href="/guide">Guide</a>
+        </Drawer>
+      );
+
+      await screen.getByRole('button', { name: 'Menu' }).click();
+      await expect.element(screen.getByRole('dialog', { name: 'Navigation' })).toBeVisible();
+
+      await screen.getByRole('button', { name: 'Close' }).click();
+
+      await expect.element(screen.getByRole('dialog')).not.toBeInTheDocument();
+      expect(document.querySelector('a[href="/guide"]')).not.toBeNull();
+    });
+
+    it('keeps a closed inline drawer in the document and in a server render', async () => {
+      const drawer = (
+        <Drawer mode="inline" keepMounted open={false} onOpenChange={() => {}} title="Projects">
+          <a href="/guide">Guide</a>
+        </Drawer>
+      );
+      const screen = await render(drawer);
+      const link = screen.container.querySelector('a[href="/guide"]');
+
+      expect(link).not.toBeNull();
+      expect(link?.closest('[hidden]')).not.toBeNull();
+      expect(screen.getByRole('heading', { name: 'Projects' }).query()).toBeNull();
+      expect(renderToString(drawer)).toContain('href="/guide"');
+    });
+
+    it('shows a kept inline drawer once it is opened', async () => {
+      const screen = await render(
+        <Drawer mode="inline" keepMounted open={false} onOpenChange={() => {}} title="Projects" />
+      );
+
+      await screen.rerender(
+        <Drawer mode="inline" keepMounted open onOpenChange={() => {}} title="Projects" />
+      );
+
+      await expect.element(screen.getByRole('heading', { name: 'Projects' })).toBeVisible();
     });
   });
 

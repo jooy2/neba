@@ -146,6 +146,18 @@ export interface DrawerProps
    * @default true
    */
   safeArea?: boolean;
+  /**
+   * Keeps the panel and its contents in the DOM while the drawer is closed,
+   * hidden, rather than building them each time it opens.
+   *
+   * For a drawer of links that should be in the page a crawler renders — the
+   * navigation a Sidebar becomes on a narrow screen above all. An `overlay`
+   * drawer is portalled, and a portal has nowhere to go until there is a
+   * document, so its contents arrive once the page has hydrated rather than in
+   * the server's HTML. An `inline` one is in the server's HTML as well.
+   * @default false
+   */
+  keepMounted?: boolean;
   /** The body. */
   children?: React.ReactNode;
 }
@@ -270,6 +282,10 @@ const viewportClasses: Record<NebaSide, string> = {
 const panelClasses = [
   surfaceClasses,
   'relative flex flex-col overflow-hidden',
+  // A drawer kept in the DOM is closed with the `hidden` attribute, which is
+  // only a user-agent rule, and `flex` outranks it. Without this a closed
+  // drawer under `keepMounted` would be drawn anyway.
+  '[&[hidden]]:hidden',
   'text-(--neba-fg) bg-(--n-panel-press)',
   '[border-color:var(--n-line)]',
   '[outline:none]'
@@ -363,6 +379,7 @@ export function Drawer(rawProps: DrawerProps) {
     modal = true,
     dismissible = true,
     safeArea = true,
+    keepMounted = false,
     className,
     style,
     children,
@@ -502,13 +519,17 @@ export function Drawer(rawProps: DrawerProps) {
   if (!overlay) {
     // An inline drawer is in the flow, so "closed" is "not in the layout".
     // There is nothing to animate on the way out: the page around it is what
-    // moves, and moving the page is not this component's to do.
-    if (!(open ?? inlineOpen)) {
+    // moves, and moving the page is not this component's to do. Kept mounted,
+    // it is still out of the layout, through `hidden` rather than by absence.
+    const shown = open ?? inlineOpen;
+
+    if (!shown && !keepMounted) {
       return null;
     }
 
     return (
       <div
+        hidden={!shown || undefined}
         className={panel}
         style={{ ...surfaceSlots(color, 0), ...sizeStyle, ...style }}
         // The same spread the overlay panel gets, in the same place. It was
@@ -541,7 +562,7 @@ export function Drawer(rawProps: DrawerProps) {
     >
       {trigger ? <BaseUIDialog.Trigger render={trigger} /> : null}
 
-      <BaseUIDialog.Portal>
+      <BaseUIDialog.Portal keepMounted={keepMounted}>
         {/* `neba-portal` is a hook, not a style: a portalled surface leaves the
             subtree a host may have scoped its CSS reset to. */}
         {/* Not fully modal, the page beside the drawer stays usable: the scrim
@@ -556,7 +577,7 @@ export function Drawer(rawProps: DrawerProps) {
 
         <BaseUIDialog.Viewport
           className={cx(
-            'neba-portal fixed inset-0 z-(--neba-z-portal) flex',
+            'neba-portal fixed inset-0 z-(--neba-z-portal) flex [&[hidden]]:hidden',
             viewportClasses[side],
             modal === true ? '' : 'pointer-events-none'
           )}

@@ -57,6 +57,16 @@ The fold only happens when it removes more than one step.
 
 </Demo>
 
+### keepMounted
+
+The steps a fold hides are not in the DOM by default, so a crawler reading the server render never sees their links. `keepMounted` keeps them in the DOM, hidden, and pressing the `…` shows them where they already are. `structuredData` describes the whole path either way; this puts the links themselves in the markup.
+
+```tsx
+<Breadcrumb maxItems={3} keepMounted>
+  …
+</Breadcrumb>
+```
+
 ### The current step
 
 The last step is the page you are on, so it is not a link even when it is given an `href`. `current` on an earlier step moves that mark, and takes it off the last one.
@@ -107,4 +117,5 @@ It is off by default. Leave it off when the app already emits a `BreadcrumbList`
 - The current step carries `aria-current="page"`, and exactly one step in a trail ever does.
 - The separators are `aria-hidden`, so a reader hears the steps and not the punctuation between them.
 - The `…` is a real button named by `expandLabel`. With `expandable={false}` it is a mark and is hidden from readers.
+- Steps a fold keeps in the DOM under `keepMounted` are hidden, so they are out of the tab order and the accessibility tree until the trail unfolds.
 - `locale` names the nav landmark and the `…` button; `label` and `expandLabel` write them out instead.

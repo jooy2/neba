@@ -51,6 +51,8 @@ interface TreeViewContextValue {
   disabled: boolean;
   /** Whether more than one row may be chosen, which decides how a row says it is not. */
   multiple: boolean;
+  /** Whether a shut branch stays in the document rather than being taken out of it. */
+  keepMounted: boolean;
   expandedKeys: ReadonlySet<string>;
   selectedKeys: ReadonlySet<string>;
   activeKey: string | null;
@@ -79,6 +81,7 @@ const TreeViewContext = React.createContext<TreeViewContextValue>({
   density: 'default',
   disabled: false,
   multiple: false,
+  keepMounted: false,
   expandedKeys: new Set(),
   selectedKeys: new Set(),
   activeKey: null,
@@ -99,6 +102,10 @@ const TreeViewContext = React.createContext<TreeViewContextValue>({
  * rather than a sixth of a second later. `treeRows` is the other half — the
  * `data-closing` attribute keeps the same rows out of the order the arrow keys
  * walk.
+ *
+ * A branch kept in the document by `keepMounted` is the same case held for
+ * good: it is shut and never finishes leaving, so its rows read `true` for as
+ * long as it stays shut.
  */
 const TreeClosingContext = React.createContext(false);
 
@@ -139,6 +146,17 @@ export interface TreeViewProps
   disabled?: boolean;
   /** The name the tree is announced by. */
   label?: string;
+  /**
+   * Keeps the rows of a shut branch in the DOM — collapsed, inert and out of
+   * the order the arrow keys walk — instead of taking them out of it.
+   *
+   * A row that is not in the markup is not in a server render either, and a
+   * crawler reads the server render without opening a single branch. Turn this
+   * on for a tree that is navigation, so every `href` in it can be followed. A
+   * tree of thousands of rows pays for every one of them on the first render.
+   * @default false
+   */
+  keepMounted?: boolean;
   /** The top-level TreeItems. */
   children?: React.ReactNode;
 }
@@ -315,7 +333,8 @@ const keyOf = (value: TreeViewValue) => String(value);
  * keys are questions about the *tree* ("what is the next visible row", "where is
  * my parent"), and the only element that can answer them is the one holding all
  * of them. The rows the query returns are in document order, which is reading
- * order, because a shut branch is unmounted rather than hidden.
+ * order, because a shut branch is either unmounted or — under `keepMounted` —
+ * marked, and `treeRows` leaves a marked one out.
  */
 export const TreeView = React.forwardRef<HTMLUListElement, TreeViewProps>(
   function TreeView(rawProps, ref) {
@@ -335,6 +354,7 @@ export const TreeView = React.forwardRef<HTMLUListElement, TreeViewProps>(
       multiple = false,
       disabled = false,
       label,
+      keepMounted = false,
       className,
       style,
       children,
@@ -480,6 +500,7 @@ export const TreeView = React.forwardRef<HTMLUListElement, TreeViewProps>(
         density,
         disabled,
         multiple,
+        keepMounted,
         expandedKeys: new Set(expandedValues.map(keyOf)),
         selectedKeys: new Set(selectedValues.map(keyOf)),
         activeKey,
@@ -496,6 +517,7 @@ export const TreeView = React.forwardRef<HTMLUListElement, TreeViewProps>(
         density,
         disabled,
         multiple,
+        keepMounted,
         expandedKey,
         selectedKey,
         activeKey,
@@ -728,7 +750,8 @@ export const TreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(function 
     select,
     activate,
     register,
-    multiple
+    multiple,
+    keepMounted
   } = React.useContext(TreeViewContext);
 
   const generatedId = React.useId();
@@ -956,7 +979,11 @@ export const TreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(function 
         ) : null}
       </div>
 
-      {isParent && branchMounted && branch.length > 0 ? (
+      {/* `keepMounted` holds a shut branch exactly where a closing one is left
+          for 160ms: on a `0fr` track, inert and marked, which is already
+          everything a branch on its way out has to be. Kept, it simply never
+          finishes leaving. */}
+      {isParent && (branchMounted || keepMounted) && branch.length > 0 ? (
         <div
           ref={branchRef}
           // The hook `treeRows` reads to leave a shutting branch out of the

@@ -86,6 +86,18 @@ export interface MenuProps extends MenuSurfaceProps {
   loopFocus?: boolean;
   /** Unavailable. The trigger stops opening anything. */
   disabled?: boolean;
+  /**
+   * Keeps the popup and its rows in the DOM while the menu is closed, hidden,
+   * rather than building them each time it opens. A submenu inside takes the
+   * same answer.
+   *
+   * For a menu of links that should be in the page a crawler renders. The
+   * popup is portalled, and a portal has nowhere to go until there is a
+   * document, so the rows arrive once the page has hydrated rather than in the
+   * server's HTML.
+   * @default false
+   */
+  keepMounted?: boolean;
   /** The rows. */
   children?: React.ReactNode;
 }
@@ -118,6 +130,11 @@ export interface ContextMenuProps
   /** @default true */
   loopFocus?: boolean;
   disabled?: boolean;
+  /**
+   * Keeps the popup and its rows in the DOM while the menu is closed, hidden.
+   * @default false
+   */
+  keepMounted?: boolean;
 }
 
 export interface MenuItemProps {
@@ -646,7 +663,7 @@ export function MenuSubmenu({
   style
 }: MenuSubmenuProps) {
   const menu = React.useContext(MenuContext);
-  const { size, density, color } = menu;
+  const { size, density, color, keepMounted } = menu;
   const direction = useDirection();
 
   return (
@@ -675,7 +692,9 @@ export function MenuSubmenu({
         </span>
       </BaseUIMenu.SubmenuTrigger>
 
-      <BaseUIMenu.Portal>
+      {/* The menu's own answer: a menu of links kept in the DOM that dropped
+          the links one level down would have kept half of them. */}
+      <BaseUIMenu.Portal keepMounted={keepMounted}>
         <BaseUIMenu.Positioner
           className="neba-portal z-(--neba-z-portal) [outline:none]"
           side={side ?? 'inline-end'}
@@ -732,11 +751,15 @@ export function Menu(rawProps: MenuProps) {
     openOnHover = false,
     loopFocus = true,
     disabled = false,
+    keepMounted = false,
     className,
     style,
     children
   } = useStyleDefaults(rawProps, ['size', 'density']);
-  const context = React.useMemo(() => ({ size, color, density }), [size, color, density]);
+  const context = React.useMemo(
+    () => ({ size, color, density, keepMounted }),
+    [size, color, density, keepMounted]
+  );
 
   return (
     <MenuContext.Provider value={context}>
@@ -752,7 +775,7 @@ export function Menu(rawProps: MenuProps) {
           <BaseUIMenu.Trigger render={trigger} openOnHover={openOnHover} disabled={disabled} />
         ) : null}
 
-        <BaseUIMenu.Portal>
+        <BaseUIMenu.Portal keepMounted={keepMounted}>
           {/* `neba-portal` is a hook, not a style: a portalled popup leaves the
               subtree a host may have scoped its CSS reset to. */}
           <BaseUIMenu.Positioner
@@ -813,11 +836,15 @@ export const ContextMenu = React.forwardRef<HTMLDivElement, ContextMenuProps>(
       onOpenChange,
       loopFocus = true,
       disabled = false,
+      keepMounted = false,
       className,
       style,
       ...props
     } = useStyleDefaults(rawProps, ['size', 'density']);
-    const context = React.useMemo(() => ({ size, color, density }), [size, color, density]);
+    const context = React.useMemo(
+      () => ({ size, color, density, keepMounted }),
+      [size, color, density, keepMounted]
+    );
 
     return (
       <MenuContext.Provider value={context}>
@@ -835,7 +862,7 @@ export const ContextMenu = React.forwardRef<HTMLDivElement, ContextMenuProps>(
             they carry on down to the same node the menu is listening on. */}
           <BaseUIContextMenu.Trigger ref={ref} render={children} {...props} />
 
-          <BaseUIContextMenu.Portal>
+          <BaseUIContextMenu.Portal keepMounted={keepMounted}>
             <BaseUIContextMenu.Positioner className="neba-portal z-(--neba-z-portal) [outline:none]">
               <BaseUIContextMenu.Popup
                 className={cx(

@@ -24,6 +24,11 @@ export interface MenuContextValue {
    * opens beside it rather than downward over the next word.
    */
   orientation?: NebaOrientation;
+  /**
+   * Whether a closed popup stays in the DOM, set by the menu a submenu is
+   * inside, so the rows one level down are kept along with the rest.
+   */
+  keepMounted?: boolean;
 }
 
 export const MenuContext = React.createContext<MenuContextValue>({

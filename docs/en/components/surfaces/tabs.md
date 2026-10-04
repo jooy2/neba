@@ -121,6 +121,17 @@ Off by default: walking the arrow keys along the bar does not change the panel, 
 
 Set on a `TabPanel`, it keeps an unselected panel's React tree alive. An unselected panel is otherwise not in the DOM, so it is not in a server render or a crawler's index either: set `keepMounted` on panels whose content should be found by search.
 
+Set on `Tabs`, it does the same for every panel, which saves writing it on each one. A panel's own `keepMounted` still wins, so `keepMounted={false}` on one panel leaves that panel out.
+
+```tsx
+<Tabs defaultValue="overview" keepMounted>
+  <Tab value="overview">Overview</Tab>
+  <Tab value="usage">Usage</Tab>
+  <TabPanel value="overview">…</TabPanel>
+  <TabPanel value="usage">…</TabPanel>
+</Tabs>
+```
+
 ## Accessibility
 
 - The whole bar is one tab stop, with the arrow keys and Home/End moving within it (a roving tab index).
