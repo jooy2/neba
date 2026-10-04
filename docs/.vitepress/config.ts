@@ -16,10 +16,11 @@ const srcDir = resolve(rootDir, 'docs');
 
 const defaultLocale: string = 'en';
 const supportLocales: string[] = [defaultLocale, 'ko'];
-const editLinkPattern = `${packageJson.repository.url}/edit/main/docs/:path`;
-
 const siteUrl = packageJson.homepage.replace(/\/+$/, '');
-const repoUrl = packageJson.repository.url.replace(/\.git$/, '');
+// `repository.url` is in the form npm writes, `git+https://….git`, which is an
+// address for git and not a page; `scripts/release-notes.mjs` strips it alike.
+const repoUrl = packageJson.repository.url.replace(/^git\+/, '').replace(/\.git$/, '');
+const editLinkPattern = `${repoUrl}/edit/main/docs/:path`;
 const npmUrl = `https://www.npmjs.com/package/${packageJson.name}`;
 
 /** The card image. A square mark, which is why the Twitter card is `summary`. */
@@ -491,7 +492,7 @@ const vitePressConfig: UserConfig = {
     },
     socialLinks: [
       { icon: 'npm', link: 'https://www.npmjs.com/package/neba' },
-      { icon: 'github', link: packageJson.repository.url.replace('.git', '') }
+      { icon: 'github', link: repoUrl }
     ],
     footer: {
       message: 'Released under the MIT License',
