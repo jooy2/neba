@@ -312,6 +312,7 @@ export const SegmentedButton = React.forwardRef<HTMLDivElement, SegmentedButtonP
       tile.hidden = !active;
       if (!active) {
         tile.removeAttribute('data-ready');
+        root.removeAttribute('data-placed');
         return;
       }
 
@@ -343,6 +344,10 @@ export const SegmentedButton = React.forwardRef<HTMLDivElement, SegmentedButtonP
       }
 
       tile.setAttribute('data-ready', '');
+      // Takes the stand-in fill off the chosen segment, in the same frame as
+      // the tile arrives under it. See "A segmented button before its tile is
+      // placed" in `styles.css`.
+      root.setAttribute('data-placed', '');
     }, []);
 
     // Before the browser paints, or the tile is visibly at nothing for a frame.
@@ -389,7 +394,8 @@ export const SegmentedButton = React.forwardRef<HTMLDivElement, SegmentedButtonP
           className={[
             // `relative` is load-bearing twice over: it is what makes the trough
             // the segments' offsetParent, and what the tile is positioned in.
-            'relative items-center rounded-full',
+            // `neba-segmented` is the hook the stand-in fill hangs off.
+            'neba-segmented relative items-center rounded-full',
             disabled ? disabledTroughClasses[variant] : troughClasses[variant],
             transitionClasses,
             readOnly ? '[filter:saturate(0.55)]' : '',
@@ -400,7 +406,17 @@ export const SegmentedButton = React.forwardRef<HTMLDivElement, SegmentedButtonP
           ]
             .filter(Boolean)
             .join(' ')}
-          style={{ ...controlSlots(color, elevation, variant), ...style }}
+          style={
+            {
+              ...controlSlots(color, elevation, variant),
+              // What the chosen segment draws for itself until the tile is
+              // placed: the tile's own fill and plate for this variant.
+              '--n-seg-bg': variant === 'solid' ? 'var(--n-fill)' : 'var(--n-panel-press)',
+              '--n-seg-plate':
+                variant === 'solid' ? 'var(--neba-plate-solid)' : 'var(--neba-plate-glass)',
+              ...style
+            } as React.CSSProperties
+          }
           {...props}
         >
           {/* Rendered only once something is chosen. An empty set has no tile to
@@ -419,7 +435,10 @@ export const SegmentedButton = React.forwardRef<HTMLDivElement, SegmentedButtonP
                 '[transition-timing-function:var(--neba-ease)]',
                 // Nothing until the first measurement has landed; the house
                 // duration from then on.
-                '[transition-duration:0ms] data-[ready]:[transition-duration:var(--neba-duration)]'
+                '[transition-duration:0ms] data-[ready]:[transition-duration:var(--neba-duration)]',
+                // And not drawn until then either: unplaced, it is a dot in the
+                // groove's corner, and the chosen segment draws its own fill.
+                'invisible data-[ready]:visible'
               ].join(' ')}
             />
           ) : null}

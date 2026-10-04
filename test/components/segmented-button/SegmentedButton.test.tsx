@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+import { renderToString } from 'react-dom/server';
 import { render } from 'vitest-browser-react';
 import { Segment, SegmentedButton } from 'neba';
 
@@ -227,6 +228,38 @@ describe('SegmentedButton', () => {
   });
 
   describe('the tile', () => {
+    // Until the tile is placed the chosen segment draws its own fill, which the
+    // stylesheet hangs off a root that is not yet `data-placed`. A server cannot
+    // place it, so its HTML says unplaced; a browser places it before painting.
+    it('is unplaced in a server render and placed once mounted', async () => {
+      const html = renderToString(<Basic defaultValue="week" />);
+      const host = document.createElement('div');
+
+      host.innerHTML = html;
+
+      const served = host.querySelector('[role="radiogroup"]');
+
+      expect(served).toHaveClass('neba-segmented');
+      expect(served).not.toHaveAttribute('data-placed');
+
+      const screen = await render(<Basic defaultValue="week" />);
+      const group = screen.getByRole('radiogroup').element();
+
+      expect(group).toHaveAttribute('data-placed');
+      expect(tile(group)).toHaveAttribute('data-ready');
+    });
+
+    it('is unplaced again when no segment carries the value', async () => {
+      const screen = await render(<Basic value="week" />);
+      const group = screen.getByRole('radiogroup').element();
+
+      expect(group).toHaveAttribute('data-placed');
+
+      await screen.rerender(<Basic value="year" />);
+
+      await vi.waitFor(() => expect(group).not.toHaveAttribute('data-placed'));
+    });
+
     it('is not drawn until something is chosen', async () => {
       const screen = await render(<Basic />);
       const group = screen.getByRole('radiogroup').element();

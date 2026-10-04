@@ -88,6 +88,8 @@
 
 - **A server-rendered masonry `Gallery` is laid out in the reader's columns from the first paint.** A server cannot know how wide the window is, so it dealt the tiles into the `xs` column count and the page redrew itself into three or four columns as it hydrated, moving every tile; the preview demo scored a layout shift of 0.18. Until hydration it now draws one deal for every width its `columns` change at, shows only the one for the reader's width with the classes `Show` uses, and keeps that one, as the same elements, once the page is running. The hidden deals are `display: none`, so a lazy picture in them is not fetched. A tree rendered only in the browser deals once, as before.
 
+- **A server-rendered `SegmentedButton` shows its choice from the first paint.** The tile under the chosen segment is placed by measuring that segment, which only happens once the page is running, so until then it was a dot in the corner of the groove, and a `solid` set's chosen label was drawn in its on-fill ink over no fill at all. The chosen segment now draws the tile's own fill itself until the tile is placed, and hands it over in the same frame, so nothing moves or fades when the page hydrates.
+
 - **A chart with a `brush` hydrates cleanly.** The brush is fetched on demand, and a component fetched on demand suspends in a server render: `renderToString` gave up on its boundary and React reported the hydration failing. The brush is now drawn once the page has hydrated, over the band the chart already reserves for it, so nothing moves.
 
 - **`AnimateHeadline` puts a space between its lines in the document**, so its text reads "faster quieter yours" rather than one run-together word.

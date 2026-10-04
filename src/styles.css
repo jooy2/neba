@@ -2334,6 +2334,46 @@
 }
 
 /* ---------------------------------------------------------------------------
+ * A segmented button before its tile is placed
+ *
+ * The tile that slides under the chosen segment is placed by measuring that
+ * segment, which only a browser running the component can do. Until it has
+ * been, the chosen segment carries the same fill itself, so a server-rendered
+ * page says which one is taken from the first paint — and a `solid` set's
+ * on-fill label has a fill under it — rather than drawing a dot in the corner
+ * and a white label on the groove.
+ *
+ * On a pseudo-element rather than on the segment's own background, because the
+ * background has a transition: the moment the tile is placed this goes and the
+ * tile arrives in the same frame, where a background would fade out under it.
+ * The root's `data-placed` is what says the tile is there, and `--n-seg-bg` and
+ * `--n-seg-plate` are set inline per variant, as the tile's own classes are.
+ * ------------------------------------------------------------------------- */
+
+.neba-segmented:not([data-placed]) .neba-segment[data-checked]::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background-color: var(--n-seg-bg);
+  background-image: var(--neba-grain), var(--neba-sheen);
+  background-blend-mode: overlay, normal;
+  box-shadow: var(--neba-shadow-1), var(--n-seg-plate);
+  backdrop-filter: var(--neba-blur);
+  /* The segment's pointer light lives on this pseudo-element too, resting at
+     nothing and fading in on hover. Until the tile is placed it is the fill,
+     and once it is the light has it back with nothing to fade. */
+  opacity: 1;
+  transition: none;
+}
+
+.neba-segmented:not([data-placed]) .neba-segment[data-checked][data-disabled]::before {
+  background-color: var(--neba-disabled-bg);
+  box-shadow: none;
+}
+
+/* ---------------------------------------------------------------------------
  * Tree guides
  *
  * The rail down a level of a TreeView, and — in `folder` — the elbow from that
