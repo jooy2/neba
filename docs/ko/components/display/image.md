@@ -138,6 +138,8 @@ import { Image } from 'neba';
 
 `preview`가 켜지면 `className`과 `style`은 버튼에 붙습니다. 그래서 그림의 크기를 정하는 값이 누를 수 있는 영역의 크기도 정합니다.
 
+Dialog의 코드는 pointer나 focus, 손가락이 그림에 처음 닿을 때 내려받기 시작하므로 누를 때쯤이면 대개 도착해 있고, Dialog는 누르는 순간 마운트됩니다. 아무도 그림에 다가가지 않는 페이지는 그 코드를 받지 않고, 서버 렌더링도 기다릴 것이 없습니다.
+
 <Demo src="image/preview">
 
 <<< @/.vitepress/demos/image/preview.tsx

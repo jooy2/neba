@@ -138,6 +138,8 @@ The picture becomes a `<button>` carrying the `alt` as its name, so `Tab` reache
 
 With `preview` on, `className` and `style` go on the button, so what sizes the picture also sizes what can be pressed.
 
+The Dialog's code is fetched when a pointer, the focus or a finger first reaches the picture, so it is usually there by the time the press lands, and the Dialog is mounted by that press. A page whose pictures nobody reaches for never downloads it, and a server render has nothing to wait for.
+
 <Demo src="image/preview">
 
 <<< @/.vitepress/demos/image/preview.tsx

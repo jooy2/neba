@@ -232,18 +232,45 @@ type Phase = 'loading' | 'loaded' | 'failed';
 const FETCH_PRIORITY = Number.parseInt(React.version, 10) >= 19 ? 'fetchPriority' : 'fetchpriority';
 
 /**
- * The preview's dialog, fetched only if somebody turns `preview` on.
+ * The preview's dialog, fetched only when somebody opens a preview.
  *
  * A Dialog was most of what an Image weighed — 23.4 kB, nearly all of it Base
  * UI's own — and `preview` is off by default. A static import puts every byte
  * of that in the bundle of a page that draws a thumbnail, so this is
  * `CodeBlock`'s arrangement with the grammars, one step smaller: the chunk is
- * fetched once, after the first paint, by the pages that asked for it, and a
- * page of thumbnails carries none of it.
+ * fetched once, when a reader first reaches for a picture, and a page of
+ * thumbnails nobody reaches for carries none of it.
  */
-const PreviewDialog = React.lazy(() =>
-  import('../dialog/Dialog.js').then((module) => ({ default: module.Dialog }))
-);
+const requestDialog = () =>
+  import('../dialog/Dialog.js').then((module) => ({ default: module.Dialog }));
+
+let dialogRequest: ReturnType<typeof requestDialog> | undefined;
+
+/**
+ * The one request for the preview's chunk, shared by everything that asks.
+ *
+ * Asked for when a pointer arrives over a picture, when the focus reaches one
+ * or when a finger lands on one, so the download is under way before the press
+ * that opens it; and by `React.lazy` at that press, which is handed the same
+ * promise and waits only for what is left of it. A request that fails is
+ * forgotten, so the next one tries again rather than failing for good.
+ *
+ * An object rather than a function so a test can spy on it. Exported for that,
+ * and deliberately left out of the barrel.
+ */
+export const previewChunk = {
+  load() {
+    dialogRequest ??= requestDialog().catch((error: unknown) => {
+      dialogRequest = undefined;
+
+      throw error;
+    });
+
+    return dialogRequest;
+  }
+};
+
+const PreviewDialog = React.lazy(() => previewChunk.load());
 
 export interface ImageProps extends Omit<React.ComponentPropsWithoutRef<'img'>, 'children'> {
   /** Required, and required to be right. See the note on the component. */
@@ -356,6 +383,10 @@ export interface ImageProps extends Omit<React.ComponentPropsWithoutRef<'img'>, 
    * The picture becomes a button when this is on, so it is reachable by
    * keyboard — an image you can only enlarge with a pointer is an image half
    * the readers cannot enlarge.
+   *
+   * The Dialog is fetched when a pointer, the focus or a finger first reaches
+   * the picture, and mounted by the press that opens it, so neither a server
+   * render nor the first render in the browser waits on it.
    * @default false
    */
   preview?: boolean;
@@ -857,7 +888,8 @@ function TiledMark({
  *
  * Everything past that is opt-in and costs nothing until it is asked for:
  * `filter` is one declaration, `frame` is one element, `watermark` is one, and
- * `preview` is a chunk that is not fetched at all unless it is on.
+ * `preview` is a chunk that is not fetched at all until a reader reaches for a
+ * picture.
  */
 export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Image(rawProps, ref) {
   const {
@@ -899,6 +931,29 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
   const standSrc = useObjectUrl(stand?.src);
   const [phase, setPhase] = React.useState<Phase>('loading');
   const [open, setOpen] = React.useState(false);
+  /*
+   * Whether the preview's Dialog has been asked for yet. It is mounted by the
+   * press that first opens it and kept from then on, so a lazy component never
+   * suspends in a server render — where `renderToString` cannot wait for it,
+   * and React gives up on the boundary and reports an error at hydration — nor
+   * in the render that hydrates one.
+   */
+  const [summoned, setSummoned] = React.useState(false);
+  /*
+   * Starts the Dialog's download the first time a reader reaches for this
+   * picture, and does nothing on every reach after that. Mounting it is still
+   * the press's job: this only fetches, so nothing renders and nothing suspends.
+   */
+  const reached = React.useRef(false);
+
+  const reach = () => {
+    if (reached.current) return;
+
+    reached.current = true;
+    // A download that fails here is tried again by the press, which is the one
+    // that has a reader waiting on it.
+    previewChunk.load().catch(() => {});
+  };
   /*
    * What the file turned out to be, kept for the one layout that cannot know it
    * in advance: a picture on its side with nothing to say its shape, whose box
@@ -1369,41 +1424,57 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
           className
         )}
         style={style}
-        onClick={() => setOpen(true)}
+        onPointerEnter={reach}
+        onFocus={reach}
+        onTouchStart={reach}
+        onClick={() => {
+          setSummoned(true);
+          setOpen(true);
+        }}
       >
         {mounted}
       </button>
 
-      <React.Suspense fallback={null}>
-        <PreviewDialog open={open} onOpenChange={setOpen} size="xl" title={alt || messages.preview}>
-          <span
-            className={cx('relative mx-auto block', sideways ? '' : 'w-fit')}
-            style={sideways ? turnedPreviewStyle(natural ?? file) : undefined}
+      {summoned ? (
+        <React.Suspense fallback={null}>
+          <PreviewDialog
+            open={open}
+            onOpenChange={setOpen}
+            size="xl"
+            title={alt || messages.preview}
           >
-            {/* The same file, reached the same way: a picture given only a
-                `srcSet` had an empty preview, and one behind a CORS or referrer
-                rule was asked for without it. `sizes` stays behind on purpose.
-                It describes the thumbnail, and a preview exists to be bigger,
-                so the browser chooses a candidate for the dialog instead. */}
-            <img
-              src={src}
-              srcSet={props.srcSet}
-              crossOrigin={props.crossOrigin}
-              referrerPolicy={props.referrerPolicy}
-              alt={alt}
-              className={cx(
-                sideways ? 'block object-contain' : 'mx-auto block max-h-[70vh] w-auto max-w-full',
-                guarded?.className
-              )}
-              style={{ filter: tint === 'none' ? undefined : tint, ...pose, ...guarded?.style }}
-              onContextMenu={guarded?.onContextMenu}
-              onDragStart={guarded?.onDragStart}
-              draggable={guarded?.draggable}
-            />
-            {mark}
-          </span>
-        </PreviewDialog>
-      </React.Suspense>
+            <span
+              className={cx('relative mx-auto block', sideways ? '' : 'w-fit')}
+              style={sideways ? turnedPreviewStyle(natural ?? file) : undefined}
+            >
+              {/* The same file, reached the same way: a picture given only a
+                  `srcSet` had an empty preview, and one behind a CORS or
+                  referrer rule was asked for without it. `sizes` stays behind
+                  on purpose. It describes the thumbnail, and a preview exists
+                  to be bigger, so the browser chooses a candidate for the
+                  dialog instead. */}
+              <img
+                src={src}
+                srcSet={props.srcSet}
+                crossOrigin={props.crossOrigin}
+                referrerPolicy={props.referrerPolicy}
+                alt={alt}
+                className={cx(
+                  sideways
+                    ? 'block object-contain'
+                    : 'mx-auto block max-h-[70vh] w-auto max-w-full',
+                  guarded?.className
+                )}
+                style={{ filter: tint === 'none' ? undefined : tint, ...pose, ...guarded?.style }}
+                onContextMenu={guarded?.onContextMenu}
+                onDragStart={guarded?.onDragStart}
+                draggable={guarded?.draggable}
+              />
+              {mark}
+            </span>
+          </PreviewDialog>
+        </React.Suspense>
+      ) : null}
     </>
   );
 });

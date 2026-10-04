@@ -18,6 +18,8 @@
 
 - **`StreamingText` redraws only the last 64 words when a token lands**, rather than the whole answer: 14 ms per token became 2.2 ms on a 2,000-word answer.
 
+- **An `Image` or a `Gallery` with `preview` fetches its viewer when a pointer, the focus or a finger first reaches it**, and mounts the viewer on the first press, rather than fetching it with the page.
+
 ### Fixed
 
 - **A Tailwind utility in a `Typography`'s `className` wins over the level's own scale.** The size, leading, tracking, weight, margins and colour were written at two-class strength so that a host's `.prose h2` could not reach them, and that also beat the caller: `className="mb-8"` rendered with no margin and `text-[2.5rem] font-black` at 13px and 400, with no warning. For each property a class sets, with or without a variant, the level now steps down to zero specificity, so the class wins and `md:text-5xl` still has the level's size below `md`. With no class, a Typography inside `.prose` or `.vp-doc` keeps its scale as before, and a `!` class such as `mb-8!` renders as it did. A class that was being ignored now applies, so check a call site that carried one. A class from your own stylesheet is not read and still needs two classes or `!important`.
@@ -27,6 +29,8 @@
 - **Classes on a heading passed as a `title` win over the sheet's scale.** `<Card title={<h2 className="text-xl">…</h2>}>` rendered at the Card's 15px, because the reset that takes the browser's 1.5em bold and margins off the heading was written at two-class strength. A heading with a class now gets that reset at zero specificity, and one without keeps it at full strength, so it still holds against `.prose h2`. The same goes for `Alert`, `Empty` and `Toast`.
 
 - **A `Skeleton` and an indeterminate `ProgressLinear` no longer add to the page's layout shift.** Their sweeps moved on `inset-inline-start`, which the browser reports as a layout shift on every frame, and a consumer's CLS adds those up: a single full-width placeholder scored 0.27 on a page that was otherwise still, past the 0.25 that counts as poor. They move on `translate` now, look the same, and still run the other way under right-to-left.
+
+- **An `Image` or a `Gallery` with `preview` no longer suspends in a server render.** The lazy Dialog was rendered from the start, so `renderToString` gave up on its boundary and React logged a recoverable error at hydration. The viewer is now mounted by the first press that opens it, and its chunk is fetched earlier, when a pointer, the focus or a finger first reaches the picture or the gallery, so that first press does not wait on the network.
 
 - **`colorSchemeScript`, `formatFileSize` and `registerLanguage` can be called from a Server Component.** They were exported from client modules, so in Next.js the `<head>` of `app/layout.tsx` — where the provider page says to call `colorSchemeScript()` — received a client reference, and calling it threw. Each is in a module of its own now.
 

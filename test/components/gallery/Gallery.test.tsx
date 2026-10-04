@@ -6,10 +6,14 @@
  *
  * The sources are data URIs so nothing depends on the network.
  */
+import type * as React from 'react';
 import { describe, expect, it, vi } from 'vitest';
+import { renderToString } from 'react-dom/server';
+import { hydrateRoot } from 'react-dom/client';
 import { render } from 'vitest-browser-react';
 import { userEvent } from 'vitest/browser';
 import { Gallery, type NebaGalleryItem } from 'neba';
+import { viewerChunk } from '../../../src/components/gallery/Gallery.js';
 
 const OK = 'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==';
 
@@ -534,6 +538,137 @@ describe('Gallery', () => {
       await vi.waitFor(() =>
         expect(dialog.querySelector('img')?.getAttribute('src')).toBe(`${OK}#full`)
       );
+    });
+  });
+
+  /*
+   * The viewer is a lazy chunk, and a lazy component in a server render is a
+   * boundary `renderToString` cannot wait for: it gave up and sent a marker for
+   * the browser to finish, and React reported that at hydration. The viewer is
+   * now mounted by the first press, so a server render has nothing to wait for.
+   */
+  /*
+   * Mounted only by the press, the viewer was downloaded by the press too, and
+   * the first picture opened only once the network had answered. The download
+   * starts when a reader reaches for the gallery instead, and still nothing is
+   * mounted until the press.
+   */
+  describe('fetching the viewer', () => {
+    // Held below where earlier tests left the pointer, so it is not already
+    // over the gallery when the gallery appears.
+    const below = (child: React.ReactNode) => <div style={{ paddingTop: 320 }}>{child}</div>;
+
+    it('starts when a pointer arrives over the gallery, and not before', async () => {
+      const load = vi.spyOn(viewerChunk, 'load');
+
+      try {
+        const screen = await render(below(<Gallery items={items} preview />));
+
+        await new Promise(requestAnimationFrame);
+        expect(load).not.toHaveBeenCalled();
+
+        await screen.getByRole('list').hover();
+        expect(load).toHaveBeenCalledTimes(1);
+
+        // Once per gallery: every reach after the first does nothing.
+        (screen.getByRole('button', { name: /A cliff/ }).element() as HTMLElement).focus();
+        expect(load).toHaveBeenCalledTimes(1);
+        expect(screen.getByRole('dialog').query()).toBeNull();
+      } finally {
+        load.mockRestore();
+      }
+    });
+
+    it('starts when the focus reaches a tile', async () => {
+      const load = vi.spyOn(viewerChunk, 'load');
+
+      try {
+        const screen = await render(below(<Gallery items={items} preview />));
+
+        (screen.getByRole('button', { name: /A bowl/ }).element() as HTMLElement).focus();
+
+        expect(load).toHaveBeenCalledTimes(1);
+      } finally {
+        load.mockRestore();
+      }
+    });
+
+    it('is not asked for without a viewer to open', async () => {
+      const load = vi.spyOn(viewerChunk, 'load');
+
+      try {
+        const screen = await render(below(<Gallery items={items} onItemSelect={() => {}} />));
+
+        await screen.getByRole('list').hover();
+        (screen.getByRole('button', { name: /A bowl/ }).element() as HTMLElement).focus();
+
+        expect(load).not.toHaveBeenCalled();
+      } finally {
+        load.mockRestore();
+      }
+    });
+
+    it("keeps a caller's own handlers on the list", async () => {
+      const onFocus = vi.fn();
+      const screen = await render(<Gallery items={items} preview onFocus={onFocus} />);
+
+      (screen.getByRole('button', { name: /A bowl/ }).element() as HTMLElement).focus();
+
+      expect(onFocus).toHaveBeenCalledTimes(1);
+    });
+
+    it('is not asked for by a server render, which holds no boundary', () => {
+      const load = vi.spyOn(viewerChunk, 'load');
+
+      try {
+        const html = renderToString(<Gallery items={items} preview />);
+
+        expect(load).not.toHaveBeenCalled();
+        expect(html).not.toContain('<!--$');
+      } finally {
+        load.mockRestore();
+      }
+    });
+
+    // The press is handed the request a reach already started, rather than
+    // making a second one.
+    it('hands every caller the one request', () => {
+      expect(viewerChunk.load()).toBe(viewerChunk.load());
+    });
+  });
+
+  describe('on a served page', () => {
+    // No boundary at all rather than no failed one: once an earlier test has
+    // fetched the chunk, a boundary around it renders, and a check for the
+    // failure marker alone would pass for the wrong reason.
+    it('leaves nothing in a server render for the browser to finish', () => {
+      const html = renderToString(<Gallery items={items} preview />);
+
+      expect(html).not.toContain('<!--$');
+      expect(html).not.toContain('<template');
+    });
+
+    it('hydrates without an error and opens on the first press', async () => {
+      const element = <Gallery items={items} preview />;
+      const host = document.createElement('div');
+
+      host.innerHTML = renderToString(element);
+      document.body.append(host);
+
+      const recoverable = vi.fn();
+      const root = hydrateRoot(host, element, { onRecoverableError: recoverable });
+
+      try {
+        // A tile's press is wired once the page has hydrated.
+        await vi.waitFor(() => {
+          (host.querySelector('button') as HTMLButtonElement).click();
+          expect(document.querySelector('[role="dialog"]')).not.toBeNull();
+        });
+        expect(recoverable).not.toHaveBeenCalled();
+      } finally {
+        root.unmount();
+        host.remove();
+      }
     });
   });
 });

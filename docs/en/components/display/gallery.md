@@ -100,7 +100,7 @@ Reach for `overlay` or `hover` in `justified`: a caption below the picture makes
 
 Opens the picture full size, with the rest of the set an arrow key away. `←` and `→` move the way the arrow points, so under RTL `←` is the next picture; `Esc` closes, and the counter under the picture is announced when it changes.
 
-An item's `full` is used if it has one, so a grid of thumbnails can open the file it is a thumbnail of. `watermark` and `protect` follow the picture into the viewer.
+An item's `full` is used if it has one, so a grid of thumbnails can open the file it is a thumbnail of. `watermark` and `protect` follow the picture into the viewer. The viewer's code is fetched when a pointer, the focus or a finger first reaches the gallery and the viewer is mounted by the press that opens it, so a server render has nothing to wait for.
 
 <Demo src="gallery/preview">
 

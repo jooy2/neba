@@ -12292,8 +12292,8 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       default: 'false',
       description: {
-        ko: '타일을 누르면 원래 크기로 열고 나머지는 방향키로 넘깁니다. 이 화면은 필요할 때 내려받습니다',
-        en: 'Opens the picture full size on a click, with the rest of the set an arrow key away. The viewer is fetched on demand'
+        ko: '타일을 누르면 원래 크기로 열고 나머지는 방향키로 넘깁니다. 이 화면은 pointer나 focus가 갤러리에 처음 닿을 때 내려받고 누를 때 마운트하므로 서버 렌더링이 기다리는 것이 없습니다',
+        en: 'Opens the picture full size on a click, with the rest of the set an arrow key away. The viewer is fetched when a pointer or the focus first reaches the gallery and mounted by the press, so a server render has nothing to wait for'
       }
     },
     {
@@ -12509,8 +12509,8 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       default: 'false',
       description: {
-        ko: '클릭하면 Dialog에서 원본을 엽니다. 그림이 alt을 이름으로 갖는 button이 되므로 키보드로도 열립니다',
-        en: 'Opens the full picture in a Dialog on click. The picture becomes a button named by its alt, so a keyboard can open it too'
+        ko: '클릭하면 Dialog에서 원본을 엽니다. 그림이 alt을 이름으로 갖는 button이 되므로 키보드로도 열립니다. Dialog는 pointer나 focus가 그림에 처음 닿을 때 내려받고 누를 때 마운트합니다',
+        en: 'Opens the full picture in a Dialog on click. The picture becomes a button named by its alt, so a keyboard can open it too. The Dialog is fetched when a pointer or the focus first reaches the picture, and mounted by the press'
       }
     },
     {

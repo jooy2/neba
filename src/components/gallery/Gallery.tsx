@@ -183,8 +183,9 @@ export interface GalleryProps extends Omit<
    * Opens the picture full size when a tile is clicked, with the rest of the
    * set an arrow key away.
    *
-   * The viewer is fetched on demand, so a Gallery that does not offer one does
-   * not carry it.
+   * The viewer is fetched when a pointer, the focus or a finger first reaches
+   * the gallery, and mounted by the press that opens it: a Gallery nobody
+   * reaches for does not carry it, and a server render does not wait on it.
    * @default false
    */
   preview?: boolean;
@@ -212,16 +213,43 @@ export interface GalleryProps extends Omit<
 }
 
 /**
- * The viewer, fetched only if somebody turns `preview` on.
+ * The viewer, fetched only when somebody reaches for a picture.
  *
  * It is a whole Dialog and the chrome around it, which is more than the gallery
  * that opens it — `Image` makes the same bargain with the same prop, and for
  * the same reason: a wall of thumbnails is the common case and a lightbox is
- * not, so the chunk arrives after the first paint on the pages that want one.
+ * not, so the chunk is fetched when a reader first reaches for one.
  */
-const GalleryViewer = React.lazy(() =>
-  import('./GalleryViewer.js').then((module) => ({ default: module.GalleryViewer }))
-);
+const requestViewer = () =>
+  import('./GalleryViewer.js').then((module) => ({ default: module.GalleryViewer }));
+
+let viewerRequest: ReturnType<typeof requestViewer> | undefined;
+
+/**
+ * The one request for the viewer's chunk, shared by everything that asks.
+ *
+ * Asked for when a pointer arrives over the gallery, when the focus reaches a
+ * tile or when a finger lands on one, so the download is under way before the
+ * press that opens it; and by `React.lazy` at that press, which is handed the
+ * same promise and waits only for what is left of it. A request that fails is
+ * forgotten, so the next one tries again rather than failing for good.
+ *
+ * An object rather than a function so a test can spy on it. Exported for that,
+ * and deliberately left out of the barrel.
+ */
+export const viewerChunk = {
+  load() {
+    viewerRequest ??= requestViewer().catch((error: unknown) => {
+      viewerRequest = undefined;
+
+      throw error;
+    });
+
+    return viewerRequest;
+  }
+};
+
+const GalleryViewer = React.lazy(() => viewerChunk.load());
 
 /** The default, which is also the shape most photograph grids end up. */
 const defaultColumns: NebaResponsive<number> = { xs: 2, sm: 3, lg: 4 };
@@ -377,12 +405,40 @@ export const Gallery = React.forwardRef<HTMLUListElement, GalleryProps>(
       className,
       classNames,
       style,
+      onPointerEnter,
+      onFocus,
+      onTouchStart,
       ...props
     } = useStyleDefaults(rawProps, ['locale']);
 
     const messages = useMessages(galleryMessages, locale);
     const idBase = React.useId();
     const [openAt, setOpenAt] = React.useState<number | null>(null);
+    /*
+     * Whether the viewer has been asked for yet. It is mounted by the first
+     * press that opens it and kept from then on, so the lazy viewer never
+     * suspends in a server render — where `renderToString` cannot wait for it,
+     * and React gives up on the boundary and reports an error at hydration —
+     * nor in the render that hydrates one.
+     */
+    const [summoned, setSummoned] = React.useState(false);
+    /*
+     * Starts the viewer's download the first time a reader reaches for the
+     * gallery, and does nothing on every reach after that. Listened for once,
+     * on the list, rather than on every tile: the focus and a touch bubble up
+     * to it, and a pointer arriving anywhere over the wall is reaching for it.
+     * Mounting the viewer is still the press's job, so nothing suspends.
+     */
+    const reached = React.useRef(false);
+
+    const reach = () => {
+      if (!preview || reached.current) return;
+
+      reached.current = true;
+      // A download that fails here is tried again by the press, which is the
+      // one that has a reader waiting on it.
+      viewerChunk.load().catch(() => {});
+    };
 
     const lanes = withBaseline(columns ?? defaultColumns, 2);
     // The one number a layout has to know in JavaScript, and only `masonry`
@@ -400,7 +456,10 @@ export const Gallery = React.forwardRef<HTMLUListElement, GalleryProps>(
     const open = (index: number) => {
       onItemSelect?.(items[index], index);
 
-      if (preview) setOpenAt(index);
+      if (preview) {
+        setSummoned(true);
+        setOpenAt(index);
+      }
     };
 
     const tile = (item: NebaGalleryItem, index: number, tileStyle: React.CSSProperties) => {
@@ -677,11 +736,23 @@ export const Gallery = React.forwardRef<HTMLUListElement, GalleryProps>(
           className={listClasses}
           style={listStyle}
           {...props}
+          onPointerEnter={(event) => {
+            reach();
+            onPointerEnter?.(event);
+          }}
+          onFocus={(event) => {
+            reach();
+            onFocus?.(event);
+          }}
+          onTouchStart={(event) => {
+            reach();
+            onTouchStart?.(event);
+          }}
         >
           {children}
         </ul>
 
-        {preview ? (
+        {preview && summoned ? (
           <React.Suspense fallback={null}>
             <GalleryViewer
               items={items}

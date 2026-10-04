@@ -5,14 +5,65 @@
  * The sources are data URIs so nothing depends on the network: a 1×1 GIF that
  * always decodes, and a string that never will.
  */
+import * as React from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { renderToString } from 'react-dom/server';
 import { hydrateRoot } from 'react-dom/client';
 import { render } from 'vitest-browser-react';
+import { userEvent } from 'vitest/browser';
 import { Image } from 'neba';
+import { previewChunk } from '../../../src/components/image/Image.js';
 
 const OK = 'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==';
 const BROKEN = 'data:image/gif;base64,not-a-picture';
+
+/**
+ * Renders something only once the render that hydrated it is over, the way
+ * `useHydrated` answers — so a test can wait for the render after hydration
+ * rather than for an arbitrary amount of time.
+ */
+function PastHydration() {
+  const past = React.useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
+
+  return past ? <i data-past-hydration="" /> : null;
+}
+
+/**
+ * Renders on the "server", puts the HTML in the page, and hydrates it. `before`
+ * is a copy of what the server sent, taken before React has touched it.
+ */
+async function serve(element: React.ReactElement) {
+  const host = document.createElement('div');
+  const tree = (
+    <>
+      {element}
+      <PastHydration />
+    </>
+  );
+
+  host.innerHTML = renderToString(tree);
+  document.body.append(host);
+
+  const before = host.cloneNode(true) as HTMLElement;
+  const recoverable = vi.fn();
+  const root = hydrateRoot(host, tree, { onRecoverableError: recoverable });
+
+  await vi.waitFor(() => expect(host.querySelector('[data-past-hydration]')).not.toBeNull());
+
+  return {
+    host,
+    before,
+    recoverable,
+    done: () => {
+      root.unmount();
+      host.remove();
+    }
+  };
+}
 
 /*
  * Read as a number rather than as the string that was written. A browser
@@ -565,6 +616,126 @@ describe('Image', () => {
     await screen.getByRole('button', { name: 'A ridge' }).click();
 
     await expect.element(screen.getByRole('dialog', { name: 'A ridge' })).toBeInTheDocument();
+  });
+
+  /*
+   * The Dialog is a lazy chunk, and a lazy component in a server render is a
+   * boundary `renderToString` cannot wait for: it gave up, sent a marker for
+   * the browser to render it instead, and React reported that at hydration.
+   * The Dialog is now mounted by the first press, so there is nothing to wait
+   * for until somebody asks.
+   */
+  /*
+   * Mounted only by the press, the Dialog was downloaded by the press too, and
+   * the first preview opened only once the network had answered. The download
+   * starts when a reader reaches for the picture instead, and still nothing is
+   * mounted until the press.
+   */
+  describe('fetching the preview', () => {
+    // Held below where earlier tests left the pointer, so it is not already
+    // over the picture when the picture appears.
+    const below = (child: React.ReactNode) => <div style={{ paddingTop: 320 }}>{child}</div>;
+
+    it('starts when a pointer arrives over the picture, and not before', async () => {
+      const load = vi.spyOn(previewChunk, 'load');
+
+      try {
+        const screen = await render(below(<Image src={OK} alt="A ridge" preview />));
+        const button = screen.getByRole('button', { name: 'A ridge' });
+
+        await new Promise(requestAnimationFrame);
+        expect(load).not.toHaveBeenCalled();
+
+        await button.hover();
+        expect(load).toHaveBeenCalledTimes(1);
+
+        // Once per picture: every reach after the first does nothing.
+        (button.element() as HTMLElement).focus();
+        expect(load).toHaveBeenCalledTimes(1);
+        expect(screen.getByRole('dialog').query()).toBeNull();
+      } finally {
+        load.mockRestore();
+      }
+    });
+
+    it('starts when the focus reaches the picture', async () => {
+      const load = vi.spyOn(previewChunk, 'load');
+
+      try {
+        const screen = await render(below(<Image src={OK} alt="A ridge" preview />));
+
+        (screen.getByRole('button', { name: 'A ridge' }).element() as HTMLElement).focus();
+
+        expect(load).toHaveBeenCalledTimes(1);
+      } finally {
+        load.mockRestore();
+      }
+    });
+
+    it('is not asked for by a server render, which holds no boundary', () => {
+      const load = vi.spyOn(previewChunk, 'load');
+
+      try {
+        const html = renderToString(<Image src={OK} alt="A ridge" preview />);
+
+        expect(load).not.toHaveBeenCalled();
+        expect(html).not.toContain('<!--$');
+      } finally {
+        load.mockRestore();
+      }
+    });
+
+    // The press is handed the request a reach already started, rather than
+    // making a second one.
+    it('hands every caller the one request', () => {
+      expect(previewChunk.load()).toBe(previewChunk.load());
+    });
+  });
+
+  describe('the preview on a served page', () => {
+    // No boundary at all rather than no failed one: once an earlier test has
+    // fetched the chunk, a boundary around it renders, and a check for the
+    // failure marker alone would pass for the wrong reason.
+    it('leaves nothing in a server render for the browser to finish', () => {
+      const html = renderToString(<Image src={OK} alt="A ridge" preview />);
+
+      expect(html).not.toContain('<!--$');
+      expect(html).not.toContain('<template');
+    });
+
+    it('hydrates without an error and opens on the first press', async () => {
+      const page = await serve(<Image src={OK} alt="A ridge" preview />);
+
+      try {
+        expect(page.recoverable).not.toHaveBeenCalled();
+
+        (page.host.querySelector('button') as HTMLButtonElement).click();
+
+        await expect
+          .poll(() => document.querySelector('[role="dialog"]')?.getAttribute('aria-labelledby'))
+          .toBeTruthy();
+      } finally {
+        page.done();
+      }
+    });
+  });
+
+  it('opens from the keyboard on the first press and hands the focus back', async () => {
+    const screen = await render(<Image src={OK} alt="A ridge" preview />);
+    const button = screen.getByRole('button', { name: 'A ridge' });
+
+    (button.element() as HTMLElement).focus();
+    await userEvent.keyboard('{Enter}');
+
+    const dialog = screen.getByRole('dialog', { name: 'A ridge' });
+
+    await expect.element(dialog).toBeInTheDocument();
+    await expect.poll(() => dialog.element().contains(document.activeElement)).toBe(true);
+
+    await userEvent.keyboard('{Escape}');
+
+    await expect.element(dialog).not.toBeInTheDocument();
+    await expect.element(button).toHaveFocus();
   });
 
   // The preview took only `src`, so a picture given a `srcSet` alone opened an
