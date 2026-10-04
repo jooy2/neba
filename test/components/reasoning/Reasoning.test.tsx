@@ -140,6 +140,54 @@ describe('Reasoning', () => {
       await expect.poll(() => hiddenAround(screen)).not.toBeNull();
     });
 
+    // A panel that folds itself away moves the answer under it up the page with
+    // nobody having pressed anything.
+    it('stays open after the stream ends when autoClose is off', async () => {
+      const screen = await render(
+        <Reasoning streaming autoClose={false}>
+          Weighing two options.
+        </Reasoning>
+      );
+
+      await expect.element(screen.getByRole('button')).toHaveAttribute('aria-expanded', 'true');
+
+      await screen.rerender(
+        <Reasoning duration={900} autoClose={false}>
+          Weighing two options.
+        </Reasoning>
+      );
+
+      await expect
+        .element(screen.getByRole('button', { name: 'Thought for 900ms' }))
+        .toHaveAttribute('aria-expanded', 'true');
+      await expect.element(screen.getByText('Weighing two options.')).toBeVisible();
+    });
+
+    it('still opens when the stream starts with autoClose off', async () => {
+      const screen = await render(<Reasoning autoClose={false}>Weighing two options.</Reasoning>);
+
+      await screen.rerender(
+        <Reasoning streaming autoClose={false}>
+          Weighing two options.
+        </Reasoning>
+      );
+
+      await expect.element(screen.getByRole('button')).toHaveAttribute('aria-expanded', 'true');
+    });
+
+    it('closes when the reader presses it after the stream with autoClose off', async () => {
+      const screen = await render(
+        <Reasoning streaming autoClose={false}>
+          Weighing two options.
+        </Reasoning>
+      );
+
+      await screen.rerender(<Reasoning autoClose={false}>Weighing two options.</Reasoning>);
+      await screen.getByRole('button').click();
+
+      await expect.element(screen.getByRole('button')).toHaveAttribute('aria-expanded', 'false');
+    });
+
     it('stays where the reader put it when autoOpen is off', async () => {
       const screen = await render(<Reasoning autoOpen={false}>Weighing two options.</Reasoning>);
 

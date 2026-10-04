@@ -27,7 +27,7 @@ A [Spoiler](../surfaces/spoiler) and a [Collapsible](../surfaces/collapsible) ar
 
 ### streaming
 
-The one prop that drives the rest. While it is true the header says so, the mark turns, the root carries `data-streaming` and `aria-busy`, and the panel is open. When it goes false the panel folds away and the header becomes a summary.
+The one prop that drives the rest. While it is true the header says so, the mark turns, the root carries `data-streaming` and `aria-busy`, and the panel is open. When it goes false the header becomes a summary and, unless `autoClose` is off, the panel folds away.
 
 A Reasoning that _mounts_ while `streaming` is already true starts open: there is no edge coming to open it, and a panel that stayed shut would hide the one thing arriving on the screen.
 
@@ -46,6 +46,20 @@ Milliseconds, and the header reads "Thought for 4.2s". Leave it out and the pane
 On. Turning it off keeps the header's sentence and the mark and leaves the panel exactly where the reader put it, which is what a page wants when the thinking is the content rather than an aside.
 
 The panel follows the _edges_ of `streaming` rather than its value either way, so a reader who folds it away mid-stream is not overruled on the next token. Passing `open` turns all of it off: a controlled Reasoning is where its caller says it is.
+
+### autoClose
+
+On, so `autoOpen` also closes the panel when the stream ends. Turn it off to keep the thinking open once it has arrived: a panel that folds itself away moves the answer under it up the page while the reader is reading it. `autoClose` is only read while `autoOpen` is on, and the reader can still fold the panel away by pressing the header.
+
+```tsx
+<Reasoning streaming={streaming} autoClose={false}>
+  {thinking}
+</Reasoning>
+```
+
+### hiddenUntilFound
+
+On. A closed panel stays in the DOM as `hidden="until-found"`, so the thinking is in a server render, and the browser's own page search can find it and open the panel. `hiddenUntilFound={false}` takes a closed panel out of the DOM.
 
 ### variant
 

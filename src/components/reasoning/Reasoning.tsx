@@ -75,6 +75,17 @@ export interface ReasoningProps
    */
   autoOpen?: boolean;
   /**
+   * Whether `autoOpen` also closes the panel when the stream ends.
+   *
+   * Turn it off to leave the thinking open once it has arrived. A panel that
+   * folds itself away moves everything under it up the page with nobody having
+   * pressed anything, and where the answer is already being read below it, that
+   * jump is worse than the space the thinking takes. Only read while `autoOpen`
+   * is on: with it off, the stream moves nothing in either direction.
+   * @default true
+   */
+  autoClose?: boolean;
+  /**
    * Keeps a closed panel in the DOM, hidden until the browser's own page search
    * finds something in it and opens it.
    *
@@ -156,6 +167,7 @@ export const Reasoning = React.forwardRef<HTMLDivElement, ReasoningProps>(
       defaultOpen = false,
       onOpenChange,
       autoOpen = true,
+      autoClose = true,
       hiddenUntilFound = true,
       label,
       icon,
@@ -182,12 +194,13 @@ export const Reasoning = React.forwardRef<HTMLDivElement, ReasoningProps>(
     /*
      * React's own "adjusting state when a prop changes". The panel follows the
      * *edges* of `streaming` rather than its value, so a reader who folds the
-     * panel away mid-stream is not overruled on the next token.
+     * panel away mid-stream is not overruled on the next token. The falling
+     * edge is the one `autoClose` can take away.
      */
     if (wasStreaming !== streaming) {
       setWasStreaming(streaming);
 
-      if (autoOpen && !controlled) {
+      if (autoOpen && !controlled && (streaming || autoClose)) {
         setOpenState(streaming);
       }
     }

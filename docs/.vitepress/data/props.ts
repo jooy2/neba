@@ -15906,8 +15906,17 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       default: 'true',
       description: {
-        ko: '스트림이 도는 동안 열고 끝나면 닫습니다. Collapsible과의 차이가 바로 이것입니다',
-        en: 'Opens the panel while the stream runs and closes it when the stream ends'
+        ko: '스트림이 도는 동안 열고 끝나면 닫습니다. Collapsible과의 차이가 바로 이것입니다. 끝날 때 닫는 것은 autoClose로 끕니다',
+        en: 'Opens the panel while the stream runs and closes it when the stream ends, unless autoClose is off'
+      }
+    },
+    {
+      name: 'autoClose',
+      type: 'boolean',
+      default: 'true',
+      description: {
+        ko: 'autoOpen이 스트림이 끝날 때 패널을 닫기까지 할지. 끄면 생각이 다 도착한 뒤에도 열린 채로 남아 아래의 답이 저절로 위로 올라가지 않습니다. autoOpen이 켜져 있을 때만 읽습니다',
+        en: 'Whether autoOpen also closes the panel when the stream ends. Off, the thinking stays open once it has arrived, so the answer below it is not moved up the page by itself. Only read while autoOpen is on'
       }
     },
     {

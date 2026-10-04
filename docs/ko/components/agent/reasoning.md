@@ -27,7 +27,7 @@ import { Reasoning } from 'neba';
 
 ### streaming
 
-나머지를 전부 끌고 가는 prop 하나입니다. true인 동안 헤더가 그렇게 말하고, 표시가 돌고, 루트에 `data-streaming`과 `aria-busy`가 붙고, 패널이 열려 있습니다. false가 되면 패널은 접히고 헤더는 요약이 됩니다.
+나머지를 전부 끌고 가는 prop 하나입니다. true인 동안 헤더가 그렇게 말하고, 표시가 돌고, 루트에 `data-streaming`과 `aria-busy`가 붙고, 패널이 열려 있습니다. false가 되면 헤더는 요약이 되고, `autoClose`를 끄지 않았다면 패널은 접힙니다.
 
 `streaming`이 이미 true인 상태로 *마운트*된 Reasoning은 열린 채로 시작합니다. 열어 줄 변화가 앞으로 오지 않고, 닫힌 패널은 화면에 도착하고 있는 유일한 것을 가리게 되기 때문입니다.
 
@@ -46,6 +46,20 @@ import { Reasoning } from 'neba';
 켜져 있습니다. 끄면 헤더의 문장과 표시는 그대로 두고 패널만 독자가 둔 자리에 남습니다. 사고 자체가 본문인 페이지가 원하는 동작입니다.
 
 어느 쪽이든 패널은 `streaming`의 값이 아니라 *변화*를 따릅니다. 스트림 도중에 패널을 접은 독자가 다음 토큰에서 뒤집히지 않습니다. `open`을 넘기면 이 동작 전체가 꺼지고, 제어되는 Reasoning은 호출한 쪽이 말한 자리에 있습니다.
+
+### autoClose
+
+켜져 있으므로 `autoOpen`은 스트림이 끝날 때 패널을 닫기까지 합니다. 끄면 사고가 다 도착한 뒤에도 패널이 열려 있습니다. 저절로 접히는 패널은 독자가 읽고 있는 아래의 답을 페이지 위로 끌어올립니다. `autoClose`는 `autoOpen`이 켜져 있을 때만 읽으며, 독자는 여전히 헤더를 눌러 패널을 접을 수 있습니다.
+
+```tsx
+<Reasoning streaming={streaming} autoClose={false}>
+  {thinking}
+</Reasoning>
+```
+
+### hiddenUntilFound
+
+켜져 있습니다. 닫힌 패널은 `hidden="until-found"`로 DOM에 남으므로 사고 내용이 서버 렌더에 포함되고, 브라우저의 페이지 내 찾기가 이를 찾아 패널을 열 수 있습니다. `hiddenUntilFound={false}`를 주면 닫힌 패널이 DOM에서 빠집니다.
 
 ### variant
 
