@@ -191,3 +191,42 @@ jobs:
         run: npm run test
         env:
           VITEST_BROWSER: chromium
+
+  zod-4:
+    runs-on: ubuntu-latest
+    name: Test the A2UI adapter on Zod 4 (chromium)
+    # The peer range takes Zod 3 and Zod 4, and the lockfile has 3, where the
+    # adapter and `web_core` share one copy. Under 4 they do not: the adapter's
+    # `zod/v3` is the copy inside the project's Zod 4, and `web_core` installs a
+    # Zod 3 of its own, so the schemas it builds meet a second set of classes.
+    # Only this layout can show a mistake about that, and only the adapter's
+    # test file imports anything that reaches Zod.
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v6
+        name: Setup Node.js
+        with:
+          node-version: '26'
+          cache: npm
+          cache-dependency-path: '**/package-lock.json'
+      - run: npm ci
+      - name: Install Zod 4
+        run: npm install --no-save --ignore-scripts zod@4
+      - name: Check the Zod layout
+        run: |
+          node -e "
+            const root = require('zod/package.json').version;
+            const own = require('./node_modules/@a2ui/web_core/node_modules/zod/package.json').version;
+            if (!root.startsWith('4.') || !own.startsWith('3.')) throw new Error('zod ' + root + ', web_core zod ' + own);
+          "
+      - name: Install Playwright browser (chromium)
+        run: npx playwright install --with-deps chromium
+      - name: Test the adapter
+        timeout-minutes: 10
+        run: npm run test -- test/a2ui
+        env:
+          VITEST_BROWSER: chromium

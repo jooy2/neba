@@ -19,6 +19,8 @@
  * npm install @a2ui/react @a2ui/web_core zod
  * ```
  *
+ * `zod` may be 3.25 or 4; `schema.ts` says why both work.
+ *
  * ## Versions
  *
  * The catalog is written against **A2UI v1.0** and `@a2ui/react` 0.11's newest

@@ -39,6 +39,8 @@ npm install @a2ui/react @a2ui/web_core zod
 
 셋 다 **optional peer dependency**입니다. `neba/a2ui`가 `neba`에서 다시 export되지 않기 때문에 안전합니다. 번들러가 패키지를 훑을 때 여기까지 오지 않으므로, `Button`만 쓰고 A2UI를 들어 본 적 없는 프로젝트는 새로 해석할 것이 하나도 없습니다. 아래 import를 쓸 때만 딸려 옵니다. 이 셋을 external로 두면 어댑터는 gzip으로 약 93 kB입니다. 어댑터 자체의 코드는 약 29 kB이고, 나머지는 열여덟 개 컴포넌트 뒤의 Base UI입니다. 어댑터는 설명을 뺀 카탈로그 사본을 읽습니다. 렌더러는 모델에게 주는 설명을 읽지 않으므로, 에이전트가 읽는 파일이 페이지까지 따라오지 않습니다.
 
+`zod`는 3.25 이상의 3.x든 4든 됩니다. 어댑터는 두 버전이 모두 `zod/v3`로 제공하는 Zod 3 API로 스키마를 만들고, Zod 4를 쓰는 프로젝트에서는 `@a2ui/web_core`가 자기 Zod 3을 따로 설치합니다. 그래서 프로젝트의 Zod 버전을 바꿀 필요가 없습니다.
+
 ```tsx
 import { MessageProcessor } from '@a2ui/web_core/v0_9';
 import { A2uiSurface } from '@a2ui/react/v0_9';

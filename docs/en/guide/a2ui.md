@@ -39,6 +39,8 @@ npm install @a2ui/react @a2ui/web_core zod
 
 They are **optional peer dependencies**, which is safe here because `neba/a2ui` is not re-exported from `neba`: a bundler walking the package never reaches it, so a project that imports `Button` and has never heard of A2UI resolves nothing new. Only the import below pulls them in. The adapter itself is about 93 kB gzipped with those three external: its own code is about 29 kB, and the rest is the Base UI behind the eighteen components. It reads a copy of the catalog with the descriptions taken out, since the renderer never reads the prose a model is given, so the file an agent reads does not travel into the page.
 
+`zod` can be 3.25 or any later 3.x, or 4. The adapter builds its schemas with the Zod 3 API at `zod/v3`, which both serve, and in a project on Zod 4 `@a2ui/web_core` installs a Zod 3 of its own, so the project's version does not have to change.
+
 ```tsx
 import { MessageProcessor } from '@a2ui/web_core/v0_9';
 import { A2uiSurface } from '@a2ui/react/v0_9';

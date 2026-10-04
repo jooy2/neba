@@ -20,9 +20,19 @@
  * not decoration over `z.string()`: the node layer reads a marker off those
  * schemas to work out which props are child references, so a `Card.child` built
  * from a bare string is a card that never resolves its child.
+ *
+ * The import is `zod/v3` rather than `zod` because `web_core` builds its
+ * schemas with Zod 3, and the ones built here sit in the same objects as
+ * those. Zod 3.25 and every Zod 4 serve the v3 API at that path, so the peer
+ * range takes both: under Zod 3 it is the package root by another name, and
+ * under Zod 4 it is the copy of v3 that ships inside it, while `web_core`
+ * installs a Zod 3 of its own. Two copies of v3 are two sets of classes, so
+ * nothing here may let an object built by one reach the other's `instanceof` —
+ * see `componentSchema`. `web_core` reads the result by `_def.typeName` and
+ * never by class, so the renderer does not care which copy built it.
  */
 
-import { z } from 'zod';
+import { z } from 'zod/v3';
 import { childList, CommonSchemas, componentId } from '@a2ui/web_core/v0_9';
 
 /** As much of JSON Schema as the catalog is written in. */
@@ -231,9 +241,15 @@ export function componentSchema(name: string, definition: CatalogSchema): z.ZodT
     accessibility: CommonSchemas.AccessibilityAttributes.optional()
   });
 
+  // `extend` with a shape, never `merge` with an object: `merge` takes the
+  // other object's `catchall`, and `checkable` is built by `web_core`'s copy of
+  // Zod, which under a project's Zod 4 is not this one. Its `ZodNever` then
+  // fails this copy's `instanceof`, and the object refuses every key it does
+  // not declare — so a component whose `allOf` ended on `Checkable` would drop
+  // a node over a stray key instead of stripping it.
   for (const part of parts) {
     if (part.$ref === `${COMMON}Checkable`) {
-      built = built.merge(checkable);
+      built = built.extend(checkable.shape);
       continue;
     }
 
@@ -244,7 +260,7 @@ export function componentSchema(name: string, definition: CatalogSchema): z.ZodT
     }
 
     checkKeywords(part, name, OBJECT_KEYWORDS);
-    built = built.merge(shape(part, name));
+    built = built.extend(shape(part, name).shape);
   }
 
   return built;

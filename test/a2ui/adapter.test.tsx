@@ -10,7 +10,7 @@
  * The messages below are the ones an agent sends, in the shape it sends them.
  */
 import { describe, expect, it, vi } from 'vitest';
-import type { z } from 'zod';
+import type { z } from 'zod/v3';
 import { flushSync } from 'react-dom';
 import { createRoot } from 'react-dom/client';
 import { render } from 'vitest-browser-react';
@@ -177,6 +177,29 @@ describe('the A2UI adapter', () => {
       expect(schema.shape.lines.safeParse(2).success).toBe(true);
       expect(schema.shape.lines.safeParse(0).success).toBe(false);
       expect(schema.shape.lines.safeParse(1.5).success).toBe(false);
+    });
+
+    /*
+     * A key the catalog does not declare is stripped, not refused, because a
+     * refusal drops the whole message. `Checkable` is built by `web_core`'s Zod,
+     * which under a project's Zod 4 is a copy of its own; merged in last, its
+     * `ZodNever` was one this copy's `instanceof` did not recognise, and the
+     * component refused every stray key. Only the run with Zod 4 installed can
+     * fail this, so both orders are checked rather than the catalog's one.
+     */
+    it('strips an undeclared key wherever `Checkable` sits in the composition', () => {
+      const definition = catalog.components.TextField as CatalogSchema;
+      const orders = [definition.allOf!, [...definition.allOf!].reverse()];
+
+      for (const allOf of orders) {
+        const parsed = componentSchema('TextField', { allOf }).safeParse({
+          label: 'Name',
+          stray: 1
+        });
+
+        expect(parsed.success).toBe(true);
+        expect(parsed.data).toEqual({ label: 'Name' });
+      }
     });
 
     /*
