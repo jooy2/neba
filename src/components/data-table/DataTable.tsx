@@ -383,6 +383,16 @@ export interface DataTableProps<Row>
   /** @default 1 */
   defaultPage?: number;
   onPageChange?: (page: number) => void;
+  /**
+   * The address of a page, which turns the footer's page numbers into real
+   * links — the same prop on Pagination, handed through.
+   *
+   * Without it the pages are buttons, and a crawler cannot press one, so the
+   * rows past the first page are out of its reach. A press on a link still
+   * moves the table without leaving the page; a press with a modifier key is
+   * left to the browser, which opens the address.
+   */
+  getPageHref?: (page: number) => string;
   /** How many rows a page holds. Use with `onPageSizeChange`. */
   pageSize?: number;
   /** @default 25 */
@@ -1074,6 +1084,7 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
     page: pageProp,
     defaultPage = 1,
     onPageChange,
+    getPageHref,
     pageSize: pageSizeProp,
     defaultPageSize = 25,
     onPageSizeChange,
@@ -3451,6 +3462,7 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
                 count={bounds.pages}
                 page={bounds.page}
                 siblingCount={0}
+                getPageHref={getPageHref}
                 onPageChange={goToPage}
               />
             ) : null}

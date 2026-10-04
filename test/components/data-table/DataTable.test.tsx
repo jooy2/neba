@@ -669,6 +669,39 @@ describe('DataTable', () => {
       // start past the end and the search would answer with nothing.
       expect(cellText(screen.container, 0)).toEqual(['Person 1']);
     });
+
+    // The pages were buttons only, so a crawler never got past the first one.
+    it('makes the pages links when it is given their addresses', async () => {
+      const onPageChange = vi.fn();
+      const screen = await render(
+        <DataTable
+          headers={HEADERS}
+          items={manyItems(10)}
+          getRowKey={key}
+          paging="pages"
+          defaultPageSize={4}
+          getPageHref={(page) => `?page=${page}`}
+          onPageChange={onPageChange}
+        />
+      );
+      const second = screen.getByRole('link', { name: 'Page 2' });
+
+      await expect.element(second).toHaveAttribute('href', '?page=2');
+      await expect
+        .element(screen.getByRole('link', { name: 'Page 3' }))
+        .toHaveAttribute('href', '?page=3');
+
+      // The press still moves the table where it is, rather than leaving the page.
+      await second.click();
+
+      expect(onPageChange).toHaveBeenLastCalledWith(2);
+      expect(cellText(screen.container, 0)).toEqual([
+        'Person 4',
+        'Person 5',
+        'Person 6',
+        'Person 7'
+      ]);
+    });
   });
 
   describe('virtual scrolling', () => {

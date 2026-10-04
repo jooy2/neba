@@ -117,6 +117,8 @@ Adjacent columns carrying the same `group` string are merged under one heading i
 
 `paging="pages"` cuts the rows into pages and draws a footer: the range, how many rows are chosen, a page-size [Select](../inputs/select) and a [Pagination](../inputs/pagination). `pageSizeOptions` decides what the Select offers, and an empty list drops it.
 
+`getPageHref` gives each page an address, and the page numbers become links a crawler can follow. A press on one still moves the table without leaving the page.
+
 `footer` shows or hides that bar on its own, so a scrolling table can have the count without the pages.
 
 <Demo src="data-table/pages" minHeight="420">

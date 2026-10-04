@@ -6721,6 +6721,14 @@ export const propTables: Record<string, PropRow[]> = {
       description: { ko: '페이지가 바뀔 때', en: 'Fires when the page changes' }
     },
     {
+      name: 'getPageHref',
+      type: '(page: number) => string',
+      description: {
+        ko: '페이지의 주소. 넘기면 푸터의 페이지 번호가 실제 링크가 되어 크롤러가 따라갈 수 있습니다. 누르면 페이지를 떠나지 않고 표만 넘어갑니다',
+        en: "The address of a page. Turns the footer's page numbers into real links a crawler can follow; a press still moves the table without leaving the page"
+      }
+    },
+    {
       name: 'pageSize / defaultPageSize',
       type: 'number',
       default: '25',

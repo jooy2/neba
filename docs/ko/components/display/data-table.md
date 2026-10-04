@@ -117,6 +117,8 @@ const rowKey = (row: Build) => row.id;
 
 `paging="pages"`는 행을 페이지로 끊고 푸터를 그립니다. 표시 범위, 선택된 행 수, 페이지 크기 [Select](../inputs/select), 그리고 [Pagination](../inputs/pagination)이 들어갑니다. `pageSizeOptions`가 Select에 담길 값을 정하고, 빈 배열이면 그 컨트롤이 사라집니다.
 
+`getPageHref`로 페이지마다 주소를 주면 페이지 번호가 크롤러가 따라갈 수 있는 링크가 됩니다. 링크를 눌러도 페이지를 떠나지 않고 표만 넘어갑니다.
+
 `footer`는 그 바 자체를 켜고 끄므로, 스크롤하는 표에 페이지 없이 개수만 둘 수도 있습니다.
 
 <Demo src="data-table/pages" minHeight="420">
