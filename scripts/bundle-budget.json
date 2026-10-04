@@ -19,25 +19,25 @@
       "id": "line-chart",
       "label": "LineChart",
       "imports": ["LineChart"],
-      "budget": 16.3
+      "budget": 17.1
     },
     {
       "id": "code-block",
       "label": "CodeBlock",
       "imports": ["CodeBlock"],
-      "budget": 5.4
+      "budget": 5.8
     },
     {
       "id": "image",
       "label": "Image",
       "imports": ["Image"],
-      "budget": 8.8
+      "budget": 9
     },
     {
       "id": "gallery",
       "label": "Gallery",
       "imports": ["Gallery"],
-      "budget": 11.7
+      "budget": 12.3
     },
     {
       "id": "app-12",
@@ -56,7 +56,7 @@
         "Chip",
         "Typography"
       ],
-      "budget": 74.2
+      "budget": 74.3
     },
     {
       "id": "app-25",
@@ -88,13 +88,13 @@
         "Chip",
         "Typography"
       ],
-      "budget": 121.7
+      "budget": 122.1
     },
     {
       "id": "page-shell",
       "label": "a page shell — the layout and its four",
       "imports": ["PageLayout", "Header", "Footer", "Sidebar", "SidebarTrigger", "AppLogo"],
-      "budget": 30.1
+      "budget": 30.5
     },
     {
       "id": "app-12-ko",
@@ -114,13 +114,13 @@
         "Typography"
       ],
       "locales": ["ko"],
-      "budget": 78.4
+      "budget": 78.5
     },
     {
       "id": "everything",
       "label": "every export",
       "imports": null,
-      "budget": 297.7
+      "budget": 302.8
     },
     {
       "id": "a2ui",
@@ -128,13 +128,13 @@
       "from": "neba/a2ui",
       "imports": ["createNebaCatalog"],
       "external": ["@a2ui/react", "@a2ui/web_core", "zod"],
-      "budget": 93.9
+      "budget": 94.7
     },
     {
       "id": "stylesheet",
       "label": "neba/styles.css — every page carries it",
       "file": "styles.css",
-      "budget": 26
+      "budget": 26.2
     }
   ]
 }

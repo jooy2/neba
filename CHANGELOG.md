@@ -14,6 +14,31 @@
 
 - **`StreamingText` draws text it did not watch arrive as plain text.** A message loaded from history, text rendered on a server and text already there when a stream starts were cut into one element per word and faded in, which for a history of fifty answers was fifteen thousand animations starting at once. Only the words that arrive while `streaming` is on fade now. Turn `streaming` on while the text arrives to keep the fade.
 
+### Where the bytes went
+
+| What you import               | 1.17.1   | vNext    |
+| ----------------------------- | -------- | -------- |
+| `Button`                      | 5.0 kB   | 5.0 kB   |
+| `Chip`                        | 3.4 kB   | 3.4 kB   |
+| `LineChart`                   | 16.3 kB  | 17.1 kB  |
+| `CodeBlock`                   | 5.4 kB   | 5.8 kB   |
+| `Image`                       | 8.8 kB   | 9.0 kB   |
+| `Gallery`                     | 11.7 kB  | 12.3 kB  |
+| a whole page shell            | 30.1 kB  | 30.5 kB  |
+| 12 components — a typical app | 74.2 kB  | 74.3 kB  |
+| 12 components, with Korean    | 78.4 kB  | 78.5 kB  |
+| 25 components — a large one   | 121.7 kB | 122.1 kB |
+| all exports                   | 297.7 kB | 302.8 kB |
+| `neba/styles.css`             | 26.0 kB  | 26.2 kB  |
+
+The rows that moved are the ones this release is about, and each one paid for a page that is faster to show or to use.
+
+A `LineChart` grew 0.8 kB, as every chart did: the hidden table's rows are now added after the first paint for a chart past 500 points, the layout is memoised so the pointer stops rebuilding it, and finding a formatter the library already built no longer writes its options out as JSON. That last part is in `internal/format.ts`, so every component that writes a number or a date carries its quarter of a kilobyte. In exchange, a LineChart of three 1,000-point series mounts in about a fifth of the time and sends 4.3 kB of server HTML rather than 68.6 kB.
+
+A `CodeBlock` grew 0.4 kB for the shared observer it now waits on before colouring a block, and an `Image` 0.2 kB and a `Gallery` 0.6 kB for telling a server-rendered picture from one mounted in the browser, fetching the viewer on the first touch, and the Gallery's `priority`, `srcSet` and `sizes` and the server-rendered masonry. The page shell moved 0.4 kB for the room PageLayout now reserves for a fixed header and the `keepMounted` a Sidebar passes to its drawer.
+
+The rest of the 5.1 kB on every export is spread across the components below: the text cut the same way on every engine for the animated text, StreamingText's blocks, DataTable's memoised rows and Select's sampler. The stylesheet's 0.2 kB is the sweeps' right-to-left rules and the classes that keep content hidden while `keepMounted` holds it in the DOM.
+
 ### Added
 
 - **`keepMounted` on `Tabs`, `TreeView`, `Breadcrumb`, `Drawer`, `Sidebar`, `Menu` and `ContextMenu` keeps hidden content in the DOM.** It is off by default, so nothing changes until it is set. On, the panels behind every tab, the rows of a shut branch, the steps a `maxItems` fold hides and a closed drawer's contents stay in the document, hidden, so a crawler that does not click can follow the links in them. Those of `Tabs`, `TreeView`, `Breadcrumb` and an inline `Drawer` are in the server's HTML; a `Menu`, an overlay `Drawer` and a collapsed `Sidebar` render into a portal, which mounts only in the browser, so theirs reach only a crawler that runs JavaScript. A `TabPanel`'s own `keepMounted` still wins over its set's.
