@@ -114,6 +114,70 @@ describe('Gallery', () => {
     });
 
     /*
+     * A server does not know how wide the window is, so it dealt for the
+     * narrowest width and the page redrew itself into more columns as it
+     * hydrated, moving every tile on it. Until hydration it draws one deal per
+     * width the columns change at, each behind the classes that show it only
+     * there; afterwards only the reader's is left, as the same elements.
+     */
+    it('server-renders a masonry deal for every width its columns change at', () => {
+      const html = renderToString(
+        <Gallery items={items} layout="masonry" columns={{ xs: 2, md: 3, lg: 4 }} />
+      );
+      const host = document.createElement('div');
+
+      host.innerHTML = html;
+
+      expect(host.querySelectorAll('ul ul')).toHaveLength(2 + 3 + 4);
+      expect(host.querySelectorAll('.md\\:hidden')).toHaveLength(2);
+      expect(host.querySelectorAll('.max-md\\:hidden.lg\\:hidden')).toHaveLength(3);
+      expect(host.querySelectorAll('.max-lg\\:hidden')).toHaveLength(4);
+    });
+
+    it("keeps only the reader's deal once hydrated, as the elements the server drew", async () => {
+      const element = <Gallery items={items} layout="masonry" columns={{ xs: 2, md: 3, lg: 4 }} />;
+      const host = document.createElement('div');
+
+      host.innerHTML = renderToString(element);
+      document.body.append(host);
+
+      const drawn = new Set(host.querySelectorAll(':scope > ul > li'));
+      const expected = matchMedia('(min-width: 64rem)').matches
+        ? 4
+        : matchMedia('(min-width: 48rem)').matches
+          ? 3
+          : 2;
+      const recoverable = vi.fn();
+      const root = hydrateRoot(host, element, { onRecoverableError: recoverable });
+
+      try {
+        await vi.waitFor(() => expect(host.querySelectorAll('ul ul')).toHaveLength(expected));
+
+        const kept = [...host.querySelectorAll(':scope > ul > li')];
+
+        expect(kept.every((lane) => drawn.has(lane))).toBe(true);
+        expect(kept.some((lane) => /hidden/.test(lane.className))).toBe(false);
+        expect(recoverable).not.toHaveBeenCalled();
+      } finally {
+        root.unmount();
+        host.remove();
+      }
+    });
+
+    it('draws a single deal in a tree that was never server-rendered', async () => {
+      const screen = await render(
+        <Gallery items={items} layout="masonry" columns={{ xs: 2, md: 3, lg: 4 }} />
+      );
+      const expected = matchMedia('(min-width: 64rem)').matches
+        ? 4
+        : matchMedia('(min-width: 48rem)').matches
+          ? 3
+          : 2;
+
+      expect(screen.container.querySelectorAll('ul ul')).toHaveLength(expected);
+    });
+
+    /*
      * Grown and based in proportion to the picture's own width, which is what
      * makes every tile in a row come out the same height once the row has been
      * stretched to the edge. The browser does the arithmetic; nothing here is

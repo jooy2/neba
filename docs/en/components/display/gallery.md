@@ -42,7 +42,7 @@ An item can also carry `rotate`, `flip`, `position` and a `placeholder`, which r
 
 `grid` gives every tile the same shape, whatever shape the files are. `masonry` keeps each picture's own proportion and stacks the columns, dealing each item into the shortest one so the first row is the first three pictures rather than the first three of column one. `justified` keeps the proportions and fills every row to the edge, scaling each row to a common height: the arrangement where nothing is cropped and no space is left over. `quilted` is a grid whose tiles may take more than one cell.
 
-`masonry` reads the breakpoint in JavaScript, to know how many columns it deals into. A page rendered on a server deals into the `xs` count and deals again once it hydrates on a wider screen, and crossing a breakpoint deals again, which mounts every tile afresh in its new column. `grid`, `quilted` and `justified` take their columns from CSS and never move a tile.
+`masonry` reads the breakpoint in JavaScript, to know how many columns it deals into. A page rendered on a server draws one deal for every width its `columns` change at and shows only the one for the reader's width, so nothing moves when it hydrates; the others are hidden and are dropped once the page is running. Crossing a breakpoint afterwards deals again, which mounts every tile afresh in its new column. `grid`, `quilted` and `justified` take their columns from CSS and never move a tile.
 
 <Demo src="gallery/layouts">
 

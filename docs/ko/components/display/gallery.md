@@ -42,7 +42,7 @@ import { Gallery } from 'neba';
 
 `grid`는 파일이 어떤 모양이든 모든 타일을 같은 모양으로 맞춥니다. `masonry`는 사진마다의 비율을 지키면서 열에 쌓되, 가장 짧은 열부터 채우므로 첫 줄이 1열의 첫 세 장이 아니라 처음 받은 세 장이 됩니다. `justified`는 비율을 지키면서 각 줄을 가장자리까지 채우고 한 줄을 같은 높이로 맞춥니다. 잘리는 것도 남는 공간도 없는 배치입니다. `quilted`는 타일이 여러 칸을 차지할 수 있는 grid입니다.
 
-`masonry`는 몇 열에 나눠 담을지 정하려고 JavaScript에서 breakpoint를 읽습니다. 서버에서 렌더한 페이지는 `xs` 열 수로 나눴다가 더 넓은 화면에서 hydration되면 다시 나누고, breakpoint를 넘을 때도 다시 나누며, 이때 모든 타일이 새 열에서 다시 마운트됩니다. `grid`, `quilted`, `justified`는 열을 CSS에서 가져오므로 타일이 옮겨지지 않습니다.
+`masonry`는 몇 열에 나눠 담을지 정하려고 JavaScript에서 breakpoint를 읽습니다. 서버에서 렌더한 페이지는 `columns`가 바뀌는 폭마다 나눈 결과를 하나씩 그리고 읽는 사람의 폭에 맞는 것만 보여 주므로, hydration될 때 아무것도 움직이지 않습니다. 나머지는 숨겨져 있다가 페이지가 실행되면 사라집니다. 그 뒤 breakpoint를 넘으면 다시 나누며, 이때 모든 타일이 새 열에서 다시 마운트됩니다. `grid`, `quilted`, `justified`는 열을 CSS에서 가져오므로 타일이 옮겨지지 않습니다.
 
 <Demo src="gallery/layouts">
 

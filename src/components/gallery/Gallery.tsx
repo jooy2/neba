@@ -2,8 +2,16 @@
 
 import * as React from 'react';
 import { Image } from '../image/Image.js';
-import { responsiveSlots, withBaseline } from '../../internal/responsive.js';
+import {
+  breakpoints,
+  hiddenBelowClasses,
+  hiddenFromClasses,
+  responsiveSlots,
+  valueAt,
+  withBaseline
+} from '../../internal/responsive.js';
 import { useBreakpointValue } from '../../hooks/useMediaQuery.js';
+import { useHydrated } from '../../internal/media.js';
 import { fillMessage, galleryMessages, useMessages } from '../../internal/i18n.js';
 import {
   cx,
@@ -470,6 +478,7 @@ export const Gallery = React.forwardRef<HTMLUListElement, GalleryProps>(
     // does: the columns it deals into. Every other layout reads the same value
     // out of the cascade without React hearing about the resize.
     const laneCount = Math.max(1, useBreakpointValue(lanes) ?? 2);
+    const hydrated = useHydrated();
 
     const space =
       typeof gap === 'string' && gap in gapValues
@@ -714,21 +723,57 @@ export const Gallery = React.forwardRef<HTMLUListElement, GalleryProps>(
 
     if (layout === 'masonry') {
       const ratios = items.map((item) => shownRatioOf(item, fallbackRatio));
+      const dealt = (count: number, visibility: string) =>
+        deal(ratios, count).map((lane, index) => (
+          <li
+            // Keyed by the deal as well as the place, so the lanes a server
+            // drew for the width the reader turns out to have are the ones
+            // React keeps once it knows that width.
+            key={`${count}-${index}`}
+            // A lane is a list item holding a list, rather than a `<div>`
+            // between the `<ul>` and its `<li>`s, which is markup a screen
+            // reader reads as a list with nothing in it.
+            className={cx('m-0 flex min-w-0 flex-1 list-none flex-col', visibility)}
+            style={{ gap: space }}
+          >
+            <ul className="m-0 flex list-none flex-col p-0" style={{ gap: space }}>
+              {lane.map((at) => tile(items[at], at, {}))}
+            </ul>
+          </li>
+        ));
 
-      children = deal(ratios, laneCount).map((lane, index) => (
-        <li
-          key={index}
-          // A lane is a list item holding a list, rather than a `<div>` between
-          // the `<ul>` and its `<li>`s, which is markup a screen reader reads as
-          // a list with nothing in it.
-          className="m-0 flex min-w-0 flex-1 list-none flex-col"
-          style={{ gap: space }}
-        >
-          <ul className="m-0 flex list-none flex-col p-0" style={{ gap: space }}>
-            {lane.map((at) => tile(items[at], at, {}))}
-          </ul>
-        </li>
-      ));
+      /*
+       * The one layout that has to know its column count in JavaScript, and a
+       * server does not know how wide the window is. So until hydration every
+       * deal the breakpoints call for is drawn, each shown only across its own
+       * widths by the same classes `Show` uses — the reader sees the right one
+       * in the first frame, where a single deal for the narrowest width used
+       * to be redrawn into four columns the moment the page hydrated, moving
+       * every tile on it. The hidden ones are `display: none`, so a lazy
+       * picture in them is not fetched, and they go once React knows the width.
+       */
+      const steps = breakpoints.map((breakpoint) => ({
+        breakpoint,
+        count: Math.max(1, Math.round(valueAt(lanes, breakpoint) ?? 2))
+      }));
+      const ranges = steps.filter(
+        (step, index) => index === 0 || step.count !== steps[index - 1].count
+      );
+
+      children =
+        hydrated || ranges.length === 1
+          ? dealt(Math.max(1, Math.round(laneCount)), '')
+          : ranges.flatMap((range, index) => {
+              const next = ranges[index + 1];
+
+              return dealt(
+                range.count,
+                cx(
+                  hiddenBelowClasses[range.breakpoint],
+                  next ? hiddenFromClasses[next.breakpoint] : ''
+                )
+              );
+            });
     } else if (layout === 'justified') {
       children = items.map((item, index) => {
         const each = shownRatioOf(item, fallbackRatio);
