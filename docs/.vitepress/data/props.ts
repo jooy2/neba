@@ -15507,6 +15507,23 @@ export const propTables: Record<string, PropRow[]> = {
         ko: '그 그림이 볼 수 없는 독자에게 하는 말',
         en: 'What that picture says for a reader who cannot see it'
       }
+    },
+    {
+      name: 'imageWidth · imageHeight',
+      type: 'number',
+      description: {
+        ko: '그림 파일 자체의 픽셀 크기. img의 width와 height로 쓰이며, 브라우저가 파일이 도착하기 전에 그 비율만큼 자리를 잡아 두므로 그림이 도착해도 본문이 자라지 않습니다. 크기가 아니라 비율이라 그림은 여전히 본문 너비를 채웁니다',
+        en: "The picture file's own pixel dimensions, written as the img's width and height. The browser reserves their proportion before the file arrives, so the panel does not grow when it lands. A proportion rather than a size: the picture still spans the panel"
+      }
+    },
+    {
+      name: 'imageLoading',
+      type: "'lazy' | 'eager'",
+      default: "'lazy'",
+      description: {
+        ko: '그림을 언제 불러올지. lazy는 안내서가 화면 가까이 올 때까지 기다리고, eager는 페이지 맨 위의 안내서에 씁니다',
+        en: 'When the picture is fetched. lazy waits until the guide is near the screen; eager is for a guide at the top of the page'
+      }
     }
   ],
 

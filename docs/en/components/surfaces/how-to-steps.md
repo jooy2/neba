@@ -115,6 +115,14 @@ The three weights say what they say everywhere. `color` never dyes the sheet and
 <HowToSteps steps={steps} title="Getting started" headingLevel={2} />
 ```
 
+### image
+
+A step can carry a picture above its content, with `imageAlt` for what it says. Give `imageWidth` and `imageHeight`, the file's own pixel dimensions, and the browser reserves the picture's proportion before it arrives, so the panel does not grow as the pictures land. The picture still spans the panel. Pictures load lazily; `imageLoading: 'eager'` is for a guide at the top of the page.
+
+```tsx
+{ title: 'Open the panel', image: '/panel.png', imageWidth: 1600, imageHeight: 900 }
+```
+
 ### content
 
 `content` takes a node, so a step can hold a [CodeBlock](../display/code-block), a screenshot through `image`, a form, or another component entirely. The panel keeps the height of the tallest step, so reaching a step with a code block in it does not resize the card. Nothing is remounted as the step changes, so a form halfway through a guide still holds what was typed into it.

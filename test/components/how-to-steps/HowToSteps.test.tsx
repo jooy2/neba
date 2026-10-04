@@ -142,6 +142,39 @@ describe('HowToSteps', () => {
   });
 
   describe('the step image', () => {
+    // With no proportion to reserve, the panel grew as each picture landed.
+    it('writes the dimensions it was given, for the browser to reserve', async () => {
+      const screen = await render(
+        <HowToSteps
+          steps={[
+            { title: 'Open the panel', image: '/panel.png', imageWidth: 1600, imageHeight: 900 }
+          ]}
+        />
+      );
+      const picture = screen.getByRole('img', { name: 'Open the panel' }).element();
+
+      expect(picture).toHaveAttribute('width', '1600');
+      expect(picture).toHaveAttribute('height', '900');
+      // Read as a proportion and not as a length, whatever reset the page has.
+      expect(picture).toHaveClass('h-auto');
+    });
+
+    it('loads lazily unless it is told otherwise', async () => {
+      const screen = await render(
+        <HowToSteps
+          steps={[
+            { title: 'Open the panel', image: '/panel.png' },
+            { title: 'Press start', image: '/start.png', imageLoading: 'eager' }
+          ]}
+        />
+      );
+      const [panel, start] = [...screen.container.querySelectorAll('img')];
+
+      expect(panel).toHaveAttribute('loading', 'lazy');
+      expect(panel).not.toHaveAttribute('width');
+      expect(start).toHaveAttribute('loading', 'eager');
+    });
+
     // React 18 sets attributes in the order they are written, and Firefox and
     // Safari start the request when `src` is set. A server render writes them
     // in the same order, where React 19 cannot reorder them out of sight.

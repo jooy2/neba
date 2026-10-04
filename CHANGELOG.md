@@ -16,6 +16,8 @@
 
 - **`priority` on `Gallery`, and `srcSet` and `sizes` on a Gallery item.** The first `priority` tiles are fetched eagerly at a high fetch priority and drawn from the first paint, as an `Image` with `priority` is. `srcSet` and `sizes` reach the tile's `<img>`, so a small tile is not sent the full-size original; with no `full`, the viewer chooses from the same `srcSet`.
 
+- **`imageWidth`, `imageHeight` and `imageLoading` on a `HowToSteps` step.** The dimensions are written on the step's `<img>`, so the browser reserves the picture's proportion and the panel no longer grows as pictures arrive. `imageLoading: 'eager'` is for a guide at the top of a page.
+
 ### Changed
 
 - **A `Slider`'s labels at `min` and `max` line up inward from their ticks.** Centred, the label at either end hung half its width past the track, and in a narrow column past the edge of the column. Every other mark stays centred, and a vertical slider does the same at its top and bottom.

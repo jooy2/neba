@@ -115,6 +115,14 @@ import { HowToSteps } from 'neba';
 <HowToSteps steps={steps} title="시작하기" headingLevel={2} />
 ```
 
+### image
+
+단계는 `content` 위에 그림을 하나 둘 수 있고, 그 그림이 말하는 내용은 `imageAlt`로 씁니다. 파일 자체의 픽셀 크기를 `imageWidth`와 `imageHeight`로 주면 브라우저가 그림이 도착하기 전에 그 비율만큼 자리를 잡아 두므로, 그림이 도착해도 본문이 자라지 않습니다. 크기가 아니라 비율이라 그림은 여전히 본문 너비를 채웁니다. 기본은 lazy로 불러오며, 페이지 맨 위의 안내서라면 `imageLoading: 'eager'`를 쓰세요.
+
+```tsx
+{ title: '패널 열기', image: '/panel.png', imageWidth: 1600, imageHeight: 900 }
+```
+
 ### content
 
 `content`는 노드를 받으므로 한 단계 안에 [CodeBlock](../display/code-block)이, `image`로 스크린샷이, 폼이, 다른 컴포넌트가 들어갈 수 있습니다. 본문 영역이 가장 긴 단계의 높이를 유지하므로 코드 블록이 들어 있는 단계에 도착해도 카드 크기가 바뀌지 않습니다. 단계가 바뀔 때 아무것도 다시 mount되지 않으므로 안내서 중간의 폼은 입력해 둔 내용을 그대로 들고 있습니다.

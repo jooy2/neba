@@ -55,6 +55,20 @@ export interface HowToStep {
   image?: string;
   /** What that picture says for a reader who cannot see it. Defaults to `title`. */
   imageAlt?: string;
+  /**
+   * The picture's own pixel dimensions, as an `<img>` takes them. Together they
+   * are its proportion, which the browser reserves before the file arrives, so
+   * the panel is the right height from the first paint rather than growing as
+   * the pictures land. They are not a size: the picture still spans the panel.
+   */
+  imageWidth?: number;
+  imageHeight?: number;
+  /**
+   * When the picture is fetched. `lazy` waits until the guide is near the
+   * screen; `eager` is for a guide at the top of the page.
+   * @default 'lazy'
+   */
+  imageLoading?: 'lazy' | 'eager';
 }
 
 export interface HowToStepsProps extends Omit<
@@ -617,15 +631,19 @@ export const HowToSteps = React.forwardRef<HTMLDivElement, HowToStepsProps>(
               {item.image ? (
                 <img
                   alt={item.imageAlt ?? plainTitle(item.title)}
+                  // The proportion the browser reserves, and `h-auto` below so
+                  // the height attribute is read as that and not as a length.
+                  width={item.imageWidth}
+                  height={item.imageHeight}
+                  className={cx('mb-3 h-auto max-h-72 w-full object-contain', radiusClasses[size])}
                   // Every step's picture is in the document at once so the panel
                   // can keep the height of the tallest, and they share one grid
                   // cell — so to the browser a hidden step's picture is exactly
                   // as near the viewport as the one showing, and `lazy` fetches
                   // them together. What it still does is hold all of them back
                   // until the guide itself is scrolled to.
-                  loading="lazy"
+                  loading={item.imageLoading ?? 'lazy'}
                   decoding="async"
-                  className={cx('mb-3 max-h-72 w-full object-contain', radiusClasses[size])}
                   // Last: React 18 sets attributes in the order they are
                   // written, and Firefox and Safari start the request when
                   // `src` is set, before a `loading` written after it is read.
