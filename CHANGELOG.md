@@ -24,6 +24,8 @@
 
 - **A `Slider`'s labels at `min` and `max` line up inward from their ticks.** Centred, the label at either end hung half its width past the track, and in a narrow column past the edge of the column. Every other mark stays centred, and a vertical slider does the same at its top and bottom.
 
+- **A `DataTable` sorts once instead of on every keystroke in its search.** The sort runs over every row and the search filters what it returns, which is the same rows in the same order; a caller's `filter` is now called in sorted order. Only the rows that changed are drawn again when the active row moves, the body scrolls past a row, a selection the table keeps itself changes or a column is resized, and a render of the table by the caller still draws every row. A dragged selection stops auto-scrolling once it reaches the end instead of running every frame until the button is released.
+
 - **`StreamingText` redraws only the last 64 words when a token lands**, rather than the whole answer: 14 ms per token became 2.2 ms on a 2,000-word answer.
 
 - **An `Image` or a `Gallery` with `preview` fetches its viewer when a pointer, the focus or a finger first reaches it**, and mounts the viewer on the first press, rather than fetching it with the page.

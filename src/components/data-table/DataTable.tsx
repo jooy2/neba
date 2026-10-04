@@ -41,7 +41,7 @@ import {
   toLength,
   transitionClasses
 } from '../../internal/styles.js';
-import type { NebaAlign, NebaElevation, NebaStyleProps } from '../../types.js';
+import type { NebaAlign, NebaColor, NebaElevation, NebaSize, NebaStyleProps } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
 import { useIntlLocale } from '../../internal/media.js';
 
@@ -672,6 +672,315 @@ interface RowEntry<Row> {
   origin: number;
 }
 
+/** Where each pinned column comes to rest, by key, against its own edge. */
+interface PinOffsets {
+  start: ReadonlyMap<string, number>;
+  end: ReadonlyMap<string, number>;
+}
+
+/**
+ * A pinned cell's own styles.
+ *
+ * The background is two declarations rather than one because the row's tint
+ * is a custom property that is often transparent: a sticky cell painted only
+ * with `var(--n-row)` has the scrolling content showing through it. The
+ * `linear-gradient` composites that tint over the sheet's own colour, which
+ * is the one form that keeps stripes, hover and selection while staying
+ * opaque.
+ */
+function pinnedStyle(edge: 'start' | 'end', offset: number, header: boolean): React.CSSProperties {
+  return {
+    position: 'sticky',
+    insetInlineStart: edge === 'start' ? `${offset}px` : undefined,
+    insetInlineEnd: edge === 'end' ? `${offset}px` : undefined,
+    // A body cell above the scrolling cells and under a sticky header. A header
+    // cell above the sticky headings beside it too, which are `z-20`: at a lower
+    // number the headings scrolling past slid over the frozen one.
+    zIndex: header ? 21 : 1,
+    backgroundColor: 'var(--n-panel-press)',
+    backgroundImage: header ? undefined : 'linear-gradient(var(--n-row), var(--n-row))'
+  };
+}
+
+/** A column's pinned styles, or none for a column that scrolls. */
+function columnPinStyle<Row>(
+  column: DataTableColumn<Row>,
+  offsets: PinOffsets,
+  header: boolean
+): React.CSSProperties {
+  if (!column.pinned) {
+    return {};
+  }
+
+  const offset =
+    column.pinned === 'start' ? offsets.start.get(column.key) : offsets.end.get(column.key);
+
+  return pinnedStyle(column.pinned, offset ?? 0, header);
+}
+
+/** The value behind a cell: the column's `value`, or the property its key names. */
+function cellValue<Row>(column: DataTableColumn<Row>, row: Row): unknown {
+  return column.value ? column.value(row) : (row as Record<string, unknown>)[column.key];
+}
+
+/**
+ * Whether one cell edits: there is an `onCellEdit` to hand the value to, and
+ * the column says so for this row.
+ */
+function cellEditable<Row>(column: DataTableColumn<Row>, row: Row, handled: boolean): boolean {
+  return (
+    handled &&
+    (typeof column.editable === 'function' ? column.editable(row) : Boolean(column.editable))
+  );
+}
+
+/*
+ * The tick is centred by a flex box around it rather than by `align-middle`
+ * on the Checkbox itself: Checkbox's own root already carries `align-top`,
+ * and two Tailwind utilities of equal specificity resolve by their order in
+ * the generated stylesheet rather than by which one was written last.
+ */
+function tickBox(control: React.ReactNode) {
+  return <span className="flex items-center justify-center">{control}</span>;
+}
+
+/* ---------------------------------------------------------------------------
+ * One body row
+ * ------------------------------------------------------------------------- */
+
+/** What every row is drawn with, whichever row it is. */
+interface RowLook<Row> {
+  columns: readonly DataTableColumn<Row>[];
+  reactId: string;
+  selects: boolean;
+  navigable: boolean;
+  showTicks: boolean;
+  /** Whether a press on a row does anything, which is what its cursor says. */
+  pressable: boolean;
+  virtualized: boolean;
+  headRows: number;
+  /** Which parity carries the stripe, or `null` for a table with none. */
+  stripe: 0 | 1 | null;
+  hoverable: boolean;
+  rowHeight: number;
+  cellStyle: React.CSSProperties;
+  pinOffsets: PinOffsets;
+  /** Whether anything is pinned to the start, which freezes the tick column too. */
+  pinsStart: boolean;
+  filler: boolean;
+  /** Whether there is an `onCellEdit` for an editable column to answer to. */
+  edits: boolean;
+  size: NebaSize;
+  color: NebaColor;
+  intlLocale: string | undefined;
+  /** The id of the first half of every tick's name. */
+  tickNameId: string;
+  /** What a tick is called when there is no first cell to name it after. */
+  selectRowLabel: string;
+}
+
+/**
+ * What a row does when it is pressed. Read when the press happens rather than
+ * when the row was drawn, so a row that was not drawn again still acts on the
+ * table as it is now.
+ */
+interface RowActions<Row> {
+  pointerDown: (entry: RowEntry<Row>, event: React.PointerEvent<HTMLTableRowElement>) => void;
+  click: (
+    entry: RowEntry<Row>,
+    position: number,
+    event: React.MouseEvent<HTMLTableRowElement>
+  ) => void;
+  doubleClick: (
+    entry: RowEntry<Row>,
+    position: number,
+    event: React.MouseEvent<HTMLTableRowElement>
+  ) => void;
+  tick: (key: string) => void;
+  openEditor: (rowKey: string, columnKey: string) => void;
+  editorBlur: (entry: RowEntry<Row>, column: DataTableColumn<Row>, raw: string) => void;
+  editorKeyDown: (
+    entry: RowEntry<Row>,
+    column: DataTableColumn<Row>,
+    event: React.KeyboardEvent<HTMLInputElement>
+  ) => void;
+}
+
+interface DataTableRowProps<Row> {
+  entry: RowEntry<Row>;
+  /** Its place among the displayed rows, which the stripe and `aria-rowindex` count. */
+  index: number;
+  /** Its place in the sorted, filtered order across every page — what `render` is told. */
+  position: number;
+  selected: boolean;
+  active: boolean;
+  /** The key of the column whose editor is open in this row, if one is. */
+  editing: string | null;
+  look: RowLook<Row>;
+  actions: { readonly current: RowActions<Row> | null };
+  /**
+   * The props the caller last rendered the table with, which are never read.
+   *
+   * A cell's `render`, `value` and `editable` are the caller's functions and
+   * may read anything the caller holds, a row changed in place included, so
+   * every row is drawn again whenever the caller draws the table. What a row
+   * is spared is the table's own renders: a scroll across a row boundary, the
+   * active row moving, a selection or a column width the table keeps itself.
+   */
+  redraw: object;
+}
+
+/**
+ * One body row, drawn again only when something it draws has changed.
+ *
+ * The table renders for things one or two rows care about — the active row
+ * moving, a scroll crossing a row boundary, a pointer dragging a run — and
+ * every row in the window was drawn again with it, cell by cell and closure
+ * by closure. As a component of its own, with what it draws passed in and
+ * what it does read through `actions` when it happens, a row whose props did
+ * not change is skipped.
+ */
+function DataTableRow<Row>({
+  entry,
+  index,
+  position,
+  selected,
+  active,
+  editing,
+  look,
+  actions
+}: DataTableRowProps<Row>) {
+  const { columns, reactId, cellStyle } = look;
+  const firstCellId = `${reactId}-first-${entry.origin}`;
+
+  return (
+    <tr
+      id={`${reactId}-${entry.key}`}
+      aria-selected={look.selects ? selected : undefined}
+      aria-rowindex={look.virtualized ? index + look.headRows + 1 : undefined}
+      data-neba-row={entry.key}
+      className={cx(
+        rowClasses,
+        // An if/else, not stacked variants: two Tailwind classes
+        // of equal specificity resolve by their order in the
+        // generated stylesheet, not by the order written here.
+        selected
+          ? '[--n-row:var(--n-soft-press)]'
+          : look.stripe !== null && index % 2 === look.stripe
+            ? '[--n-row:var(--n-stripe)]'
+            : '',
+        !selected && look.hoverable ? 'hover:[--n-row:var(--n-soft)]' : '',
+        active && look.navigable ? '[box-shadow:inset_0_0_0_1px_var(--n-ring)]' : '',
+        look.pressable ? 'cursor-default' : ''
+      )}
+      style={{ height: `${look.rowHeight}px`, backgroundColor: 'var(--n-row)' }}
+      onPointerDown={(event) => actions.current?.pointerDown(entry, event)}
+      onClick={(event) => actions.current?.click(entry, position, event)}
+      onDoubleClick={(event) => actions.current?.doubleClick(entry, position, event)}
+    >
+      {/*
+        A row's tick is out of the tab order and named after its row. Every
+        tick a tab stop was a table of a hundred rows a keyboard had to cross a
+        hundred times, for a choice Space already makes on the active row; and
+        every one named "Select row" was a hundred controls a screen reader
+        could not tell apart. The name is the words and then the row's first
+        cell, by reference, so a cell drawn by `render` names the row as well
+        as a plain one does. The ids are built from where the row sat in
+        `items` rather than from its key, which may hold a space, and a space
+        splits a list of ids.
+      */}
+      {look.showTicks ? (
+        <td
+          data-neba-tick=""
+          role={look.selects ? 'gridcell' : undefined}
+          style={{
+            ...cellStyle,
+            padding: 0,
+            overflow: 'visible',
+            ...(look.pinsStart ? pinnedStyle('start', 0, false) : {})
+          }}
+        >
+          {tickBox(
+            <Checkbox
+              size={look.size}
+              color={look.color}
+              checked={selected}
+              tabIndex={-1}
+              aria-labelledby={columns.length > 0 ? `${look.tickNameId} ${firstCellId}` : undefined}
+              aria-label={columns.length > 0 ? undefined : look.selectRowLabel}
+              onCheckedChange={() => actions.current?.tick(entry.key)}
+            />
+          )}
+        </td>
+      ) : null}
+
+      {columns.map((column, columnIndex) => {
+        const editable = cellEditable(column, entry.row, look.edits);
+        const open = editing === column.key;
+        const initial = open ? cellValue(column, entry.row) : undefined;
+
+        return (
+          <td
+            key={column.key}
+            id={look.showTicks && columnIndex === 0 ? firstCellId : undefined}
+            role={look.navigable ? 'gridcell' : undefined}
+            style={{
+              ...cellStyle,
+              ...columnPinStyle(column, look.pinOffsets, false),
+              textAlign: column.align ?? 'start',
+              cursor: editable && !open ? 'cell' : undefined
+            }}
+            onPointerEnter={column.render || open ? undefined : titleCutCell}
+            onDoubleClick={
+              editable
+                ? (event) => {
+                    // A cell that opens an editor has answered
+                    // the double-click; `onRowActivate` must not
+                    // also fire and take the reader elsewhere.
+                    event.stopPropagation();
+                    actions.current?.openEditor(entry.key, column.key);
+                  }
+                : undefined
+            }
+          >
+            {open ? (
+              /*
+               * A bare `<input>` rather than a TextField: a field inside a
+               * table cell has to be exactly the height of the row it is in,
+               * and TextField's shell — the label column, the two message
+               * lines, its own padding — is a form's shape rather than a
+               * cell's.
+               */
+              <input
+                autoFocus
+                data-neba-editor=""
+                type={column.editType === 'number' ? 'number' : 'text'}
+                defaultValue={initial === null || initial === undefined ? '' : String(initial)}
+                aria-label={typeof column.label === 'string' ? column.label : column.key}
+                className="neba-input w-full bg-transparent [font:inherit] text-inherit [outline:none]"
+                style={{ textAlign: column.align ?? 'start' }}
+                onPointerDown={(event) => event.stopPropagation()}
+                onBlur={(event) =>
+                  actions.current?.editorBlur(entry, column, event.currentTarget.value)
+                }
+                onKeyDown={(event) => actions.current?.editorKeyDown(entry, column, event)}
+              />
+            ) : column.render ? (
+              column.render(entry.row, position)
+            ) : (
+              plainCell((entry.row as Record<string, unknown>)[column.key], look.intlLocale)
+            )}
+          </td>
+        );
+      })}
+
+      {look.filler ? <td aria-hidden="true" style={{ ...cellStyle, padding: 0 }} /> : null}
+    </tr>
+  );
+}
+
+const MemoDataTableRow = React.memo(DataTableRow) as typeof DataTableRow;
+
 /* ---------------------------------------------------------------------------
  * The component
  * ------------------------------------------------------------------------- */
@@ -908,26 +1217,6 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
       ));
   }, [entries, searchedColumns]);
 
-  const filtered = React.useMemo(() => {
-    if (stages.has('filter')) {
-      return entries;
-    }
-
-    const needle = searchText(query);
-
-    // Indexed by `origin`, which is the row's place in `items` and therefore
-    // its place in `entries` — so this holds however the rows are later sliced.
-    let result = entries;
-
-    if (needle !== '' && searchedColumns.length > 0) {
-      const stacks = haystacks();
-
-      result = entries.filter((entry) => stacks[entry.origin].includes(needle));
-    }
-
-    return filter ? result.filter((entry) => filter(entry.row, entry.origin)) : result;
-  }, [entries, query, filter, stages, searchedColumns, haystacks]);
-
   /*
    * The collator is built once per locale rather than per comparison: building
    * one is the expensive half of `localeCompare`, and a sort of a hundred
@@ -943,12 +1232,23 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
   );
   const sort = sortProp ?? uncontrolledSort;
 
-  const sorted = React.useMemo(() => {
+  /**
+   * Every row, in the order the sort puts it.
+   *
+   * The sort runs over every row and the search over its result, rather than
+   * the other way round. A query changes on every keystroke and a sort hardly
+   * ever, and sorting the matches ran the whole comparison again for each
+   * character typed: about thirty milliseconds of `Intl.Collator.compare` per
+   * key on ten thousand rows, and four times that on a phone. The sort is
+   * stable and a filter keeps the order it is handed, so the rows that come
+   * out, and their order, are the same either way round.
+   */
+  const ordered = React.useMemo(() => {
     if (stages.has('sort')) {
-      return filtered;
+      return entries;
     }
 
-    return sortRows<RowEntry<Row>>(filtered, sort as readonly SortEntry[], (key) => {
+    return sortRows<RowEntry<Row>>(entries, sort as readonly SortEntry[], (key) => {
       const column = columns.find((entry) => entry.key === key);
 
       if (!column) {
@@ -968,7 +1268,28 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
         isEmpty: (entry) => isEmptyValue(read(entry.row))
       };
     });
-  }, [filtered, sort, columns, collator, stages]);
+  }, [entries, sort, columns, collator, stages]);
+
+  /** The sorted rows the search and the caller's `filter` keep, still in sort order. */
+  const filtered = React.useMemo(() => {
+    if (stages.has('filter')) {
+      return ordered;
+    }
+
+    const needle = searchText(query);
+
+    // Indexed by `origin`, which is the row's place in `items` and therefore
+    // its place in `entries` — so this holds whatever order the rows are in.
+    let result = ordered;
+
+    if (needle !== '' && searchedColumns.length > 0) {
+      const stacks = haystacks();
+
+      result = ordered.filter((entry) => stacks[entry.origin].includes(needle));
+    }
+
+    return filter ? result.filter((entry) => filter(entry.row, entry.origin)) : result;
+  }, [ordered, query, filter, stages, searchedColumns, haystacks]);
 
   /* -- Paging -------------------------------------------------------------- */
 
@@ -996,7 +1317,7 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
     const order: string[] = [];
     const byLabel = new Map<string, RowEntry<Row>[]>();
 
-    for (const entry of sorted) {
+    for (const entry of filtered) {
       const label = groupBy(entry.row) ?? '';
 
       if (!byLabel.has(label)) {
@@ -1007,17 +1328,17 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
     }
 
     return { order: [...order].sort((a, b) => (a === '' ? -1 : b === '' ? 1 : 0)), byLabel };
-  }, [sorted, groupBy]);
+  }, [filtered, groupBy]);
 
   const arranged = React.useMemo(() => {
     if (!groups) {
-      return sorted;
+      return filtered;
     }
 
     return groups.order.flatMap((label) =>
       collapsedGroups.has(label) ? [] : (groups.byLabel.get(label) ?? [])
     );
-  }, [groups, collapsedGroups, sorted]);
+  }, [groups, collapsedGroups, filtered]);
 
   const total = stages.has('pages') ? (rowCount ?? arranged.length) : arranged.length;
   const bounds = pageBounds(total, pageProp ?? uncontrolledPage, pageSize);
@@ -1025,7 +1346,7 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
   /**
    * Everything the reader is currently looking at, as a file.
    *
-   * `sorted` and not `paged`: the search and the sort are what the reader
+   * `filtered` and not `paged`: the search and the sort are what the reader
    * narrowed the table to, and the page is only how much of it fits — a file
    * of page 3 is not a file anybody asked for.
    */
@@ -1036,7 +1357,7 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
       typeof column.label === 'string' ? column.label : column.key
     );
 
-    const body = sorted.map((entry) =>
+    const body = filtered.map((entry) =>
       shown.map((column) =>
         column.exportValue
           ? column.exportValue(entry.row)
@@ -1873,18 +2194,29 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
       }
 
       drag.y = event.clientY;
-      dragToRef.current(drag.y);
 
-      if (!node || !bounded) {
+      if (node && bounded) {
+        const rect = node.getBoundingClientRect();
+        const above = rect.top + rowHeight - drag.y;
+        const below = drag.y - (rect.bottom - rowHeight);
+
+        drag.speed = above > 0 ? -Math.min(above, 40) : below > 0 ? Math.min(below, 40) : 0;
+      }
+
+      // While the body is running, its frame takes the run once it has
+      // scrolled, from wherever the pointer has got to by then. Taking it here
+      // as well was a second selection in the same frame: new arrays, a new
+      // set, a second report to `onSelectedChange` and a second render. A
+      // `pointermove` is already one per frame, so outside the loop this is
+      // the one commit a frame gets, with no frame of latency added to it.
+      if (drag.frame !== null && drag.speed !== 0) {
         return;
       }
 
-      const rect = node.getBoundingClientRect();
-      const above = rect.top + rowHeight - drag.y;
-      const below = drag.y - (rect.bottom - rowHeight);
+      dragToRef.current(drag.y);
 
-      drag.speed = above > 0 ? -Math.min(above, 40) : below > 0 ? Math.min(below, 40) : 0;
-
+      // Also what starts the body again after the loop stopped at the end of
+      // the rows, so a pointer that moves can still scroll it further.
       if (drag.speed !== 0 && drag.frame === null) {
         drag.frame = requestAnimationFrame(step);
       }
@@ -1902,11 +2234,23 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
         return;
       }
 
-      node.scrollTop += drag.speed;
+      const from = node.scrollTop;
+
+      node.scrollTop = from + drag.speed;
+
+      const moved = node.scrollTop !== from;
+
       // The rows have moved under a pointer that has not, so the run has to be
-      // taken again from where it now points.
+      // taken again from where it now points. Once more on the frame that moved
+      // nothing too, for wherever the pointer went while the loop was the one
+      // taking the run.
       dragToRef.current(drag.y);
-      drag.frame = requestAnimationFrame(step);
+
+      // A body that did not move has reached the end of the rows. Going on
+      // wrote the same `scrollTop` and measured the same boxes every frame for
+      // as long as the button was held, so the loop stops here and the next
+      // `pointermove` starts it again.
+      drag.frame = moved ? requestAnimationFrame(step) : null;
     };
 
     let release = () => {};
@@ -2103,8 +2447,18 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
    * is measured at the default. That is why the prop's documentation asks for a
    * `width`: guessing here is how a frozen column ends up one pixel over its
    * neighbour on somebody else's screen.
+   *
+   * Kept while only the widths of columns that scroll change: every row is
+   * drawn with these, and a boundary dragged between two scrolling columns
+   * moved nothing here but drew every row in the window again on each frame of
+   * the drag.
    */
-  const pinOffsets = React.useMemo(() => {
+  const pinnedWidths = columns
+    .filter((column) => column.pinned)
+    .map((column) => explicitWidth(column) ?? '')
+    .join(',');
+
+  const pinOffsets = React.useMemo<PinOffsets>(() => {
     const start = new Map<string, number>();
     const end = new Map<string, number>();
 
@@ -2126,47 +2480,14 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
     }
 
     return { start, end };
-    // `widths` is what `explicitWidth` reads, so a dragged boundary has to move
-    // everything pinned behind it.
+    // `widths` is what `explicitWidth` reads, and `pinnedWidths` is the part of
+    // it that moves anything here: a dragged boundary has to move everything
+    // pinned behind it.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [columns, widths, showTicks, tickWidth]);
+  }, [columns, pinnedWidths, showTicks, tickWidth]);
 
-  /**
-   * A pinned cell's own styles.
-   *
-   * The background is two declarations rather than one because the row's tint
-   * is a custom property that is often transparent: a sticky cell painted only
-   * with `var(--n-row)` has the scrolling content showing through it. The
-   * `linear-gradient` composites that tint over the sheet's own colour, which
-   * is the one form that keeps stripes, hover and selection while staying
-   * opaque.
-   */
-  const pinnedStyle = (
-    edge: 'start' | 'end',
-    offset: number,
-    header: boolean
-  ): React.CSSProperties => ({
-    position: 'sticky',
-    insetInlineStart: edge === 'start' ? `${offset}px` : undefined,
-    insetInlineEnd: edge === 'end' ? `${offset}px` : undefined,
-    // A body cell above the scrolling cells and under a sticky header. A header
-    // cell above the sticky headings beside it too, which are `z-20`: at a lower
-    // number the headings scrolling past slid over the frozen one.
-    zIndex: header ? 21 : 1,
-    backgroundColor: 'var(--n-panel-press)',
-    backgroundImage: header ? undefined : 'linear-gradient(var(--n-row), var(--n-row))'
-  });
-
-  const pinStyle = (column: DataTableColumn<Row>, header: boolean): React.CSSProperties => {
-    if (!column.pinned) {
-      return {};
-    }
-
-    const offset =
-      column.pinned === 'start' ? pinOffsets.start.get(column.key) : pinOffsets.end.get(column.key);
-
-    return pinnedStyle(column.pinned, offset ?? 0, header);
-  };
+  const pinStyle = (column: DataTableColumn<Row>, header: boolean): React.CSSProperties =>
+    columnPinStyle(column, pinOffsets, header);
 
   /**
    * The tick column is frozen with the columns pinned to the start. They are
@@ -2179,13 +2500,17 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
 
   /* -- Styles -------------------------------------------------------------- */
 
-  const cellStyle: React.CSSProperties = {
-    padding: `0 ${padX}`,
-    borderBottom: '1px solid var(--n-line)',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap'
-  };
+  // Kept between renders, since every row is drawn with it.
+  const cellStyle = React.useMemo<React.CSSProperties>(
+    () => ({
+      padding: `0 ${padX}`,
+      borderBottom: '1px solid var(--n-line)',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap'
+    }),
+    [padX]
+  );
 
   const headCellStyle: React.CSSProperties = {
     ...cellStyle,
@@ -2199,8 +2524,6 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
     // stylesheet.
     color: 'var(--n-cell-ink, var(--neba-muted-fg))'
   };
-
-  const stripeIndex = striped === 'odd' ? 0 : 1;
 
   /* -- The footer ---------------------------------------------------------- */
 
@@ -2226,6 +2549,70 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
     onPageChange?.(next);
   };
 
+  /** The first half of every row tick's name, drawn once at the end of the sheet. */
+  const tickNameId = `${reactId}-tick`;
+  const pressable = selects || onRowClick !== undefined;
+  const handlesEdits = onCellEdit !== undefined;
+
+  /**
+   * Everything a row is drawn with that is the same for every row.
+   *
+   * One object, kept between renders until one of these changes, because it is
+   * a prop of every row: a new one draws every row in the window again, and
+   * that is exactly what a scroll or a moved active row should not do.
+   */
+  const look = React.useMemo<RowLook<Row>>(
+    () => ({
+      columns,
+      reactId,
+      selects,
+      navigable,
+      showTicks,
+      pressable,
+      virtualized,
+      headRows,
+      stripe: striped === false ? null : striped === 'odd' ? 0 : 1,
+      hoverable,
+      rowHeight,
+      cellStyle,
+      pinOffsets,
+      pinsStart,
+      filler,
+      edits: handlesEdits,
+      size,
+      color,
+      intlLocale,
+      tickNameId,
+      selectRowLabel: messages.selectRow
+    }),
+    [
+      columns,
+      reactId,
+      selects,
+      navigable,
+      showTicks,
+      pressable,
+      virtualized,
+      headRows,
+      striped,
+      hoverable,
+      rowHeight,
+      cellStyle,
+      pinOffsets,
+      pinsStart,
+      filler,
+      handlesEdits,
+      size,
+      color,
+      intlLocale,
+      tickNameId,
+      messages.selectRow
+    ]
+  );
+
+  /** What the rows do, assigned once the handlers below exist. */
+  const rowActions = React.useRef<RowActions<Row> | null>(null);
+
   /**
    * One body row.
    *
@@ -2245,95 +2632,20 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
    * put in one. `entry.key` is the caller's own `getRowKey`, which is already
    * what selection, the active row and the open editor are tracked by.
    */
-  const bodyRow = (entry: RowEntry<Row>, index: number) => {
-    const isSelected = selectedKeys.has(entry.key);
-    const isActive = activeKey === entry.key;
-
-    return (
-      <tr
-        key={entry.key}
-        id={`${reactId}-${entry.key}`}
-        aria-selected={selects ? isSelected : undefined}
-        aria-rowindex={virtualized ? index + headRows + 1 : undefined}
-        data-neba-row={entry.key}
-        className={cx(
-          rowClasses,
-          // An if/else, not stacked variants: two Tailwind classes
-          // of equal specificity resolve by their order in the
-          // generated stylesheet, not by the order written here.
-          isSelected
-            ? '[--n-row:var(--n-soft-press)]'
-            : striped !== false && index % 2 === stripeIndex
-              ? '[--n-row:var(--n-stripe)]'
-              : '',
-          !isSelected && hoverable ? 'hover:[--n-row:var(--n-soft)]' : '',
-          isActive && navigable ? '[box-shadow:inset_0_0_0_1px_var(--n-ring)]' : '',
-          selects || onRowClick ? 'cursor-default' : ''
-        )}
-        style={{ height: `${rowHeight}px`, backgroundColor: 'var(--n-row)' }}
-        onPointerDown={(event) => handleRowPointerDown(entry, event)}
-        onClick={(event) => {
-          if ((event.target as HTMLElement).closest(OWN_CONTROLS)) {
-            return;
-          }
-
-          if (touchedKey.current === entry.key) {
-            touchedKey.current = null;
-            tableRef.current?.focus({ preventScroll: true });
-            setActiveKey(entry.key);
-            selectOnly(entry.key);
-          }
-          onRowClick?.(entry.row, displayOffset + index, event);
-        }}
-        onDoubleClick={(event) => {
-          if (!(event.target as HTMLElement).closest(OWN_CONTROLS)) {
-            onRowActivate?.(entry.row, displayOffset + index);
-          }
-        }}
-      >
-        {showTicks ? tickCell(entry) : null}
-
-        {columns.map((column, columnIndex) => {
-          const editable = canEdit(column, entry.row);
-          const open = editing?.key === entry.key && editing.column === column.key;
-
-          return (
-            <td
-              key={column.key}
-              id={showTicks && columnIndex === 0 ? firstCellId(entry) : undefined}
-              role={navigable ? 'gridcell' : undefined}
-              style={{
-                ...cellStyle,
-                ...pinStyle(column, false),
-                textAlign: column.align ?? 'start',
-                cursor: editable && !open ? 'cell' : undefined
-              }}
-              onPointerEnter={column.render || open ? undefined : titleCutCell}
-              onDoubleClick={
-                editable
-                  ? (event) => {
-                      // A cell that opens an editor has answered
-                      // the double-click; `onRowActivate` must not
-                      // also fire and take the reader elsewhere.
-                      event.stopPropagation();
-                      openEditor(entry.key, column.key);
-                    }
-                  : undefined
-              }
-            >
-              {open
-                ? cellEditor(entry, column)
-                : column.render
-                  ? column.render(entry.row, displayOffset + index)
-                  : plainCell((entry.row as Record<string, unknown>)[column.key], intlLocale)}
-            </td>
-          );
-        })}
-
-        {filler ? <td aria-hidden="true" style={{ ...cellStyle, padding: 0 }} /> : null}
-      </tr>
-    );
-  };
+  const bodyRow = (entry: RowEntry<Row>, index: number) => (
+    <MemoDataTableRow
+      key={entry.key}
+      entry={entry}
+      index={index}
+      position={displayOffset + index}
+      selected={selectedKeys.has(entry.key)}
+      active={activeKey === entry.key}
+      editing={editing?.key === entry.key ? editing.column : null}
+      look={look}
+      actions={rowActions}
+      redraw={rawProps}
+    />
+  );
 
   /**
    * Which side of the heading under it a carried column will land on. Carried
@@ -2627,127 +2939,94 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
   }
 
   const canEdit = (column: DataTableColumn<Row>, row: Row) =>
-    onCellEdit !== undefined &&
-    (typeof column.editable === 'function' ? column.editable(row) : Boolean(column.editable));
+    cellEditable(column, row, onCellEdit !== undefined);
 
   /**
-   * The field one cell becomes while it is being edited.
-   *
-   * A bare `<input>` rather than a TextField: a field inside a table cell has
-   * to be exactly the height of the row it is in, and TextField's shell — the
-   * label column, the two message lines, its own padding — is a form's shape
-   * rather than a cell's.
+   * Hands what an open cell editor holds to `onCellEdit`, when it holds a
+   * change.
    *
    * Blur commits and `Escape` cancels, which is the arrangement a spreadsheet
    * taught everybody. `Enter` commits too, and does not submit anything: the
    * key never reaches a form, because a table inside one would otherwise
    * submit it every time a cell was finished.
    */
-  const cellEditor = (entry: RowEntry<Row>, column: DataTableColumn<Row>) => {
-    const initial = column.value
-      ? column.value(entry.row)
-      : (entry.row as Record<string, unknown>)[column.key];
+  const commitEdit = (entry: RowEntry<Row>, column: DataTableColumn<Row>, raw: string) => {
+    setEditing(null);
+    const initial = cellValue(column, entry.row);
+    const next = column.editType === 'number' ? Number(raw) : raw;
 
-    const commit = (raw: string) => {
-      setEditing(null);
-      const next = column.editType === 'number' ? Number(raw) : raw;
-
-      // An emptied number field holds no number, the way a `NaN` does — and
-      // `Number('')` is `0`, which would write a zero nobody typed.
-      if (column.editType === 'number' && (raw.trim() === '' || Number.isNaN(next as number))) {
-        return;
-      }
-      if (String(next) !== String(initial ?? '')) {
-        onCellEdit?.(entry.row, column, next);
-      }
-    };
-
-    return (
-      <input
-        autoFocus
-        data-neba-editor=""
-        type={column.editType === 'number' ? 'number' : 'text'}
-        defaultValue={initial === null || initial === undefined ? '' : String(initial)}
-        aria-label={typeof column.label === 'string' ? column.label : column.key}
-        className="neba-input w-full bg-transparent [font:inherit] text-inherit [outline:none]"
-        style={{ textAlign: column.align ?? 'start' }}
-        onPointerDown={(event) => event.stopPropagation()}
-        onBlur={(event) => {
-          if (!editorSettled.current) {
-            commit(event.currentTarget.value);
-          }
-        }}
-        onKeyDown={(event) => {
-          if (event.key !== 'Enter' && event.key !== 'Escape') {
-            return;
-          }
-
-          event.stopPropagation();
-          editorSettled.current = true;
-
-          if (event.key === 'Enter') {
-            event.preventDefault();
-            commit(event.currentTarget.value);
-          } else {
-            setEditing(null);
-          }
-
-          // The editor held the focus and is about to go; the table takes it
-          // back, so the arrows carry on from the row that was edited.
-          tableRef.current?.focus({ preventScroll: true });
-        }}
-      />
-    );
+    // An emptied number field holds no number, the way a `NaN` does — and
+    // `Number('')` is `0`, which would write a zero nobody typed.
+    if (column.editType === 'number' && (raw.trim() === '' || Number.isNaN(next as number))) {
+      return;
+    }
+    if (String(next) !== String(initial ?? '')) {
+      onCellEdit?.(entry.row, column, next);
+    }
   };
 
-  /*
-   * The tick is centred by a flex box around it rather than by `align-middle`
-   * on the Checkbox itself: Checkbox's own root already carries `align-top`,
-   * and two Tailwind utilities of equal specificity resolve by their order in
-   * the generated stylesheet rather than by which one was written last.
-   */
-  const tickBox = (control: React.ReactNode) => (
-    <span className="flex items-center justify-center">{control}</span>
-  );
+  const editorKeyDown = (
+    entry: RowEntry<Row>,
+    column: DataTableColumn<Row>,
+    event: React.KeyboardEvent<HTMLInputElement>
+  ) => {
+    if (event.key !== 'Enter' && event.key !== 'Escape') {
+      return;
+    }
 
-  /*
-   * A row's tick is out of the tab order and named after its row. Every tick a
-   * tab stop was a table of a hundred rows a keyboard had to cross a hundred
-   * times, for a choice Space already makes on the active row; and every one
-   * named "Select row" was a hundred controls a screen reader could not tell
-   * apart. The name is the words and then the row's first cell, by reference,
-   * so a cell drawn by `render` names the row as well as a plain one does. The
-   * ids are built from where the row sat in `items` rather than from its key,
-   * which may hold a space, and a space splits a list of ids.
-   */
-  const tickNameId = `${reactId}-tick`;
-  const firstCellId = (entry: RowEntry<Row>) => `${reactId}-first-${entry.origin}`;
+    event.stopPropagation();
+    editorSettled.current = true;
 
-  const tickCell = (entry: RowEntry<Row>) => (
-    <td
-      data-neba-tick=""
-      role={selects ? 'gridcell' : undefined}
-      style={{ ...cellStyle, padding: 0, overflow: 'visible', ...tickPinStyle(false) }}
-    >
-      {tickBox(
-        <Checkbox
-          size={size}
-          color={color}
-          checked={selectedKeys.has(entry.key)}
-          tabIndex={-1}
-          aria-labelledby={columns.length > 0 ? `${tickNameId} ${firstCellId(entry)}` : undefined}
-          aria-label={columns.length > 0 ? undefined : messages.selectRow}
-          onCheckedChange={() => {
-            if (multiple) {
-              toggleKey(entry.key);
-            } else {
-              selectOnly(entry.key);
-            }
-          }}
-        />
-      )}
-    </td>
-  );
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      commitEdit(entry, column, event.currentTarget.value);
+    } else {
+      setEditing(null);
+    }
+
+    // The editor held the focus and is about to go; the table takes it
+    // back, so the arrows carry on from the row that was edited.
+    tableRef.current?.focus({ preventScroll: true });
+  };
+
+  // Everything a row does, for it to read when it happens. Assigned on every
+  // render and never read during one, as `latest` is.
+  // eslint-disable-next-line react-hooks/refs
+  rowActions.current = {
+    pointerDown: handleRowPointerDown,
+    click: (entry, position, event) => {
+      if ((event.target as HTMLElement).closest(OWN_CONTROLS)) {
+        return;
+      }
+
+      if (touchedKey.current === entry.key) {
+        touchedKey.current = null;
+        tableRef.current?.focus({ preventScroll: true });
+        setActiveKey(entry.key);
+        selectOnly(entry.key);
+      }
+      onRowClick?.(entry.row, position, event);
+    },
+    doubleClick: (entry, position, event) => {
+      if (!(event.target as HTMLElement).closest(OWN_CONTROLS)) {
+        onRowActivate?.(entry.row, position);
+      }
+    },
+    tick: (key) => {
+      if (multiple) {
+        toggleKey(key);
+      } else {
+        selectOnly(key);
+      }
+    },
+    openEditor,
+    editorBlur: (entry, column, raw) => {
+      if (!editorSettled.current) {
+        commitEdit(entry, column, raw);
+      }
+    },
+    editorKeyDown
+  };
 
   const selectAllTick = multiple
     ? tickBox(

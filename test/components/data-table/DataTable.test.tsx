@@ -373,6 +373,55 @@ describe('DataTable', () => {
     });
   });
 
+  describe('drawing rows again', () => {
+    const drawnRows = (draw: { mock: { calls: [Person][] } }) =>
+      new Set(draw.mock.calls.map(([row]) => row.id));
+
+    // Every row in the window was drawn again, cell by cell, for a change only
+    // one or two of them were part of.
+    it('draws again only the rows a selection or the active row changed', async () => {
+      const draw = vi.fn((row: Person) => row.name);
+      const screen = await render(
+        <DataTable
+          headers={[{ key: 'name', label: 'Name', render: draw }, HEADERS[1]]}
+          items={ITEMS}
+          getRowKey={key}
+          selectionMode="multiple"
+        />
+      );
+
+      draw.mockClear();
+      await screen.getByText('Bo').click();
+      await expect
+        .element(screen.getByRole('row', { selected: true }))
+        .toHaveAttribute('data-neba-row', 'b');
+
+      expect(drawnRows(draw)).toEqual(new Set(['b']));
+
+      draw.mockClear();
+      await userEvent.keyboard('{ArrowDown}');
+      await expect
+        .element(screen.getByRole('row', { selected: true }))
+        .toHaveAttribute('data-neba-row', 'c');
+
+      expect(drawnRows(draw)).toEqual(new Set(['b', 'c']));
+    });
+
+    it('draws every row again when the caller renders, so a row changed in place shows it', async () => {
+      const draw = vi.fn((row: Person) => row.name);
+      const headers: DataTableColumn<Person>[] = [{ key: 'name', label: 'Name', render: draw }];
+      const items = ITEMS.map((row) => ({ ...row }));
+      const screen = await render(<DataTable headers={headers} items={items} getRowKey={key} />);
+
+      draw.mockClear();
+      items[0].name = 'Zed';
+      await screen.rerender(<DataTable headers={headers} items={items} getRowKey={key} />);
+
+      expect(drawnRows(draw)).toEqual(new Set(['a', 'b', 'c']));
+      expect(cellText(screen.container, 0)).toEqual(['Zed', 'Bo', 'Cy']);
+    });
+  });
+
   describe('search and filter', () => {
     it('matches every searchable column, ignoring case and accents', async () => {
       const screen = await render(
@@ -438,6 +487,50 @@ describe('DataTable', () => {
 
       expect(cellText(screen.container, 0)).toEqual(['Lisbon']);
       expect(read).toBe(folded);
+    });
+
+    // The search ran before the sort, so every keystroke sorted the matches
+    // again: thirty milliseconds of comparisons per key on ten thousand rows.
+    it('sorts once and leaves the sort alone while the query changes', async () => {
+      const byCity = (a: Person, b: Person) => a.city.localeCompare(b.city);
+      const compare = vi.fn(byCity);
+      // Seven cities over sixty rows, so most rows tie and the order inside a
+      // tie is what the sort's stability decides.
+      const items = manyItems(60).map((row, index) => ({ ...row, city: `City ${index % 7}` }));
+      const headers: DataTableColumn<Person>[] = [
+        { key: 'name', label: 'Name' },
+        { key: 'city', label: 'City', compare }
+      ];
+      const screen = await render(
+        <DataTable
+          headers={headers}
+          items={items}
+          getRowKey={key}
+          searchable
+          defaultSort={[{ key: 'city', direction: 'desc' }]}
+        />
+      );
+      const field = screen.getByRole('searchbox');
+      const sortedThenFiltered = (query: string) =>
+        [...items]
+          .sort((a, b) => byCity(b, a))
+          .filter((row) => row.name.toLowerCase().includes(query.toLowerCase()))
+          .map((row) => row.name);
+
+      const sorting = compare.mock.calls.length;
+
+      expect(sorting).toBeGreaterThan(0);
+
+      await field.fill('Person 1');
+      expect(cellText(screen.container, 0)).toEqual(sortedThenFiltered('Person 1'));
+
+      await field.fill('Person 2');
+      expect(cellText(screen.container, 0)).toEqual(sortedThenFiltered('Person 2'));
+
+      await field.fill('');
+      expect(cellText(screen.container, 0)).toEqual(sortedThenFiltered(''));
+
+      expect(compare).toHaveBeenCalledTimes(sorting);
     });
 
     // Only a virtual table with no footer said how many rows a search left,
@@ -895,6 +988,91 @@ describe('DataTable', () => {
 
       await expect.poll(() => onSelectedChange.mock.calls.length).toBe(2);
       expect(onSelectedChange).toHaveBeenLastCalledWith(['a', 'b', 'c'], ITEMS);
+    });
+
+    // Held past the end of the rows, the drag went on writing the same
+    // `scrollTop` and measuring the same boxes every frame until it was let go.
+    it('stops scrolling a dragged run at the end of the rows, and starts again on a move', async () => {
+      const onSelectedChange = vi.fn();
+      const items = manyItems(60);
+      const screen = await render(
+        <DataTable
+          headers={HEADERS}
+          items={items}
+          getRowKey={key}
+          selectionMode="multiple"
+          height={200}
+          rowHeight={24}
+          onSelectedChange={onSelectedChange}
+        />
+      );
+
+      const table = screen.container.querySelector<HTMLTableElement>('table')!;
+      const viewport = table.parentElement!;
+      const native = Object.getOwnPropertyDescriptor(Element.prototype, 'scrollTop')!;
+      let writes = 0;
+
+      // What `overflow-auto` would say, had the test a stylesheet.
+      viewport.style.overflow = 'auto';
+
+      Object.defineProperty(viewport, 'scrollTop', {
+        configurable: true,
+        get() {
+          return native.get!.call(this);
+        },
+        set(value: number) {
+          writes += 1;
+          native.set!.call(this, value);
+        }
+      });
+
+      const frames = (count: number) =>
+        new Promise<void>((resolve) => {
+          const next = (left: number) =>
+            left === 0 ? resolve() : requestAnimationFrame(() => next(left - 1));
+
+          next(count);
+        });
+      const lastChosen = () => (onSelectedChange.mock.lastCall?.[0] ?? []) as string[];
+      const first = screen.container.querySelector<HTMLElement>('tr[data-neba-row="0"]')!;
+      const firstBox = first.getBoundingClientRect();
+      const below = viewport.getBoundingClientRect().bottom + 20;
+      const furthest = () => viewport.scrollHeight - viewport.clientHeight;
+
+      try {
+        table.setPointerCapture = () => {};
+        first.dispatchEvent(
+          new PointerEvent('pointerdown', {
+            bubbles: true,
+            clientY: firstBox.top + firstBox.height / 2,
+            pointerId: 1,
+            button: 0
+          })
+        );
+        table.dispatchEvent(new PointerEvent('pointermove', { bubbles: true, clientY: below }));
+
+        await expect.poll(() => lastChosen().at(-1), { timeout: 5000 }).toBe('59');
+        await expect.poll(() => viewport.scrollTop).toBeGreaterThanOrEqual(furthest() - 1);
+
+        await frames(4);
+        const settled = writes;
+
+        await frames(12);
+        expect(writes).toBe(settled);
+
+        // A move is what gives the loop another go, and with nowhere left to
+        // go it stops again after one frame.
+        table.dispatchEvent(new PointerEvent('pointermove', { bubbles: true, clientY: below + 4 }));
+        await frames(12);
+        expect(writes).toBe(settled + 1);
+
+        table.dispatchEvent(new PointerEvent('pointerup', { bubbles: true }));
+
+        expect(lastChosen()).toEqual(items.map((row) => row.id));
+      } finally {
+        table.dispatchEvent(new PointerEvent('pointerup', { bubbles: true }));
+        delete (viewport as { scrollTop?: number }).scrollTop;
+      }
     });
 
     it('walks the rows with the arrow keys, choosing as it goes', async () => {
