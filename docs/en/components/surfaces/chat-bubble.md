@@ -91,6 +91,12 @@ The dots light in sequence and never move.
 
 `preview` unfurls a link into a card under the text: `url`, `title`, `description`, `image`, `site`, and `newTab` for the ones that should leave the app. The card works on a filled bubble and a bare one alike.
 
+`rel` is written on the card's link. A preview is usually of a URL somebody else posted, so `rel: 'ugc nofollow'` tells a search engine the page did not choose it. With `newTab`, `noopener noreferrer` is added to whatever `rel` says.
+
+```tsx
+<ChatBubble preview={{ url, title, rel: 'ugc nofollow', newTab: true }}>{message}</ChatBubble>
+```
+
 <Demo src="chat-bubble/preview">
 
 <<< @/.vitepress/demos/chat-bubble/preview.tsx

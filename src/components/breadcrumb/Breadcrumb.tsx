@@ -140,6 +140,11 @@ export interface BreadcrumbItemProps extends Omit<
   render?: useRender.RenderProp;
   /** Where the link opens. Anything but this tab also gets `rel="noopener noreferrer"`. */
   target?: string;
+  /**
+   * The link's `rel` — `nofollow`, `sponsored`. The two tokens a new tab needs
+   * are merged into it rather than written over it.
+   */
+  rel?: string;
   /** Content before the label — a home glyph, a repository avatar. */
   startIcon?: React.ReactNode;
   /** Content after the label. */
@@ -548,6 +553,7 @@ export const BreadcrumbItem = React.forwardRef<HTMLLIElement, BreadcrumbItemProp
       onClick,
       render,
       target,
+      rel,
       startIcon,
       endIcon,
       current,
@@ -603,7 +609,7 @@ export const BreadcrumbItem = React.forwardRef<HTMLLIElement, BreadcrumbItemProp
       props: {
         href,
         target,
-        rel: safeRel(target, undefined),
+        rel: safeRel(target, rel),
         className: stepClassNames,
         onClick,
         children: (

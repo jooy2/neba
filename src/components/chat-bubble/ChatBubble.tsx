@@ -53,6 +53,12 @@ export interface ChatBubbleLinkPreview {
   site?: React.ReactNode;
   /** Opens the card in a new tab. @default false */
   newTab?: boolean;
+  /**
+   * The link's `rel`. A preview of a URL somebody posted is the usual reason:
+   * `'ugc nofollow'` tells a search engine the page did not choose the link.
+   * With `newTab`, `noopener noreferrer` is added to whatever is written here.
+   */
+  rel?: string;
 }
 
 export interface ChatBubbleProps extends Omit<
@@ -474,14 +480,14 @@ function TypingDots({ label }: { label: string }) {
 
 /** The unfurled link: an image, who published it, a title and two lines of summary. */
 function LinkPreview({ preview, locale }: { preview: ChatBubbleLinkPreview; locale?: string }) {
-  const { url, title, description, image, site, newTab = false } = preview;
+  const { url, title, description, image, site, newTab = false, rel } = preview;
   const target = newTab ? '_blank' : undefined;
 
   return (
     <a
       href={safeHref(url)}
       target={target}
-      rel={safeRel(target, undefined)}
+      rel={safeRel(target, rel)}
       className={previewSurfaceClasses}
     >
       {image ? (

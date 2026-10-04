@@ -226,6 +226,38 @@ describe('ChatBubble', () => {
       expect(screen.getByRole('link').element().textContent).toMatch(/\(opens in a new tab\)$/);
     });
 
+    // A preview is usually of a URL somebody posted, which a page marks for a
+    // search engine as not its own choice.
+    it('takes a rel of its own, and keeps it beside a new tab', async () => {
+      const screen = await render(
+        <ChatBubble preview={{ url: 'https://example.com', title: 'Post', rel: 'ugc nofollow' }}>
+          Read this
+        </ChatBubble>
+      );
+
+      expect(screen.getByRole('link').element()).toHaveAttribute('rel', 'ugc nofollow');
+
+      await screen.rerender(
+        <ChatBubble
+          preview={{ url: 'https://example.com', title: 'Post', rel: 'ugc nofollow', newTab: true }}
+        >
+          Read this
+        </ChatBubble>
+      );
+
+      const rel = screen.getByRole('link').element().getAttribute('rel') ?? '';
+
+      expect(rel.split(' ').sort()).toEqual(['nofollow', 'noopener', 'noreferrer', 'ugc']);
+    });
+
+    it('writes no rel on a card that stays in this tab and was given none', async () => {
+      const screen = await render(
+        <ChatBubble preview={{ url: 'https://example.com', title: 'Post' }}>Read this</ChatBubble>
+      );
+
+      expect(screen.getByRole('link').element()).not.toHaveAttribute('rel');
+    });
+
     // React 18 sets attributes in the order they are written, and Firefox and
     // Safari start the request when `src` is set, so a `loading="lazy"` after
     // it came too late. A server render writes them in that same order.

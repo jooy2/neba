@@ -71,6 +71,16 @@ import { Breadcrumb, BreadcrumbItem } from 'neba';
 
 마지막 단계는 지금 보고 있는 페이지이므로, `href`를 주더라도 링크가 되지 않습니다. 앞쪽 단계에 `current`를 붙이면 그 표시가 옮겨 가고, 마지막 단계에서는 걷힙니다.
 
+### target · rel
+
+`target`은 단계의 링크가 열릴 곳을 정하며, 이 탭이 아닌 곳이면 `rel="noopener noreferrer"`가 붙습니다. `rel`도 링크에 그대로 쓰이므로 `nofollow`나 `sponsored`를 줄 수 있습니다. 새 탭에 필요한 두 토큰은 이 값을 덮어쓰지 않고 합쳐집니다.
+
+```tsx
+<BreadcrumbItem href="https://example.com/partners" target="_blank" rel="sponsored">
+  Partners
+</BreadcrumbItem>
+```
+
 ### startIcon
 
 <Demo src="breadcrumb/icons">

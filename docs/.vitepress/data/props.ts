@@ -11188,6 +11188,14 @@ export const propTables: Record<string, PropRow[]> = {
       }
     },
     {
+      name: 'rel',
+      type: 'string',
+      description: {
+        ko: '링크의 rel. nofollow나 sponsored처럼 직접 쓴 값에 새 탭에 필요한 두 토큰이 합쳐집니다',
+        en: "The link's rel, such as nofollow or sponsored. The two tokens a new tab needs are merged into it"
+      }
+    },
+    {
       name: 'startIcon',
       type: 'ReactNode',
       description: {
@@ -11365,8 +11373,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'preview',
       type: 'ChatBubbleLinkPreview',
       description: {
-        ko: '메시지 안의 링크를 카드로 펼칩니다. url · title · description · image · site · newTab',
-        en: 'A link in the message, unfurled into a card: url · title · description · image · site · newTab'
+        ko: '메시지 안의 링크를 카드로 펼칩니다. url · title · description · image · site · newTab · rel',
+        en: 'A link in the message, unfurled into a card: url · title · description · image · site · newTab · rel'
       }
     },
     {

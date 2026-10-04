@@ -91,6 +91,12 @@ import { Avatar, ChatBubble } from 'neba';
 
 `preview`는 메시지 속 링크를 텍스트 아래 카드로 펼칩니다. `url`, `title`, `description`, `image`, `site`, 그리고 앱을 벗어나야 하는 링크를 위한 `newTab`을 받습니다. 카드는 채워진 말풍선에서도 비어 있는 말풍선에서도 잘 보입니다.
 
+`rel`은 카드 링크에 그대로 쓰입니다. 미리보기는 대개 다른 사람이 올린 URL이므로, `rel: 'ugc nofollow'`를 주면 검색 엔진에 이 페이지가 고른 링크가 아니라고 알릴 수 있습니다. `newTab`이 켜져 있으면 `rel`에 쓴 값에 `noopener noreferrer`가 더해집니다.
+
+```tsx
+<ChatBubble preview={{ url, title, rel: 'ugc nofollow', newTab: true }}>{message}</ChatBubble>
+```
+
 <Demo src="chat-bubble/preview">
 
 <<< @/.vitepress/demos/chat-bubble/preview.tsx

@@ -71,6 +71,16 @@ The steps a fold hides are not in the DOM by default, so a crawler reading the s
 
 The last step is the page you are on, so it is not a link even when it is given an `href`. `current` on an earlier step moves that mark, and takes it off the last one.
 
+### target · rel
+
+`target` decides where a step's link opens, and any target other than this tab adds `rel="noopener noreferrer"`. `rel` is written on the link as well, so a step can carry `nofollow` or `sponsored`; the two tokens a new tab needs are merged into it rather than replacing it.
+
+```tsx
+<BreadcrumbItem href="https://example.com/partners" target="_blank" rel="sponsored">
+  Partners
+</BreadcrumbItem>
+```
+
 ### startIcon
 
 <Demo src="breadcrumb/icons">

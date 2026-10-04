@@ -81,6 +81,54 @@ describe('Breadcrumb', () => {
       await expect.element(link).toHaveAttribute('rel', 'noopener noreferrer');
     });
 
+    it('writes the rel it is given on a link', async () => {
+      const screen = await render(
+        <Breadcrumb>
+          <BreadcrumbItem href="/partners" rel="sponsored">
+            Partners
+          </BreadcrumbItem>
+          <BreadcrumbItem>Billing</BreadcrumbItem>
+        </Breadcrumb>
+      );
+
+      await expect
+        .element(screen.getByRole('link', { name: 'Partners' }))
+        .toHaveAttribute('rel', 'sponsored');
+    });
+
+    // `nofollow` is an SEO decision and the two tokens a new tab needs are a
+    // safety one; a rel written by hand must not take the second away.
+    it('merges a rel it is given with the two a new tab needs', async () => {
+      const screen = await render(
+        <Breadcrumb>
+          <BreadcrumbItem href="/docs" target="_blank" rel="nofollow">
+            Docs
+          </BreadcrumbItem>
+          <BreadcrumbItem>Billing</BreadcrumbItem>
+        </Breadcrumb>
+      );
+      const rel = screen
+        .getByRole('link', { name: 'Docs (opens in a new tab)' })
+        .element()
+        .getAttribute('rel');
+
+      expect(rel?.split(' ').sort()).toEqual(['nofollow', 'noopener', 'noreferrer']);
+    });
+
+    it('keeps rel off the list item', async () => {
+      const screen = await render(
+        <Breadcrumb>
+          <BreadcrumbItem href="/partners" rel="sponsored">
+            Partners
+          </BreadcrumbItem>
+          <BreadcrumbItem>Billing</BreadcrumbItem>
+        </Breadcrumb>
+      );
+      const link = screen.getByRole('link', { name: 'Partners' }).element();
+
+      expect(link.closest('li')).not.toHaveAttribute('rel');
+    });
+
     it('leaves the current step as text even when it has render', async () => {
       const screen = await render(
         <Breadcrumb>
