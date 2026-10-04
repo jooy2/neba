@@ -43,9 +43,11 @@ The reservation is a floor and stays a floor once the text is there. A height th
 
 ### fade
 
-Each word fades in on its own, in `opacity` and nothing else.
+Each word that arrives during a stream fades in on its own, in `opacity` and nothing else.
 
-A word already on screen never fades a second time. Each word is an element of its own, so turn `fade` off for a very long answer.
+A word already on screen never fades a second time. Each streamed word is an element of its own, so turn `fade` off for a very long answer.
+
+Text that is not arriving is drawn as plain text, with no element per word and no fade: what the block is drawn with while `streaming` is off, such as a message loaded from history, what the server rendered, and what was already on screen when a stream started. Words that land in the same render that turns `streaming` off still fade.
 
 Only a **string** is cut into words. Anything else is rendered untouched, with the caret and the reserved height still around it. Words are cut at whitespace, and a run in a script written without spaces, such as Japanese, Chinese or Thai, is cut again with `Intl.Segmenter`. A browser without it (Firefox before 125) fades such a run in as one piece.
 

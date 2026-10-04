@@ -16422,8 +16422,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'children',
       type: 'ReactNode',
       description: {
-        ko: '지금까지 도착한 텍스트. 문자열이면 단어로 잘라 하나씩 나타나게 합니다. 그 밖의 값은 손대지 않고 그립니다',
-        en: 'The text so far. A string is cut into words and each fades in; anything else is rendered untouched'
+        ko: '지금까지 도착한 텍스트. 문자열이면 스트림으로 들어오는 부분을 단어로 잘라 하나씩 나타나게 합니다. 그 밖의 값은 손대지 않고 그립니다',
+        en: 'The text so far. What streams into a string is cut into words and each fades in; anything else is rendered untouched'
       }
     },
     {
@@ -16449,8 +16449,8 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       default: 'true',
       description: {
-        ko: '도착하는 단어마다 하나씩 나타나게 합니다. 단어당 요소 하나가 드는 값이며, 아주 긴 답에서는 끄세요',
-        en: 'Fades each word in as it arrives. It costs one element per word; turn it off for a very long answer'
+        ko: '스트림으로 도착하는 단어마다 하나씩 나타나게 합니다. 단어당 요소 하나가 드는 값이며, 아주 긴 답에서는 끄세요. 스트리밍 중이 아닐 때 그린 텍스트와 서버가 렌더링한 텍스트는 평범한 텍스트로 그립니다',
+        en: 'Fades in each word that arrives during a stream. It costs one element per word; turn it off for a very long answer. Text drawn while not streaming, or rendered on the server, is plain text'
       }
     },
     {
