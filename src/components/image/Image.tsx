@@ -5,6 +5,7 @@ import { AspectRatio } from '../aspect-ratio/AspectRatio.js';
 import { Skeleton } from '../skeleton/Skeleton.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
 import { imageMessages, useMessages } from '../../internal/i18n.js';
+import { useHydrated } from '../../internal/media.js';
 import {
   cx,
   metaTextValues,
@@ -343,6 +344,11 @@ export interface ImageProps extends Omit<React.ComponentPropsWithoutRef<'img'>, 
    *
    * Like the Skeleton, a stand-in fills the box, so it needs one to fill: a
    * `ratio`, or `width` and `height`.
+   *
+   * On a page rendered on a server, the stand-in is drawn under the picture
+   * rather than over it and the picture is never faded in, so the `<img>` shows
+   * as soon as the browser has the file: before hydration, and with JavaScript
+   * off. A picture first mounted in the browser fades in over its stand-in.
    */
   placeholder?: React.ReactNode | false | NebaImagePlaceholderOptions;
   /**
@@ -369,11 +375,9 @@ export interface ImageProps extends Omit<React.ComponentPropsWithoutRef<'img'>, 
    * `decoding`, `fetchPriority`. An attribute written out wins over what this
    * implies.
    *
-   * It also draws the picture from the first paint: no fade, and no Skeleton
-   * over it. A server-rendered page shows the `<img>` as soon as the browser
-   * has the file, rather than waiting for hydration to lift a cover and start a
-   * fade, which is exactly what Largest Contentful Paint would otherwise wait
-   * on. A `placeholder` picture still stands beneath it while it arrives.
+   * It also draws the picture with no fade and no Skeleton, even where the
+   * Image is first mounted in the browser rather than rendered on a server. A
+   * `placeholder` picture still stands beneath it while it arrives.
    * @default false
    */
   priority?: boolean;
@@ -955,6 +959,21 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
     previewChunk.load().catch(() => {});
   };
   /*
+   * Whether this picture arrived in a server's HTML. The first render is the
+   * one that decides, and it is kept: `useHydrated` turns true straight after
+   * hydration, and the picture is still the one the server sent.
+   *
+   * A served picture is never hidden. Hiding it until hydration lifts the cover
+   * makes the largest picture on the page wait for the JavaScript before it can
+   * count as painted, and with no JavaScript at all it never shows; so it draws
+   * at full strength from the first paint, with whatever stands in for it drawn
+   * underneath rather than over it. A picture first mounted in the browser
+   * still fades in, because there the cover is lifted by the same script that
+   * put it there.
+   */
+  const hydrated = useHydrated();
+  const [served] = React.useState(() => !hydrated);
+  /*
    * What the file turned out to be, kept for the one layout that cannot know it
    * in advance: a picture on its side with nothing to say its shape, whose box
    * is the file's height by its width. Set beside the phase, so a load is still
@@ -1105,12 +1124,14 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
         // this element lost it to this one by stylesheet order, and its zoom
         // jumped.
         '[transition:opacity_var(--neba-duration-fill)_var(--neba-ease),filter_var(--neba-duration-fill)_var(--neba-ease),transform_var(--neba-duration-fill)_var(--neba-ease)]',
-        // A `priority` picture is never hidden, not even for the moment before
-        // hydration: that is the moment it is being measured in.
-        priority || phase === 'loaded' ? 'opacity-100' : 'opacity-0',
-        // Positioned, so it paints over the absolutely positioned copy under it
-        // rather than beneath it.
-        blurred || stand !== null ? 'relative' : '',
+        // A `priority` picture and one the server sent are never hidden, not
+        // even for the moment before hydration: that is the moment Largest
+        // Contentful Paint is measured in.
+        priority || served || phase === 'loaded' ? 'opacity-100' : 'opacity-0',
+        // Positioned, so it paints over the absolutely positioned layers under
+        // it rather than beneath them: the blurred copy, the stand-in, and on a
+        // served picture the placeholder.
+        blurred || stand !== null || served ? 'relative' : '',
         guarded?.className,
         classNames?.image
       )}
@@ -1171,7 +1192,7 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
       className={cx(
         'pointer-events-none block object-cover select-none',
         '[transition:opacity_var(--neba-duration-fill)_var(--neba-ease)]',
-        phase === 'loaded' ? 'opacity-100' : 'opacity-0'
+        served || phase === 'loaded' ? 'opacity-100' : 'opacity-0'
       )}
       style={{
         ...layerStyle(pose, sideways, LETTERBOX_BLUR * 2),
@@ -1186,9 +1207,10 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
 
   /*
    * The picture stand-in, under the picture rather than over it: the picture
-   * fades in on top of it, and it is taken away only once that fade has run, so
-   * the two are never both half there with the page showing through. Gone
-   * entirely when the file fails, since the fallback says that instead.
+   * fades in on top of it, or on a served picture simply paints over it, and
+   * it is taken away only once that fade has run, so the two are never both
+   * half there with the page showing through. Gone entirely when the file
+   * fails, since the fallback says that instead.
    */
   const standIn =
     stand === null || phase === 'failed' || standSrc === undefined ? null : (
@@ -1213,7 +1235,7 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
       />
     );
 
-  const cover =
+  const failure =
     phase === 'failed' ? (
       <span
         className={cx(
@@ -1232,7 +1254,21 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
           </span>
         )}
       </span>
-    ) : phase === 'loading' && placeholder !== false && stand === null && !priority ? (
+    ) : null;
+
+  /*
+   * What stands in while the file arrives, over the picture or under it.
+   *
+   * Over it on a picture first mounted in the browser, which is hidden until it
+   * loads and has nothing to be covered. Under it on a served picture, which is
+   * never hidden: an `<img>` paints nothing until it has a file, so the
+   * placeholder shows through until it arrives and is covered the moment it
+   * does, with or without any JavaScript. What a served picture's empty space
+   * shows — the sides `contain` leaves, the clear parts of a PNG — is the
+   * placeholder until hydration takes it away.
+   */
+  const waiting =
+    phase === 'loading' && placeholder !== false && stand === null && !priority ? (
       <span className={cx('absolute inset-0', classNames?.placeholder)}>
         {(placeholder as React.ReactNode) ?? (
           // A `<span>`, like everything else an Image draws: an Image is the
@@ -1245,8 +1281,8 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
 
   const mark = watermark === undefined ? null : renderMark(watermark, classNames?.watermark);
 
-  // One stack — the picture with whatever is standing over it — wrapped either
-  // in a box that holds a proportion or in one that does not.
+  // One stack — the picture with whatever is standing under it and over it —
+  // wrapped either in a box that holds a proportion or in one that does not.
   const stack = (
     <span
       className="relative block size-full"
@@ -1261,8 +1297,10 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
     >
       {backdrop}
       {standIn}
+      {served ? waiting : null}
       {picture}
-      {cover}
+      {served ? null : waiting}
+      {failure}
       {mark}
     </span>
   );

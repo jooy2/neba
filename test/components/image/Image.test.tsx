@@ -1260,10 +1260,15 @@ describe('Image', () => {
   });
 
   // A picture that loaded before hydration is asked after the fact, and the
-  // question was only put to one with a `src`: given only a `srcSet`, it stayed
-  // behind its placeholder for good.
-  it('shows a picture given only a srcSet that loaded before hydration', async () => {
-    const element = <Image srcSet={`${OK} 1x`} alt="A ridge" />;
+  // question was only put to one with a `src`: given only a `srcSet`, it was
+  // never reported as loaded and kept its placeholder for good. A served
+  // picture is drawn whether or not the question is asked, so what is asserted
+  // is the answer.
+  it('settles a picture given only a srcSet that loaded before hydration', async () => {
+    const onLoadingStatusChange = vi.fn();
+    const element = (
+      <Image srcSet={`${OK} 1x`} alt="A ridge" onLoadingStatusChange={onLoadingStatusChange} />
+    );
     const host = document.createElement('div');
 
     host.innerHTML = renderToString(element);
@@ -1276,11 +1281,114 @@ describe('Image', () => {
     const root = hydrateRoot(host, element);
 
     try {
-      await vi.waitFor(() => expect(host.querySelector('img')).toHaveClass('opacity-100'));
+      await vi.waitFor(() => expect(onLoadingStatusChange).toHaveBeenCalledWith('loaded'));
+      expect(host.querySelector('img')).toHaveClass('opacity-100');
     } finally {
       root.unmount();
       host.remove();
     }
+  });
+
+  /*
+   * A served picture that waited for hydration to lift its cover was a page
+   * whose largest picture could not count as painted until the JavaScript had
+   * run, and one that never showed at all with the JavaScript off. Each is held
+   * in the loading phase with no `src`, which is the phase a server render is
+   * always in.
+   */
+  describe('a picture the server sent', () => {
+    it('is never hidden, before hydration or after', async () => {
+      const page = await serve(<Image alt="A ridge" ratio={1} />);
+
+      try {
+        expect(page.before.querySelector('img')).toHaveClass('opacity-100');
+        expect(page.before.querySelector('img')).not.toHaveClass('opacity-0');
+        expect(page.host.querySelector('img')).toHaveClass('opacity-100');
+        expect(page.host.querySelector('img')).not.toHaveClass('opacity-0');
+        expect(page.recoverable).not.toHaveBeenCalled();
+      } finally {
+        page.done();
+      }
+    });
+
+    // An `<img>` paints nothing until it has a file, so a placeholder under it
+    // shows until the file arrives and is covered the moment it does.
+    it('draws its placeholder under the picture rather than over it', async () => {
+      const page = await serve(
+        <Image alt="A ridge" ratio={1} classNames={{ placeholder: 'wait' }} />
+      );
+
+      try {
+        for (const html of [page.before, page.host]) {
+          const placeholder = html.querySelector('.wait') as HTMLElement;
+          const picture = html.querySelector('img') as HTMLImageElement;
+
+          expect(placeholder.compareDocumentPosition(picture)).toBe(
+            Node.DOCUMENT_POSITION_FOLLOWING
+          );
+          // Positioned, so it paints over the absolutely positioned layer
+          // before it rather than beneath it.
+          expect(picture).toHaveClass('relative');
+        }
+      } finally {
+        page.done();
+      }
+    });
+
+    it('draws its blurred copy and its stand-in picture unhidden, under it', async () => {
+      const page = await serve(
+        <Image
+          src={OK}
+          alt="A ridge"
+          ratio={1}
+          fit="contain"
+          letterbox="blur"
+          placeholder={{ src: OK }}
+        />
+      );
+
+      try {
+        const [copy, standIn, picture] = [...page.before.querySelectorAll('img')];
+
+        expect(copy).toHaveClass('opacity-100');
+        expect(standIn).toHaveClass('opacity-100');
+        expect(picture).toHaveAttribute('alt', 'A ridge');
+        expect(picture).toHaveClass('opacity-100', 'relative');
+      } finally {
+        page.done();
+      }
+    });
+
+    // A picture first mounted in the browser is hidden by the same script that
+    // lifts the cover, so it keeps its fade and the placeholder over it.
+    it('still fades in where it was first mounted in the browser', async () => {
+      const screen = await render(
+        <Image alt="A ridge" ratio={1} classNames={{ placeholder: 'wait' }} />
+      );
+      const placeholder = screen.container.querySelector('.wait') as HTMLElement;
+      const picture = screen.container.querySelector('img') as HTMLImageElement;
+
+      expect(picture).toHaveClass('opacity-0');
+      expect(picture.compareDocumentPosition(placeholder)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+    });
+
+    it('still draws the fallback over a served picture that fails', async () => {
+      const page = await serve(
+        <Image src={BROKEN} alt="A ridge" ratio={1} classNames={{ fallback: 'broke' }} />
+      );
+
+      try {
+        await vi.waitFor(() => expect(page.host.querySelector('.broke')).not.toBeNull());
+
+        const fallback = page.host.querySelector('.broke') as HTMLElement;
+        const picture = page.host.querySelector('img') as HTMLImageElement;
+
+        expect(fallback).toHaveTextContent('A ridge');
+        expect(picture.compareDocumentPosition(fallback)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+      } finally {
+        page.done();
+      }
+    });
   });
 
   // A Markdown renderer puts an Image inside a `<p>`, where the `<div>` its

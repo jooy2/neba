@@ -12492,8 +12492,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'placeholder',
       type: 'ReactNode | false | { src: string | Blob; blur?: boolean | number }',
       description: {
-        ko: '파일이 도착하는 동안 자리를 지키는 것. 기본값은 같은 모양의 Skeleton이고, { src }를 주면 URL이나 Blob 그림이 같은 fit · position · rotate · flip으로 대신 그려집니다',
-        en: 'What stands in while the file is arriving. A Skeleton of the right shape by default; { src } draws a URL or a Blob instead, with the same fit, position, rotate and flip'
+        ko: '파일이 도착하는 동안 자리를 지키는 것. 기본값은 같은 모양의 Skeleton이고, { src }를 주면 URL이나 Blob 그림이 같은 fit · position · rotate · flip으로 대신 그려집니다. 서버에서 렌더한 페이지에서는 그림 아래에 깔리고, 그림은 페이드 없이 파일이 도착하는 대로 보입니다',
+        en: 'What stands in while the file is arriving. A Skeleton of the right shape by default; { src } draws a URL or a Blob instead, with the same fit, position, rotate and flip. On a server-rendered page it is drawn under the picture, which shows as soon as its file arrives, with no fade'
       }
     },
     {
