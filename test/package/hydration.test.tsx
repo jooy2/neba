@@ -32,6 +32,8 @@ import { renderToString } from 'react-dom/server';
 import { createRoot, hydrateRoot } from 'react-dom/client';
 import { flushSync } from 'react-dom';
 import {
+  AgentStep,
+  AgentSteps,
   AnimateCounter,
   BarChart,
   Calendar,
@@ -50,11 +52,13 @@ import {
   ProgressBox,
   ProgressCircular,
   ProgressLinear,
+  Reasoning,
   ScatterChart,
   Slider,
   Statistic,
   TimePicker,
-  TimelineChart
+  TimelineChart,
+  ToolCall
 } from 'neba';
 
 const SERVER_DEFAULT = 'ko-KR';
@@ -311,6 +315,14 @@ const cases: [string, React.ReactElement][] = [
       getRowKey={(row: Build) => row.name}
       paging="pages"
     />
+  ],
+  ['Reasoning', <Reasoning duration={2400}>Weighed the two options.</Reasoning>],
+  ['ToolCall', <ToolCall name="deploy" status="success" duration={1840} />],
+  [
+    'AgentSteps',
+    <AgentSteps>
+      <AgentStep title="Read the request" duration={1840} />
+    </AgentSteps>
   ]
 ];
 
@@ -412,6 +424,21 @@ describe('server-rendered and hydrated in another language', () => {
       expect(page.html).toContain(french);
       expect(page.host.textContent).toContain(french);
       expect(page.recoverable).toEqual([]);
+    } finally {
+      page.cleanup();
+    }
+  });
+
+  it("writes a run's duration in the language of the sentence around it", async () => {
+    const page = await serverThenHydrate(
+      <Reasoning duration={2400}>Weighed the two options.</Reasoning>
+    );
+
+    try {
+      // English words around an English unit, on the server and in a German browser.
+      expect(page.html).toContain('2.4s');
+      expect(page.host.textContent).toContain('2.4s');
+      expect(page.host.textContent).not.toContain('Sek');
     } finally {
       page.cleanup();
     }

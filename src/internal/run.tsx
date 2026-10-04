@@ -71,21 +71,28 @@ export function runColor(status: NebaRunStatus, color: NebaColor): NebaColor {
 }
 
 /**
- * A length of time, in the reader's own language.
+ * A length of time, in the language of the sentence around it.
  *
  * `Intl` knows the words, so none of this is in `i18n.ts`: what it decides is
  * only the unit and how many digits are worth printing. Under a second the
  * number is milliseconds, because "0.3s" is a measurement written in the wrong
  * unit; over it, seconds, to one decimal place for the first ten and then to
  * none — a step that ran for four minutes is not more informative at 247.3.
+ *
+ * With no `locale` it is English, because that is what the library's own words
+ * fall back to and a duration is printed inside them: left to the runtime, a
+ * Korean browser wrote "Thought for 2.4초". It also means the server and the
+ * browser can never disagree about it.
  */
 export function formatDuration(ms: number, locale?: string): string {
   if (!Number.isFinite(ms) || ms < 0) {
     return '';
   }
 
+  const tag = locale ?? 'en';
+
   if (ms < 1000) {
-    return numberFormatter(locale, {
+    return numberFormatter(tag, {
       style: 'unit',
       unit: 'millisecond',
       unitDisplay: 'narrow',
@@ -95,7 +102,7 @@ export function formatDuration(ms: number, locale?: string): string {
 
   const seconds = ms / 1000;
 
-  return numberFormatter(locale, {
+  return numberFormatter(tag, {
     style: 'unit',
     unit: 'second',
     unitDisplay: 'narrow',
