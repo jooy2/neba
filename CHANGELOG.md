@@ -68,6 +68,8 @@
 
 - **`AnimateSplit` and `StreamingText` hydrate in every browser.** Engines cut Japanese and Thai into words differently, and a browser without `Intl.Segmenter` cut everything differently, so the browser drew a different number of pieces from the server and React threw the server's HTML away. The server and the hydrating render now cut the text the same way, and the reader's engine takes over after hydration.
 
+- **A chart with a `brush` hydrates cleanly.** The brush is fetched on demand, and a component fetched on demand suspends in a server render: `renderToString` gave up on its boundary and React reported the hydration failing. The brush is now drawn once the page has hydrated, over the band the chart already reserves for it, so nothing moves.
+
 - **`AnimateHeadline` puts a space between its lines in the document**, so its text reads "faster quieter yours" rather than one run-together word.
 
 - **On a runtime without `Intl.Segmenter`, `AnimateTyping`, `AnimateScramble` and `AnimateSplit` keep emoji, accents and stacked consonants together**, and cut Chinese, Japanese and Thai per character rather than as one piece.

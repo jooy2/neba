@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { renderToString } from 'react-dom/server';
+import { hydrateRoot } from 'react-dom/client';
 import { render } from 'vitest-browser-react';
 import { LineChart } from 'neba';
 
@@ -796,6 +797,31 @@ describe('LineChart', () => {
 
       await expect.element(screen.getByRole('img', { name: 'Signups by day' })).toBeInTheDocument();
       expect(screen.getByRole('slider').query()).toBeNull();
+    });
+
+    // The brush is lazy, and a lazy component in a server render suspends:
+    // `renderToString` gave up on its boundary and the hydration that followed
+    // reported an error.
+    it('leaves the brush out of a server render and draws it once hydrated', async () => {
+      const element = chart({ brush: { defaultRange: [10, 19] } });
+      const html = renderToString(element);
+      const host = document.createElement('div');
+
+      expect(html).not.toContain('<!--$');
+
+      host.innerHTML = html;
+      document.body.append(host);
+
+      const recoverable = vi.fn();
+      const root = hydrateRoot(host, element, { onRecoverableError: recoverable });
+
+      try {
+        await vi.waitFor(() => expect(host.querySelectorAll('[role="slider"]')).toHaveLength(2));
+        expect(recoverable).not.toHaveBeenCalled();
+      } finally {
+        root.unmount();
+        host.remove();
+      }
     });
 
     it('gives the window two handles that say where they are', async () => {

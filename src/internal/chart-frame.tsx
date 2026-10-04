@@ -53,7 +53,7 @@ import {
   type ValueScale
 } from './chart.js';
 import { numberFormatter } from './format.js';
-import { useIntlLocale } from './media.js';
+import { useHydrated, useIntlLocale } from './media.js';
 import { observeResize } from './observe.js';
 import { chartMessages, emptyMessages, fillMessage, useMessages } from './i18n.js';
 import { cx, hasContent, metaTextClasses, srOnlyClasses, transitionClasses } from './styles.js';
@@ -1582,6 +1582,11 @@ export function CartesianChart(rawProps: CartesianProps) {
   const messages = useMessages(emptyMessages, locale);
   const chartWords = useMessages(chartMessages, locale);
   const intlLocale = useIntlLocale(locale);
+  // The brush waits for hydration: it is lazy, and a lazy component in a server
+  // render suspends — `renderToString` gives up on the boundary and React
+  // reports the hydration failing. The band it lies over is already reserved,
+  // and a tree that was never server-rendered is hydrated from its first render.
+  const hydrated = useHydrated();
   const tableId = React.useId();
   const summaryId = React.useId();
 
@@ -2846,7 +2851,7 @@ export function CartesianChart(rawProps: CartesianProps) {
           control that decides what the chart shows. Laid over the band the
           drawing already reserved at its foot, so the strip costs the box no
           height of its own. */}
-      {brushOptions && !nothingAtAll ? (
+      {brushOptions && !nothingAtAll && hydrated ? (
         <React.Suspense fallback={null}>
           <ChartBrush
             /* The first series that is drawn, and all of it. A strip with
