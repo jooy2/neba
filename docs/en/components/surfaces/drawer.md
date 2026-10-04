@@ -80,11 +80,30 @@ The body is the only part that scrolls, so `title`, `description` and `actions` 
 <Drawer side="bottom" extent="50vh" title="Filters" />
 ```
 
+### headingLevel
+
+The level the title is written at, `2` by default. An `inline` drawer's title is a heading in the page, so set the level that fits where the drawer sits: `3` inside a section headed `<h2>`. An `overlay` drawer is a dialog, which starts a heading order of its own, and rarely needs it.
+
+```tsx
+<Drawer mode="inline" title="Filters" headingLevel={3} />
+```
+
+### keepMounted
+
+A closed drawer's contents are not in the DOM by default. `keepMounted` keeps them there, hidden, which is what a drawer of navigation links needs for a crawler to find them. An `overlay` drawer is portalled, so its contents arrive once the page has hydrated rather than in the server's HTML; a closed `inline` drawer is in the server's HTML too. A [Sidebar](../layout/sidebar) that collapses into a drawer passes its own `keepMounted` here.
+
+```tsx
+<Drawer keepMounted trigger={<Button>Menu</Button>} title="Navigation">
+  <nav>…</nav>
+</Drawer>
+```
+
 ## Accessibility
 
 - In `overlay` mode the panel is a modal dialog: focus is trapped inside, the page behind goes inert, Escape closes it and focus returns to the trigger.
 - `title` names the drawer and `description` describes it, wired with `aria-labelledby` and `aria-describedby`. A drawer with neither needs an `aria-label` of its own.
 - `modal="trap-focus"` keeps the page scrollable and clickable while still holding focus inside.
 - `dismissible={false}` cancels Escape and the click on the scrim. Give that drawer actions that close it, because there will be no other way out.
-- An `inline` drawer is not a dialog: it takes no focus, traps nothing, and announces nothing. Its `title` is a plain heading, so put it in the page's heading order.
+- An `inline` drawer is not a dialog: it takes no focus, traps nothing, and announces nothing. Its `title` is a plain heading, so put it in the page's heading order with `headingLevel`.
+- A closed drawer kept in the DOM by `keepMounted` is hidden: its contents are out of the tab order and the accessibility tree, and it holds no focus and leaves the page usable until it opens.
 - `locale` decides the ×'s accessible name; `closeLabel` writes it out instead.

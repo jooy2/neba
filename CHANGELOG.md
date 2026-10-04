@@ -20,6 +20,8 @@
 
 - **`autoClose` on `Reasoning`.** Turned off, the panel stays open when the stream ends instead of folding away and moving the answer below it up the page.
 
+- **`headingLevel` on `Drawer`**, so an inline drawer's title can sit at the right level of the page outline. It is `2` by default, as before.
+
 - **`priority` on `Gallery`, and `srcSet` and `sizes` on a Gallery item.** The first `priority` tiles are fetched eagerly at a high fetch priority and drawn from the first paint, as an `Image` with `priority` is. `srcSet` and `sizes` reach the tile's `<img>`, so a small tile is not sent the full-size original; with no `full`, the viewer chooses from the same `srcSet`.
 
 - **`imageWidth`, `imageHeight` and `imageLoading` on a `HowToSteps` step.** The dimensions are written on the step's `<img>`, so the browser reserves the picture's proportion and the panel no longer grows as pictures arrive. `imageLoading: 'eager'` is for a guide at the top of a page.

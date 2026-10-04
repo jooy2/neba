@@ -80,11 +80,30 @@ import { Button, Drawer, List } from 'neba';
 <Drawer side="bottom" extent="50vh" title="Filters" />
 ```
 
+### headingLevel
+
+제목이 쓰이는 heading 레벨이며 기본값은 `2`입니다. `inline` drawer의 제목은 페이지 안의 heading이므로 drawer가 놓인 자리에 맞는 레벨을 주세요. `<h2>`로 시작하는 섹션 안이라면 `3`입니다. `overlay` drawer는 자기만의 heading 순서를 여는 dialog라서 바꿀 일이 드뭅니다.
+
+```tsx
+<Drawer mode="inline" title="Filters" headingLevel={3} />
+```
+
+### keepMounted
+
+기본적으로 닫힌 drawer의 내용은 DOM에 없습니다. `keepMounted`를 주면 숨겨진 채 DOM에 남으므로, 크롤러가 찾아야 하는 내비게이션 링크를 담은 drawer에 쓰세요. `overlay` drawer는 portal로 렌더되므로 내용이 서버 HTML이 아니라 hydration 뒤에 들어오고, 닫힌 `inline` drawer는 서버 HTML에도 들어갑니다. drawer로 접히는 [Sidebar](../layout/sidebar)는 자기 `keepMounted`를 여기로 넘깁니다.
+
+```tsx
+<Drawer keepMounted trigger={<Button>Menu</Button>} title="Navigation">
+  <nav>…</nav>
+</Drawer>
+```
+
 ## 접근성
 
 - `overlay` mode에서 패널은 modal dialog입니다. focus가 안에 갇히고, 뒤 페이지는 inert가 되며, Esc로 닫히고 focus는 trigger로 돌아갑니다.
 - `title`이 drawer의 이름이 되고 `description`이 설명이 되며, `aria-labelledby`와 `aria-describedby`로 연결됩니다. 둘 다 없는 drawer에는 `aria-label`을 따로 주세요.
 - `modal="trap-focus"`는 페이지의 스크롤과 클릭은 남기고 focus만 안에 붙잡습니다.
 - `dismissible={false}`는 Esc와 스크림 클릭을 모두 취소합니다. 그런 drawer에는 닫는 action을 반드시 함께 주세요. 다른 출구가 없습니다.
-- `inline` drawer는 dialog가 아닙니다. focus를 가져가지도, 가두지도, 알리지도 않습니다. `title`은 평범한 heading이므로 페이지의 heading 순서 안에 놓으세요.
+- `inline` drawer는 dialog가 아닙니다. focus를 가져가지도, 가두지도, 알리지도 않습니다. `title`은 평범한 heading이므로 `headingLevel`로 페이지의 heading 순서 안에 놓으세요.
+- `keepMounted`로 DOM에 남은 닫힌 drawer는 숨겨져 있습니다. 열리기 전까지 그 내용은 tab 순서에도 accessibility tree에도 없고, focus를 가두지 않으며 페이지도 그대로 쓸 수 있습니다.
 - ×의 접근성 이름은 `locale`이 정합니다. `closeLabel`로 직접 쓸 수도 있습니다.

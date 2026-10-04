@@ -430,6 +430,36 @@ describe('Drawer', () => {
     });
   });
 
+  // A heading level is a claim about the page the drawer is on, which only the
+  // caller knows.
+  describe('headingLevel', () => {
+    it('writes the title as an h2 by default', async () => {
+      const screen = await render(<Drawer mode="inline" title="Filters" />);
+
+      await expect
+        .element(screen.getByRole('heading', { level: 2, name: 'Filters' }))
+        .toBeInTheDocument();
+    });
+
+    it('writes an inline title at the level it is given', async () => {
+      const screen = await render(<Drawer mode="inline" title="Filters" headingLevel={3} />);
+
+      await expect
+        .element(screen.getByRole('heading', { level: 3, name: 'Filters' }))
+        .toBeInTheDocument();
+      expect(screen.getByRole('heading', { level: 2 }).query()).toBeNull();
+    });
+
+    it('writes an overlay title at that level and still names the dialog by it', async () => {
+      const screen = await render(<Drawer defaultOpen title="Navigation" headingLevel={3} />);
+
+      await expect
+        .element(screen.getByRole('heading', { level: 3, name: 'Navigation' }))
+        .toBeInTheDocument();
+      await expect.element(screen.getByRole('dialog', { name: 'Navigation' })).toBeInTheDocument();
+    });
+  });
+
   // What is in a drawer nobody opened is in a crawler's render only if it is in
   // the DOM.
   describe('keepMounted', () => {

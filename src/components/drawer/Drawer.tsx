@@ -78,6 +78,15 @@ export interface DrawerProps
   trigger?: React.ReactElement;
   /** The heading. Rendered as the element that names the drawer. */
   title?: React.ReactNode;
+  /**
+   * Which heading the title is, in the page's own outline. An `inline` drawer
+   * is part of the page, so its heading is too: one beside an `<h1>` wants `2`,
+   * and one inside a section headed `<h2>` wants `3`. An `overlay` drawer is a
+   * dialog and starts an outline of its own, where the default is what it
+   * wants.
+   * @default 2
+   */
+  headingLevel?: 1 | 2 | 3 | 4 | 5 | 6;
   /** A line under the title, and the drawer's accessible description. */
   description?: React.ReactNode;
   /**
@@ -368,6 +377,7 @@ export function Drawer(rawProps: DrawerProps) {
     onOpenChange,
     trigger,
     title,
+    headingLevel = 2,
     description,
     actions,
     dividers = false,
@@ -425,8 +435,17 @@ export function Drawer(rawProps: DrawerProps) {
   // Base UI's parts carry the `aria-labelledby` / `aria-describedby` wiring an
   // overlay drawer needs. An inline one is not a dialog and needs none, so it
   // gets the plain tags rather than a dialog's parts outside a dialog.
-  const TitleTag = overlay ? BaseUIDialog.Title : 'h2';
+  const heading = `h${headingLevel}` as const;
   const DescriptionTag = overlay ? BaseUIDialog.Description : 'p';
+  const titleClasses = cx(
+    // An inline Drawer's title is a heading sitting in the page, so it is
+    // written at two-class strength — see `headingTitleClasses`. The overlay
+    // one is portalled and out of a host's reach either way; one code path is
+    // worth more than the handful of characters.
+    'neba-heading',
+    '[&.neba-heading]:m-0 [&.neba-heading]:font-semibold [&.neba-heading]:text-inherit',
+    headingTitleClasses[size]
+  );
 
   const contents = (
     <>
@@ -434,20 +453,13 @@ export function Drawer(rawProps: DrawerProps) {
         <div className={`flex shrink-0 items-start gap-3 ${sectionClasses}`}>
           <div className={`flex min-w-0 flex-1 flex-col ${sheetHeaderGapClasses[size]}`}>
             {hasContent(title) ? (
-              <TitleTag
-                className={cx(
-                  // An inline Drawer's title is an `<h2>` sitting in the page,
-                  // so it is written at two-class strength — see
-                  // `headingTitleClasses`. The overlay one is portalled and out
-                  // of a host's reach either way; one code path is worth more
-                  // than the handful of characters.
-                  'neba-heading',
-                  '[&.neba-heading]:m-0 [&.neba-heading]:font-semibold [&.neba-heading]:text-inherit',
-                  headingTitleClasses[size]
-                )}
-              >
-                {title}
-              </TitleTag>
+              overlay ? (
+                <BaseUIDialog.Title render={React.createElement(heading)} className={titleClasses}>
+                  {title}
+                </BaseUIDialog.Title>
+              ) : (
+                React.createElement(heading, { className: titleClasses }, title)
+              )
             ) : null}
             {hasContent(description) ? (
               <DescriptionTag className={`m-0 text-(--neba-muted-fg) ${metaTextClasses[size]}`}>

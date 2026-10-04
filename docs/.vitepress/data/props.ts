@@ -11619,6 +11619,15 @@ export const propTables: Record<string, PropRow[]> = {
       }
     },
     {
+      name: 'headingLevel',
+      type: '1 | 2 | 3 | 4 | 5 | 6',
+      default: '2',
+      description: {
+        ko: '제목이 문서 개요에서 갖는 heading 레벨. inline drawer는 페이지의 일부이므로 h1 옆이라면 2, h2 섹션 안이라면 3입니다',
+        en: 'Which heading the title is in the page outline. An inline drawer is part of the page: 2 beside an h1, 3 inside a section headed h2'
+      }
+    },
+    {
       name: 'description',
       type: 'ReactNode',
       description: {
