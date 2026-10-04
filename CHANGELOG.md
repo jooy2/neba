@@ -2,6 +2,8 @@
 
 ## vNext (2026--)
 
+## 1.18.0 (2026-10-04)
+
 ### Breaking changes
 
 - **A date or a number formatted with no `locale` is written in `en-US` on the server and while the page hydrates, and in the reader's language right after.** It was written in whatever the runtime defaulted to, so a server in one language and a browser in another drew two different strings into the same element, and React threw the server's HTML away and rendered the whole tree again in the browser. This covers every component that writes a date or a number: `Calendar` and the pickers, the charts and their hidden tables, `Statistic`, `AnimateCounter`, `Meter`, the progress indicators, `Slider`, `NumberField`, `ContextWindow`, `ColorPicker` and `DataTable`. A page rendered only in the browser formats exactly as before. On a server-rendered page whose server already spoke the reader's language, the text now changes once, just after it appears; pass `locale`, or `defaults.locale` on a `NebaProvider`, to keep it in one language from the first paint. The library's own words are unaffected: with no `locale` they are English, as they were.
@@ -16,7 +18,7 @@
 
 ### Where the bytes went
 
-| What you import               | 1.17.1   | vNext    |
+| What you import               | 1.17.1   | 1.18.0   |
 | ----------------------------- | -------- | -------- |
 | `Button`                      | 5.0 kB   | 5.0 kB   |
 | `Chip`                        | 3.4 kB   | 3.4 kB   |
