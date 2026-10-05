@@ -60,6 +60,8 @@ When Tailwind v4 is already in your project, import the token sheet instead of t
 | `@import 'tailwindcss'` | Tailwind itself |
 | `@import 'neba/tailwind.css'` | The design tokens, the `.neba-glow` layers, and the `@source` that registers the package |
 
+Do not import `neba/styles.css` as well, or in place of `neba/tailwind.css`. Tailwind v4 puts your utilities in a cascade layer, while the rules in the compiled sheet sit outside any layer, so a component's own rule beats a class you pass for the same property, whatever its specificity. `className="px-10"` on a `Button` leaves the button's own padding in place, and only an important class such as `px-10!` gets through.
+
 You do not write an `@source` of your own on this path either. The classes Neba's components use are Tailwind utilities, so Tailwind has to read the package's compiled files to find them; `neba/tailwind.css` takes care of that by declaring `@source '.'` inside itself. `@source` resolves relative to the file it is written in, which here is `node_modules/neba/dist/`, right next to those files. An explicitly registered source is scanned even inside `node_modules`, which automatic detection skips.
 
 The upshot is that nothing depends on where your own CSS file sits. If you have seen `@source '../node_modules/neba'` in an older README, you can delete it: that path was only correct for a CSS file exactly one directory deep.
