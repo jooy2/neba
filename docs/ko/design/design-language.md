@@ -185,7 +185,7 @@ type NebaElevation = 0 | 1 | 2 | 3;
 
 **그림자에 컨트롤 자신의 색을 섞지 마세요.** 컬러 글로우는 작은 컨트롤에서 가장 과한 표현이 됩니다. `--neba-shadow-*`는 전부 중립색입니다.
 
-### portal로 띄우는 표면은 z-index 하나를 공유합니다
+### portal로 띄우는 표면은 z-index 하나를 읽습니다
 
 Menu, Dialog, Drawer, Tooltip, Toast는 작성된 자리가 아니라 문서 끝에 그려지고, 전부 `--neba-z-portal`을 읽습니다. 기본값은 `50`입니다.
 
@@ -197,7 +197,9 @@ Menu, Dialog, Drawer, Tooltip, Toast는 작성된 자리가 아니라 문서 끝
 }
 ```
 
-라이브러리는 popup끼리 층을 나누지 않으므로 값 하나면 전부 덮습니다. 표면 안쪽에서 쓰는 작은 `z-index`(고정 테이블 헤더, 차트 tooltip)는 그 컴포넌트 안에서만 의미가 있고 밖으로 나가지 않습니다.
+같은 값을 쓰는 표면끼리는 나중에 연 쪽이 위에 그려지고, Dialog 안에서 연 Menu에는 그게 맞습니다. 예외는 Toast 스택 하나입니다. 스택은 `ToastProvider`와 함께 mount되어 그 아래에서 여는 어떤 Dialog보다 앞에 놓이므로, 한 단계 위인 `--neba-z-toast`에 그립니다. 직접 정하지 않으면 이 값은 `--neba-z-portal`에 1을 더한 값이라, `--neba-z-portal`을 올리면 Toast도 함께 올라갑니다.
+
+표면 안쪽에서 쓰는 작은 `z-index`(고정 테이블 헤더, 차트 tooltip)는 그 컴포넌트 안에서만 의미가 있고 밖으로 나가지 않습니다.
 
 ---
 

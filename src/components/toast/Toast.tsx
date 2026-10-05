@@ -445,7 +445,13 @@ function ToastViewport(
           // Full width and `pointer-events-none`, so the strip across the top or
           // the bottom of the page is not a wall the rest of the app is behind.
           // The toasts themselves take their events back.
-          'neba-portal pointer-events-none fixed inset-x-0 z-(--neba-z-portal) flex flex-col gap-2 p-4',
+          'neba-portal pointer-events-none fixed inset-x-0 flex flex-col gap-2 p-4',
+          // One step above every other portalled surface. On the same z-index
+          // the later portal wins, and this one mounts with the provider, so a
+          // dialog opened afterwards covered the toast it raised. The step is
+          // worked out here rather than declared in `styles.css`, so it follows
+          // `--neba-z-portal` wherever a host sets it.
+          'z-(--neba-z-toast,calc(var(--neba-z-portal)+1))',
           viewportClasses[position],
           classNames?.viewport
         )}

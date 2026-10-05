@@ -2,6 +2,10 @@
 
 ## vNext (2026--)
 
+### Fixed
+
+- **A toast raised while a modal `Dialog` or `Drawer` is open is drawn above its scrim, and its buttons take the click.** The toast stack read the same `--neba-z-portal` as every other portalled surface, and on equal z-index the later portal is on top. The stack mounts with `ToastProvider`, so a dialog opened after it covered the toast. The stack now reads `--neba-z-toast`, which is one above `--neba-z-portal` unless you set it, so the order holds on a page that raises `--neba-z-portal`. Menus, tooltips and popovers keep their z-index; where one overlaps a toast, the toast is now the one on top.
+
 ## 1.18.0 (2026-10-04)
 
 ### Breaking changes
