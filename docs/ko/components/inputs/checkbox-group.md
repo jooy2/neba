@@ -50,7 +50,7 @@ import { Checkbox, CheckboxGroup } from 'neba';
 
 ### spacing
 
-체크박스 사이의 간격입니다. Tailwind 간격 스케일이라 `4`는 `1rem`이고, 가로 group이 줄바꿈되면 줄 사이도 같은 간격으로 벌어집니다. 주지 않으면 RadioGroup과 같아서 세로는 `2`(`0.5rem`), 가로는 같은 줄에서 `5`, 줄 사이 `2`입니다. [NebaProvider](../../guide/provider)의 `defaults`에 준 `spacing`은 서로 다른 field 사이의 간격이므로 여기에는 닿지 않습니다.
+체크박스 사이의 간격입니다. Tailwind 간격 스케일이라 `4`는 `1rem`이고, 가로 group이 줄바꿈되면 줄 사이도 같은 간격으로 벌어집니다. 주지 않으면 RadioGroup과 같아서 세로는 [Form](./form)의 field와 같은 단계로 `size`를 따라 `md`에서 `3`(`0.75rem`)이고, 가로는 같은 줄에서 `5`, 줄 사이는 세로와 같은 단계입니다. [NebaProvider](../../guide/provider)의 `defaults`에 준 `spacing`은 서로 다른 field 사이의 간격이므로 여기에는 닿지 않습니다.
 
 <Demo src="checkbox-group/spacing">
 

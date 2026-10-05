@@ -52,7 +52,7 @@ The one thing only a real `<fieldset>` can do: it reaches every control inside, 
 
 ### spacing
 
-The gap between the controls as an exact length, on Tailwind's spacing scale: `6` is `1.5rem`. The legend keeps the type scale `size` gives it. A `spacing` in a [NebaProvider](../../guide/provider)'s `defaults` reaches every Fieldset and [Form](./form) at once. For a column of checkboxes, use a [CheckboxGroup](./checkbox-group) instead: its options sit closer together than separate fields, so they read as one set.
+The gap between the controls as an exact length, on Tailwind's spacing scale: `6` is `1.5rem`. The legend keeps the type scale `size` gives it. A `spacing` in a [NebaProvider](../../guide/provider)'s `defaults` reaches every Fieldset and [Form](./form) at once. For a column of checkboxes, use a [CheckboxGroup](./checkbox-group) instead: it gives the set one value, a label and an error of its own.
 
 <Demo src="fieldset/spacing">
 

@@ -23,7 +23,14 @@
  */
 
 import type * as React from 'react';
-import type { NebaColor, NebaDensity, NebaElevation, NebaSize, NebaVariant } from '../types.js';
+import type {
+  NebaColor,
+  NebaDensity,
+  NebaElevation,
+  NebaOrientation,
+  NebaSize,
+  NebaVariant
+} from '../types.js';
 
 /* ---------------------------------------------------------------------------
  * Scales
@@ -459,6 +466,28 @@ export const sheetSectionGapClasses: Record<NebaSize, string> = {
   md: 'gap-3',
   lg: 'gap-3.5',
   xl: 'gap-4'
+};
+
+/**
+ * Between the options of a RadioGroup or a CheckboxGroup, when no `spacing`
+ * says otherwise.
+ *
+ * A column stands on the ladder above, the one a Form and a Fieldset put
+ * between their fields, so at `md` an option is as far from the next as a
+ * field is: a column of checkboxes and a column of text fields set side by side
+ * keep one rhythm. A row keeps a wider step along it, because a label has to
+ * end visibly before the next box starts, and puts its wrapped lines on the
+ * column's step.
+ */
+export const optionGapClasses: Record<NebaOrientation, Record<NebaSize, string>> = {
+  vertical: sheetSectionGapClasses,
+  horizontal: {
+    xs: 'gap-x-5 gap-y-1.5',
+    sm: 'gap-x-5 gap-y-2',
+    md: 'gap-x-5 gap-y-3',
+    lg: 'gap-x-5 gap-y-3.5',
+    xl: 'gap-x-5 gap-y-4'
+  }
 };
 
 /* ---------------------------------------------------------------------------

@@ -9,6 +9,7 @@ import {
   cx,
   hitAreaClasses,
   metaTextClasses,
+  optionGapClasses,
   surfaceClasses,
   tickDotClasses,
   tickRowLeadingClasses,
@@ -82,11 +83,13 @@ export interface RadioGroupProps extends Omit<
    * The gap between the options, on Tailwind's spacing scale: `3` is
    * `0.75rem`, the same step `gap-3` is. One length on both axes, so a
    * horizontal group that wraps puts its lines as far apart as its options.
-   * Left out, a vertical group is `2` apart, and a horizontal one `5` along the
-   * row and `2` between the lines.
+   * Left out, a column follows `size` on the ladder a Form stands its fields
+   * on, `3` at `md`, and a row keeps `5` along it with the column's step
+   * between its lines.
    *
    * Not read from a `NebaProvider`: the provider's `spacing` is the gap between
-   * fields, and the options of one field sit closer together than that.
+   * fields, and a product that spreads its fields apart should not spread every
+   * set of options with them.
    */
   spacing?: number;
   /** The question the options answer. Rendered as the group's legend. */
@@ -350,11 +353,7 @@ export const RadioGroup = React.forwardRef<HTMLDivElement, RadioGroupProps>(
             className={cx(
               'flex',
               orientation === 'horizontal' ? 'flex-row flex-wrap' : 'flex-col',
-              spacing === undefined
-                ? orientation === 'horizontal'
-                  ? 'gap-x-5 gap-y-2'
-                  : 'gap-2'
-                : '',
+              spacing === undefined ? optionGapClasses[orientation][size] : '',
               classNames?.control
             )}
             style={spacing === undefined ? undefined : { gap: spacingValue(spacing) }}

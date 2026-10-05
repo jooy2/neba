@@ -31,12 +31,12 @@ export interface NebaDefaults {
    * The gap a Form and a Fieldset stand their fields at, on Tailwind's spacing
    * scale: `4` is `1rem`.
    *
-   * Only those two read it. The options of a RadioGroup and the rows of a List
-   * take a `spacing` of their own, and they are a different distance: options
-   * that answer one question sit closer together than two questions do, so one
-   * number for both would push the options apart until they stopped reading as
-   * a set. Flex and GridContainer are layout, and a page-wide gutter would move
-   * every layout in the product.
+   * Only those two read it. The options of a RadioGroup or a CheckboxGroup and
+   * the rows of a List take a `spacing` of their own: they start on the same
+   * step at `md`, but a product that spreads its fields apart should not spread
+   * every set of options with them, until the options stop reading as a set.
+   * Flex and GridContainer are layout, and a page-wide gutter would move every
+   * layout in the product.
    */
   spacing?: number;
 }

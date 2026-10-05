@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { CheckboxGroup as BaseUICheckboxGroup } from '@base-ui/react/checkbox-group';
 import { Field } from '@base-ui/react/field';
-import { cx, metaTextClasses } from '../../internal/styles.js';
+import { cx, metaTextClasses, optionGapClasses } from '../../internal/styles.js';
 import { spacingValue } from '../../internal/grid.js';
 import type {
   NebaColor,
@@ -46,12 +46,14 @@ export interface CheckboxGroupProps extends Omit<
    * The gap between the checkboxes, on Tailwind's spacing scale: `3` is
    * `0.75rem`, the same step `gap-3` is. One length on both axes, so a
    * horizontal group that wraps puts its lines as far apart as its options.
-   * Left out, a vertical group is `2` apart, and a horizontal one `5` along the
-   * row and `2` between the lines — RadioGroup's gaps, so the two read as the
-   * same kind of question.
+   * Left out, a column follows `size` on the ladder a Form stands its fields
+   * on, `3` at `md`, and a row keeps `5` along it with the column's step
+   * between its lines — RadioGroup's gaps, so the two read as the same kind of
+   * question.
    *
    * Not read from a `NebaProvider`: the provider's `spacing` is the gap between
-   * fields, and the options of one field sit closer together than that.
+   * fields, and a product that spreads its fields apart should not spread every
+   * set of options with them.
    */
   spacing?: number;
   /** The question the checkboxes answer. It names the group. */
@@ -90,10 +92,9 @@ export interface CheckboxGroupProps extends Omit<
  * A column of Checkboxes in a Fieldset already works, and this is what that
  * column was missing: one value for the set — an array of the ticked
  * checkboxes' `value`s, controlled or not — a label and an error that belong to
- * the question rather than to one option, the gap options stand at rather than
- * the wider one between fields, and a parent checkbox that ticks every option
- * at once. `allValues` names every option, and the Checkbox with `parent` is
- * the one that answers for all of them.
+ * the question rather than to one option, and a parent checkbox that ticks
+ * every option at once. `allValues` names every option, and the Checkbox with
+ * `parent` is the one that answers for all of them.
  *
  * Base UI's group owns the value and the parent's three states. What it does
  * not carry down is how each option looks, so `size`, `color`, `disabled` and
@@ -170,11 +171,7 @@ export const CheckboxGroup = React.forwardRef<HTMLDivElement, CheckboxGroupProps
             className={cx(
               'flex',
               orientation === 'horizontal' ? 'flex-row flex-wrap' : 'flex-col',
-              spacing === undefined
-                ? orientation === 'horizontal'
-                  ? 'gap-x-5 gap-y-2'
-                  : 'gap-2'
-                : '',
+              spacing === undefined ? optionGapClasses[orientation][size] : '',
               classNames?.control
             )}
             style={spacing === undefined ? undefined : { gap: spacingValue(spacing) }}

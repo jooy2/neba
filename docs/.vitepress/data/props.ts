@@ -5241,8 +5241,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'spacing',
       type: 'number',
       description: {
-        ko: '체크박스 사이의 간격. Tailwind 간격 스케일이라 3은 0.75rem이며, 가로 그룹이 줄바꿈될 때 줄 사이에도 같은 길이가 쓰입니다. 주지 않으면 RadioGroup과 같아서 세로 그룹은 2, 가로 그룹은 같은 줄에서 5, 줄 사이 2입니다. NebaProvider의 spacing은 읽지 않습니다',
-        en: "The gap between the checkboxes, on Tailwind's spacing scale: 3 is 0.75rem. A horizontal group that wraps puts its lines the same distance apart. Left out it matches RadioGroup: a vertical group is 2 apart, and a horizontal one 5 along the row and 2 between lines. NebaProvider's spacing does not reach it"
+        ko: '체크박스 사이의 간격. Tailwind 간격 스케일이라 3은 0.75rem이며, 가로 그룹이 줄바꿈될 때 줄 사이에도 같은 길이가 쓰입니다. 주지 않으면 RadioGroup과 같아서 세로 그룹은 Form의 field와 같은 단계로 size를 따라 md에서 3이고, 가로 그룹은 같은 줄에서 5, 줄 사이는 세로와 같은 단계입니다. NebaProvider의 spacing은 읽지 않습니다',
+        en: "The gap between the checkboxes, on Tailwind's spacing scale: 3 is 0.75rem. A horizontal group that wraps puts its lines the same distance apart. Left out it matches RadioGroup: a column follows size on the same steps as a Form's fields, 3 at md, and a row keeps 5 along it with the column's step between lines. NebaProvider's spacing does not reach it"
       }
     },
     ...fieldProps,
@@ -5365,8 +5365,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'spacing',
       type: 'number',
       description: {
-        ko: '옵션 사이의 간격. Tailwind 간격 스케일이라 3은 0.75rem이며, 가로 그룹이 줄바꿈될 때 줄 사이에도 같은 길이가 쓰입니다. 주지 않으면 세로 그룹은 2, 가로 그룹은 같은 줄에서 5, 줄 사이 2입니다. NebaProvider의 spacing은 읽지 않습니다',
-        en: "The gap between the options, on Tailwind's spacing scale: 3 is 0.75rem. A horizontal group that wraps puts its lines the same distance apart. Left out, a vertical group is 2 apart, and a horizontal one 5 along the row and 2 between lines. NebaProvider's spacing does not reach it"
+        ko: '옵션 사이의 간격. Tailwind 간격 스케일이라 3은 0.75rem이며, 가로 그룹이 줄바꿈될 때 줄 사이에도 같은 길이가 쓰입니다. 주지 않으면 세로 그룹은 Form의 field와 같은 단계로 size를 따라 md에서 3이고, 가로 그룹은 같은 줄에서 5, 줄 사이는 세로와 같은 단계입니다. NebaProvider의 spacing은 읽지 않습니다',
+        en: "The gap between the options, on Tailwind's spacing scale: 3 is 0.75rem. A horizontal group that wraps puts its lines the same distance apart. Left out, a column follows size on the same steps as a Form's fields, 3 at md, and a row keeps 5 along it with the column's step between lines. NebaProvider's spacing does not reach it"
       }
     },
     ...fieldProps,

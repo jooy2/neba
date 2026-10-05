@@ -52,7 +52,7 @@ legend는 안에 있는 모든 컨트롤의 접근 가능한 이름이 됩니다
 
 ### spacing
 
-컨트롤 사이의 간격을 정확한 길이로 정합니다. Tailwind 간격 스케일이라 `6`은 `1.5rem`입니다. legend는 `size`가 준 타입 스케일을 그대로 씁니다. [NebaProvider](../../guide/provider)의 `defaults`에 `spacing`을 주면 모든 Fieldset과 [Form](./form)에 한 번에 적용됩니다. 체크박스를 세로로 늘어놓을 때는 [CheckboxGroup](./checkbox-group)을 쓰세요. 선택지끼리는 서로 다른 field보다 가까이 붙어 있어야 한 묶음으로 읽힙니다.
+컨트롤 사이의 간격을 정확한 길이로 정합니다. Tailwind 간격 스케일이라 `6`은 `1.5rem`입니다. legend는 `size`가 준 타입 스케일을 그대로 씁니다. [NebaProvider](../../guide/provider)의 `defaults`에 `spacing`을 주면 모든 Fieldset과 [Form](./form)에 한 번에 적용됩니다. 체크박스를 세로로 늘어놓을 때는 [CheckboxGroup](./checkbox-group)을 쓰세요. 묶음 전체가 값 하나와 자기 라벨, 오류 메시지를 갖습니다.
 
 <Demo src="fieldset/spacing">
 

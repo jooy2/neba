@@ -42,11 +42,15 @@ describe('CheckboxGroup', () => {
     it('stacks the checkboxes vertically by default and in a row on request', async () => {
       const screen = await render(<Alerts />);
 
-      expect(screen.getByRole('group').element()).toHaveClass('flex-col', 'gap-2');
+      expect(screen.getByRole('group').element()).toHaveClass('flex-col', 'gap-3');
 
       await screen.rerender(<Alerts orientation="horizontal" />);
 
-      expect(screen.getByRole('group').element()).toHaveClass('flex-row', 'gap-x-5', 'gap-y-2');
+      expect(screen.getByRole('group').element()).toHaveClass('flex-row', 'gap-x-5', 'gap-y-3');
+
+      await screen.rerender(<Alerts size="xs" />);
+
+      expect(screen.getByRole('group').element()).toHaveClass('gap-1.5');
     });
 
     it('stands the checkboxes `spacing` apart on both axes', async () => {
@@ -54,7 +58,7 @@ describe('CheckboxGroup', () => {
       const group = screen.getByRole('group').element() as HTMLElement;
 
       expect(group.style.gap).toBe('0.75rem');
-      expect(group).not.toHaveClass('gap-2');
+      expect(group).not.toHaveClass('gap-3');
       expect(group).not.toHaveAttribute('spacing');
     });
 

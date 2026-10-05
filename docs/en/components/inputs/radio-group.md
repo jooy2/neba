@@ -58,7 +58,7 @@ Each option can carry a sentence. However many lines the description takes, the 
 
 ### spacing
 
-The gap between the options, on Tailwind's spacing scale: `4` is `1rem`. A horizontal group that wraps puts its lines the same distance apart. Left out, a vertical group is `2` (`0.5rem`) apart, and a horizontal one `5` along the row and `2` between lines. The `spacing` in a [NebaProvider](../../guide/provider)'s `defaults` does not reach it, because that is the gap between separate fields.
+The gap between the options, on Tailwind's spacing scale: `4` is `1rem`. A horizontal group that wraps puts its lines the same distance apart. Left out, a column follows `size` on the same steps as a [Form](./form)'s fields, `3` (`0.75rem`) at `md`, and a row keeps `5` along it with the column's step between lines. The `spacing` in a [NebaProvider](../../guide/provider)'s `defaults` does not reach it, because that is the gap between separate fields.
 
 <Demo src="radio-group/spacing">
 

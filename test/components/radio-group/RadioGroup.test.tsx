@@ -55,7 +55,7 @@ describe('RadioGroup', () => {
       const group = screen.getByRole('radiogroup').element() as HTMLElement;
 
       expect(group.style.gap).toBe('1rem');
-      expect(group).not.toHaveClass('gap-2');
+      expect(group).not.toHaveClass('gap-3');
 
       await screen.rerender(<Plans label="Plan" orientation="horizontal" spacing={4} />);
 
@@ -63,12 +63,20 @@ describe('RadioGroup', () => {
       expect(group).not.toHaveClass('gap-x-5');
     });
 
-    it('keeps its own gaps when no spacing is given', async () => {
-      const screen = await render(<Plans label="Plan" orientation="horizontal" />);
+    it('stands the options on the field ladder when no spacing is given', async () => {
+      const screen = await render(<Plans label="Plan" />);
       const group = screen.getByRole('radiogroup').element() as HTMLElement;
 
-      expect(group).toHaveClass('gap-x-5', 'gap-y-2');
+      expect(group).toHaveClass('gap-3');
       expect(group.style.gap).toBe('');
+
+      await screen.rerender(<Plans label="Plan" size="xl" />);
+
+      expect(group).toHaveClass('gap-4');
+
+      await screen.rerender(<Plans label="Plan" orientation="horizontal" />);
+
+      expect(group).toHaveClass('gap-x-5', 'gap-y-3');
     });
 
     it('keeps caller-supplied class names on the field wrapper', async () => {
