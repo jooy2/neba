@@ -21,7 +21,7 @@ import { Checkbox } from 'neba';
 
 `label`, `description` and `error` are props rather than `children`; `children` is not accepted.
 
-For a setting that takes effect immediately, use [Switch](./switch). A Checkbox is a value submitted alongside a Save button.
+For a setting that takes effect immediately, use [Switch](./switch). A Checkbox is a value submitted alongside a Save button. For several checkboxes that answer one question, put them in a [CheckboxGroup](./checkbox-group), which gives the set one value, a label and the gap options stand at.
 
 ## Examples
 
@@ -41,7 +41,7 @@ An `error` message also turns the checkbox invalid and re-points the colour fami
 
 ### indeterminate
 
-A third appearance for a parent checkbox whose children disagree. The value underneath is still on or off; `indeterminate` only affects what is drawn.
+A third appearance for a parent checkbox whose children disagree. The value underneath is still on or off; `indeterminate` only affects what is drawn. Inside a [CheckboxGroup](./checkbox-group), a Checkbox with `parent` works this out on its own.
 
 <Demo src="checkbox/indeterminate">
 

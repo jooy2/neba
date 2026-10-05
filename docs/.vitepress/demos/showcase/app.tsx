@@ -37,6 +37,7 @@ import {
   Carousel,
   ChatBubble,
   Checkbox,
+  CheckboxGroup,
   Chip,
   CodeBlock,
   Collapsible,
@@ -831,7 +832,7 @@ function ShowcaseBody() {
         <section className="flex flex-col gap-3">
           <Caption>
             Button · ButtonGroup · SegmentedButton · Toggle · ToggleGroup · TextField · Select ·
-            Tooltip · Menu · Popover · Drawer · Overlay · ScrollArea · Flex
+            Tooltip · Menu · Popover · CheckboxGroup · Drawer · Overlay · ScrollArea · Flex
           </Caption>
           {/* The row every control on this screen sits in. `spacing` tightens
               on a phone and opens up from md — one prop rather than a
@@ -924,9 +925,11 @@ function ShowcaseBody() {
               title="Filter deploys"
               description="Applied to the table below."
             >
-              <div className="flex flex-col gap-2">
-                <Checkbox size="sm" label="Failed only" />
-                <Checkbox size="sm" label="This week" defaultChecked />
+              <div className="flex flex-col gap-3">
+                <CheckboxGroup size="sm" label="Show" defaultValue={['week']}>
+                  <Checkbox value="failed" label="Failed only" />
+                  <Checkbox value="week" label="This week" />
+                </CheckboxGroup>
                 <div className="flex justify-end">
                   <PopoverClose render={<Button size="sm">Apply</Button>} />
                 </div>

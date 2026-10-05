@@ -5197,12 +5197,102 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'name',
       type: 'string',
       description: {
-        ko: '폼 제출 시의 필드 이름',
-        en: 'Identifies the field when a form is submitted'
+        ko: '폼 제출 시의 필드 이름. CheckboxGroup 안에서는 주지 않으면 그룹의 name을 씁니다',
+        en: "Identifies the field when a form is submitted. Inside a CheckboxGroup it defaults to the group's name"
+      }
+    },
+    {
+      name: 'value',
+      type: 'string',
+      description: {
+        ko: 'CheckboxGroup 안에서 이 체크박스를 식별하는 값. 체크되면 그룹의 value 배열에 들어가고, 폼에는 이 값이 제출됩니다',
+        en: "Identifies this checkbox inside a CheckboxGroup. Ticked, it is in the group's value array, and it is what a form submits"
+      }
+    },
+    {
+      name: 'parent',
+      type: 'boolean',
+      default: 'false',
+      description: {
+        ko: 'allValues를 받은 CheckboxGroup 안에서 모든 옵션을 한 번에 체크하는 부모 체크박스로 만듭니다. 일부만 체크되면 중간 상태로 그려지고, 폼에는 제출되지 않습니다',
+        en: 'Inside a CheckboxGroup with allValues, makes this the checkbox that ticks every option at once. It draws itself indeterminate while only some are ticked, and is not submitted'
       }
     },
     ...inertProps,
     slotsProp('label', 'control', 'description', 'error', 'indicator')
+  ],
+
+  CheckboxGroup: [
+    ...scaleProps("'md'", "'primary'", {
+      ko: '의미론적 색 역할. 그룹이 정하고, 자기 color가 없는 모든 Checkbox가 물려받습니다',
+      en: 'Semantic colour role. Set on the group, inherited by every Checkbox that has no color of its own'
+    }),
+    {
+      name: 'orientation',
+      type: ORIENTATION,
+      default: "'vertical'",
+      shared: true,
+      description: {
+        ko: '체크박스가 쌓이는 방향. 세로가 기본입니다. 가로는 라벨이 길어지는 순간 읽기 어려워집니다',
+        en: 'Which way the checkboxes stack. Vertical by default: a row breaks the moment one label is long'
+      }
+    },
+    {
+      name: 'spacing',
+      type: 'number',
+      description: {
+        ko: '체크박스 사이의 간격. Tailwind 간격 스케일이라 3은 0.75rem이며, 가로 그룹이 줄바꿈될 때 줄 사이에도 같은 길이가 쓰입니다. 주지 않으면 RadioGroup과 같아서 세로 그룹은 2, 가로 그룹은 같은 줄에서 5, 줄 사이 2입니다. NebaProvider의 spacing은 읽지 않습니다',
+        en: "The gap between the checkboxes, on Tailwind's spacing scale: 3 is 0.75rem. A horizontal group that wraps puts its lines the same distance apart. Left out it matches RadioGroup: a vertical group is 2 apart, and a horizontal one 5 along the row and 2 between lines. NebaProvider's spacing does not reach it"
+      }
+    },
+    ...fieldProps,
+    {
+      name: 'value',
+      type: 'string[]',
+      description: {
+        ko: '체크된 체크박스들의 value. onValueChange와 함께 제어 컴포넌트로 씁니다',
+        en: 'The values of the ticked checkboxes. Use with onValueChange for a controlled group'
+      }
+    },
+    {
+      name: 'defaultValue',
+      type: 'string[]',
+      description: {
+        ko: '처음 체크될 value들',
+        en: 'The values ticked at first, for an uncontrolled group'
+      }
+    },
+    {
+      name: 'onValueChange',
+      type: '(value: string[], details) => void',
+      description: {
+        ko: '체크박스 하나가 체크되거나 풀릴 때, 새 배열과 함께',
+        en: 'Called with the new array when a checkbox is ticked or unticked'
+      }
+    },
+    {
+      name: 'allValues',
+      type: 'string[]',
+      description: {
+        ko: '그룹 안 모든 체크박스의 value. 주면 parent를 단 Checkbox가 전체 선택 체크박스가 됩니다',
+        en: 'The values of every checkbox in the group. Given, the Checkbox with parent becomes the one that ticks them all'
+      }
+    },
+    {
+      name: 'name',
+      type: 'string',
+      description: {
+        ko: '체크된 값이 제출되는 이름. 네이티브 제출에는 체크된 체크박스마다 하나씩 들어가고, Form의 onSubmit은 배열로 받습니다',
+        en: "The name the ticked values are submitted under. A native submit sends one entry per ticked checkbox, and a Form's onSubmit is handed them as an array"
+      }
+    },
+    ...inertProps,
+    {
+      name: 'children',
+      type: 'ReactNode',
+      description: { ko: 'Checkbox들', en: 'The Checkboxes' }
+    },
+    slotsProp('label', 'control', 'description', 'error')
   ],
 
   Switch: [

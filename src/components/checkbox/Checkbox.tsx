@@ -17,6 +17,7 @@ import {
 import type { NebaColor, NebaFieldSlot, NebaSize, NebaSlots } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
 import { useFieldsetDisabled } from '../../internal/fieldset.js';
+import { CheckboxGroupContext } from '../../internal/checkbox-group.js';
 
 /**
  * Base UI's own props, minus the ones this component owns: `className` and
@@ -197,27 +198,36 @@ function DashMark() {
  */
 export const Checkbox = React.forwardRef<HTMLElement, CheckboxProps>(
   function Checkbox(rawProps, ref) {
+    const group = React.useContext(CheckboxGroupContext);
     const {
-      size = 'md',
-      color = 'primary',
+      size: sizeProp,
+      color: colorProp,
       label,
       description,
       error,
       invalid,
       disabled: disabledProp,
-      readOnly = false,
+      readOnly: readOnlyProp,
+      name: nameProp,
       className,
       classNames,
       style,
       ...props
-    } = useStyleDefaults(rawProps, ['size']);
-    const disabled = useFieldsetDisabled(disabledProp);
+    } = useStyleDefaults(rawProps, ['size'], group);
+    // The checkbox's own prop, then the group around it, then the provider —
+    // which `useStyleDefaults` has already filled in when there is no group.
+    const size = sizeProp ?? group?.size ?? 'md';
+    const color = colorProp ?? group?.color ?? 'primary';
+    const readOnly = readOnlyProp ?? group?.readOnly ?? false;
+    const name = nameProp ?? group?.name;
+    const disabled = useFieldsetDisabled(disabledProp) || group?.disabled === true;
 
     const hasError = error !== undefined && error !== null && error !== false && error !== '';
     const isInvalid = invalid ?? hasError;
     // Invalid re-points the whole slot family at `danger`, so the tick, the ring
-    // and the message all turn over together.
-    const family: NebaColor = isInvalid ? 'danger' : color;
+    // and the message all turn over together. An invalid group turns every
+    // option over with it, whatever colour the option asked for.
+    const family: NebaColor = isInvalid || group?.invalid === true ? 'danger' : color;
 
     const slots = {
       '--n-fill': `var(--neba-${family}-fill)`,
@@ -260,11 +270,20 @@ export const Checkbox = React.forwardRef<HTMLElement, CheckboxProps>(
               className={cx(tickClasses, classNames?.control)}
               disabled={disabled}
               readOnly={readOnly}
+              name={name}
               {...props}
             >
-              <BaseUICheckbox.Indicator className={cx(markClasses, classNames?.indicator)}>
-                {props.indeterminate ? <DashMark /> : <CheckMark />}
-              </BaseUICheckbox.Indicator>
+              {/* The mark follows the state Base UI settled on rather than the
+                prop: a group's parent checkbox is indeterminate because some
+                of its children are ticked, and nobody passes it the prop. */}
+              <BaseUICheckbox.Indicator
+                className={cx(markClasses, classNames?.indicator)}
+                render={(indicatorProps, state) => (
+                  <span {...indicatorProps}>
+                    {state.indeterminate ? <DashMark /> : <CheckMark />}
+                  </span>
+                )}
+              />
             </BaseUICheckbox.Root>
           </span>
 

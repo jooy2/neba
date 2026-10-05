@@ -43,6 +43,7 @@ import {
   Carousel,
   ChatBubble,
   Checkbox,
+  CheckboxGroup,
   Chip,
   CodeBlock,
   ColorPicker,
@@ -423,6 +424,17 @@ const GROUPS: Group[] = [
             <Checkbox size="sm" label="Remember me" defaultChecked />
             <Checkbox size="sm" label="Send updates" />
           </div>
+        )
+      },
+      {
+        name: 'CheckboxGroup',
+        summary: { ko: '한 질문에 여러 개의 답', en: 'Any number of a set' },
+        path: '/components/inputs/checkbox-group',
+        preview: (
+          <CheckboxGroup size="sm" defaultValue={['deploys']}>
+            <Checkbox value="deploys" label="Deploys" />
+            <Checkbox value="digest" label="Digest" />
+          </CheckboxGroup>
         )
       },
       {

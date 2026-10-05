@@ -74,7 +74,7 @@ Three things are deliberately **left unmarked**, and each would break if it were
 
 - **`src/index.ts` and the component barrels.** A barrel only re-exports. Unmarked, it is a module either graph may pull in, so a Server Component importing `neba` reaches the client modules behind it; marked, it would become a boundary of its own and drag the whole barrel across.
 - **`src/locales/**` and `src/internal/i18n.ts`.** `registerMessages` is a plain function a consumer calls at module scope, and `useMessages` is a `useMemo`, which the `react-server` build does export. Marked, `registerMessages` would come back to a consumer's server module as a client reference instead of a function, and calling it would throw.
-- **The rest of `internal/`** — the arithmetic, the tables, the glyphs, `sizer.tsx`, `picker.tsx`, `notch.tsx`. A module with no directive belongs to whichever graph imports it, which is exactly right for these; only the sixteen that hold a context, an effect or a store (`animate.tsx`, `bottom-navigation.ts`, `button-group.ts`, `calendar.tsx`, `chart-brush.tsx`, `chart-frame.tsx`, `defaults.ts`, `drop.ts`, `fieldset.ts`, `layout-effect.ts`, `media.ts`, `menu.ts`, `new-tab.tsx`, `page-layout.ts`, `run.tsx`, `screen.ts`) are marked.
+- **The rest of `internal/`** — the arithmetic, the tables, the glyphs, `sizer.tsx`, `picker.tsx`, `notch.tsx`. A module with no directive belongs to whichever graph imports it, which is exactly right for these; only the seventeen that hold a context, an effect or a store (`animate.tsx`, `bottom-navigation.ts`, `button-group.ts`, `calendar.tsx`, `checkbox-group.ts`, `chart-brush.tsx`, `chart-frame.tsx`, `defaults.ts`, `drop.ts`, `fieldset.ts`, `layout-effect.ts`, `media.ts`, `menu.ts`, `new-tab.tsx`, `page-layout.ts`, `run.tsx`, `screen.ts`) are marked.
 
 **A plain function or constant a consumer may call on a server lives in a module with no directive**, even when it belongs to a component. Exported from a `'use client'` file it reaches a Server Component as a client reference, and calling it there throws. `colorSchemeScript` is the case that taught this — it is called from the `<head>` of `app/layout.tsx`, which is a Server Component, and it used to live in `NebaProvider.tsx` — so it is in `provider/colorSchemeScript.ts`, `formatFileSize` in `file-picker/formatFileSize.ts`, and the code-block barrel re-exports `registerLanguage` straight from `internal/highlight.ts`. `test/package/resolution.test.ts` checks every barrel for it.
 
@@ -134,7 +134,7 @@ The same file holds `NebaSlots` and `NebaFieldSlot`, which are that rule applied
 
 The same rule applies to the values behind those names, which is what `src/internal/styles.ts` is for. Control heights, radii, type scales, the two padding tracks, the _sheet_ ladder a Card, an Alert and a Dialog share, the frosted surface, the house transition, the fade every floating surface arrives on, the focus ring and the `--n-*` slot generators live there once and every component imports them. A component keeps only what genuinely differs: its variant class maps and its layout. If you find yourself writing `h-8` or `rounded-(--neba-radius-md)` into a component, check whether the table already says it.
 
-**A gap between a component's children is `spacing`**: a number on Tailwind's spacing scale, turned into a length by `spacingValue` in `internal/grid.ts`. Flex, GridContainer, ScrollZone, Form, Fieldset, RadioGroup and List all take it. The library's own field controls carry no outer margin, so how far apart a column of fields stands is always the container's call. The `spacing` in `NebaProvider`'s `defaults` is the gap between fields and nothing else: only Form and Fieldset pass `'spacing'` to `useStyleDefaults`. A RadioGroup's options and a List's rows are a shorter distance than two fields, and a layout gutter is not a form's, so the others take the prop alone.
+**A gap between a component's children is `spacing`**: a number on Tailwind's spacing scale, turned into a length by `spacingValue` in `internal/grid.ts`. Flex, GridContainer, ScrollZone, Form, Fieldset, RadioGroup, CheckboxGroup and List all take it. The library's own field controls carry no outer margin, so how far apart a column of fields stands is always the container's call. The `spacing` in `NebaProvider`'s `defaults` is the gap between fields and nothing else: only Form and Fieldset pass `'spacing'` to `useStyleDefaults`. A RadioGroup's or a CheckboxGroup's options and a List's rows are a shorter distance than two fields, and a layout gutter is not a form's, so the others take the prop alone.
 
 ### Internal modules
 
@@ -142,7 +142,7 @@ The same rule applies to the values behind those names, which is what `src/inter
 
 | Module | What it holds |
 | --- | --- |
-| `button-group.ts`, `menu.ts` | The contexts a group and a menu share with their rows |
+| `button-group.ts`, `checkbox-group.ts`, `menu.ts` | The contexts a group and a menu share with their rows |
 | `sizer.tsx` | `WidthSizer`, which pins a control to its widest value |
 | `responsive.ts` | The table behind every prop that changes at a breakpoint |
 | `progress.ts`, `icons.tsx` | The progress arithmetic, `thresholdColor`, and the shared glyphs |
@@ -171,6 +171,8 @@ The same rule applies to the values behind those names, which is what `src/inter
 #### `internal/button-group.ts` and `internal/menu.ts`
 
 `src/internal/button-group.ts` holds the context `ButtonGroup` provides and `Button` reads as a fallback — and `ToggleGroup` provides and `Toggle` reads, because it is the same six values and a second context spelled identically would only be a second chance to disagree. It lives in `internal/` so the two components do not import each other; `List`, `Accordion` and `Tabs` have the same arrangement but keep their context in their own file, because each is a parent and its rows in one file. `src/internal/menu.ts` is the exception that proves the rule: `Menu`, `ContextMenu`, `Menubar` and every row read the same context, and a submenu is a menu inside a menu, so four components need it and none of them should have to import the others.
+
+`src/internal/checkbox-group.ts` is `button-group.ts`'s arrangement for a Checkbox and the CheckboxGroup around it, with two differences. Every field is settled by the group, and `invalid` and `disabled` beat the Checkbox's own props rather than losing to them, because a question answered wrongly is wrong in every option. It also carries the group's `name`: Base UI's group takes its name from the Field around it, and each Neba Checkbox draws a Field of its own, so without it the inputs reach a native submit unnamed.
 
 #### `internal/sizer.tsx`
 
@@ -489,7 +491,7 @@ docs/{ko,en}/
 
 The groups are folders, and which one a component belongs in is decided by what it does rather than by what it looks like:
 
-- **`inputs`** — the reader acts on it. Button, IconButton, ButtonGroup, SegmentedButton, Toggle, ToggleGroup, Form, Fieldset, TextField, NumberField, OtpField, Select, Combobox, Checkbox, RadioGroup, Switch, Slider, Menu, Menubar, NavigationMenu, CommandPalette, FilePicker, Transfer, TreeSelect, Pagination, Rating, ColorPicker, Calendar, DatePicker, TimePicker, DateTimePicker, DateRangePicker, BottomNavigation, FloatingBottomNavigation, FloatingActionButton.
+- **`inputs`** — the reader acts on it. Button, IconButton, ButtonGroup, SegmentedButton, Toggle, ToggleGroup, Form, Fieldset, TextField, NumberField, OtpField, Select, Combobox, Checkbox, CheckboxGroup, RadioGroup, Switch, Slider, Menu, Menubar, NavigationMenu, CommandPalette, FilePicker, Transfer, TreeSelect, Pagination, Rating, ColorPicker, Calendar, DatePicker, TimePicker, DateTimePicker, DateRangePicker, BottomNavigation, FloatingBottomNavigation, FloatingActionButton.
 - **`display`** — it shows something and nothing more. Typography, TextLink, Blockquote, Highlight, Divider, Chip, Badge, Avatar, AppLogo, Icon, Image, Gallery, Shortcut, List, DataList, Table, DataTable, CodeBlock, Timeline, Breadcrumb, Anchor, TreeView, VisuallyHidden.
 - **`charts`** — it draws numbers. Statistic, Sparkline, LineChart, AreaChart, BarChart, PieChart, GaugeChart, ScatterChart, HeatmapChart, TimelineChart. Statistic lives here rather than in `display` because what a reader is looking for is not "a component that shows a value" but "the place the charts are", and a number with a delta on it is the smallest chart on the page. The group is also what the shared data model is documented against: every one of them takes the same `series`/`data`, so the pages cross-reference one definition rather than each restating it.
 - **`feedback`** — it says what happened, or what is happening. Alert, Dialog, Confirm, Popconfirm, Toast, Tooltip, Overlay, ProgressLinear, ProgressCircular, ProgressBox, Meter, Skeleton, Empty, Tour.

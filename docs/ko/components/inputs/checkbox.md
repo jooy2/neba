@@ -21,7 +21,7 @@ import { Checkbox } from 'neba';
 
 `label` · `description` · `error`는 `children`이 아니라 prop입니다. `children`은 받지 않습니다.
 
-즉시 효력이 생기는 설정이라면 [Switch](./switch)를 쓰세요. Checkbox는 저장 버튼과 함께 제출되는 값입니다.
+즉시 효력이 생기는 설정이라면 [Switch](./switch)를 쓰세요. Checkbox는 저장 버튼과 함께 제출되는 값입니다. 한 질문에 답하는 체크박스 여러 개는 [CheckboxGroup](./checkbox-group)에 넣으세요. 묶음 전체가 값 하나와 라벨을 갖고, 선택지끼리의 간격으로 놓입니다.
 
 ## 예시
 
@@ -41,7 +41,7 @@ import { Checkbox } from 'neba';
 
 ### indeterminate
 
-하위 항목의 상태가 서로 다를 때 부모 Checkbox에 쓰는 세 번째 겉모습입니다. 값 자체는 여전히 켜짐 또는 꺼짐이며, `indeterminate`는 표시에만 관여합니다.
+하위 항목의 상태가 서로 다를 때 부모 Checkbox에 쓰는 세 번째 겉모습입니다. 값 자체는 여전히 켜짐 또는 꺼짐이며, `indeterminate`는 표시에만 관여합니다. [CheckboxGroup](./checkbox-group) 안에서는 `parent`를 단 Checkbox가 이 상태를 스스로 계산합니다.
 
 <Demo src="checkbox/indeterminate">
 
