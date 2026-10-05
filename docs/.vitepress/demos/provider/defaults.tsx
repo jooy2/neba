@@ -1,9 +1,8 @@
-import { Button, Checkbox, NebaProvider, Select, TextField } from 'neba';
+import { Button, Checkbox, Fieldset, NebaProvider, Select, TextField } from 'neba';
 
 function Form({ heading }: { heading: string }) {
   return (
-    <div className="flex w-56 flex-col gap-3">
-      <p className="text-sm font-medium text-(--neba-fg)">{heading}</p>
+    <Fieldset legend={heading} className="w-56">
       <TextField fullWidth label="Project" placeholder="neba" />
       <Select
         fullWidth
@@ -16,7 +15,7 @@ function Form({ heading }: { heading: string }) {
       />
       <Checkbox label="Deploy on push" />
       <Button fullWidth>Create</Button>
-    </div>
+    </Fieldset>
   );
 }
 
@@ -31,6 +30,10 @@ export default function ProviderDefaults() {
 
       <NebaProvider defaults={{ labelPlacement: 'notch' }}>
         <Form heading="labelPlacement notch" />
+      </NebaProvider>
+
+      <NebaProvider defaults={{ spacing: 7 }}>
+        <Form heading="spacing 7" />
       </NebaProvider>
     </div>
   );

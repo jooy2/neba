@@ -56,6 +56,16 @@ import { Radio, RadioGroup } from 'neba';
 
 </Demo>
 
+### spacing
+
+option 사이의 간격입니다. Tailwind 간격 스케일이라 `4`는 `1rem`이고, 가로 group이 줄바꿈되면 줄 사이도 같은 간격으로 벌어집니다. 주지 않으면 세로 group은 `2`(`0.5rem`), 가로 group은 같은 줄에서 `5`, 줄 사이 `2`입니다. [NebaProvider](../../guide/provider)의 `defaults`에 준 `spacing`은 서로 다른 field 사이의 간격이므로 여기에는 닿지 않습니다.
+
+<Demo src="radio-group/spacing">
+
+<<< @/.vitepress/demos/radio-group/spacing.tsx
+
+</Demo>
+
 ### disabled · readOnly
 
 그룹 전체에도, 개별 `Radio`에도 지정할 수 있습니다. 그룹에 지정하면 모든 선택지에 전달됩니다.
@@ -71,7 +81,7 @@ import { Radio, RadioGroup } from 'neba';
 group과 개별 option은 따로 스타일합니다. 둘은 서로 다른 컴포넌트이기 때문입니다. RadioGroup의 `classNames`는 `label`, `control`, `description`, `error`를 받고, 여기서 `control`은 option들을 담아 가로·세로 방향을 지고 있는 요소입니다. Radio의 `classNames`는 `label`, `control`, `indicator`, `description`을 받고, 여기서 `control`은 점입니다.
 
 ```tsx
-<RadioGroup label="Plan" classNames={{ control: 'gap-6' }}>
+<RadioGroup label="Plan" classNames={{ control: 'ps-6' }}>
   <Radio value="team" label="Team" classNames={{ control: 'rounded-sm' }} />
 </RadioGroup>
 ```

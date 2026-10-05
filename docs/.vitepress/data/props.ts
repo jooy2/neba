@@ -3755,8 +3755,16 @@ export const propTables: Record<string, PropRow[]> = {
       default: "'md'",
       shared: true,
       description: {
-        ko: 'children 사이의 간격. form은 세로 열이고, 이것이 어느 사다리 위에 쌓이는지를 정합니다',
-        en: 'The gap between the children. A form is a stack, and this is which rung it stacks on'
+        ko: 'spacing이 없을 때 children 사이의 간격. form은 세로 열이고, 이것이 어느 사다리 위에 쌓이는지를 정합니다',
+        en: 'The gap between the children when spacing is not given. A form is a stack, and this is which rung it stacks on'
+      }
+    },
+    {
+      name: 'spacing',
+      type: 'number',
+      description: {
+        ko: 'children 사이의 간격을 정확한 길이로 정합니다. Tailwind 간격 스케일이라 5는 1.25rem입니다. size가 고르는 간격 대신 쓰이고, NebaProvider의 defaults로 모든 Form에 한 번에 정할 수 있습니다',
+        en: "The gap between the children as an exact length, on Tailwind's spacing scale: 5 is 1.25rem. Takes over from the gap size picks, and NebaProvider's defaults can set it for every Form"
       }
     },
     {
@@ -3795,8 +3803,16 @@ export const propTables: Record<string, PropRow[]> = {
       default: "'md'",
       shared: true,
       description: {
-        ko: 'legend의 타입 스케일과 컨트롤 사이의 간격. 컨트롤 자체에는 닿지 않습니다',
-        en: 'The type scale of the legend and the gap between the controls. It does not reach the controls themselves'
+        ko: 'legend의 타입 스케일과, spacing이 없을 때 컨트롤 사이의 간격. 컨트롤 자체에는 닿지 않습니다',
+        en: 'The type scale of the legend, and the gap between the controls when spacing is not given. It does not reach the controls themselves'
+      }
+    },
+    {
+      name: 'spacing',
+      type: 'number',
+      description: {
+        ko: '컨트롤 사이의 간격을 정확한 길이로 정합니다. Tailwind 간격 스케일이라 5는 1.25rem입니다. size가 고르는 간격 대신 쓰이고 legend의 타입 스케일은 그대로 둡니다. NebaProvider의 defaults로 모든 Fieldset에 한 번에 정할 수 있습니다',
+        en: "The gap between the controls as an exact length, on Tailwind's spacing scale: 5 is 1.25rem. Takes over from the gap size picks and leaves the legend's type scale alone. NebaProvider's defaults can set it for every Fieldset"
       }
     },
     {
@@ -5253,6 +5269,14 @@ export const propTables: Record<string, PropRow[]> = {
       description: {
         ko: '옵션이 쌓이는 방향. 세로가 기본입니다. 가로는 라벨이 길어지는 순간 읽을 수 없어집니다',
         en: 'Which way the options stack. Vertical by default: a row breaks the moment one label is long'
+      }
+    },
+    {
+      name: 'spacing',
+      type: 'number',
+      description: {
+        ko: '옵션 사이의 간격. Tailwind 간격 스케일이라 3은 0.75rem이며, 가로 그룹이 줄바꿈될 때 줄 사이에도 같은 길이가 쓰입니다. 주지 않으면 세로 그룹은 2, 가로 그룹은 같은 줄에서 5, 줄 사이 2입니다. NebaProvider의 spacing은 읽지 않습니다',
+        en: "The gap between the options, on Tailwind's spacing scale: 3 is 0.75rem. A horizontal group that wraps puts its lines the same distance apart. Left out, a vertical group is 2 apart, and a horizontal one 5 along the row and 2 between lines. NebaProvider's spacing does not reach it"
       }
     },
     ...fieldProps,
@@ -7613,6 +7637,14 @@ export const propTables: Record<string, PropRow[]> = {
       description: {
         ko: '행 사이를 여백 대신 하이라인으로 나눕니다. 들리는 것보다 많이 바뀝니다. 선이 시트 양끝까지 닿아야 하므로 목록은 안쪽 여백을, 행은 둥근 모서리를 내놓습니다',
         en: 'Separates the rows with a hairline instead of space. It changes more than it sounds like: the rules have to reach both edges, so the list gives up its inner padding and the rows give up their corners'
+      }
+    },
+    {
+      name: 'spacing',
+      type: 'number',
+      description: {
+        ko: '행 사이의 간격. Tailwind 간격 스케일이라 1은 0.25rem입니다. 주지 않으면 행이 맞닿습니다. dividers가 있으면 선이 행을 나누므로 무시됩니다',
+        en: "The gap between the rows, on Tailwind's spacing scale: 1 is 0.25rem. Left out, the rows touch. Ignored with dividers, where the rule is what separates the rows"
       }
     },
     {

@@ -56,6 +56,16 @@ Each option can carry a sentence. However many lines the description takes, the 
 
 </Demo>
 
+### spacing
+
+The gap between the options, on Tailwind's spacing scale: `4` is `1rem`. A horizontal group that wraps puts its lines the same distance apart. Left out, a vertical group is `2` (`0.5rem`) apart, and a horizontal one `5` along the row and `2` between lines. The `spacing` in a [NebaProvider](../../guide/provider)'s `defaults` does not reach it, because that is the gap between separate fields.
+
+<Demo src="radio-group/spacing">
+
+<<< @/.vitepress/demos/radio-group/spacing.tsx
+
+</Demo>
+
 ### disabled · readOnly
 
 Both can be set on the group or on an individual `Radio`. On the group, they reach every option.
@@ -71,7 +81,7 @@ Both can be set on the group or on an individual `Radio`. On the group, they rea
 The group and one option are styled separately, because they are two components. On RadioGroup, `classNames` takes `label`, `control`, `description` and `error`, where `control` is the element holding the options: the one carrying the row or column direction. On Radio it takes `label`, `control`, `indicator` and `description`, where `control` is the dot.
 
 ```tsx
-<RadioGroup label="Plan" classNames={{ control: 'gap-6' }}>
+<RadioGroup label="Plan" classNames={{ control: 'ps-6' }}>
   <Radio value="team" label="Team" classNames={{ control: 'rounded-sm' }} />
 </RadioGroup>
 ```

@@ -15,9 +15,16 @@ import {
   Chip,
   colorSchemeScript,
   DatePicker,
+  Fieldset,
+  Flex,
+  Form,
   LineChart,
+  List,
+  ListItem,
   NebaProvider,
   ProgressBox,
+  Radio,
+  RadioGroup,
   Select,
   TextField,
   Toggle,
@@ -255,6 +262,69 @@ describe('defaults', () => {
     );
 
     expect(screen.container.querySelector('[labelPlacement], [labelplacement]')).toBeNull();
+  });
+
+  // How far apart a product stands its fields is one decision, made once.
+  it('stands the fields of every Form and Fieldset the product’s spacing apart', async () => {
+    const screen = await render(
+      <NebaProvider defaults={{ spacing: 6 }}>
+        <Form aria-label="Sign up" size="xs">
+          <TextField label="Email" />
+        </Form>
+        <Fieldset legend="Address">
+          <TextField label="Street" />
+        </Fieldset>
+      </NebaProvider>
+    );
+    const form = screen.getByRole('form').element() as HTMLElement;
+    const group = screen.getByRole('group', { name: 'Address' }).element() as HTMLElement;
+
+    expect(form.style.gap).toBe('1.5rem');
+    expect(form).not.toHaveClass('gap-1.5');
+    expect(group.style.gap).toBe('1.5rem');
+  });
+
+  it('loses the spacing to the call site', async () => {
+    const screen = await render(
+      <NebaProvider defaults={{ spacing: 6 }}>
+        <Form aria-label="Sign up" spacing={2}>
+          <TextField label="Email" />
+        </Form>
+      </NebaProvider>
+    );
+
+    expect((screen.getByRole('form').element() as HTMLElement).style.gap).toBe('0.5rem');
+  });
+
+  // The options of one question and the rows of a list are a different
+  // distance from two fields, and a layout's gutter is not a form's at all.
+  it('leaves radio options, list rows and layout gutters on their own spacing', async () => {
+    const screen = await render(
+      <>
+        <NebaProvider defaults={{ spacing: 6 }}>
+          <RadioGroup label="Plan">
+            <Radio value="team" label="Team" />
+          </RadioGroup>
+          <List>
+            <ListItem>Production</ListItem>
+          </List>
+          <Flex data-testid="inside">
+            <span>a</span>
+          </Flex>
+          <Chip>tag</Chip>
+        </NebaProvider>
+        <Flex data-testid="outside">
+          <span>a</span>
+        </Flex>
+      </>
+    );
+
+    expect((screen.getByRole('radiogroup').element() as HTMLElement).style.gap).toBe('');
+    expect((screen.getByRole('list').element() as HTMLElement).style.gap).toBe('');
+    expect(screen.getByTestId('inside').element().getAttribute('style')).toBe(
+      screen.getByTestId('outside').element().getAttribute('style')
+    );
+    expect(screen.container.querySelector('[spacing]')).toBeNull();
   });
 });
 
@@ -595,6 +665,20 @@ describe('nesting', () => {
     );
 
     expect(screen.container.querySelector('.neba-notch label')).toHaveTextContent('Name');
+  });
+
+  it('keeps the outer spacing inside a provider that sets something else', async () => {
+    const screen = await render(
+      <NebaProvider defaults={{ spacing: 7 }}>
+        <NebaProvider defaults={{ size: 'sm' }}>
+          <Form aria-label="Sign up">
+            <TextField label="Email" />
+          </Form>
+        </NebaProvider>
+      </NebaProvider>
+    );
+
+    expect((screen.getByRole('form').element() as HTMLElement).style.gap).toBe('1.75rem');
   });
 
   // The merge has to keep both halves: the outer size and the inner density.

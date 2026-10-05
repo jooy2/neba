@@ -42,11 +42,21 @@ legend는 안에 있는 모든 컨트롤의 접근 가능한 이름이 됩니다
 
 ### size
 
-`size`는 legend의 타입 스케일과 컨트롤이 놓이는 간격입니다. 컨트롤 자체에는 닿지 않습니다. `sm` field들의 묶음은 `sm` field로 직접 쓰면 됩니다.
+`size`는 legend의 타입 스케일이고, `spacing`이 없으면 컨트롤이 놓이는 간격도 정합니다. 컨트롤 자체에는 닿지 않습니다. `sm` field들의 묶음은 `sm` field로 직접 쓰면 됩니다.
 
 <Demo src="fieldset/sizes">
 
 <<< @/.vitepress/demos/fieldset/sizes.tsx
+
+</Demo>
+
+### spacing
+
+컨트롤 사이의 간격을 정확한 길이로 정합니다. Tailwind 간격 스케일이라 `2`는 `0.5rem`입니다. legend는 `size`가 준 타입 스케일을 그대로 씁니다. 체크박스를 세로로 늘어놓을 때가 쓸 만한 경우입니다. 옵션은 서로 다른 field보다 가까이 붙어 있어야 한 묶음으로 읽힙니다. [NebaProvider](../../guide/provider)의 `defaults`에 `spacing`을 주면 모든 Fieldset과 [Form](./form)에 한 번에 적용됩니다.
+
+<Demo src="fieldset/spacing">
+
+<<< @/.vitepress/demos/fieldset/spacing.tsx
 
 </Demo>
 

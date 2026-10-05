@@ -24,7 +24,7 @@ import { Button, Form, TextField } from 'neba';
 
 `<form>`의 모든 속성이 그대로 전달됩니다. 이벤트 대신 값을 받는 `onSubmit`만 예외입니다. 이것은 form *라이브러리*가 아닙니다. 스키마도, resolver도, field array도 없습니다. 그런 것이 필요한 프로젝트는 쓰던 것을 그대로 쓰고 결과를 `errors`로 넘기면 됩니다. 이 컴포넌트는 그 이음매를 중심으로 설계되었습니다.
 
-children은 `size`가 정한 간격의 세로 열로 놓입니다. 다른 배치가 필요하면 안에 [Grid](../layout/grid)나 [Fieldset](./fieldset)을 두세요.
+children은 세로 열로 놓이고, 간격은 `size`가 정하거나 `spacing`으로 직접 줍니다. 다른 배치가 필요하면 안에 [Grid](../layout/grid)나 [Fieldset](./fieldset)을 두세요.
 
 ## 예시
 
@@ -49,6 +49,16 @@ children은 `size`가 정한 간격의 세로 열로 놓입니다. 다른 배치
 <Demo src="form/errors">
 
 <<< @/.vitepress/demos/form/errors.tsx
+
+</Demo>
+
+### spacing
+
+children 사이의 간격을 정확한 길이로 정합니다. Tailwind 간격 스케일이라 `7`은 `gap-7`과 같은 `1.75rem`입니다. 주지 않으면 `size`를 따르고, `md`에서는 `0.75rem`입니다. [NebaProvider](../../guide/provider)에 <code v-pre>defaults={{ spacing: 7 }}</code>을 주면 모든 Form과 [Fieldset](./fieldset)에 한 번에 적용되고, Form에 직접 준 `spacing`이 그보다 우선합니다.
+
+<Demo src="form/spacing">
+
+<<< @/.vitepress/demos/form/spacing.tsx
 
 </Demo>
 

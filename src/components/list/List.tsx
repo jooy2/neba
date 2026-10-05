@@ -17,6 +17,7 @@ import {
   surfaceSlots,
   transitionClasses
 } from '../../internal/styles.js';
+import { spacingValue } from '../../internal/grid.js';
 import type { NebaDensity, NebaElevation, NebaSize, NebaStyleProps } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
 
@@ -62,6 +63,15 @@ export interface ListProps
    * @default false
    */
   dividers?: boolean;
+  /**
+   * The gap between the rows, on Tailwind's spacing scale: `1` is `0.25rem`,
+   * the same step `gap-1` is. Left out, the rows touch, and the padding inside
+   * each one is what keeps their text apart.
+   *
+   * Ignored with `dividers`, where the rule is what separates the rows: a rule
+   * with a gap on either side of it is a line floating between two tiles.
+   */
+  spacing?: number;
   /**
    * Renders something other than a `<ul>` — `render={<ol />}` for a list where
    * the order is the point. Base UI's own escape hatch.
@@ -184,6 +194,7 @@ export const List = React.forwardRef<HTMLUListElement, ListProps>(function List(
     density = 'default',
     elevation = 0,
     dividers = false,
+    spacing,
     render,
     className,
     style,
@@ -214,7 +225,11 @@ export const List = React.forwardRef<HTMLUListElement, ListProps>(function List(
       // one-line fix, and it costs nothing when the reset is not there.
       role: 'list',
       className: classNames,
-      style: { ...surfaceSlots(color, elevation), ...style },
+      style: {
+        ...surfaceSlots(color, elevation),
+        ...(spacing === undefined || dividers ? null : { gap: spacingValue(spacing) }),
+        ...style
+      },
       children,
       ...props
     }

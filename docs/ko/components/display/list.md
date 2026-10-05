@@ -46,6 +46,16 @@ import { List, ListItem } from 'neba';
 
 </Demo>
 
+### spacing
+
+기본으로 행은 서로 맞닿고, 각 행 안쪽의 여백이 글자 사이를 띄웁니다. `spacing`을 주면 행 사이에 간격이 생깁니다. Tailwind 간격 스케일이라 `1`은 `0.25rem`이고, 이 정도면 hover되거나 선택된 타일이 옆 행에 붙어 보이지 않습니다. `dividers`가 있으면 선이 행을 나누므로 무시됩니다.
+
+<Demo src="list/spacing">
+
+<<< @/.vitepress/demos/list/spacing.tsx
+
+</Demo>
+
 ### variant
 
 [Card](../surfaces/card) 안에 넣을 때는 `variant="text"`를 쓰세요. Card가 이미 sheet이므로 테두리가 겹치지 않습니다.

@@ -19,7 +19,7 @@ It renders no element of its own. Three jobs are together here because all three
 
 ## defaults
 
-Five axes: `size`, `density`, `variant`, `locale` and `labelPlacement`. Writing `size="sm"` at four hundred call sites is the problem this exists to end.
+Six axes: `size`, `density`, `variant`, `locale`, `labelPlacement` and `spacing`. Writing `size="sm"` at four hundred call sites is the problem this exists to end.
 
 <Demo src="provider/defaults">
 
@@ -29,11 +29,12 @@ Five axes: `size`, `density`, `variant`, `locale` and `labelPlacement`. Writing 
 
 A call site still wins. The order is **the caller, then the provider, then the component's own default**, so a `<Button size="xl">` inside a `size="xs"` provider is `xl`, and a component with no `size` prop is untouched. A `ButtonGroup` or `ToggleGroup` sits between the caller and the provider: a Button in a `size="lg"` group under a `size: 'sm'` provider is `lg`.
 
-### The five axes
+### The six axes
 
 |  |  |
 | --- | --- |
 | `size` `density` `variant` `locale` `labelPlacement` | The right value is a property of the product. A dense application is dense everywhere, a Korean one is Korean everywhere, and a form puts all its labels in one place. `labelPlacement` reaches the ten fields that draw a shell: TextField, NumberField, Select, Combobox, DatePicker, TimePicker, DateTimePicker, DateRangePicker, ColorPicker and TreeSelect. |
+| `spacing` | The gap between fields, on Tailwind's spacing scale: `7` is `1.75rem`. It reaches the two components that stack fields, [Form](../components/inputs/form) and [Fieldset](../components/inputs/fieldset), and takes over from the gap their `size` picks. The options of a [RadioGroup](../components/inputs/radio-group) and the rows of a [List](../components/display/list) take a `spacing` of their own and do not read this one: options that answer one question sit closer together than two questions do. Flex and GridContainer are layout, and do not read it either. |
 | `color` | **Not defaultable.** A component's colour default is often semantic. An [Alert](../components/feedback/alert) is `info` and a [Popconfirm](../components/feedback/popconfirm) is `danger` because severity carries meaning, and one global override would silently repaint those into something that means something else. |
 | `elevation` | **Not defaultable.** A shadow is opt-in per surface, which the [design language](../design/design-language) is explicit about. An application-wide one is the moulded-plastic look the whole thing is against. |
 

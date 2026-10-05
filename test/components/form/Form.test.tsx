@@ -44,6 +44,40 @@ describe('Form', () => {
 
       expect(screen.getByRole('form').element()).toHaveClass('gap-4');
     });
+
+    it('stands its children `spacing` apart instead', async () => {
+      const screen = await render(
+        <Form aria-label="Sign up" spacing={8}>
+          <TextField label="Email" name="email" />
+        </Form>
+      );
+      const element = screen.getByRole('form').element() as HTMLElement;
+
+      expect(element.style.gap).toBe('2rem');
+      expect(element).not.toHaveClass('gap-4');
+    });
+
+    it('takes a spacing of 0, and keeps the style it was handed beside the gap', async () => {
+      const screen = await render(
+        <Form aria-label="Sign up" spacing={0} style={{ paddingTop: '3px' }}>
+          <TextField label="Email" name="email" />
+        </Form>
+      );
+      const element = screen.getByRole('form').element() as HTMLElement;
+
+      expect(element.style.gap).toBe('0rem');
+      expect(element.style.paddingTop).toBe('3px');
+    });
+
+    it('leaves `spacing` off the element', async () => {
+      const screen = await render(
+        <Form aria-label="Sign up" spacing={5}>
+          <TextField label="Email" name="email" />
+        </Form>
+      );
+
+      expect(screen.getByRole('form').element()).not.toHaveAttribute('spacing');
+    });
   });
 
   describe('submitting', () => {

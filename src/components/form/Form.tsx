@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { Form as BaseUIForm } from '@base-ui/react/form';
 import { cx, sheetSectionGapClasses } from '../../internal/styles.js';
+import { spacingValue } from '../../internal/grid.js';
 import type { NebaSize } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
 
@@ -44,11 +45,17 @@ export interface FormProps extends Omit<React.ComponentPropsWithoutRef<'form'>, 
    */
   onSubmit?: (values: Record<string, unknown>) => void;
   /**
-   * The gap between the form's children. A form is a stack, and this is which
-   * rung of the ladder it stacks on.
+   * The gap between the form's children, when `spacing` is not given. A form is
+   * a stack, and this is which rung of the ladder it stacks on.
    * @default 'md'
    */
   size?: NebaSize;
+  /**
+   * The gap between the form's children as an exact length, on Tailwind's
+   * spacing scale: `5` is `1.25rem`, the same step `gap-5` is. Takes over from
+   * the gap `size` picks, and a `NebaProvider` can set it for every Form.
+   */
+  spacing?: number;
   children?: React.ReactNode;
 }
 
@@ -107,10 +114,12 @@ export const Form = React.forwardRef<HTMLFormElement, FormProps>(function Form(r
     errors,
     onSubmit,
     size = 'md',
+    spacing,
     className,
+    style,
     children,
     ...props
-  } = useStyleDefaults(rawProps, ['size']);
+  } = useStyleDefaults(rawProps, ['size', 'spacing']);
   return (
     <BaseUIForm
       ref={ref}
@@ -125,7 +134,12 @@ export const Form = React.forwardRef<HTMLFormElement, FormProps>(function Form(r
           ? (values, details) => onSubmit(withRepeated(values, details.event.target))
           : undefined
       }
-      className={cx('flex flex-col', sheetSectionGapClasses[size], className ?? '')}
+      className={cx(
+        'flex flex-col',
+        spacing === undefined ? sheetSectionGapClasses[size] : '',
+        className ?? ''
+      )}
+      style={spacing === undefined ? style : { gap: spacingValue(spacing), ...style }}
       {...props}
     >
       {children}

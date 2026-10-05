@@ -42,11 +42,21 @@ The one thing only a real `<fieldset>` can do: it reaches every control inside, 
 
 ### size
 
-`size` is the type scale of the legend and the gap the controls stand at. It does not reach the controls themselves: a group of `sm` fields is written as `sm` fields.
+`size` is the type scale of the legend and, unless `spacing` is given, the gap the controls stand at. It does not reach the controls themselves: a group of `sm` fields is written as `sm` fields.
 
 <Demo src="fieldset/sizes">
 
 <<< @/.vitepress/demos/fieldset/sizes.tsx
+
+</Demo>
+
+### spacing
+
+The gap between the controls as an exact length, on Tailwind's spacing scale: `2` is `0.5rem`. The legend keeps the type scale `size` gives it. A column of checkboxes is one place to use it, since options read as a set when they sit closer together than separate fields. A `spacing` in a [NebaProvider](../../guide/provider)'s `defaults` reaches every Fieldset and [Form](./form) at once.
+
+<Demo src="fieldset/spacing">
+
+<<< @/.vitepress/demos/fieldset/spacing.tsx
 
 </Demo>
 

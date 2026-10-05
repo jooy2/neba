@@ -10,6 +10,7 @@ import {
   sheetSectionGapClasses,
   sheetTitleClasses
 } from '../../internal/styles.js';
+import { spacingValue } from '../../internal/grid.js';
 import type { NebaSize } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
 import { FieldsetDisabledContext, useFieldsetDisabled } from '../../internal/fieldset.js';
@@ -25,8 +26,19 @@ export interface FieldsetProps extends Omit<React.ComponentPropsWithoutRef<'fiel
   description?: React.ReactNode;
   /** Disables every control inside at once, the way a `<fieldset>` always has. */
   disabled?: boolean;
-  /** The type scale of the legend and the gap between the controls. @default 'md' */
+  /**
+   * The type scale of the legend, and the gap between the controls when
+   * `spacing` is not given.
+   * @default 'md'
+   */
   size?: NebaSize;
+  /**
+   * The gap between the controls as an exact length, on Tailwind's spacing
+   * scale: `5` is `1.25rem`, the same step `gap-5` is. Takes over from the gap
+   * `size` picks, leaves the legend's type scale alone, and a `NebaProvider` can
+   * set it for every Fieldset.
+   */
+  spacing?: number;
   children?: React.ReactNode;
 }
 
@@ -52,11 +64,13 @@ export const Fieldset = React.forwardRef<HTMLFieldSetElement, FieldsetProps>(
       description,
       disabled: disabledProp,
       size = 'md',
+      spacing,
       className,
+      style,
       children,
       'aria-describedby': describedBy,
       ...props
-    } = useStyleDefaults(rawProps, ['size']);
+    } = useStyleDefaults(rawProps, ['size', 'spacing']);
     // A group inside a disabled group is disabled too — the browser already
     // says so for a nested `<fieldset>`, and the fields inside it have to hear
     // the same thing, or they are drawn available and do nothing.
@@ -76,9 +90,10 @@ export const Fieldset = React.forwardRef<HTMLFieldSetElement, FieldsetProps>(
             // half: a fieldset is `min-width: min-content` by default, which is what
             // makes one holding a wide table refuse to shrink.
             'm-0 flex min-w-0 flex-col border-0 p-0',
-            sheetSectionGapClasses[size],
+            spacing === undefined ? sheetSectionGapClasses[size] : '',
             className ?? ''
           )}
+          style={spacing === undefined ? style : { gap: spacingValue(spacing), ...style }}
           // The description is the group's description and not part of its name.
           // Inside the legend it was both, so every control in the group was
           // introduced by a whole sentence.

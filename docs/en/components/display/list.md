@@ -46,6 +46,16 @@ import { List, ListItem } from 'neba';
 
 </Demo>
 
+### spacing
+
+Rows touch by default, and the padding inside each one keeps their text apart. `spacing` puts a gap between them, on Tailwind's spacing scale: `1` is `0.25rem`, enough that a hovered or selected tile no longer runs into its neighbour. It is ignored with `dividers`, where the rule is what separates the rows.
+
+<Demo src="list/spacing">
+
+<<< @/.vitepress/demos/list/spacing.tsx
+
+</Demo>
+
 ### variant
 
 Use `variant="text"` inside a [Card](../surfaces/card). The card is already a sheet, so the borders do not double up.

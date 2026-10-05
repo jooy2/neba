@@ -15,6 +15,7 @@ import {
   tickSizeClasses,
   transitionClasses
 } from '../../internal/styles.js';
+import { spacingValue } from '../../internal/grid.js';
 import type {
   NebaColor,
   NebaFieldSlot,
@@ -77,6 +78,17 @@ export interface RadioGroupProps extends Omit<
    * @default 'vertical'
    */
   orientation?: NebaOrientation;
+  /**
+   * The gap between the options, on Tailwind's spacing scale: `3` is
+   * `0.75rem`, the same step `gap-3` is. One length on both axes, so a
+   * horizontal group that wraps puts its lines as far apart as its options.
+   * Left out, a vertical group is `2` apart, and a horizontal one `5` along the
+   * row and `2` between the lines.
+   *
+   * Not read from a `NebaProvider`: the provider's `spacing` is the gap between
+   * fields, and the options of one field sit closer together than that.
+   */
+  spacing?: number;
   /** The question the options answer. Rendered as the group's legend. */
   label?: React.ReactNode;
   /** Helper text under the label. */
@@ -263,6 +275,7 @@ export const RadioGroup = React.forwardRef<HTMLDivElement, RadioGroupProps>(
       size = 'md',
       color = 'primary',
       orientation = 'vertical',
+      spacing,
       label,
       description,
       error,
@@ -336,11 +349,15 @@ export const RadioGroup = React.forwardRef<HTMLDivElement, RadioGroupProps>(
             readOnly={readOnly}
             className={cx(
               'flex',
-              orientation === 'horizontal'
-                ? 'flex-row flex-wrap gap-x-5 gap-y-2'
-                : 'flex-col gap-2',
+              orientation === 'horizontal' ? 'flex-row flex-wrap' : 'flex-col',
+              spacing === undefined
+                ? orientation === 'horizontal'
+                  ? 'gap-x-5 gap-y-2'
+                  : 'gap-2'
+                : '',
               classNames?.control
             )}
+            style={spacing === undefined ? undefined : { gap: spacingValue(spacing) }}
             {...props}
           >
             {children}

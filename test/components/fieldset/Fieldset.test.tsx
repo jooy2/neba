@@ -86,6 +86,33 @@ describe('Fieldset', () => {
     });
   });
 
+  describe('spacing', () => {
+    it('stands the controls on the size ladder', async () => {
+      const screen = await render(
+        <Fieldset legend="Address" size="xl">
+          <TextField label="Street" />
+        </Fieldset>
+      );
+
+      expect(screen.getByRole('group').element()).toHaveClass('gap-4');
+    });
+
+    it('stands them `spacing` apart instead, and keeps the legend on its size', async () => {
+      const screen = await render(
+        <Fieldset legend="Address" size="xl" spacing={2} style={{ paddingTop: '3px' }}>
+          <TextField label="Street" />
+        </Fieldset>
+      );
+      const element = screen.getByRole('group').element() as HTMLElement;
+
+      expect(element.style.gap).toBe('0.5rem');
+      expect(element.style.paddingTop).toBe('3px');
+      expect(element).not.toHaveClass('gap-4');
+      expect(screen.getByText('Address').element()).toHaveClass('text-[1.25rem]/[1.75rem]');
+      expect(element).not.toHaveAttribute('spacing');
+    });
+  });
+
   describe('disabled', () => {
     it('disables every control inside at once', async () => {
       const screen = await render(

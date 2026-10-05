@@ -261,6 +261,40 @@ describe('List', () => {
       expect(element.style.getPropertyValue('--n-elev')).toBe('var(--neba-shadow-3)');
     });
 
+    it('lets the rows touch until `spacing` stands them apart', async () => {
+      const screen = await render(
+        <List>
+          <ListItem>Production</ListItem>
+          <ListItem>Staging</ListItem>
+        </List>
+      );
+      const element = screen.getByRole('list').element() as HTMLElement;
+
+      expect(element.style.gap).toBe('');
+
+      await screen.rerender(
+        <List spacing={1} style={{ paddingTop: '3px' }}>
+          <ListItem>Production</ListItem>
+          <ListItem>Staging</ListItem>
+        </List>
+      );
+
+      expect(element.style.gap).toBe('0.25rem');
+      expect(element.style.paddingTop).toBe('3px');
+      expect(element).not.toHaveAttribute('spacing');
+    });
+
+    it('ignores `spacing` when the rows are ruled', async () => {
+      const screen = await render(
+        <List dividers spacing={2}>
+          <ListItem>Production</ListItem>
+          <ListItem>Staging</ListItem>
+        </List>
+      );
+
+      expect((screen.getByRole('list').element() as HTMLElement).style.gap).toBe('');
+    });
+
     it('is an outline list by default', async () => {
       const screen = await render(
         <List>

@@ -6,7 +6,7 @@ import type { NebaDensity, NebaLabelPlacement, NebaSize, NebaVariant } from '../
 /**
  * The prop values an application can set once instead of at every call site.
  *
- * Five, and the list is closed on purpose. These are the axes whose right value
+ * Six, and the list is closed on purpose. These are the axes whose right value
  * is a property of the *product* rather than of the control — a dense
  * application is dense everywhere, a Korean one is Korean everywhere, and a
  * form whose fields put their labels in two different places looks assembled
@@ -27,9 +27,21 @@ export interface NebaDefaults {
   locale?: string;
   /** Where every field-shaped component draws its label. */
   labelPlacement?: NebaLabelPlacement;
+  /**
+   * The gap a Form and a Fieldset stand their fields at, on Tailwind's spacing
+   * scale: `4` is `1rem`.
+   *
+   * Only those two read it. The options of a RadioGroup and the rows of a List
+   * take a `spacing` of their own, and they are a different distance: options
+   * that answer one question sit closer together than two questions do, so one
+   * number for both would push the options apart until they stopped reading as
+   * a set. Flex and GridContainer are layout, and a page-wide gutter would move
+   * every layout in the product.
+   */
+  spacing?: number;
 }
 
-/** Which of the five a given component actually accepts. */
+/** Which of the six a given component actually accepts. */
 export type DefaultableKey = keyof NebaDefaults;
 
 /**

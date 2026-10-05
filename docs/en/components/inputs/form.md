@@ -24,7 +24,7 @@ import { Button, Form, TextField } from 'neba';
 
 Every native `<form>` attribute passes through, apart from `onSubmit`, which is handed the values rather than the event. It is not a form _library_: there is no schema, no resolver and no field array here. A project that wants those keeps them and hands the result to `errors`, which is the seam this is built around.
 
-The children are laid out as a column with the gap `size` names. Put a [Grid](../layout/grid) or a [Fieldset](./fieldset) inside for anything else.
+The children are laid out as a column, with the gap `size` names or the one `spacing` gives. Put a [Grid](../layout/grid) or a [Fieldset](./fieldset) inside for anything else.
 
 ## Examples
 
@@ -49,6 +49,16 @@ Errors from outside the browser's own validation (a server, a form action, a sch
 <Demo src="form/errors">
 
 <<< @/.vitepress/demos/form/errors.tsx
+
+</Demo>
+
+### spacing
+
+The gap between the children as an exact length, on Tailwind's spacing scale: `7` is `1.75rem`, the same step `gap-7` is. Without it the gap follows `size`, `0.75rem` at `md`. Set it once for every Form and [Fieldset](./fieldset) with <code v-pre>defaults={{ spacing: 7 }}</code> on a [NebaProvider](../../guide/provider); a `spacing` on the Form itself still wins.
+
+<Demo src="form/spacing">
+
+<<< @/.vitepress/demos/form/spacing.tsx
 
 </Demo>
 
