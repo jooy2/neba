@@ -18,7 +18,7 @@ import { cdp, server } from 'vitest/browser';
 // Where the provider gives `cdp()` its `send`; the test config names only the
 // provider's context, which leaves the session's type empty.
 import type {} from '@vitest/browser-playwright';
-import { Button, Card, Pill } from 'neba';
+import { Button, Card, Pill, Switch } from 'neba';
 import standaloneCss from '../../src/standalone.css?inline';
 
 let sheet: HTMLStyleElement;
@@ -197,6 +197,8 @@ describe('prefers-reduced-transparency', () => {
           </Card>
           {/* A wash rather than a sheet, laid on the surface on its own. */}
           <Pill variant="text" title="Wash" data-testid="pill" />
+          {/* The off track is a groove, a wash too. */}
+          <Switch label="Track" />
           <div className="dark">
             <Card title="Dark" data-testid="dark">
               <Button>Dark</Button>
@@ -213,6 +215,7 @@ describe('prefers-reduced-transparency', () => {
       const surfaces = [
         ...cards,
         screen.getByTestId('pill').element(),
+        screen.getByRole('switch').element(),
         ...screen.container.querySelectorAll('button')
       ];
 

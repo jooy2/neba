@@ -165,12 +165,28 @@ const trackBaseClasses =
  * the light on. It is read straight off the token rather than through a slot,
  * because a groove is never dyed: the family arrives when the switch is on.
  */
+/**
+ * The off track where a reader asked for reduced transparency. The groove is a
+ * wash rather than a sheet, so with the blur gone a switch laid straight on a
+ * photograph or a paragraph showed it through the track. There the wash is
+ * laid on the page's surface as a layer of its own; the on track is a fill,
+ * which is already laid on it. Under the media query only, so that without the
+ * preference the track is exactly what it was.
+ */
+const offTrackBackingClasses =
+  '[@media(prefers-reduced-transparency:reduce)]:not-data-checked:bg-(--neba-backing) ' +
+  '[@media(prefers-reduced-transparency:reduce)]:not-data-checked:hover:bg-(--neba-backing) ' +
+  '[@media(prefers-reduced-transparency:reduce)]:not-data-checked:[background-blend-mode:overlay,normal,normal] ' +
+  '[@media(prefers-reduced-transparency:reduce)]:not-data-checked:[background-image:var(--neba-grain),var(--neba-sheen),linear-gradient(var(--neba-groove),var(--neba-groove))] ' +
+  '[@media(prefers-reduced-transparency:reduce)]:not-data-checked:hover:[background-image:var(--neba-grain),var(--neba-sheen),linear-gradient(var(--neba-groove-hover),var(--neba-groove-hover))]';
+
 const restTrackClasses =
   surfaceClasses +
   ' cursor-pointer bg-(--neba-groove) [border-color:var(--n-line)] ' +
   'hover:bg-(--neba-groove-hover) hover:[border-color:var(--n-line-hover)] ' +
   'data-[checked]:bg-(--n-fill) data-[checked]:[border-color:transparent] ' +
-  'data-[checked]:hover:bg-(--n-fill-hover)';
+  'data-[checked]:hover:bg-(--n-fill-hover) ' +
+  offTrackBackingClasses;
 
 const readOnlyTrackClasses =
   surfaceClasses +
