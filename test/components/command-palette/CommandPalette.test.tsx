@@ -3,7 +3,7 @@ import { render } from 'vitest-browser-react';
 import { userEvent } from 'vitest/browser';
 import { renderToString } from 'react-dom/server';
 import { hydrateRoot } from 'react-dom/client';
-import { CommandPalette, type CommandItem } from 'neba';
+import { CommandPalette, type CommandItem, type CommandPaletteSlot, type NebaSlots } from 'neba';
 import { sheetChunk } from '../../../src/components/command-palette/CommandPalette.js';
 import { readOS } from '../../../src/internal/keys.js';
 
@@ -356,15 +356,18 @@ describe('CommandPalette', () => {
       expect(screen.getByRole('dialog').element().querySelector('.slot-list')).not.toBeNull();
     });
 
-    /** Both render outside the sheet, so nothing written against it finds them. */
+    /**
+     * Both render outside the sheet, so nothing written against it finds them.
+     * The slots are typed with the union the package exports, so a caller who
+     * builds the object apart from the element can name its type.
+     */
     it('reaches the backdrop and the viewport', async () => {
+      const classNames: NebaSlots<CommandPaletteSlot> = {
+        backdrop: 'slot-backdrop',
+        viewport: 'slot-viewport'
+      };
       const screen = await render(
-        <CommandPalette
-          items={ITEMS}
-          shortcut={false}
-          defaultOpen
-          classNames={{ backdrop: 'slot-backdrop', viewport: 'slot-viewport' }}
-        />
+        <CommandPalette items={ITEMS} shortcut={false} defaultOpen classNames={classNames} />
       );
       const sheet = screen.getByRole('dialog').element();
 

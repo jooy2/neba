@@ -56,6 +56,8 @@ All exports grew 13.3 kB. About 3.6 kB of that is the code of the new chunks, wh
 
 - **`useToastActions()`: `add`, `close`, `update` and `promise` without the list of toasts.** `useToast` also returns `toasts`, which is a subscription, so every component that raised toasts through it rendered again whenever any toast was added, updated or closed. A component that only raises toasts can call `useToastActions` instead and is never drawn again for that. `useToast` is unchanged, and the `ToastActions` type is exported.
 
+- **`CommandPaletteSlot`, the type of the keys a `CommandPalette`'s `classNames` takes.** It was declared beside the component but not exported, so a slots object built apart from the element had no type to name. Import it with `import type { CommandPaletteSlot } from 'neba'`.
+
 ### Changed
 
 - **A `Combobox` filters its list only when the query, the options or `filter` change.** The functions it handed Base UI were new on every render, so every render of anything above it, a keystroke in another field of the same form included, ran the filter over every option again. A `filter` of your own is no longer called on a render that changes none of those, as long as it is the same function from one render to the next.
