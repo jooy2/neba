@@ -41,6 +41,8 @@ Both are milliseconds. A delay is what turns a set of fades into a sequence, and
 
 `mount` is the default and needs nothing from you. `visible` waits until the element is scrolled into view (once, unless `once` is off), and `threshold` is how much of it has to be on screen. `hover` runs while the pointer is on it, restarting on each entry, and keyboard focus counts as a pointer. `manual` runs nothing until `play` says so, and every `false` → `true` starts it over.
 
+Content in the first screen of a page should keep the default `mount`, or take `timeline="view"`. Both run from the stylesheet alone, while `visible` waits for the page's script to load and measure the element, so a heading or a picture above the fold that waits for it is drawn late.
+
 <Demo src="animate-fade/triggers">
 
 <<< @/.vitepress/demos/animate-fade/triggers.tsx
@@ -83,5 +85,5 @@ The step is per _child_, so what you pass matters: five children are five steps,
 
 ## Accessibility
 
-- A reduced-motion preference cuts the animation to its last frame, so content arriving is simply there and content leaving is gone. An element still waiting for its trigger is shown as it is, and is never left invisible.
+- A reduced-motion preference cuts the animation to its last frame, so content arriving is simply there and content leaving is gone. An element still waiting for its trigger is shown as it is, and is never left invisible. The same holds in a browser with scripting turned off.
 - The wrapper adds no role and no name; whatever is inside keeps its own.

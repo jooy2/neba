@@ -126,6 +126,8 @@
 
 - **An `Animate*` with `trigger="visible"` starts when its own box scrolls into view, wherever its first frame is.** The observer measured the element as drawn on its first frame, so a full-width `AnimateSlide` from the left or the right, or one inside a box with `overflow: hidden`, was never on screen and never started, and an element taller than the screen never showed the share `threshold` asked for and stayed invisible. While an entrance whose first frame cannot be seen waits, it is now drawn where it belongs, and carries `data-waiting`; on an element larger than the screen, `threshold` is a share of the screen. A slide with `fade={false}` inside a clipping box or a frame can still wait for good, since what it shows while it waits has to stay where it is.
 
+- **An `Animate*` waiting for its trigger is drawn as it ends when scripting is off.** An effect with `trigger="visible"`, `"hover"` or `"manual"` is paused on its first frame in the server's HTML, and only the script ever starts it, so with scripting off an entrance stayed invisible. It now shows its content, in Chrome and Edge 120 and Safari 17 and later. Content in the first screen of a page should keep `trigger="mount"` or take `timeline="view"`, which run from the stylesheet alone; a `visible` one is drawn only once the page's script has run.
+
 ## 1.18.1 (2026-10-07)
 
 ### Added

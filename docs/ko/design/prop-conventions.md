@@ -110,6 +110,8 @@ type NebaTransition = NebaAnimation | NebaTransitionOptions;
 
 `timeline="view"`를 쓰면 `duration`, `delay`, `repeat`, 그리고 모든 `trigger`가 무시됩니다. 스크롤이 재생하는 애니메이션에는 시간이 들어 있지 않고, 시작시키는 것은 스크롤 위치이기 때문입니다. `animation-timeline`이 없는 브라우저에서는 mount에서 한 번 재생되는 것으로 되돌아갑니다.
 
+`visible`, `hover`, `manual` 효과는 페이지 스크립트가 시작시킬 때까지 첫 프레임에서 기다립니다. 그래서 페이지 첫 화면의 콘텐츠에는 스타일시트만으로 재생되는 `mount`나 `timeline="view"`가 맞습니다. 스크립트를 끈 브라우저에서는 기다리던 효과가 끝난 모습으로 그려집니다.
+
 축소된 모션 설정에서는 라이브러리의 모든 효과가 마지막 프레임으로 바로 넘어갑니다. 어느 효과도 그것만으로 정보를 전달하지 않기 때문입니다.
 
 ## 상태 prop

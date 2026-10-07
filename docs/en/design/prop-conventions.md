@@ -110,6 +110,8 @@ Five more go on the eleven whose motion is a `@keyframes` on the element or on t
 
 `timeline="view"` costs `duration`, `delay`, `repeat` and every `trigger`: a scroll-driven animation has no time in it, and the scroll position is what starts it. Where the browser has no `animation-timeline` the effect falls back to running once on mount.
 
+A `visible`, `hover` or `manual` effect waits on its first frame until the page's script lets it go. Content in the first screen of a page should therefore keep `mount` or take `timeline="view"`, which run from the stylesheet alone. With scripting turned off, a waiting effect is drawn as it ends.
+
 A reduced-motion preference cuts every effect in the library to its last frame, and none of them is ever the only thing carrying a message.
 
 ## State props

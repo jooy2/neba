@@ -3086,6 +3086,21 @@
   rotate: none !important;
 }
 
+/*
+ * With scripting off, nothing will ever let a waiting effect go, so it is not
+ * held at all. An entrance waiting for `visible`, `hover` or `manual` sat on an
+ * invisible first frame for good; it is drawn as it ends instead, which is what
+ * the reduced-motion block below does for the same element. A browser that
+ * does not know `scripting` skips the block, and only a reader with scripting
+ * off could tell.
+ */
+@media (scripting: none) {
+  .neba-anim[data-state='paused'],
+  [data-state='paused'] .neba-anim {
+    animation: none;
+  }
+}
+
 /* Symmetric on purpose: a blink that ended anywhere but where it started would
    leave the element half drawn whenever the count ran out. */
 @keyframes neba-anim-blink {
