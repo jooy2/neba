@@ -1,4 +1,6 @@
+import * as React from 'react';
 import { describe, expect, it } from 'vitest';
+import { renderToString } from 'react-dom/server';
 import { render } from 'vitest-browser-react';
 import { Meter, NebaProvider } from 'neba';
 
@@ -133,6 +135,43 @@ describe('Meter', () => {
       const element = screen.getByRole('meter').element() as HTMLElement;
 
       expect(element.style.getPropertyValue('--n-fill')).toBe('var(--neba-success-fill)');
+    });
+  });
+
+  /*
+   * Base UI's label part told the root its id from a layout effect, so the
+   * root was named only in a second commit after every mount and every
+   * hydration, and a server render named nothing.
+   */
+  describe('label', () => {
+    it('is named by its label in the server render', () => {
+      const html = renderToString(<Meter value={40} label="Storage" />);
+      const page = new DOMParser().parseFromString(html, 'text/html');
+      const root = page.querySelector('[role="meter"]')!;
+      const label = page.getElementById(root.getAttribute('aria-labelledby') ?? '');
+
+      expect(label?.textContent).toBe('Storage');
+    });
+
+    it('is named by its label in the commit it mounts in', async () => {
+      let commits = 0;
+      const screen = await render(
+        <React.Profiler id="Meter" onRender={() => (commits += 1)}>
+          <Meter value={40} label="Storage" />
+        </React.Profiler>
+      );
+
+      await expect.element(screen.getByRole('meter', { name: 'Storage' })).toBeInTheDocument();
+      expect(commits).toBe(1);
+    });
+
+    it("leaves an aria-labelledby of the caller's in place", async () => {
+      const screen = await render(<Meter value={40} label="Storage" aria-labelledby="elsewhere" />);
+
+      expect(screen.container.querySelector('[role="meter"]')).toHaveAttribute(
+        'aria-labelledby',
+        'elsewhere'
+      );
     });
   });
 });

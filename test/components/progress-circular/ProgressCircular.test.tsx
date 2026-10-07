@@ -1,4 +1,6 @@
+import * as React from 'react';
 import { describe, expect, it } from 'vitest';
+import { renderToString } from 'react-dom/server';
 import { render } from 'vitest-browser-react';
 import { ProgressCircular } from 'neba';
 
@@ -139,6 +141,62 @@ describe('ProgressCircular', () => {
       await expect
         .element(screen.getByRole('progressbar', { name: 'Uploading' }))
         .toBeInTheDocument();
+    });
+  });
+
+  /*
+   * Base UI's label part told the root its id from a layout effect, so the
+   * root was named only in a second commit after every mount and every
+   * hydration, and a server render named nothing.
+   */
+  describe('label', () => {
+    it('is named by its label in the server render', () => {
+      const html = renderToString(<ProgressCircular value={40} label="Sync" />);
+      const page = new DOMParser().parseFromString(html, 'text/html');
+      const root = page.querySelector('[role="progressbar"]')!;
+      const label = page.getElementById(root.getAttribute('aria-labelledby') ?? '');
+
+      expect(label?.textContent).toBe('Sync');
+    });
+
+    it('is named by its label in the commit it mounts in', async () => {
+      let commits = 0;
+      const screen = await render(
+        <React.Profiler id="ProgressCircular" onRender={() => (commits += 1)}>
+          <ProgressCircular value={40} label="Sync" />
+        </React.Profiler>
+      );
+
+      await expect.element(screen.getByRole('progressbar', { name: 'Sync' })).toBeInTheDocument();
+      expect(commits).toBe(1);
+    });
+
+    it("leaves an aria-labelledby of the caller's in place", async () => {
+      const screen = await render(
+        <ProgressCircular value={40} label="Sync" aria-labelledby="elsewhere" />
+      );
+
+      expect(screen.container.querySelector('[role="progressbar"]')).toHaveAttribute(
+        'aria-labelledby',
+        'elsewhere'
+      );
+    });
+
+    // Base UI's label part carried the root's status, and the label drawn in
+    // its place carries the same one.
+    it('carries the status the root carries', async () => {
+      for (const [element, attribute] of [
+        [<ProgressCircular value={40} label="Sync" />, 'data-progressing'],
+        [<ProgressCircular value={100} label="Sync" />, 'data-complete'],
+        [<ProgressCircular value={null} label="Sync" />, 'data-indeterminate']
+      ] as const) {
+        const screen = await render(element);
+        const root = screen.getByRole('progressbar').element();
+
+        expect(root).toHaveAttribute(attribute, '');
+        expect(screen.getByText('Sync').element()).toHaveAttribute(attribute, '');
+        await screen.unmount();
+      }
     });
   });
 });

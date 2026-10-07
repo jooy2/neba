@@ -226,6 +226,35 @@ export function progressFraction(
 }
 
 /**
+ * The class a progress indicator's or a meter's label is drawn with.
+ *
+ * Each of the four draws its label itself rather than through Base UI's
+ * `Label` part. That part draws the same `<span role="presentation">`, and
+ * then tells the root its id from a layout effect, so the root only wrote
+ * `aria-labelledby` in a second commit after every mount and every hydration,
+ * and a server render named nothing. The id is known while rendering, from
+ * `useId`, so the component writes it on both elements in the first one.
+ */
+export const progressLabelClasses = 'min-w-0 truncate text-(--neba-fg)';
+
+/**
+ * The status attribute Base UI's progress parts carry, for the label a
+ * progress indicator draws itself: `data-indeterminate` without a fraction,
+ * `data-complete` at the top of the range, and `data-progressing` below it.
+ */
+export function progressStatusAttribute(
+  fraction: number | null,
+  value: number | null | undefined,
+  max: number
+): Record<string, ''> {
+  if (fraction === null || value === null || value === undefined) {
+    return { 'data-indeterminate': '' };
+  }
+
+  return value >= max ? { 'data-complete': '' } : { 'data-progressing': '' };
+}
+
+/**
  * What the value reads as, both on screen and to a screen reader.
  *
  * Without `format` it is the share of the range as a whole percent, computed

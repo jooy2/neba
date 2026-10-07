@@ -6,6 +6,7 @@ import {
   barThicknessClasses,
   progressAriaText,
   progressFraction,
+  progressLabelClasses,
   progressSlots,
   thresholdColor,
   type ProgressThickness
@@ -101,6 +102,8 @@ export const Meter = React.forwardRef<HTMLDivElement, MeterProps>(function Meter
     ...props
   } = useStyleDefaults(rawProps, ['size', 'locale']);
   const intlLocale = useIntlLocale(locale);
+  // The label's, written on the root in the same render: see `progressLabelClasses`.
+  const labelId = React.useId();
 
   const fraction = progressFraction(value, min, max);
   const family = thresholdColor(value, color, thresholds);
@@ -120,6 +123,7 @@ export const Meter = React.forwardRef<HTMLDivElement, MeterProps>(function Meter
       getAriaValueText={progressAriaText(fraction, hasFormat)}
       className={cx('flex w-full flex-col', stackGapClasses[size], className ?? '')}
       style={{ ...progressSlots(family), ...style }}
+      aria-labelledby={label ? labelId : undefined}
       {...props}
     >
       {label || showValue ? (
@@ -132,9 +136,9 @@ export const Meter = React.forwardRef<HTMLDivElement, MeterProps>(function Meter
           }
         >
           {label ? (
-            <BaseUIMeter.Label className="min-w-0 truncate text-(--neba-fg)">
+            <span id={labelId} role="presentation" className={progressLabelClasses}>
               {label}
-            </BaseUIMeter.Label>
+            </span>
           ) : null}
           {showValue ? (
             <BaseUIMeter.Value className="shrink-0 tabular-nums text-(--neba-muted-fg)">

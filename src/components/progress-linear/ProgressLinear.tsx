@@ -6,7 +6,9 @@ import {
   barThicknessClasses,
   progressAriaText,
   progressFraction,
+  progressLabelClasses,
   progressSlots,
+  progressStatusAttribute,
   progressText,
   type ProgressSharedProps,
   type ProgressThickness
@@ -68,6 +70,8 @@ export const ProgressLinear = React.forwardRef<HTMLDivElement, ProgressLinearPro
       ...props
     } = useStyleDefaults(rawProps, ['size', 'locale']);
     const intlLocale = useIntlLocale(locale);
+    // The label's, written on the root in the same render: see `progressLabelClasses`.
+    const labelId = React.useId();
 
     const fraction = progressFraction(value, min, max);
     const indeterminate = fraction === null;
@@ -87,6 +91,7 @@ export const ProgressLinear = React.forwardRef<HTMLDivElement, ProgressLinearPro
         getAriaValueText={progressAriaText(fraction, hasFormat)}
         className={cx('flex w-full flex-col', stackGapClasses[size], className ?? '')}
         style={{ ...progressSlots(color), ...style }}
+        aria-labelledby={label ? labelId : undefined}
         {...props}
       >
         {label || showValue ? (
@@ -99,7 +104,14 @@ export const ProgressLinear = React.forwardRef<HTMLDivElement, ProgressLinearPro
             }
           >
             {label ? (
-              <Progress.Label className="min-w-0 truncate text-(--neba-fg)">{label}</Progress.Label>
+              <span
+                {...progressStatusAttribute(fraction, value, max)}
+                id={labelId}
+                role="presentation"
+                className={progressLabelClasses}
+              >
+                {label}
+              </span>
             ) : null}
             {showValue ? (
               <Progress.Value className="shrink-0 tabular-nums text-(--neba-muted-fg)">

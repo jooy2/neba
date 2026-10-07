@@ -5,7 +5,9 @@ import { Progress } from '@base-ui/react/progress';
 import {
   progressAriaText,
   progressFraction,
+  progressLabelClasses,
   progressSlots,
+  progressStatusAttribute,
   progressText,
   ringDiameters,
   ringStrokes,
@@ -60,6 +62,8 @@ export const ProgressCircular = React.forwardRef<HTMLDivElement, ProgressCircula
       ...props
     } = useStyleDefaults(rawProps, ['size', 'locale']);
     const intlLocale = useIntlLocale(locale);
+    // The label's, written on the root in the same render: see `progressLabelClasses`.
+    const labelId = React.useId();
 
     const fraction = progressFraction(value, min, max);
     const indeterminate = fraction === null;
@@ -102,6 +106,7 @@ export const ProgressCircular = React.forwardRef<HTMLDivElement, ProgressCircula
           className ?? ''
         )}
         style={{ ...progressSlots(color), ...style }}
+        aria-labelledby={label ? labelId : undefined}
         {...props}
       >
         <svg
@@ -135,7 +140,14 @@ export const ProgressCircular = React.forwardRef<HTMLDivElement, ProgressCircula
         </svg>
 
         {label ? (
-          <Progress.Label className="min-w-0 truncate text-(--neba-fg)">{label}</Progress.Label>
+          <span
+            {...progressStatusAttribute(fraction, value, max)}
+            id={labelId}
+            role="presentation"
+            className={progressLabelClasses}
+          >
+            {label}
+          </span>
         ) : null}
         {showValue ? (
           <Progress.Value className="shrink-0 tabular-nums text-(--neba-muted-fg)">

@@ -202,6 +202,8 @@ All exports grew 13.3 kB. About 3.6 kB of that is the code of the new chunks, wh
 
 - **A server-rendered `Calendar` that moves to the reader's month after hydrating puts its tab stop on today.** When the server's month and the reader's differed, the stop ended on the 1st of the reader's month, so `Tab` into the grid landed on the 1st while a calendar mounted in the browser lands on today. It lands on today in both now.
 
+- **A `Meter`, `ProgressLinear`, `ProgressCircular` or `ProgressBox` with a `label` is named by it from the first render.** The root only pointed at its label after a second commit, on every mount and every hydration, so the server's HTML had the label but nothing named by it. The root now carries `aria-labelledby` from the start, a labelled indicator renders once rather than twice as it mounts or hydrates, and the accessible name, the value text and the DOM after hydration are as before. A label's generated id no longer starts with `base-ui-`.
+
 ### Documentation
 
 - **Getting started says more about server rendering.** A `locale` also keeps a date picker's field from widening at hydration and spares each component a render; a chart can draw in the server's HTML with `initialWidth`; content in the first screen should keep `trigger="mount"`; a `Shortcut` takes its platform from the request; and `colorSchemeScript()` should be called with the options the provider has.
