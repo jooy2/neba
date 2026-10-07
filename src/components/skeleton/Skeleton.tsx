@@ -11,6 +11,7 @@ import {
 } from '../../internal/styles.js';
 import type { NebaColor, NebaSize } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
+import { observeVisibility } from '../../internal/observe.js';
 
 /**
  * What the placeholder is standing in for.
@@ -188,6 +189,32 @@ export const Skeleton = React.forwardRef<HTMLDivElement, SkeletonProps>(
     // Tailwind variant, so there is nothing to express them with.
     const sweep = animated ? 'neba-skeleton' : '';
 
+    /* Held still while it is off screen. A sweep is an endless animation, and
+       a page of placeholders the reader cannot see — a long list loading, a
+       gallery of lazy pictures far below the fold — kept the compositor
+       drawing frames for all of them, so the page never went idle. The mark
+       is written straight onto the element, so nothing re-renders, and
+       `styles.css` pauses every sweep under it; the shared observer is the one
+       the endless `Animate*` effects already pause on. */
+    const own = React.useRef<HTMLDivElement | null>(null);
+
+    React.useEffect(() => {
+      const node = own.current;
+
+      if (!animated || !node) {
+        return;
+      }
+
+      const stop = observeVisibility(node, 0, (visible) => {
+        node.toggleAttribute('data-offscreen', !visible);
+      });
+
+      return () => {
+        stop?.();
+        node.removeAttribute('data-offscreen');
+      };
+    }, [animated]);
+
     const shapeClasses =
       shape === 'circle'
         ? `rounded-full ${controlHeightClasses[size]} ${controlSquareClasses[size]} shrink-0`
@@ -212,7 +239,7 @@ export const Skeleton = React.forwardRef<HTMLDivElement, SkeletonProps>(
 
     return useRender({
       render,
-      ref,
+      ref: [ref, own],
       props: {
         className: (stacked
           ? ['flex w-full flex-col', lineGapClasses[size], className ?? '']

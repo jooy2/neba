@@ -57,7 +57,7 @@ The three shapes are the three things a layout is made of. `line` is a run of te
 
 ### animated
 
-`animated` is the highlight travelling across the placeholder. Turn it off for a page holding dozens of them, or where the wait is long enough that motion becomes noise.
+`animated` is the highlight travelling across the placeholder. Turn it off for a page holding dozens of them, or where the wait is long enough that motion becomes noise. The highlight holds still while the placeholder is scrolled out of view, so placeholders below the fold cost nothing.
 
 ```tsx
 <Skeleton animated={false} lines={4} />

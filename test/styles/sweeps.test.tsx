@@ -125,3 +125,31 @@ describe('the light that travels round', () => {
     expect(new Set(properties)).toEqual(new Set(['rotate']));
   });
 });
+
+// A placeholder far below the fold swept for as long as the page was open, and
+// a page of them kept the compositor busy for nothing.
+describe('a sweep nobody can see', () => {
+  it('holds still while its placeholder is off screen', async () => {
+    window.scrollTo(0, 0);
+
+    const screen = await render(
+      <>
+        <div style={{ height: '300vh' }} />
+        <Skeleton data-testid="far" />
+      </>
+    );
+    const element = screen.getByTestId('far').element();
+    const sweep = () =>
+      element
+        .getAnimations({ subtree: true })
+        .find((animation) => (animation.effect as KeyframeEffect).pseudoElement === '::after');
+
+    await expect.element(screen.getByTestId('far')).toHaveAttribute('data-offscreen');
+    await expect.poll(() => sweep()?.playState).toBe('paused');
+
+    element.scrollIntoView();
+
+    await expect.poll(() => sweep()?.playState).toBe('running');
+    window.scrollTo(0, 0);
+  });
+});

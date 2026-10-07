@@ -2865,6 +2865,13 @@
   animation: neba-skeleton-sweep 1.5s var(--neba-ease) infinite;
 }
 
+/* Off screen, a sweep holds still. `Skeleton` marks its root once it has
+   scrolled out of view, which is also the root of a stack of lines. */
+[data-offscreen].neba-skeleton::after,
+[data-offscreen] .neba-skeleton::after {
+  animation-play-state: paused;
+}
+
 /* Where a reader asked for reduced transparency the panel colours are laid on
    the page's surface, which in the dark theme is darker than the wash a
    placeholder is drawn in, so the highlight crossed it as a shadow. Screened,

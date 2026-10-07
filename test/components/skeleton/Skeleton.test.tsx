@@ -182,5 +182,42 @@ describe('Skeleton', () => {
 
       expect(bars.every((bar) => !bar.classList.contains('neba-skeleton'))).toBe(true);
     });
+
+    // An endless sweep nobody can see kept the page from going idle. The mark
+    // is what `styles.css` pauses the sweep on.
+    it('marks itself off screen while it is scrolled out of view, and not otherwise', async () => {
+      // From the top, whatever an earlier file left the page scrolled to.
+      window.scrollTo(0, 0);
+
+      const screen = await render(
+        <>
+          {/* Sized here, since no stylesheet is loaded to give them a height. */}
+          <Skeleton data-testid="near" width={100} height={20} />
+          <div style={{ height: '300vh' }} />
+          <Skeleton data-testid="far" width={100} height={20} />
+        </>
+      );
+
+      await expect.element(screen.getByTestId('far')).toHaveAttribute('data-offscreen');
+      expect(screen.getByTestId('near').element()).not.toHaveAttribute('data-offscreen');
+
+      screen.getByTestId('far').element().scrollIntoView();
+
+      await expect.element(screen.getByTestId('far')).not.toHaveAttribute('data-offscreen');
+      window.scrollTo(0, 0);
+    });
+
+    it('does not watch a placeholder that does not sweep', async () => {
+      const screen = await render(
+        <>
+          <div style={{ height: '300vh' }} />
+          <Skeleton data-testid="still" animated={false} width={100} height={20} />
+        </>
+      );
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      expect(screen.getByTestId('still').element()).not.toHaveAttribute('data-offscreen');
+    });
   });
 });
