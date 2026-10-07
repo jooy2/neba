@@ -96,6 +96,41 @@ describe('NavigationMenu', () => {
       ).not.toBeNull();
     });
 
+    // The item became a trigger and the href went nowhere, with nothing on the
+    // screen to say so.
+    it('warns, in development, about an item with both an href and a panel', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+      try {
+        const screen = await render(
+          <NavigationMenu aria-label="Main">
+            <NavigationMenuItem label="Product" href="/product">
+              <NavigationMenuLink href="/analytics" title="Analytics" />
+            </NavigationMenuItem>
+          </NavigationMenu>
+        );
+
+        await expect.element(screen.getByRole('button', { name: /Product/ })).toBeInTheDocument();
+        expect(warn).toHaveBeenCalledTimes(1);
+        expect(String(warn.mock.calls[0][0])).toContain('href="/product"');
+      } finally {
+        warn.mockRestore();
+      }
+    });
+
+    it('says nothing about an item that is only a link or only a panel', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+      try {
+        const screen = await render(<Nav />);
+
+        await expect.element(screen.getByRole('link', { name: 'Pricing' })).toBeInTheDocument();
+        expect(warn).not.toHaveBeenCalled();
+      } finally {
+        warn.mockRestore();
+      }
+    });
+
     it('opens no panel until an item is asked', async () => {
       const screen = await render(<Nav />);
 

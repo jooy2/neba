@@ -40,7 +40,7 @@ The difference from a [Menu](./menu) is what the rows _are_. A menu holds action
 
 ### Items with and without a panel
 
-An item with children is a trigger and a panel; an item with an `href` and nothing else is a link, and the two are announced differently.
+An item with children is a trigger and a panel; an item with an `href` and nothing else is a link, and the two are announced differently. An item cannot be both: with children, its `href` is not used, and a development build warns in the console. Put that destination in the panel as a `NavigationMenuLink`.
 
 ### columns
 

@@ -24,6 +24,8 @@
 
 - **`initialWidth` on every chart, a `GaugeChart` and a `Sparkline` included.** A chart is laid out in pixels and a server has nothing to measure, so a server-rendered chart is an empty box of the right height until the page has hydrated. Given a width in pixels, the chart is drawn at it on the server and while the page hydrates, so the drawing is in the first paint and in the HTML a crawler reads, and the measured width replaces it afterwards. It makes the server's HTML larger by the drawing: about 10 kB for a BarChart of a dozen categories, close to 400 kB for a 1,000-point ScatterChart. It is ignored when `height` is a CSS length, and left out nothing changes.
 
+- **`NavigationMenuItem` warns in a development build when it has both an `href` and children.** An item with children opens a panel and is drawn as a button, so the `href` went nowhere and nothing on the screen said so. Put that destination in the panel as a `NavigationMenuLink`, or drop the children to make the item a link. A production build says nothing.
+
 ### Changed
 
 - **A `Combobox` filters its list only when the query, the options or `filter` change.** The functions it handed Base UI were new on every render, so every render of anything above it, a keystroke in another field of the same form included, ran the filter over every option again. A `filter` of your own is no longer called on a render that changes none of those, as long as it is the same function from one render to the next.

@@ -24,6 +24,9 @@ import {
 import type { NebaOrientation, NebaSize, NebaStyleProps } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
 
+/** What a bundler replaces, for the development-only warning below. */
+declare const process: { env: { NODE_ENV?: string } };
+
 /**
  * What every part of a navigation menu inherits from the root.
  *
@@ -72,7 +75,8 @@ export interface NavigationMenuItemProps {
   /**
    * Makes the item a plain link rather than something that opens a panel. An
    * item with an `href` and no children is a destination, and it is announced as
-   * one — which is the whole reason a site nav is not a Menu.
+   * one — which is the whole reason a site nav is not a Menu. With children it
+   * is not used, and a development build says so in the console.
    */
   href?: string;
   /**
@@ -238,7 +242,22 @@ export function NavigationMenuItem({
 }: NavigationMenuItemProps) {
   const { size, density } = React.useContext(NavigationMenuContext);
   const href = safeHref(hrefProp);
-  const isLink = href !== undefined && !hasContent(children);
+  const hasPanel = hasContent(children);
+  const isLink = href !== undefined && !hasPanel;
+
+  // An item with children is a trigger, and a trigger is a `<button>`, so an
+  // `href` beside them goes nowhere. Nothing on the screen says so — the item
+  // opens its panel as it should — so the developer is told in the console,
+  // and a production build says nothing.
+  React.useEffect(() => {
+    if (process.env.NODE_ENV === 'production' || hrefProp === undefined || !hasPanel) {
+      return;
+    }
+
+    console.warn(
+      `Neba: a NavigationMenuItem has both children and href="${hrefProp}". An item with children opens a panel and is drawn as a button, so the href is not used. Put the destination in the panel as a NavigationMenuLink, or drop the children to make the item a link.`
+    );
+  }, [hrefProp, hasPanel]);
 
   const chrome = [
     triggerClasses,

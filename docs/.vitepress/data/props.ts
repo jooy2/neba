@@ -4051,8 +4051,8 @@ export const propTables: Record<string, PropRow[]> = {
       name: 'href',
       type: 'string',
       description: {
-        ko: '패널을 여는 대신 그냥 링크가 되게 합니다. href가 있고 children이 없는 항목은 목적지이며, 그렇게 안내됩니다',
-        en: 'Makes the item a plain link rather than something that opens a panel. An item with an href and no children is a destination, and it is announced as one'
+        ko: '패널을 여는 대신 그냥 링크가 되게 합니다. href가 있고 children이 없는 항목은 목적지이며, 그렇게 안내됩니다. children이 있으면 쓰이지 않고, 개발 빌드에서 경고합니다',
+        en: 'Makes the item a plain link rather than something that opens a panel. An item with an href and no children is a destination, and it is announced as one. With children it is not used, and a development build warns'
       }
     },
     {

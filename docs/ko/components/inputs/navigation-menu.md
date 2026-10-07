@@ -40,7 +40,7 @@ import { NavigationMenu, NavigationMenuItem, NavigationMenuLink } from 'neba';
 
 ### 패널이 있는 항목과 없는 항목
 
-children이 있는 항목은 trigger와 패널이 되고, `href`만 있고 children이 없는 항목은 링크가 됩니다. 두 가지는 스크린 리더에 다르게 전달됩니다.
+children이 있는 항목은 trigger와 패널이 되고, `href`만 있고 children이 없는 항목은 링크가 됩니다. 두 가지는 스크린 리더에 다르게 전달됩니다. 한 항목이 둘 다 될 수는 없습니다. children이 있으면 `href`는 쓰이지 않고, 개발 빌드에서는 콘솔에 경고가 남습니다. 그 목적지는 패널 안에 `NavigationMenuLink`로 넣으세요.
 
 ### columns
 
