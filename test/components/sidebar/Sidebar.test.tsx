@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { page, userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-react';
@@ -171,6 +172,34 @@ describe('Sidebar', () => {
 
     it('hands every caller the one request', () => {
       expect(drawerChunk.load()).toBe(drawerChunk.load());
+    });
+  });
+
+  describe('its ref', () => {
+    // A ref that went to null on a narrow screen was the column's alone: the
+    // drawer the sidebar turns into is the same sidebar, and it is handed over.
+    it('follows the sidebar into the drawer it becomes', async () => {
+      await widen(NARROW);
+
+      const ref = React.createRef<HTMLElement>();
+      const screen = await render(
+        <PageLayout
+          collapseBelow="md"
+          header={<SidebarTrigger />}
+          sidebar={
+            <Sidebar ref={ref} title="Menu">
+              Navigation
+            </Sidebar>
+          }
+        >
+          Page
+        </PageLayout>
+      );
+
+      await screen.getByRole('button', { name: 'Open sidebar' }).click();
+      await expect.element(screen.getByRole('dialog', { name: 'Menu' })).toBeInTheDocument();
+
+      expect(ref.current).toBe(screen.getByRole('dialog', { name: 'Menu' }).element());
     });
   });
 

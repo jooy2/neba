@@ -487,6 +487,10 @@ export const Sidebar = React.forwardRef<HTMLElement, SidebarProps>(function Side
     return (
       <React.Suspense fallback={null}>
         <SidebarDrawer
+          // The panel the column turns into, so a ref follows the sidebar across
+          // the breakpoint rather than going to null on a narrow screen. Null
+          // while the drawer is shut, since there is no panel then.
+          ref={setRootRef}
           side={edge}
           mode="overlay"
           open={open}

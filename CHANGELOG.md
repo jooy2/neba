@@ -180,6 +180,8 @@ All exports grew 13.3 kB. About 3.6 kB of that is the code of the new chunks, wh
 
 - **Links drawn by `BottomNavigation`, `FloatingBottomNavigation`, `Breadcrumb`, `Pagination`, `Menu`, `List`, `TreeView`, a `ChatBubble` card and a `Button` or `IconButton` rendered as an `<a>` look the same with `neba/styles.css` as they do under Tailwind.** The stylesheet's reset leaves links alone, since a page's own links are the page's, and these relied on Tailwind's Preflight to take the browser's underline and, for a `List` row, a `TreeView` row and a `ChatBubble` card, its blue away. Each now says so itself; under Tailwind nothing changes.
 
+- **`Drawer` takes a `ref`, and a collapsed `Sidebar` hands its own to the drawer it becomes.** A `Drawer` was a plain function, so on React 18 a `ref` reached nothing; it now points at the panel, inline or open as an overlay. A `Sidebar` passed its `ref` to the column only, so below `collapseBelow` the same sidebar's `ref` stayed `null`; it now follows the sidebar into the drawer, and is `null` only while that drawer is shut.
+
 ### Documentation
 
 - **Getting started says more about server rendering.** A `locale` also keeps a date picker's field from widening at hydration and spares each component a render; a chart can draw in the server's HTML with `initialWidth`; content in the first screen should keep `trigger="mount"`; a `Shortcut` takes its platform from the request; and `colorSchemeScript()` should be called with the options the provider has.

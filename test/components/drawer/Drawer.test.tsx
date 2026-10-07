@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { renderToString } from 'react-dom/server';
 import { render } from 'vitest-browser-react';
@@ -15,6 +16,14 @@ describe('Drawer', () => {
       const screen = await render(<Drawer trigger={<Button>Menu</Button>} title="Navigation" />);
 
       expect(screen.getByRole('dialog').query()).toBeNull();
+    });
+
+    it('hands its ref the open panel', async () => {
+      const ref = React.createRef<HTMLDivElement>();
+      const screen = await render(<Drawer ref={ref} defaultOpen title="Navigation" />);
+
+      await expect.element(screen.getByRole('dialog', { name: 'Navigation' })).toBeInTheDocument();
+      expect(ref.current).toBe(screen.getByRole('dialog', { name: 'Navigation' }).element());
     });
 
     it('renders a dialog named by its title', async () => {
@@ -175,6 +184,13 @@ describe('Drawer', () => {
   });
 
   describe('inline mode', () => {
+    it('hands its ref the panel', async () => {
+      const ref = React.createRef<HTMLDivElement>();
+      await render(<Drawer ref={ref} mode="inline" title="Projects" data-testid="panel" />);
+
+      expect(ref.current).toBe(document.querySelector('[data-testid="panel"]'));
+    });
+
     it('is in the layout without being opened', async () => {
       const screen = await render(<Drawer mode="inline" title="Projects" />);
 

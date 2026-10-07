@@ -363,7 +363,7 @@ export const DrawerClose = BaseUIDialog.Close;
  * scroll lock, the `aria-labelledby` / `aria-describedby` wiring, restoring
  * focus to the trigger, and the inert page behind.
  */
-export function Drawer(rawProps: DrawerProps) {
+export const Drawer = React.forwardRef<HTMLDivElement, DrawerProps>(function Drawer(rawProps, ref) {
   const {
     side = 'left',
     mode = 'overlay',
@@ -539,6 +539,7 @@ export function Drawer(rawProps: DrawerProps) {
 
     return (
       <div
+        ref={ref}
         hidden={!shown || undefined}
         className={panel}
         style={{ ...surfaceSlots(color, 0), ...sizeStyle, ...style }}
@@ -593,6 +594,7 @@ export function Drawer(rawProps: DrawerProps) {
           )}
         >
           <BaseUIDialog.Popup
+            ref={ref}
             className={cx(panel, modal === true ? '' : 'pointer-events-auto')}
             style={{
               ...surfaceSlots(color, 3),
@@ -608,4 +610,4 @@ export function Drawer(rawProps: DrawerProps) {
       </BaseUIDialog.Portal>
     </BaseUIDialog.Root>
   );
-}
+});
