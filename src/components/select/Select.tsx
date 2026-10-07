@@ -282,6 +282,52 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
 
     const groups = React.useMemo(() => groupOptions(items), [items]);
 
+    /*
+     * The rows, built once per list rather than once per render.
+     *
+     * Base UI mounts the popup and every row in it the first time the trigger
+     * takes the focus, so that the first press opens a list that is already
+     * there, and it keeps them mounted from then on. Built inline, every row
+     * was a new element on every render of the Select after that, and React
+     * rendered each of them again: a controlled Select of 250 countries in a
+     * form rendered 250 rows on every keystroke in any other field. The same
+     * elements are handed back now until the list, the size or the row's class
+     * changes, and React skips them.
+     */
+    const itemClassName = classNames?.item;
+    const list = React.useMemo(() => {
+      const rowClasses = cx(itemClasses, itemClassName);
+
+      return groups.map((group, index) => {
+        const options = group.items.map((item) => (
+          <BaseUISelect.Item
+            key={String(item.value)}
+            value={item.value}
+            disabled={item.disabled}
+            className={rowClasses}
+          >
+            <BaseUISelect.ItemIndicator className="absolute start-1.5 flex size-4 items-center justify-center">
+              <CheckIcon />
+            </BaseUISelect.ItemIndicator>
+            <BaseUISelect.ItemText className="truncate">
+              {item.label ?? String(item.value)}
+            </BaseUISelect.ItemText>
+          </BaseUISelect.Item>
+        ));
+
+        if (group.label === undefined) return options;
+
+        return (
+          <BaseUISelect.Group key={`${group.label}-${index}`}>
+            <BaseUISelect.GroupLabel className={`${groupLabelClasses} ${metaTextClasses[size]}`}>
+              {group.label}
+            </BaseUISelect.GroupLabel>
+            {options}
+          </BaseUISelect.Group>
+        );
+      });
+    }, [groups, itemClassName, size]);
+
     // The trigger is a `<button>`, and a `<label>` cannot go inside one, so a
     // notched Select's frame holds the notch beside the trigger, and the frame
     // is what the edge answers the hover and the focus of.
@@ -471,36 +517,7 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
                 )}
                 style={surfaceSlots(family, 3)}
               >
-                {groups.map((group, index) => {
-                  const options = group.items.map((item) => (
-                    <BaseUISelect.Item
-                      key={String(item.value)}
-                      value={item.value}
-                      disabled={item.disabled}
-                      className={cx(itemClasses, classNames?.item)}
-                    >
-                      <BaseUISelect.ItemIndicator className="absolute start-1.5 flex size-4 items-center justify-center">
-                        <CheckIcon />
-                      </BaseUISelect.ItemIndicator>
-                      <BaseUISelect.ItemText className="truncate">
-                        {item.label ?? String(item.value)}
-                      </BaseUISelect.ItemText>
-                    </BaseUISelect.Item>
-                  ));
-
-                  if (group.label === undefined) return options;
-
-                  return (
-                    <BaseUISelect.Group key={`${group.label}-${index}`}>
-                      <BaseUISelect.GroupLabel
-                        className={`${groupLabelClasses} ${metaTextClasses[size]}`}
-                      >
-                        {group.label}
-                      </BaseUISelect.GroupLabel>
-                      {options}
-                    </BaseUISelect.Group>
-                  );
-                })}
+                {list}
               </BaseUISelect.Popup>
             </BaseUISelect.Positioner>
           </BaseUISelect.Portal>

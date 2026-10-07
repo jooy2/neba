@@ -1,6 +1,27 @@
+import * as React from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { Select } from 'neba';
+
+/*
+ * Base UI's row, counting its renders and otherwise untouched. Whether a row
+ * renders again is the whole of what one test below is about, and nothing in
+ * the document changes when it does.
+ */
+const itemRenders = vi.hoisted(() => ({ count: 0 }));
+
+vi.mock('@base-ui/react/select', async (importOriginal) => {
+  const original = await importOriginal<typeof import('@base-ui/react/select')>();
+  const Item = React.forwardRef<HTMLDivElement, React.ComponentProps<typeof original.Select.Item>>(
+    function Item(props, ref) {
+      itemRenders.count += 1;
+
+      return <original.Select.Item ref={ref} {...props} />;
+    }
+  );
+
+  return { ...original, Select: { ...original.Select, Item } };
+});
 
 const PLANS = [
   { value: 'starter', label: 'Starter' },
@@ -121,6 +142,33 @@ describe('Select', () => {
 
       await expect.element(screen.getByRole('combobox')).toBeDisabled();
       expect(screen.getByRole('option', { name: 'Team' }).query()).toBeNull();
+    });
+
+    // Base UI mounts the rows once the trigger has had the focus and keeps them,
+    // and they were new elements on every render of the Select after that: a
+    // Select of 250 countries rendered 250 rows on every keystroke in the form.
+    it('does not render its rows again when nothing they show has changed', async () => {
+      const rows = Array.from({ length: 20 }, (_, index) => ({
+        value: index,
+        label: `Row ${index}`
+      }));
+      const screen = await render(<Select items={rows} label="Row" description="One" />);
+
+      (screen.getByRole('combobox').element() as HTMLElement).focus();
+      await expect.poll(() => itemRenders.count).toBeGreaterThanOrEqual(rows.length);
+
+      const before = itemRenders.count;
+
+      await screen.rerender(<Select items={rows} label="Row" description="Two" />);
+      await expect.element(screen.getByText('Two')).toBeInTheDocument();
+
+      expect(itemRenders.count).toBe(before);
+
+      await screen.rerender(
+        <Select items={rows} label="Row" description="Two" classNames={{ item: 'my-row' }} />
+      );
+
+      await expect.poll(() => itemRenders.count).toBeGreaterThanOrEqual(before + rows.length);
     });
   });
 

@@ -8,6 +8,8 @@
 
 - **A `Select` whose labels are elements lays out only the ones that could be the widest**, as it already did for string labels. A label that was not a string was always drawn into the hidden box that holds the trigger's width, so a list of 250 countries with a flag `<img>` in each label fetched all 250 flags before it was opened and carried them in the server's HTML. The text among an element's children is now ranked like a string. An element with no text in it, such as a picture on its own, is still always laid out, and an icon or a flag beside the text is taken to be the same size in every option.
 
+- **A `Select` no longer renders every option again each time it renders.** Once the trigger has had the focus, the list stays mounted, hidden, so that the first press opens it at once, and every option in it was drawn again on each later render: a controlled Select of 250 countries in a form drew 250 rows on every keystroke in another field. The rows are now kept until `items`, `size` or `classNames.item` changes.
+
 ### Fixed
 
 - **A `multiple` `Combobox` keeps the error a `Form` put on it while the page around it renders again, and a single one keeps what is typed after a value its `items` do not have.** The value handed to Base UI was a new object on every render, which Base UI took for a new choice: it cleared the field's errors, so a server error vanished the moment the reader typed in another field, and in single mode it wrote the chosen label back into the input, so typing after a custom value such as `defaultValue="Foo"` did nothing. The value now stays the same object for as long as it holds the same entries, including when `value` or `items` is written inline.
