@@ -174,6 +174,13 @@ function findTarget(selector: string): Element | null {
  * `pointer-events: none` throughout. A tour that blocked the page would be a
  * modal dialog wearing a cut-out, and the whole point of the cut-out is that
  * the thing it is pointing at can still be used.
+ *
+ * The hole is pinned to the corner of the window and moved on `translate`,
+ * never on `top` and `left`. It follows its target on every frame the page
+ * scrolls, and a box moved by a layout property is a layout shift the browser
+ * reports on each of those frames: a scroll of a second and a half under an
+ * open tour added 0.73 to a page's CLS, from this element alone. Its size is
+ * still `width` and `height`, which change once a step and move nothing.
  */
 function Mask({
   spot,
@@ -197,12 +204,11 @@ function Mask({
     <div
       aria-hidden="true"
       className={cx(
-        'pointer-events-none fixed z-40 [box-shadow:0_0_0_9999px_var(--neba-scrim)]',
+        'pointer-events-none fixed top-0 left-0 z-40 [box-shadow:0_0_0_9999px_var(--neba-scrim)]',
         className
       )}
       style={{
-        top: spot.top,
-        left: spot.left,
+        translate: `${spot.left}px ${spot.top}px`,
         width: spot.width,
         height: spot.height,
         borderRadius: radius

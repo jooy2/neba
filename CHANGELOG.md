@@ -104,6 +104,8 @@
 
 - **A server-rendered `DatePicker`, `TimePicker`, `DateTimePicker` or `DateRangePicker` with no `locale` no longer narrows when the page hydrates.** Its trigger was held at the width of its widest date in `en-US` on the server and in the reader's language right after, so where that language writes shorter dates the field narrowed and the controls after it in a row moved sideways. It now keeps the server's width as well, so it can grow at hydration but not shrink. Pass `locale`, or `defaults.locale` on a `NebaProvider`, to keep the width the same from the first paint.
 
+- **A `Tour` no longer adds to the page's layout shift while the page scrolls under it.** The hole in its mask followed the target on `top` and `left`, which the browser reports as a layout shift on every frame of a scroll: a second and a half of scrolling under an open tour added 0.73 to the page's CLS. The mask moves on `translate` now and reports none. It looks and follows the target as before.
+
 ## 1.18.1 (2026-10-07)
 
 ### Added
