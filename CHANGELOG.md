@@ -14,6 +14,32 @@
 
 - **A `StreamingText` answer goes back to plain text once its stream has ended.** Every word that streamed in stayed an element of its own for good, so a long chat session kept one per word of every answer: fifteen thousand for fifty answers. Once `streaming` is off and the last word has faded in, the `.neba-stream-word` elements are gone and the answer is one run of text, which looks the same. A test that looked for `.neba-stream-word` after a stream ended should look while `streaming` is on, or read the text. A finished word's fade also no longer stays on it as a held animation.
 
+### Where the bytes went
+
+| What you import               | 1.18.1   | vNext    |
+| ----------------------------- | -------- | -------- |
+| `Button`                      | 5.0 kB   | 5.0 kB   |
+| `Chip`                        | 3.4 kB   | 3.8 kB   |
+| `LineChart`                   | 17.1 kB  | 18.1 kB  |
+| `CodeBlock`                   | 5.8 kB   | 5.9 kB   |
+| `Image`                       | 9.0 kB   | 9.4 kB   |
+| `Gallery`                     | 12.3 kB  | 12.8 kB  |
+| `DataTable`                   | 65.4 kB  | 34.7 kB  |
+| `CommandPalette`              | 38.7 kB  | 1.9 kB   |
+| `InlineCitation`              | 31.7 kB  | 6.7 kB   |
+| a whole page shell            | 30.5 kB  | 13.8 kB  |
+| 12 components — a typical app | 74.5 kB  | 75.5 kB  |
+| 12 components, with Korean    | 78.7 kB  | 79.7 kB  |
+| 25 components — a large one   | 122.2 kB | 123.2 kB |
+| all exports                   | 304.3 kB | 317.6 kB |
+| `neba/styles.css`             | 26.4 kB  | 27.0 kB  |
+
+Each figure is what a page downloads before it draws, gzipped, with `react` and `react-dom` external. The four rows that fell are the parts of Base UI a page used to carry for something closed: a `Sidebar`'s drawer, which a desktop page never opens, a paging `DataTable`'s rows-per-page Select, which a scrolling table never draws, a `CommandPalette`'s whole dialog, and an `InlineCitation`'s preview card. Each is now a chunk of its own, fetched when it can first be needed.
+
+A `Chip` grew 0.4 kB for `href`: the safe `rel` and `href` rules and the words a link that opens a new tab ends with, which every link in the library carries. An `Image` and a `Gallery` grew 0.4 kB for the shared observer a `Skeleton` now holds its sweep still with while it is off screen. A `LineChart` grew 1.0 kB for the hidden table's rows added in runs, the marks laid out once per layout, the transition it draws in after hydration and the room a legend keeps for `showValue`. The two apps grew about 1.0 kB, spread across what they import: `useToastActions`, a `Chip`'s link support, the sampling of labels that are elements, which a `Select` and a legend share, and a tab bar that binds the wheel only while it overflows.
+
+All exports grew 13.3 kB. About 3.6 kB of that is the code of the new chunks, which a page that imports everything counts as well, and much of the rest is those chunks being compressed as separate files rather than as one. Class strings written as concatenations rather than as an array and a join took 0.1 to 0.3 kB back off every scenario that imports more than one component. The stylesheet grew 0.6 kB for the server-rendered tab indicator, the reduced-transparency surfaces, the text effects' final text without a script and `AnimateLighting`'s composited ring.
+
 ### Added
 
 - **`autoComplete` on `Select` and `Combobox`**, so a browser's autofill can fill them in with the rest of a form: `autoComplete="country"` on a country list. It is written on the hidden input that submits the value, and a filled-in value that matches an option's `value` or label chooses that option. A Combobox's own text input keeps `autocomplete="off"`, and a `multiple` Combobox takes no autofill.
