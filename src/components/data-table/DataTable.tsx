@@ -6,8 +6,8 @@ import { Box } from '../box/Box.js';
 import { Button } from '../button/Button.js';
 import { Checkbox } from '../checkbox/Checkbox.js';
 import { Pagination } from '../pagination/Pagination.js';
-import { Select } from '../select/Select.js';
 import { TextField } from '../text-field/TextField.js';
+import { RowsPerPage } from './RowsPerPage.js';
 import {
   compareValues,
   dataHeaderHeights,
@@ -3691,34 +3691,30 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
 
           <div className="ms-auto flex items-center gap-2">
             {paging === 'pages' && pageSizeOptions.length > 0 ? (
-              <>
-                {/* The label is the Select's own rather than a `<span>` beside
-                    it: Base UI's Field is what wires a label to a trigger that
-                    is a button rather than an input, and a sentence sitting
-                    next to a control is not attached to it. */}
-                <Select
-                  size={size}
-                  color={color}
-                  density={density}
-                  variant="outline"
-                  label={messages.rowsPerPage}
-                  items={pageSizeOptions.map((value) => ({ value }))}
-                  value={pageSize}
-                  onValueChange={(value) => {
-                    const next = Number(value);
+              // The label is the Select's own rather than a `<span>` beside
+              // it: Base UI's Field is what wires a label to a trigger that is
+              // a button rather than an input, and a sentence sitting next to
+              // a control is not attached to it. The Select is fetched by the
+              // first table that pages; see `RowsPerPage`.
+              <RowsPerPage
+                size={size}
+                color={color}
+                density={density}
+                label={messages.rowsPerPage}
+                options={pageSizeOptions}
+                value={pageSize}
+                onChange={(next) => {
+                  if (pageSizeProp === undefined) {
+                    setUncontrolledPageSize(next);
+                  }
 
-                    if (pageSizeProp === undefined) {
-                      setUncontrolledPageSize(next);
-                    }
-
-                    // The reader is somewhere in the data, not on a page
-                    // number: showing twice as many rows should not move them
-                    // twice as far down the table.
-                    goToPage(Math.floor(bounds.start / next) + 1);
-                    onPageSizeChange?.(next);
-                  }}
-                />
-              </>
+                  // The reader is somewhere in the data, not on a page
+                  // number: showing twice as many rows should not move them
+                  // twice as far down the table.
+                  goToPage(Math.floor(bounds.start / next) + 1);
+                  onPageSizeChange?.(next);
+                }}
+              />
             ) : null}
 
             {paging === 'pages' ? (

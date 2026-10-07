@@ -1,11 +1,12 @@
 import * as React from 'react';
-import { describe, expect, it, vi } from 'vitest';
-import { renderToString } from 'react-dom/server';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { renderToReadableStream, renderToString } from 'react-dom/server';
 import { hydrateRoot } from 'react-dom/client';
 import { render } from 'vitest-browser-react';
 import { userEvent } from 'vitest/browser';
-import { DataTable, type DataTableColumn } from 'neba';
+import { DataTable, Select, type DataTableColumn } from 'neba';
 import { ko, registerMessages } from 'neba/locales';
+import { rowsPerPageChunk } from '../../../src/components/data-table/RowsPerPage.js';
 
 /* Only the footer test below names a language; the rest read the English
    default, which registering Korean does not change. */
@@ -748,6 +749,95 @@ describe('DataTable', () => {
       // One row matches, so there is one page. Left on page 3 the slice would
       // start past the end and the search would answer with nothing.
       await expect.poll(() => cellText(screen.container, 0)).toEqual(['Person 1']);
+    });
+
+    describe('the page-size control', () => {
+      /** The control's stand-in, which is there until the Select's chunk is. */
+      const standIn = (container: HTMLElement) =>
+        container.querySelector<HTMLElement>('[data-neba-stand-in]');
+
+      afterEach(() => {
+        vi.restoreAllMocks();
+      });
+
+      it('changes how many rows a page holds once its Select is here', async () => {
+        const onPageSizeChange = vi.fn();
+        const screen = await render(
+          <DataTable
+            headers={HEADERS}
+            items={manyItems(30)}
+            getRowKey={key}
+            paging="pages"
+            onPageSizeChange={onPageSizeChange}
+          />
+        );
+
+        await expect.poll(() => standIn(screen.container)).toBeNull();
+        expect(bodyRows(screen.container)).toHaveLength(25);
+
+        await screen.getByRole('combobox', { name: 'Rows per page' }).click();
+        await screen.getByRole('option', { name: '10' }).click();
+
+        expect(onPageSizeChange).toHaveBeenLastCalledWith(10);
+        await expect.poll(() => bodyRows(screen.container)).toHaveLength(10);
+      });
+
+      // Every table carried the Select, though only a table that pages draws it.
+      it('is not fetched by a table that scrolls, or by one that offers no sizes', async () => {
+        const load = vi.spyOn(rowsPerPageChunk, 'load');
+
+        const scrolling = await render(
+          <DataTable headers={HEADERS} items={ITEMS} getRowKey={key} footer />
+        );
+
+        await scrolling.unmount();
+
+        const fixed = await render(
+          <DataTable
+            headers={HEADERS}
+            items={ITEMS}
+            getRowKey={key}
+            paging="pages"
+            pageSizeOptions={[]}
+          />
+        );
+
+        await expect.element(fixed.getByText('1–3 of 3')).toBeInTheDocument();
+        expect(load).not.toHaveBeenCalled();
+      });
+
+      it('stands in with the current size until the Select arrives, and hands it the focus', async () => {
+        let release: (module: { default: typeof Select }) => void = () => {};
+        const gate = new Promise<{ default: typeof Select }>((resolve) => {
+          release = resolve;
+        });
+
+        vi.spyOn(rowsPerPageChunk, 'arrived').mockReturnValue(false);
+        const load = vi.spyOn(rowsPerPageChunk, 'load').mockReturnValue(gate);
+
+        const screen = await render(
+          <DataTable
+            headers={HEADERS}
+            items={manyItems(30)}
+            getRowKey={key}
+            paging="pages"
+            defaultPageSize={50}
+          />
+        );
+        const field = screen.getByRole('combobox', { name: 'Rows per page' });
+
+        // Asked for as the table mounted, not when the control is reached.
+        expect(load).toHaveBeenCalled();
+        await expect.element(field).toHaveTextContent('50');
+        expect(standIn(screen.container)).not.toBeNull();
+
+        standIn(screen.container)!.focus();
+        release({ default: Select });
+
+        await expect.poll(() => standIn(screen.container)).toBeNull();
+        await expect.element(field).toHaveTextContent('50');
+        await expect.element(field).toHaveFocus();
+      });
     });
 
     // The pages were buttons only, so a crawler never got past the first one.
@@ -3099,5 +3189,42 @@ describe('server rendering', () => {
     } finally {
       page.cleanup();
     }
+  });
+
+  const paged = (
+    <DataTable headers={HEADERS} items={manyItems(30)} getRowKey={key} paging="pages" />
+  );
+
+  // The page-size Select is fetched on demand, and a lazy component suspends
+  // wherever its chunk has not loaded: a server could not finish the boundary,
+  // and React would report an error at hydration.
+  it('sends its page-size control without suspending, and hydrates it', async () => {
+    const page = await hydrateServerHtml(paged);
+
+    try {
+      expect(page.html).toContain('data-neba-stand-in');
+      expect(page.html).toContain('Rows per page');
+      // `<!--$!-->` is a boundary the server gave up on.
+      expect(page.html).not.toContain('<!--$!-->');
+      expect(page.recoverable).toEqual([]);
+
+      await expect.poll(() => page.host.querySelector('[data-neba-stand-in]')).toBeNull();
+      expect(page.host.querySelector('[role="combobox"]')).toHaveTextContent('25');
+    } finally {
+      page.cleanup();
+    }
+  });
+
+  it('streams the same control, with no boundary left waiting', async () => {
+    const stream = await renderToReadableStream(paged);
+
+    await stream.allReady;
+
+    const html = await new Response(stream).text();
+
+    expect(html).toContain('data-neba-stand-in');
+    // `<!--$?-->` is a boundary whose content would arrive later in the stream.
+    expect(html).not.toContain('<!--$?-->');
+    expect(html).not.toContain('<!--$!-->');
   });
 });
