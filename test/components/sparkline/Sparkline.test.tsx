@@ -1,4 +1,6 @@
+import * as React from 'react';
 import { describe, expect, it } from 'vitest';
+import { renderToString } from 'react-dom/server';
 import { render } from 'vitest-browser-react';
 import { Sparkline } from 'neba';
 
@@ -111,6 +113,22 @@ describe('Sparkline', () => {
       expect(after).not.toBe(before);
     });
 
+    // Handed its width, the strip has nothing to measure. It was watched and
+    // measured all the same, which drew it a second time as soon as it mounted.
+    it('draws once when its width is a number', async () => {
+      const phases: string[] = [];
+
+      await render(
+        <React.Profiler id="strip" onRender={(_, phase) => phases.push(phase)}>
+          <Sparkline data={DATA} width={120} label="Signups" />
+        </React.Profiler>
+      );
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      expect(phases).toEqual(['mount']);
+    });
+
     it('keeps caller-supplied class names alongside its own', async () => {
       const screen = await render(
         <Sparkline data={DATA} label="Signups" className="my-own-class" />
@@ -134,7 +152,7 @@ describe('Sparkline', () => {
 
       await expect.poll(() => strip.element().querySelectorAll('path').length).toBe(3);
 
-      const svg = strip.element() as unknown as SVGSVGElement;
+      const svg = strip.element().querySelector('svg')!;
       const height = Number(svg.getAttribute('height'));
 
       for (const bar of svg.querySelectorAll('path')) {
@@ -153,7 +171,7 @@ describe('Sparkline', () => {
 
       await expect.poll(() => strip.element().querySelectorAll('path').length).toBe(3);
 
-      const svg = strip.element() as unknown as SVGSVGElement;
+      const svg = strip.element().querySelector('svg')!;
 
       expect(svg.querySelector('path')!.getBBox().height).toBeGreaterThan(
         Number(svg.getAttribute('height')) / 2
@@ -166,7 +184,7 @@ describe('Sparkline', () => {
 
       await expect.poll(() => strip.element().querySelectorAll('path').length).toBe(1);
 
-      const svg = strip.element() as unknown as SVGSVGElement;
+      const svg = strip.element().querySelector('svg')!;
       const box = svg.querySelector('path')!.getBBox();
 
       expect(box.y).toBeCloseTo(Number(svg.getAttribute('height')) / 2, 0);
@@ -178,6 +196,18 @@ describe('Sparkline', () => {
       const screen = await render(<Sparkline data={[4, 8, 6]} label="Signups" />);
 
       await expect.element(screen.getByText('4, 8, 6')).toBeInTheDocument();
+    });
+
+    // The drawing waits for a measurement, which a server render never has,
+    // and the name was on the drawing: the strip reached a crawler unnamed.
+    it('carries its name in a server render', () => {
+      const html = renderToString(<Sparkline data={[4, 8, 6]} label="Signups" />);
+      const strip = new DOMParser()
+        .parseFromString(html, 'text/html')
+        .querySelector('[role="img"]');
+
+      expect(strip?.getAttribute('aria-label')).toBe('Signups');
+      expect(html).toContain('4, 8, 6');
     });
 
     it('is hidden entirely without one', async () => {

@@ -88,14 +88,22 @@ const noMarks: readonly ChartMark[] = [];
  * it on a server-rendered page is a box of the right height with nothing in it,
  * which is why the height is a prop and not something measured too: a reserve
  * that is dropped when the content arrives is the same jump twice.
+ *
+ * `enabled: false` measures nothing and watches nothing, for a chart that was
+ * handed its width as a number: a Sparkline given `width={120}` was observed
+ * all the same, and drew itself again each time its box was resized for a
+ * width it never read.
  */
-function useMeasuredWidth(ref: React.RefObject<HTMLElement | null>): number {
+function useMeasuredWidth(
+  ref: React.RefObject<HTMLElement | null>,
+  { enabled = true }: { enabled?: boolean } = {}
+): number {
   const [width, setWidth] = React.useState(0);
 
   useLayoutEffectOnClient(() => {
     const host = ref.current;
 
-    if (!host) {
+    if (!enabled || !host) {
       return;
     }
 
@@ -104,7 +112,7 @@ function useMeasuredWidth(ref: React.RefObject<HTMLElement | null>): number {
     measure();
 
     return observeResize(host, measure);
-  }, [ref]);
+  }, [ref, enabled]);
 
   return width;
 }

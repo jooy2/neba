@@ -8,6 +8,8 @@
 
 - **A `TreeSelect`'s tree is narrowed just after a letter reaches its search box, not in the same render.** A keystroke filtered the tree and drew what it kept in the same task, so a short query against a tree of a few thousand nodes, which keeps most of them and opens every branch it kept, held the letter back until all of it was drawn. The box now shows the letter at once and the tree follows a moment later. A test that checks a row is gone straight after typing should wait for it to leave, with `await expect.element(row).not.toBeInTheDocument()` rather than `row.query()`.
 
+- **A `Sparkline`'s name is on its box rather than on its `<svg>`.** `role="img"` and the `label` were on the strip's `<svg>`, which is only drawn once the strip has measured itself, so a server render named nothing and a crawler or a reader without JavaScript got a list of numbers with nothing saying what they were. The box that holds the drawing is in the HTML from the start and carries both now. A test that found the strip by its role and read it as the `<svg>` should take the `<svg>` inside it. A Sparkline given `width` as a number also no longer measures its box, and draws once instead of twice when it mounts.
+
 ### Added
 
 - **`autoComplete` on `Select` and `Combobox`**, so a browser's autofill can fill them in with the rest of a form: `autoComplete="country"` on a country list. It is written on the hidden input that submits the value, and a filled-in value that matches an option's `value` or label chooses that option. A Combobox's own text input keeps `autocomplete="off"`, and a `multiple` Combobox takes no autofill.

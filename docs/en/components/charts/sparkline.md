@@ -71,5 +71,5 @@ A sparkline fills itself with its own range, which is what makes it legible at t
 
 ## Accessibility
 
-- A Sparkline with a `label` renders its values as visually hidden text and is exposed as an image with that name. Without a `label` it is hidden from assistive technology entirely: which is correct when the strip sits beside a [Statistic](./statistic) that already says the number, and wrong anywhere else.
+- A Sparkline with a `label` renders its values as visually hidden text and is exposed as an image with that name, in a server render as well as in the browser. Without a `label` it is hidden from assistive technology entirely: which is correct when the strip sits beside a [Statistic](./statistic) that already says the number, and wrong anywhere else.
 - Nothing in it is interactive and nothing in it is reachable only by pointer.

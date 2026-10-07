@@ -128,7 +128,8 @@ export const Sparkline = React.forwardRef<HTMLDivElement, SparklineProps>(
     } = useStyleDefaults(rawProps, ['size']);
 
     const hostRef = React.useRef<HTMLDivElement>(null);
-    const measured = useMeasuredWidth(hostRef);
+    // A number is the width; only a length or the default has to be measured.
+    const measured = useMeasuredWidth(hostRef, { enabled: typeof widthProp !== 'number' });
     const id = React.useId().replace(/:/g, '');
 
     /* `zero` is done here rather than to the points below, so everything that
@@ -207,15 +208,23 @@ export const Sparkline = React.forwardRef<HTMLDivElement, SparklineProps>(
         style={{ width: widthProp ?? '100%', height, ...style }}
         {...props}
       >
-        <div ref={hostRef} className="absolute inset-0">
+        {/* The name goes on the box rather than on the drawing. The drawing is
+            only there once the box has been measured, which a server render
+            never is, so a strip named on its `<svg>` reached a crawler and a
+            reader without JavaScript as nothing at all. The numbers below stay
+            a sibling of it: under `role="img"` they would not be read. */}
+        <div
+          ref={hostRef}
+          className="absolute inset-0"
+          role={label ? 'img' : undefined}
+          aria-label={label}
+        >
           {width > 0 && values.length > 0 ? (
             <svg
               width={width}
               height={height}
               viewBox={`0 0 ${width} ${height}`}
-              role={label ? 'img' : 'presentation'}
-              aria-label={label}
-              aria-hidden={label ? undefined : true}
+              aria-hidden="true"
               className="block overflow-visible"
             >
               {shape === 'area' ? (
