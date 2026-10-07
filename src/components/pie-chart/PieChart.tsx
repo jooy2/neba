@@ -179,10 +179,16 @@ export function PieChart(rawProps: PieChartProps) {
   const intlLocale = useIntlLocale(locale);
   const tableId = React.useId();
 
+  /* Keyed on what the options say rather than on their identity, as
+     `CartesianChart` does: `format` is usually a literal in the JSX, and a new
+     function on every render would be a hidden table written again on every
+     step of the readout. */
+  const formatKey = format ? JSON.stringify(format) : '';
   const formatValue = React.useCallback(
     (value: number) =>
       format ? numberFormatter(intlLocale, format).format(value) : compactNumber(value, intlLocale),
-    [format, intlLocale]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [formatKey, intlLocale]
   );
 
   const values = React.useMemo(() => data.map(toValue), [data]);
@@ -202,6 +208,13 @@ export function PieChart(rawProps: PieChartProps) {
   );
 
   const visibility = useVisibility(slices);
+
+  /* What the hidden table is handed, held on what it is built from:
+     `ChartDataTable` is memoised, and fresh arrays wrote every row of it again
+     each time the pointer moved onto another slice. */
+  const tableCategories = React.useMemo(() => slices.map((slice) => slice.name ?? ''), [slices]);
+  const tableSeries = React.useMemo(() => [{ name: label, data }], [label, data]);
+  const tableValues = React.useMemo(() => [values], [values]);
 
   React.useEffect(() => {
     warnPaletteOverflow(slices.length);
@@ -346,9 +359,9 @@ export function PieChart(rawProps: PieChartProps) {
           <ChartDataTable
             id={tableId}
             caption={label}
-            categories={slices.map((slice) => slice.name ?? '')}
-            series={[{ name: label, data }]}
-            values={[values]}
+            categories={tableCategories}
+            series={tableSeries}
+            values={tableValues}
             format={formatValue}
             locale={intlLocale}
           />

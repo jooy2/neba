@@ -251,6 +251,41 @@ describe('PieChart', () => {
 
       await expect.element(status).toBeEmptyDOMElement();
     });
+
+    // The hidden table was handed new arrays and, with `format` written inline,
+    // a new formatter on every render, so each step of the readout wrote every
+    // row of it again.
+    it('writes no table cell again as the readout moves from one slice to the next', async () => {
+      const data = Array.from({ length: 30 }, (_, index) => index + 1);
+      const screen = await render(
+        <PieChart label="Accounts" data={data} format={{ maximumFractionDigits: 1 }} />
+      );
+      const plot = screen.getByRole('img', { name: 'Accounts' });
+      const status = screen.getByRole('status');
+
+      await expect.poll(() => plot.element().querySelectorAll('path').length).toBe(30);
+      await userEvent.unhover(plot);
+      plot.element().focus();
+
+      await userEvent.keyboard('{ArrowRight}');
+      await expect.element(status).not.toBeEmptyDOMElement();
+
+      const before = status.element().textContent;
+      // `format` is a getter that hands back a bound function, so each number
+      // the chart writes is one read of it.
+      const formats = vi.spyOn(Intl.NumberFormat.prototype as { format: unknown }, 'format', 'get');
+
+      try {
+        await userEvent.keyboard('{ArrowRight}');
+        await expect.poll(() => status.element().textContent).not.toBe(before);
+
+        // The readout's number and the summary's, and no more: the table's
+        // thirty rows written again would be thirty.
+        expect(formats.mock.calls.length).toBeLessThan(10);
+      } finally {
+        formats.mockRestore();
+      }
+    });
   });
 
   describe('shape', () => {
