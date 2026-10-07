@@ -90,14 +90,14 @@ const indentSizes: Record<NebaSize, number> = {
   xl: 16
 };
 
-const linkClasses = [
-  'block min-w-0 truncate no-underline',
-  'text-(--neba-muted-fg)',
-  transitionClasses,
-  focusRingClasses,
-  'hover:text-(--neba-fg)',
-  'aria-[current=location]:font-medium aria-[current=location]:text-(--n-accent)'
-].join(' ');
+const linkClasses =
+  'block min-w-0 truncate no-underline ' +
+  'text-(--neba-muted-fg) ' +
+  transitionClasses +
+  ' ' +
+  focusRingClasses +
+  ' hover:text-(--neba-fg) ' +
+  'aria-[current=location]:font-medium aria-[current=location]:text-(--n-accent)';
 
 /**
  * The rail's lit segment.
@@ -106,11 +106,10 @@ const linkClasses = [
  * the library slides: a segment that animated from one heading to the next would
  * be a thing moving under a reader who is already moving.
  */
-const railClasses = [
-  'border-s [border-color:transparent]',
-  '[transition:border-color_var(--neba-duration)_var(--neba-ease)]',
-  'aria-[current=location]:[border-color:var(--n-accent)]'
-].join(' ');
+const railClasses =
+  'border-s [border-color:transparent] ' +
+  '[transition:border-color_var(--neba-duration)_var(--neba-ease)] ' +
+  'aria-[current=location]:[border-color:var(--n-accent)]';
 
 /**
  * The element one row points at, found once and kept.

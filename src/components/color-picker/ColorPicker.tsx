@@ -199,19 +199,17 @@ const hueRailBackground =
   'linear-gradient(to right, #ff0000 0%, #ffff00 16.66%, #00ff00 33.33%, #00ffff 50%, #0000ff 66.66%, #ff00ff 83.33%, #ff0000 100%)';
 
 /** A hairline and a light edge, on something whose fill is the caller's. */
-const wellClasses = [
-  'relative overflow-hidden border',
-  '[border-color:var(--neba-border)]',
-  '[box-shadow:var(--neba-plate-glass)]'
-].join(' ');
+const wellClasses =
+  'relative overflow-hidden border ' +
+  '[border-color:var(--neba-border)] ' +
+  '[box-shadow:var(--neba-plate-glass)]';
 
-const thumbClasses = [
-  'pointer-events-none absolute rounded-full border-2 border-white',
+const thumbClasses =
+  'pointer-events-none absolute rounded-full border-2 border-white ' +
   // Two shadows: a dark hairline so the white ring survives on white, and a
   // soft drop so it survives on black. Neither is tinted with the colour under
   // it, which would make the thumb disappear at exactly the moment it matters.
-  '[box-shadow:0_0_0_1px_rgba(0,0,0,0.35),0_1px_3px_rgba(0,0,0,0.4)]'
-].join(' ');
+  '[box-shadow:0_0_0_1px_rgba(0,0,0,0.35),0_1px_3px_rgba(0,0,0,0.4)]';
 
 /* ---------------------------------------------------------------------------
  * Panel

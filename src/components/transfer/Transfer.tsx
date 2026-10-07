@@ -202,11 +202,12 @@ function Panel({
     <div
       role="group"
       aria-labelledby={titleId}
-      className={[
-        'flex min-w-0 flex-col overflow-hidden',
-        fieldRestClasses[variant],
+      className={
+        'flex min-w-0 flex-col overflow-hidden ' +
+        fieldRestClasses[variant] +
+        ' ' +
         radiusClasses[size]
-      ].join(' ')}
+      }
       style={surfaceSlots(color, 0)}
     >
       <div className={`${headerClasses} ${insetX} ${panelPadY[size]}`}>

@@ -142,18 +142,16 @@ const zonePaddingClasses: Record<NebaDensity, Record<NebaSize, string>> = {
  * dropzone that looks like a Card is a Card nobody tries to drop on.
  */
 const zoneRestClasses: Record<NonNullable<NebaStyleProps['variant']>, string> = {
-  solid: [
-    surfaceClasses,
-    'border-2 border-dashed text-(--neba-fg) bg-(--n-panel-hover)',
-    '[border-color:var(--n-line)]',
-    '[box-shadow:var(--n-elev),var(--neba-plate-glass)]'
-  ].join(' '),
-  outline: [
-    surfaceClasses,
-    'border-2 border-dashed text-(--neba-fg) bg-(--n-panel)',
-    '[border-color:var(--n-line)]',
-    '[box-shadow:var(--n-elev),var(--neba-plate-glass)]'
-  ].join(' '),
+  solid:
+    surfaceClasses +
+    ' border-2 border-dashed text-(--neba-fg) bg-(--n-panel-hover) ' +
+    '[border-color:var(--n-line)] ' +
+    '[box-shadow:var(--n-elev),var(--neba-plate-glass)]',
+  outline:
+    surfaceClasses +
+    ' border-2 border-dashed text-(--neba-fg) bg-(--n-panel) ' +
+    '[border-color:var(--n-line)] ' +
+    '[box-shadow:var(--n-elev),var(--neba-plate-glass)]',
   text: 'border-2 border-dashed text-(--neba-fg) bg-transparent [border-color:var(--n-line)]'
 };
 
@@ -474,11 +472,11 @@ export const FilePicker = React.forwardRef<HTMLInputElement, FilePickerProps>(
         {hasContent(label) ? (
           <span
             id={labelId}
-            className={[
-              metaTextClasses[size],
-              'font-medium',
-              disabled ? 'text-(--neba-disabled-fg)' : 'text-(--neba-fg)'
-            ].join(' ')}
+            className={
+              metaTextClasses[size] +
+              ' font-medium ' +
+              (disabled ? 'text-(--neba-disabled-fg)' : 'text-(--neba-fg)')
+            }
           >
             {label}
           </span>
@@ -557,12 +555,13 @@ export const FilePicker = React.forwardRef<HTMLInputElement, FilePickerProps>(
             {files.map((file, index) => (
               <li
                 key={`${file.name}-${file.size}-${file.lastModified}-${index}`}
-                className={[
-                  'flex w-full items-center gap-2 px-2 py-1.5',
-                  radiusClasses.xs,
-                  controlTextLeadingClasses[size],
-                  'bg-(--n-soft) text-(--neba-fg)'
-                ].join(' ')}
+                className={
+                  'flex w-full items-center gap-2 px-2 py-1.5 ' +
+                  radiusClasses.xs +
+                  ' ' +
+                  controlTextLeadingClasses[size] +
+                  ' bg-(--n-soft) text-(--neba-fg)'
+                }
               >
                 <span className="min-w-0 flex-1 truncate">{file.name}</span>
                 <span
@@ -574,17 +573,17 @@ export const FilePicker = React.forwardRef<HTMLInputElement, FilePickerProps>(
                   <button
                     type="button"
                     aria-label={removeLabel(file.name)}
-                    className={[
-                      'relative inline-flex shrink-0 cursor-pointer items-center justify-center rounded-full',
+                    className={
+                      'relative inline-flex shrink-0 cursor-pointer items-center justify-center rounded-full ' +
                       // Drawn at the size of the name beside it, pressed at the
                       // size of a finger.
-                      hitAreaClasses,
-                      'size-[1.3em] text-(--neba-muted-fg) opacity-70',
-                      '[transition:opacity_var(--neba-duration)_var(--neba-ease),color_var(--neba-duration)_var(--neba-ease)]',
-                      '[&_svg]:size-[0.9em]',
-                      'hover:text-(--neba-fg) hover:opacity-100 focus-visible:opacity-100',
+                      hitAreaClasses +
+                      ' size-[1.3em] text-(--neba-muted-fg) opacity-70 ' +
+                      '[transition:opacity_var(--neba-duration)_var(--neba-ease),color_var(--neba-duration)_var(--neba-ease)] ' +
+                      '[&_svg]:size-[0.9em] ' +
+                      'hover:text-(--neba-fg) hover:opacity-100 focus-visible:opacity-100 ' +
                       'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-1'
-                    ].join(' ')}
+                    }
                     onClick={(event) => {
                       refocusAt.current =
                         event.currentTarget === document.activeElement ? index : null;

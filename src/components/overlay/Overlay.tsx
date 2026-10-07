@@ -184,12 +184,14 @@ export function Overlay(rawProps: OverlayProps) {
             that misses the content is an outside press rather than a click on
             the overlay itself. */}
         <BaseUIDialog.Viewport
-          className={[
-            'neba-portal fixed inset-0 z-(--neba-z-portal) flex justify-center',
-            alignClasses[align],
-            insetClasses[size],
-            modal === true ? '' : 'pointer-events-none'
-          ].join(' ')}
+          className={
+            'neba-portal fixed inset-0 z-(--neba-z-portal) flex justify-center ' +
+            alignClasses[align] +
+            ' ' +
+            insetClasses[size] +
+            ' ' +
+            (modal === true ? '' : 'pointer-events-none')
+          }
         >
           <BaseUIDialog.Popup
             aria-label={label ?? messages.label}

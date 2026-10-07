@@ -51,18 +51,16 @@ const overlapClasses: Record<NebaOrientation, string> = {
   vertical: '[&>*:not(:first-child)]:-mt-px'
 };
 
-const baseClasses = [
-  // The display is decided with `fullWidth`: `flex` beside `inline-flex` is two
+const baseClasses = // The display is decided with `fullWidth`: `flex` beside `inline-flex` is two
   // utilities for one property, and which won was stylesheet order.
-  'align-middle',
+  'align-middle ' +
   // Every child gets a stacking context so the hovered or focused one can come
   // forward — without it the focus ring is clipped by whichever button happens
   // to be painted after it.
-  '[&>*]:relative [&>*:hover]:z-10 [&>*:focus-visible]:z-10',
+  '[&>*]:relative [&>*:hover]:z-10 [&>*:focus-visible]:z-10 ' +
   // A group is a set of equal actions, so they should be the same height even
   // when one of them has an icon and the others do not.
-  '[&>*]:shrink-0'
-].join(' ');
+  '[&>*]:shrink-0';
 
 /**
  * A row of buttons that belong together.

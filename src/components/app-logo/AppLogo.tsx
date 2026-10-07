@@ -207,17 +207,15 @@ const tileRadiusClasses: Record<NebaSize, string> = {
  * and an app icon that is not filled is not an app icon.
  */
 const variantClasses: Record<NebaVariant, string> = {
-  solid: [
-    surfaceClasses,
-    'text-(--n-on-solid) bg-(--n-fill)',
-    '[box-shadow:var(--n-elev),var(--neba-plate-solid)]'
-  ].join(' '),
-  outline: [
-    surfaceClasses,
-    'border text-(--n-on-tint) bg-(--n-panel)',
-    '[border-color:var(--n-line)]',
-    '[box-shadow:var(--n-elev),var(--neba-plate-glass)]'
-  ].join(' '),
+  solid:
+    surfaceClasses +
+    ' text-(--n-on-solid) bg-(--n-fill) ' +
+    '[box-shadow:var(--n-elev),var(--neba-plate-solid)]',
+  outline:
+    surfaceClasses +
+    ' border text-(--n-on-tint) bg-(--n-panel) ' +
+    '[border-color:var(--n-line)] ' +
+    '[box-shadow:var(--n-elev),var(--neba-plate-glass)]',
   // The plate carries its own bed, so it reads the same wherever it is dropped —
   // see `tintPlateClasses`.
   text: `text-(--n-on-tint) ${tintPlateClasses} [box-shadow:var(--n-elev)]`

@@ -654,6 +654,28 @@ describe('the published package', () => {
         }
       }
     });
+
+    it('builds no class string with an array and a join', () => {
+      // `[a, b].join(' ')` is a call a bundler cannot prove free of side
+      // effects, so a class string written that way stays in the bundle of
+      // every page that reaches its module, read or not. `a + ' ' + b` is an
+      // expression it can drop. A join over a list worked out at run time,
+      // such as `.filter(Boolean).join(' ')`, is not a literal and is not
+      // what this looks for.
+      const offenders = Object.entries(sources).flatMap(([path, text]) =>
+        text
+          .split('\n')
+          .map((line, index) => ({ line, index }))
+          // A comment may name the pattern; only code is held to it.
+          .filter(({ line }) => !/^\s*(\*|\/\/)/.test(line))
+          .filter(
+            ({ line }) => /^\s*\]\.join\(' '\)/.test(line) || /\[[^\]]*\]\.join\(' '\)/.test(line)
+          )
+          .map(({ index }) => `${path}:${index + 1}`)
+      );
+
+      expect(offenders).toEqual([]);
+    });
   });
   /**
    * What a caller writes on a component, and whether it survives.

@@ -128,41 +128,40 @@ export interface NavigationMenuLinkProps extends Omit<
 }
 
 /** The row of words. A nav's items sit at control height — they are the page's. */
-const triggerClasses = [
-  'inline-flex shrink-0 cursor-pointer select-none items-center justify-center',
-  'whitespace-nowrap font-medium leading-none no-underline',
-  'text-(--neba-fg) bg-transparent',
-  '[-webkit-tap-highlight-color:transparent] [touch-action:manipulation]',
-  transitionClasses,
-  iconClasses,
-  'hover:bg-(--n-soft)',
-  'data-[popup-open]:bg-(--n-soft-hover) data-[popup-open]:text-(--n-on-tint)',
-  'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-2',
-  'data-[disabled]:cursor-not-allowed data-[disabled]:text-(--neba-disabled-fg)',
-  'data-[disabled]:hover:bg-transparent'
-].join(' ');
+const triggerClasses =
+  'inline-flex shrink-0 cursor-pointer select-none items-center justify-center ' +
+  'whitespace-nowrap font-medium leading-none no-underline ' +
+  'text-(--neba-fg) bg-transparent ' +
+  '[-webkit-tap-highlight-color:transparent] [touch-action:manipulation] ' +
+  transitionClasses +
+  ' ' +
+  iconClasses +
+  ' hover:bg-(--n-soft) ' +
+  'data-[popup-open]:bg-(--n-soft-hover) data-[popup-open]:text-(--n-on-tint) ' +
+  'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-2 ' +
+  'data-[disabled]:cursor-not-allowed data-[disabled]:text-(--neba-disabled-fg) ' +
+  'data-[disabled]:hover:bg-transparent';
 
 /** The panel. The same frosted sheet a Menu and a Popover draw. */
-const popupClasses = [
-  surfaceClasses,
-  'relative border text-(--neba-fg) bg-(--n-panel-press)',
-  '[border-color:var(--n-line)]',
-  '[box-shadow:var(--neba-shadow-3),var(--neba-plate-glass)]',
-  '[outline:none] overflow-hidden',
+const popupClasses =
+  surfaceClasses +
+  ' relative border text-(--neba-fg) bg-(--n-panel-press) ' +
+  '[border-color:var(--n-line)] ' +
+  '[box-shadow:var(--neba-shadow-3),var(--neba-plate-glass)] ' +
+  '[outline:none] overflow-hidden ' +
   // Opacity and the viewport's own size only. A panel that slid in would drag a
   // page's worth of links across the screen.
-  '[transition:opacity_var(--neba-duration)_var(--neba-ease),width_var(--neba-duration)_var(--neba-ease),height_var(--neba-duration)_var(--neba-ease)]',
-  popupFadeStateClasses
-].join(' ');
+  '[transition:opacity_var(--neba-duration)_var(--neba-ease),width_var(--neba-duration)_var(--neba-ease),height_var(--neba-duration)_var(--neba-ease)] ' +
+  popupFadeStateClasses;
 
-const linkClasses = [
-  'flex min-w-0 cursor-pointer items-start no-underline',
-  'text-(--neba-fg) bg-transparent',
-  transitionClasses,
-  iconClasses,
-  'hover:bg-(--n-soft)',
-  'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:[outline-offset:-2px]'
-].join(' ');
+const linkClasses =
+  'flex min-w-0 cursor-pointer items-start no-underline ' +
+  'text-(--neba-fg) bg-transparent ' +
+  transitionClasses +
+  ' ' +
+  iconClasses +
+  ' hover:bg-(--n-soft) ' +
+  'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:[outline-offset:-2px]';
 
 /** How much room the panel keeps around its links, per step. */
 const panelPaddingClasses: Record<NebaSize, string> = {
@@ -259,14 +258,18 @@ export function NavigationMenuItem({
     );
   }, [hrefProp, hasPanel]);
 
-  const chrome = [
-    triggerClasses,
-    controlHeightClasses[size],
-    controlTextClasses[size],
-    gapClasses[size],
-    paddingXClasses[density ?? 'default'][size],
-    radiusClasses[size]
-  ].join(' ');
+  const chrome =
+    triggerClasses +
+    ' ' +
+    controlHeightClasses[size] +
+    ' ' +
+    controlTextClasses[size] +
+    ' ' +
+    gapClasses[size] +
+    ' ' +
+    paddingXClasses[density ?? 'default'][size] +
+    ' ' +
+    radiusClasses[size];
 
   return (
     <BaseUINavigationMenu.Item value={value}>
@@ -377,11 +380,12 @@ export const NavigationMenu = React.forwardRef<HTMLElement, NavigationMenuProps>
           {...props}
         >
           <BaseUINavigationMenu.List
-            className={[
-              'flex items-center',
-              orientation === 'vertical' ? 'flex-col items-stretch' : 'flex-row',
+            className={
+              'flex items-center ' +
+              (orientation === 'vertical' ? 'flex-col items-stretch' : 'flex-row') +
+              ' ' +
               gapClasses[size]
-            ].join(' ')}
+            }
           >
             {children}
           </BaseUINavigationMenu.List>

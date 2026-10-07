@@ -92,11 +92,12 @@ export const ProgressBox = React.forwardRef<HTMLDivElement, ProgressBoxProps>(
       >
         {label || showValue ? (
           <div
-            className={[
-              'flex items-baseline gap-2',
-              label ? 'justify-between' : 'justify-end',
+            className={
+              'flex items-baseline gap-2 ' +
+              (label ? 'justify-between' : 'justify-end') +
+              ' ' +
               metaTextClasses[size]
-            ].join(' ')}
+            }
           >
             {label ? (
               <Progress.Label className="min-w-0 truncate text-(--neba-fg)">{label}</Progress.Label>

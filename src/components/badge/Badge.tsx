@@ -178,17 +178,15 @@ const circleInsetClasses: Record<NebaCorner, string> = {
  * reports without shouting.
  */
 const variantClasses: Record<NonNullable<NebaStyleProps['variant']>, string> = {
-  solid: [
-    surfaceClasses,
-    'text-(--n-on-solid) bg-(--n-fill)',
-    '[box-shadow:var(--n-elev),var(--neba-plate-solid)]'
-  ].join(' '),
-  outline: [
-    surfaceClasses,
-    'border text-(--n-on-tint) bg-(--n-panel)',
-    '[border-color:var(--n-line)]',
-    '[box-shadow:var(--n-elev),var(--neba-plate-glass)]'
-  ].join(' '),
+  solid:
+    surfaceClasses +
+    ' text-(--n-on-solid) bg-(--n-fill) ' +
+    '[box-shadow:var(--n-elev),var(--neba-plate-solid)]',
+  outline:
+    surfaceClasses +
+    ' border text-(--n-on-tint) bg-(--n-panel) ' +
+    '[border-color:var(--n-line)] ' +
+    '[box-shadow:var(--n-elev),var(--neba-plate-glass)]',
   // A badge is a mark a caller drops *inside* other things, so its plate carries
   // its own bed rather than borrowing whatever it landed on — see
   // `tintPlateClasses`. Avatar and AppLogo read the same treatment.
@@ -258,9 +256,11 @@ export const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(function Badg
     variantClasses[variant],
     asDot
       ? dotSizeClasses[size]
-      : [badgeHeightClasses[size], badgeTextClasses[size], badgePaddingClasses[density][size]].join(
-          ' '
-        ),
+      : badgeHeightClasses[size] +
+          ' ' +
+          badgeTextClasses[size] +
+          ' ' +
+          badgePaddingClasses[density][size],
     anchored ? `absolute ${placementClasses[placement]}` : 'relative align-middle',
     anchored ? (asDot ? cornerOffsets[size].dot : cornerOffsets[size].badge) : '',
     anchored && overlap === 'circle' ? circleInsetClasses[placement] : '',

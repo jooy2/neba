@@ -132,43 +132,39 @@ export interface RadioProps extends Omit<
  * these", and it is the one convention old enough that breaking it would cost
  * more than it bought.
  */
-const dotBaseClasses = [
-  'relative inline-flex shrink-0 items-center justify-center rounded-full border',
+const dotBaseClasses =
+  'relative inline-flex shrink-0 items-center justify-center rounded-full border ' +
   // The same target a Checkbox gets, for the same reason: the ring is sized
   // against the label's text, and a finger is bigger than text.
-  hitAreaClasses,
-  '[-webkit-tap-highlight-color:transparent] [touch-action:manipulation]',
-  transitionClasses,
-  'active:[transition-duration:0ms]',
-  'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-2'
-].join(' ');
+  hitAreaClasses +
+  ' [-webkit-tap-highlight-color:transparent] [touch-action:manipulation] ' +
+  transitionClasses +
+  ' active:[transition-duration:0ms] ' +
+  'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-2';
 
 /**
  * No plate, for the reason Checkbox's tick has none: a 1px white hairline is
  * light on a cut edge at 32px and a bevel at 18px. The acrylic surface stays;
  * only the highlight goes.
  */
-const restDotClasses = [
-  surfaceClasses,
-  'cursor-pointer bg-(--n-panel) [border-color:var(--n-line)]',
-  'hover:bg-(--n-panel-hover) hover:[border-color:var(--n-line-hover)]',
-  'data-[checked]:bg-(--n-fill) data-[checked]:text-(--n-on-solid)',
-  'data-[checked]:[border-color:transparent]',
-  'data-[checked]:hover:bg-(--n-fill-hover)'
-].join(' ');
+const restDotClasses =
+  surfaceClasses +
+  ' cursor-pointer bg-(--n-panel) [border-color:var(--n-line)] ' +
+  'hover:bg-(--n-panel-hover) hover:[border-color:var(--n-line-hover)] ' +
+  'data-[checked]:bg-(--n-fill) data-[checked]:text-(--n-on-solid) ' +
+  'data-[checked]:[border-color:transparent] ' +
+  'data-[checked]:hover:bg-(--n-fill-hover)';
 
-const readOnlyDotClasses = [
-  surfaceClasses,
-  'cursor-default bg-(--n-panel) [border-color:var(--n-line)]',
-  '[filter:saturate(0.55)]',
-  'data-[checked]:bg-(--n-fill) data-[checked]:text-(--n-on-solid)',
-  'data-[checked]:[border-color:transparent]'
-].join(' ');
+const readOnlyDotClasses =
+  surfaceClasses +
+  ' cursor-default bg-(--n-panel) [border-color:var(--n-line)] ' +
+  '[filter:saturate(0.55)] ' +
+  'data-[checked]:bg-(--n-fill) data-[checked]:text-(--n-on-solid) ' +
+  'data-[checked]:[border-color:transparent]';
 
-const disabledDotClasses = [
-  'cursor-not-allowed bg-transparent [border-color:var(--neba-disabled-border)] shadow-none',
-  'data-[checked]:bg-(--neba-disabled-bg)'
-].join(' ');
+const disabledDotClasses =
+  'cursor-not-allowed bg-transparent [border-color:var(--neba-disabled-border)] shadow-none ' +
+  'data-[checked]:bg-(--neba-disabled-bg)';
 
 /**
  * The inner dot: `currentColor`, so it inherits the on-fill ink — and it grows
@@ -185,13 +181,11 @@ const disabledDotClasses = [
  * element mounted for as long as `getAnimations()` on it reports something
  * running, and these two are on the element itself.
  */
-const indicatorClasses = [
-  // `neba-radio-dot` is the hook the forced-colours block paints the dot
+const indicatorClasses = // `neba-radio-dot` is the hook the forced-colours block paints the dot
   // through; a forced palette would otherwise repaint it the ring's colour.
-  'neba-radio-dot rounded-full bg-current',
-  '[transition:width_var(--neba-duration)_var(--neba-ease),height_var(--neba-duration)_var(--neba-ease)]',
-  'data-[starting-style]:size-0 data-[ending-style]:size-0'
-].join(' ');
+  'neba-radio-dot rounded-full bg-current ' +
+  '[transition:width_var(--neba-duration)_var(--neba-ease),height_var(--neba-duration)_var(--neba-ease)] ' +
+  'data-[starting-style]:size-0 data-[ending-style]:size-0';
 
 /**
  * One option in a RadioGroup.

@@ -243,17 +243,15 @@ const keyScale: Record<NebaSize, NebaSize> = {
  * ever printed.
  */
 const variantClasses: Record<NonNullable<NebaStyleProps['variant']>, string> = {
-  solid: [
-    surfaceClasses,
-    'text-(--n-on-solid) bg-(--n-fill)',
-    '[box-shadow:var(--n-elev),var(--neba-plate-solid)]'
-  ].join(' '),
-  outline: [
-    surfaceClasses,
-    'border text-(--n-on-tint) bg-(--n-panel)',
-    '[border-color:var(--n-line)]',
-    '[box-shadow:var(--n-elev),var(--neba-plate-glass)]'
-  ].join(' '),
+  solid:
+    surfaceClasses +
+    ' text-(--n-on-solid) bg-(--n-fill) ' +
+    '[box-shadow:var(--n-elev),var(--neba-plate-solid)]',
+  outline:
+    surfaceClasses +
+    ' border text-(--n-on-tint) bg-(--n-panel) ' +
+    '[border-color:var(--n-line)] ' +
+    '[box-shadow:var(--n-elev),var(--neba-plate-glass)]',
   text: 'text-(--n-on-tint) bg-(--n-soft)'
 };
 
@@ -314,17 +312,22 @@ export const Shortcut = React.forwardRef<HTMLSpanElement, ShortcutProps>(
     // other two join theirs with a `+`. A caller who passes one gets theirs.
     const joiner = separator === undefined ? (resolved === 'mac' ? null : '+') : separator;
 
-    const keyClasses = [
-      'inline-flex shrink-0 items-center justify-center',
-      'font-mono font-medium leading-none whitespace-nowrap tabular-nums',
-      controlHeightClasses[step],
-      controlTextClasses[step],
-      keyMinWidthClasses[step],
-      paddingXClasses[density][step],
-      radiusClasses[step],
-      variantClasses[variant],
-      transitionClasses
-    ].join(' ');
+    const keyClasses =
+      'inline-flex shrink-0 items-center justify-center ' +
+      'font-mono font-medium leading-none whitespace-nowrap tabular-nums ' +
+      controlHeightClasses[step] +
+      ' ' +
+      controlTextClasses[step] +
+      ' ' +
+      keyMinWidthClasses[step] +
+      ' ' +
+      paddingXClasses[density][step] +
+      ' ' +
+      radiusClasses[step] +
+      ' ' +
+      variantClasses[variant] +
+      ' ' +
+      transitionClasses;
 
     return (
       <span

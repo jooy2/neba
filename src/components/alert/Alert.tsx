@@ -75,17 +75,15 @@ export interface AlertProps
  * the tint. The same three weights they mean everywhere: filled, hairline, none.
  */
 const restClasses: Record<NonNullable<NebaStyleProps['variant']>, string> = {
-  solid: [
-    surfaceClasses,
-    'text-(--n-on-solid) bg-(--n-fill)',
-    '[box-shadow:var(--n-elev),var(--neba-plate-solid)]'
-  ].join(' '),
-  outline: [
-    surfaceClasses,
-    'border text-(--neba-fg) bg-(--n-panel)',
-    '[border-color:var(--n-line)]',
-    '[box-shadow:var(--n-elev),var(--neba-plate-glass)]'
-  ].join(' '),
+  solid:
+    surfaceClasses +
+    ' text-(--n-on-solid) bg-(--n-fill) ' +
+    '[box-shadow:var(--n-elev),var(--neba-plate-solid)]',
+  outline:
+    surfaceClasses +
+    ' border text-(--neba-fg) bg-(--n-panel) ' +
+    '[border-color:var(--n-line)] ' +
+    '[box-shadow:var(--n-elev),var(--neba-plate-glass)]',
   // No sheet and no edge, only the tint. For an alert set among form fields,
   // where a second bordered rectangle is one rectangle too many.
   text: 'text-(--neba-fg) bg-(--n-soft)'
@@ -235,15 +233,15 @@ export const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert
             type="button"
             aria-label={closeLabel ?? messages.dismiss}
             onClick={onClose}
-            className={[
-              'relative inline-flex size-[1.15em] cursor-pointer items-center justify-center rounded-full',
+            className={
+              'relative inline-flex size-[1.15em] cursor-pointer items-center justify-center rounded-full ' +
               // Drawn at the size of the text beside it, pressed at the size of
               // a finger.
-              hitAreaClasses,
-              'opacity-70 [transition:opacity_var(--neba-duration)_var(--neba-ease)]',
-              'hover:opacity-100 focus-visible:opacity-100',
+              hitAreaClasses +
+              ' opacity-70 [transition:opacity_var(--neba-duration)_var(--neba-ease)] ' +
+              'hover:opacity-100 focus-visible:opacity-100 ' +
               'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-2'
-            ].join(' ')}
+            }
           >
             <CloseIcon />
           </button>

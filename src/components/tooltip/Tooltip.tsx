@@ -87,17 +87,16 @@ export type TooltipProviderProps = React.ComponentProps<typeof BaseUITooltip.Pro
  * It still floats, so it carries a shadow by default, at level 3 — the same as
  * the Select popup, for the same reason.
  */
-const popupClasses = [
-  surfaceClasses,
-  'max-w-64 text-(--n-on-solid) bg-(--n-fill)',
-  '[box-shadow:var(--neba-shadow-3),var(--neba-plate-solid)]',
-  '[outline:none]',
-  popupFadeClasses,
+const popupClasses =
+  surfaceClasses +
+  ' max-w-64 text-(--n-on-solid) bg-(--n-fill) ' +
+  '[box-shadow:var(--neba-shadow-3),var(--neba-plate-solid)] ' +
+  '[outline:none] ' +
+  popupFadeClasses +
   // Base UI sets this while the pointer is moving between grouped tooltips.
   // Fading in a tooltip that is meant to appear instantly is worse than not
   // fading at all — it reads as lag.
-  'data-[instant]:[transition-duration:0ms]'
-].join(' ');
+  ' data-[instant]:[transition-duration:0ms]';
 
 /** A row's vertical padding, against the horizontal track `paddingXClasses` sets. */
 const paddingYClasses: Record<NebaSize, string> = {
@@ -227,12 +226,12 @@ export function Tooltip(rawProps: TooltipProps) {
                 // up on. The wedge is drawn pointing down and turned to match —
                 // a rotation of a glyph, which is the same allowance the Select
                 // chevron takes. Nothing with text in it moves.
-                className={[
-                  'data-[side=top]:bottom-[-1px]',
-                  'data-[side=bottom]:top-[-1px] data-[side=bottom]:rotate-180',
-                  'data-[side=left]:right-[-1px] data-[side=left]:-rotate-90',
+                className={
+                  'data-[side=top]:bottom-[-1px] ' +
+                  'data-[side=bottom]:top-[-1px] data-[side=bottom]:rotate-180 ' +
+                  'data-[side=left]:right-[-1px] data-[side=left]:-rotate-90 ' +
                   'data-[side=right]:left-[-1px] data-[side=right]:rotate-90'
-                ].join(' ')}
+                }
               >
                 <svg
                   width={arrowSize}

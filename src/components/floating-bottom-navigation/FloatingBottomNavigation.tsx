@@ -102,17 +102,15 @@ export interface FloatingBottomNavigationProps
  * separates a floating lozenge from whatever is passing underneath it.
  */
 const variantClasses: Record<NebaVariant, string> = {
-  solid: [
-    surfaceClasses,
-    'text-(--neba-fg) bg-(--n-panel-press)',
-    '[box-shadow:var(--n-elev),var(--neba-plate-solid)]'
-  ].join(' '),
-  outline: [
-    surfaceClasses,
-    'border text-(--neba-fg) bg-(--n-panel-hover)',
-    '[border-color:var(--n-line)]',
-    '[box-shadow:var(--n-elev),var(--neba-plate-glass)]'
-  ].join(' '),
+  solid:
+    surfaceClasses +
+    ' text-(--neba-fg) bg-(--n-panel-press) ' +
+    '[box-shadow:var(--n-elev),var(--neba-plate-solid)]',
+  outline:
+    surfaceClasses +
+    ' border text-(--neba-fg) bg-(--n-panel-hover) ' +
+    '[border-color:var(--n-line)] ' +
+    '[box-shadow:var(--n-elev),var(--neba-plate-glass)]',
   text: 'text-(--neba-fg) bg-transparent'
 };
 

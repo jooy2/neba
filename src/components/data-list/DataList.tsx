@@ -84,10 +84,9 @@ const rowGapClasses: Record<NebaDensity, Record<NebaSize, string>> = {
  * a `<div>` in between would take the grid with it. Counting per element type is
  * exactly what makes "every row but the first" expressible without one.
  */
-const dividerClasses = [
-  '[&>dt:nth-of-type(n+2)]:border-t [&>dd:nth-of-type(n+2)]:border-t',
-  '[&>dt]:[border-color:var(--neba-border)] [&>dd]:[border-color:var(--neba-border)]'
-].join(' ');
+const dividerClasses =
+  '[&>dt:nth-of-type(n+2)]:border-t [&>dd:nth-of-type(n+2)]:border-t ' +
+  '[&>dt]:[border-color:var(--neba-border)] [&>dd]:[border-color:var(--neba-border)]';
 
 /** The padding the hairline needs above the row it opens. */
 const dividerPadClasses: Record<NebaDensity, Record<NebaSize, string>> = {
@@ -170,11 +169,12 @@ export function DataListItem({ label, children }: DataListItemProps) {
   return (
     <>
       <dt
-        className={[
-          'min-w-0 text-(--neba-muted-fg)',
-          metaTextClasses[size],
-          orientation === 'vertical' ? 'mb-0.5' : 'py-px'
-        ].join(' ')}
+        className={
+          'min-w-0 text-(--neba-muted-fg) ' +
+          metaTextClasses[size] +
+          ' ' +
+          (orientation === 'vertical' ? 'mb-0.5' : 'py-px')
+        }
       >
         {label}
       </dt>

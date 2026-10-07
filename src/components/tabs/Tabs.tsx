@@ -641,19 +641,21 @@ export const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(function Tabs(ra
           {tabs}
 
           <BaseUITabs.Indicator
-            className={[
-              'neba-tabs-indicator pointer-events-none',
-              wraps && variant !== 'solid'
+            className={
+              'neba-tabs-indicator pointer-events-none ' +
+              (wraps && variant !== 'solid'
                 ? wrappedIndicatorClasses[orientation]
-                : indicatorClasses[variant][orientation],
-              indicatorSurfaceClasses[variant],
-              variant === 'solid' ? radiusClasses[size] : 'rounded-full',
+                : indicatorClasses[variant][orientation]) +
+              ' ' +
+              indicatorSurfaceClasses[variant] +
+              ' ' +
+              (variant === 'solid' ? radiusClasses[size] : 'rounded-full') +
               // The same easing everything else uses, on the four properties the
               // measurement actually writes.
-              '[transition-property:left,top,width,height]',
-              '[transition-duration:var(--neba-duration)]',
+              ' [transition-property:left,top,width,height] ' +
+              '[transition-duration:var(--neba-duration)] ' +
               '[transition-timing-function:var(--neba-ease)]'
-            ].join(' ')}
+            }
           />
         </BaseUITabs.List>
 

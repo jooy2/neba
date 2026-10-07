@@ -68,47 +68,41 @@ export interface AspectRatioProps extends React.ComponentPropsWithoutRef<'div'> 
  * has nothing to act on in either; an `svg` fits itself through
  * `preserveAspectRatio`.
  */
-const stretchClasses = [
-  '[&>img]:size-full',
-  '[&>video]:size-full',
-  '[&>canvas]:size-full',
-  '[&>svg]:size-full',
-  '[&>iframe]:size-full',
-  '[&>picture]:size-full',
-  '[&>picture>img]:size-full'
-].join(' ');
+const stretchClasses =
+  '[&>img]:size-full ' +
+  '[&>video]:size-full ' +
+  '[&>canvas]:size-full ' +
+  '[&>svg]:size-full ' +
+  '[&>iframe]:size-full ' +
+  '[&>picture]:size-full ' +
+  '[&>picture>img]:size-full';
 
 const fitClasses: Record<NebaAspectFit, string> = {
-  cover: [
-    '[&>img]:object-cover',
-    '[&>video]:object-cover',
-    '[&>canvas]:object-cover',
-    '[&>picture>img]:object-cover'
-  ].join(' '),
-  contain: [
-    '[&>img]:object-contain',
-    '[&>video]:object-contain',
-    '[&>canvas]:object-contain',
-    '[&>picture>img]:object-contain'
-  ].join(' '),
-  fill: [
-    '[&>img]:object-fill',
-    '[&>video]:object-fill',
-    '[&>canvas]:object-fill',
-    '[&>picture>img]:object-fill'
-  ].join(' '),
-  none: [
-    '[&>img]:object-none',
-    '[&>video]:object-none',
-    '[&>canvas]:object-none',
-    '[&>picture>img]:object-none'
-  ].join(' '),
-  'scale-down': [
-    '[&>img]:object-scale-down',
-    '[&>video]:object-scale-down',
-    '[&>canvas]:object-scale-down',
+  cover:
+    '[&>img]:object-cover ' +
+    '[&>video]:object-cover ' +
+    '[&>canvas]:object-cover ' +
+    '[&>picture>img]:object-cover',
+  contain:
+    '[&>img]:object-contain ' +
+    '[&>video]:object-contain ' +
+    '[&>canvas]:object-contain ' +
+    '[&>picture>img]:object-contain',
+  fill:
+    '[&>img]:object-fill ' +
+    '[&>video]:object-fill ' +
+    '[&>canvas]:object-fill ' +
+    '[&>picture>img]:object-fill',
+  none:
+    '[&>img]:object-none ' +
+    '[&>video]:object-none ' +
+    '[&>canvas]:object-none ' +
+    '[&>picture>img]:object-none',
+  'scale-down':
+    '[&>img]:object-scale-down ' +
+    '[&>video]:object-scale-down ' +
+    '[&>canvas]:object-scale-down ' +
     '[&>picture>img]:object-scale-down'
-  ].join(' ')
 };
 
 /**

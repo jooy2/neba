@@ -72,17 +72,16 @@ export interface CheckboxProps extends BaseCheckboxProps {
  * shifting it a step, because "on" and "off" are not two strengths of the same
  * thing.
  */
-const tickBaseClasses = [
-  'relative inline-flex shrink-0 items-center justify-center border',
+const tickBaseClasses =
+  'relative inline-flex shrink-0 items-center justify-center border ' +
   // The tick is 18px because it is sized against the text beside it. A finger
   // is not, and a Checkbox with no label — a table's tick column — has nothing
   // else to press. This grows the target and draws nothing.
-  hitAreaClasses,
-  '[-webkit-tap-highlight-color:transparent] [touch-action:manipulation]',
-  transitionClasses,
-  'active:[transition-duration:0ms]',
-  'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-2'
-].join(' ');
+  hitAreaClasses +
+  ' [-webkit-tap-highlight-color:transparent] [touch-action:manipulation] ' +
+  transitionClasses +
+  ' active:[transition-duration:0ms] ' +
+  'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-2';
 
 /**
  * No plate on a tick, and that is the one place this library deliberately does
@@ -97,36 +96,33 @@ const tickBaseClasses = [
  * The surface stays — the grain, the sheen and the backdrop blur are what make
  * the box a sheet of something. It is only the highlight that goes.
  */
-const restClasses = [
-  surfaceClasses,
-  'cursor-pointer bg-(--n-panel) [border-color:var(--n-line)]',
-  'hover:bg-(--n-panel-hover) hover:[border-color:var(--n-line-hover)]',
+const restClasses =
+  surfaceClasses +
+  ' cursor-pointer bg-(--n-panel) [border-color:var(--n-line)] ' +
+  'hover:bg-(--n-panel-hover) hover:[border-color:var(--n-line-hover)] ' +
   // `data-checked` rather than `:checked`: the visible tick is a `<span>`, and
   // the real input is hidden beside it.
-  'data-[checked]:bg-(--n-fill) data-[checked]:text-(--n-on-solid)',
-  'data-[checked]:[border-color:transparent]',
-  'data-[checked]:hover:bg-(--n-fill-hover)',
-  'data-[indeterminate]:bg-(--n-fill) data-[indeterminate]:text-(--n-on-solid)',
-  'data-[indeterminate]:[border-color:transparent]'
-].join(' ');
+  'data-[checked]:bg-(--n-fill) data-[checked]:text-(--n-on-solid) ' +
+  'data-[checked]:[border-color:transparent] ' +
+  'data-[checked]:hover:bg-(--n-fill-hover) ' +
+  'data-[indeterminate]:bg-(--n-fill) data-[indeterminate]:text-(--n-on-solid) ' +
+  'data-[indeterminate]:[border-color:transparent]';
 
-const readOnlyClasses = [
-  surfaceClasses,
-  'cursor-default bg-(--n-panel) [border-color:var(--n-line)]',
-  '[filter:saturate(0.55)]',
-  'data-[checked]:bg-(--n-fill) data-[checked]:text-(--n-on-solid)',
-  'data-[checked]:[border-color:transparent]',
-  'data-[indeterminate]:bg-(--n-fill) data-[indeterminate]:text-(--n-on-solid)',
-  'data-[indeterminate]:[border-color:transparent]'
-].join(' ');
+const readOnlyClasses =
+  surfaceClasses +
+  ' cursor-default bg-(--n-panel) [border-color:var(--n-line)] ' +
+  '[filter:saturate(0.55)] ' +
+  'data-[checked]:bg-(--n-fill) data-[checked]:text-(--n-on-solid) ' +
+  'data-[checked]:[border-color:transparent] ' +
+  'data-[indeterminate]:bg-(--n-fill) data-[indeterminate]:text-(--n-on-solid) ' +
+  'data-[indeterminate]:[border-color:transparent]';
 
 /** Disabled drops the colour family entirely, exactly as on Button. */
-const disabledTickClasses = [
-  'cursor-not-allowed bg-transparent [border-color:var(--neba-disabled-border)]',
-  'text-(--neba-disabled-fg) shadow-none',
-  'data-[checked]:bg-(--neba-disabled-bg)',
-  'data-[indeterminate]:bg-(--neba-disabled-bg)'
-].join(' ');
+const disabledTickClasses =
+  'cursor-not-allowed bg-transparent [border-color:var(--neba-disabled-border)] ' +
+  'text-(--neba-disabled-fg) shadow-none ' +
+  'data-[checked]:bg-(--neba-disabled-bg) ' +
+  'data-[indeterminate]:bg-(--neba-disabled-bg)';
 
 /**
  * The mark is drawn at 70% of the box, so it never touches the corners — and it
@@ -149,15 +145,14 @@ const disabledTickClasses = [
  * transition living only on the `path` would be cut off on the frame the
  * checkbox was cleared, so the mark would draw itself in and then vanish.
  */
-const markClasses = [
-  'flex size-[70%] items-center justify-center',
-  '[transition:opacity_var(--neba-duration)_var(--neba-ease)]',
-  'data-[starting-style]:opacity-0 data-[ending-style]:opacity-0',
-  '[&_path]:[stroke-dasharray:1]',
-  '[&_path]:[transition:stroke-dashoffset_var(--neba-duration)_var(--neba-ease)]',
-  '[&[data-starting-style]_path]:[stroke-dashoffset:1]',
-  '[&[data-ending-style]_path]:[stroke-dashoffset:1]'
-].join(' ');
+const markClasses =
+  'flex size-[70%] items-center justify-center ' +
+  '[transition:opacity_var(--neba-duration)_var(--neba-ease)] ' +
+  'data-[starting-style]:opacity-0 data-[ending-style]:opacity-0 ' +
+  '[&_path]:[stroke-dasharray:1] ' +
+  '[&_path]:[transition:stroke-dashoffset_var(--neba-duration)_var(--neba-ease)] ' +
+  '[&[data-starting-style]_path]:[stroke-dashoffset:1] ' +
+  '[&[data-ending-style]_path]:[stroke-dashoffset:1]';
 
 function CheckMark() {
   return (
@@ -241,14 +236,16 @@ export const Checkbox = React.forwardRef<HTMLElement, CheckboxProps>(
       '--n-ring': `var(--neba-${family}-ring)`
     } as React.CSSProperties;
 
-    const tickClasses = [
-      tickBaseClasses,
-      tickSizeClasses[size],
-      tickRadiusClasses[size],
+    const tickClasses =
+      tickBaseClasses +
+      ' ' +
+      tickSizeClasses[size] +
+      ' ' +
+      tickRadiusClasses[size] +
+      ' ' +
       // An if/else rather than stacked variants: two Tailwind classes of equal
       // specificity resolve by their order in the generated stylesheet.
-      disabled ? disabledTickClasses : readOnly ? readOnlyClasses : restClasses
-    ].join(' ');
+      (disabled ? disabledTickClasses : readOnly ? readOnlyClasses : restClasses);
 
     return (
       <Field.Root

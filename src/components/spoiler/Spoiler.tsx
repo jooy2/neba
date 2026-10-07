@@ -111,17 +111,15 @@ export interface SpoilerProps extends Omit<
  * the hairline and on the button, and the sheet stays neutral.
  */
 const variantClasses: Record<NebaVariant, string> = {
-  solid: [
-    surfaceClasses,
-    'bg-(--n-panel-hover)',
-    '[box-shadow:var(--n-elev),var(--neba-plate-solid)]'
-  ].join(' '),
-  outline: [
-    surfaceClasses,
-    'border bg-(--n-panel)',
-    '[border-color:var(--n-line)]',
-    '[box-shadow:var(--n-elev),var(--neba-plate-glass)]'
-  ].join(' '),
+  solid:
+    surfaceClasses +
+    ' bg-(--n-panel-hover) ' +
+    '[box-shadow:var(--n-elev),var(--neba-plate-solid)]',
+  outline:
+    surfaceClasses +
+    ' border bg-(--n-panel) ' +
+    '[border-color:var(--n-line)] ' +
+    '[box-shadow:var(--n-elev),var(--neba-plate-glass)]',
   text: 'bg-transparent'
 };
 
@@ -283,18 +281,19 @@ export const Spoiler = React.forwardRef<HTMLDivElement, SpoilerProps>(
             // box grows by at the moment of the press, and the page under it
             // moves — twice, for anyone who covers it again. The cover is over
             // this lane, so there is nothing to see in the space it holds.
-            className={[
-              open ? '' : 'invisible',
-              'flex justify-end',
-              boxPaddingXClasses[density][size],
+            className={
+              (open ? '' : 'invisible') +
+              ' flex justify-end ' +
+              boxPaddingXClasses[density][size] +
+              ' ' +
               // The row takes the sheet's padding on both axes and then gives the
               // top back: `padded` content already ends with a full gap, and two
               // of them stacked is a hole between the text and the way back out.
               // `pt-0` beating `py-*` is Tailwind's own longhand-after-shorthand
               // ordering rather than an accident of how these are concatenated.
-              boxPaddingYClasses[density][size],
-              'pt-0'
-            ].join(' ')}
+              boxPaddingYClasses[density][size] +
+              ' pt-0'
+            }
             style={{ gridArea: '2 / 1' }}
             inert={inertValue(!open)}
           >

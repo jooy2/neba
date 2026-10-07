@@ -91,11 +91,12 @@ export const ProgressLinear = React.forwardRef<HTMLDivElement, ProgressLinearPro
       >
         {label || showValue ? (
           <div
-            className={[
-              'flex items-baseline gap-2',
-              label ? 'justify-between' : 'justify-end',
+            className={
+              'flex items-baseline gap-2 ' +
+              (label ? 'justify-between' : 'justify-end') +
+              ' ' +
               metaTextClasses[size]
-            ].join(' ')}
+            }
           >
             {label ? (
               <Progress.Label className="min-w-0 truncate text-(--neba-fg)">{label}</Progress.Label>
@@ -113,16 +114,16 @@ export const ProgressLinear = React.forwardRef<HTMLDivElement, ProgressLinearPro
           style={thickness === undefined ? undefined : { height: `${thickness}px` }}
         >
           <Progress.Indicator
-            className={[
-              'neba-progress-indicator absolute rounded-full bg-(--n-fill)',
+            className={
+              'neba-progress-indicator absolute rounded-full bg-(--n-fill) ' +
               // `neba-sweep` supplies the position, the width and the animation;
               // when the value is known Base UI supplies the width instead and
               // this transition is what makes it move rather than jump. Both
               // change an inline size, never a transform.
-              indeterminate
+              (indeterminate
                 ? 'neba-sweep'
-                : 'top-0 [transition:width_var(--neba-duration-fill)_var(--neba-ease)]'
-            ].join(' ')}
+                : 'top-0 [transition:width_var(--neba-duration-fill)_var(--neba-ease)]')
+            }
           />
         </Progress.Track>
       </Progress.Root>

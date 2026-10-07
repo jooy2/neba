@@ -195,21 +195,21 @@ const resizeClasses: Record<TextFieldResize, string> = {
   both: 'resize'
 };
 
-const shellBaseClasses = [
-  // `group` so the adornments can answer the control's focus. The I-beam over
+const shellBaseClasses = // `group` so the adornments can answer the control's focus. The I-beam over
   // the whole shell, padding included, is decided with the state below: beside
   // the `cursor-not-allowed` a disabled shell takes, two cursor utilities would
   // be settled by the order Tailwind happened to emit them in.
-  'group relative flex w-full',
-  '[-webkit-tap-highlight-color:transparent]',
+  'group relative flex w-full ' +
+  '[-webkit-tap-highlight-color:transparent] ' +
   // Same property list and durations as Button, with no `:active` override
   // because a field is not pressed. What focus does have is a duration of its
   // own: the sheet, the hairline and the ring all travel at 160ms, rather than
   // the sheet taking the fill's 340ms to catch up with the other two.
-  transitionClasses,
-  fieldFocusTransitionClasses,
-  iconClasses
-].join(' ');
+  transitionClasses +
+  ' ' +
+  fieldFocusTransitionClasses +
+  ' ' +
+  iconClasses;
 
 /**
  * The shell, the read-only treatment and the disabled treatment are the ones

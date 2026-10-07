@@ -473,20 +473,21 @@ export const SegmentedButton = React.forwardRef<HTMLDivElement, SegmentedButtonP
             <span
               ref={tileRef}
               aria-hidden="true"
-              className={[
-                'pointer-events-none absolute rounded-full',
-                'left-(--n-seg-x) top-(--n-seg-y) h-(--n-seg-h) w-(--n-seg-w)',
-                tileClasses[variant],
-                offTileClasses,
-                '[transition-property:left,top,width,height]',
-                '[transition-timing-function:var(--neba-ease)]',
+              className={
+                'pointer-events-none absolute rounded-full ' +
+                'left-(--n-seg-x) top-(--n-seg-y) h-(--n-seg-h) w-(--n-seg-w) ' +
+                tileClasses[variant] +
+                ' ' +
+                offTileClasses +
+                ' [transition-property:left,top,width,height] ' +
+                '[transition-timing-function:var(--neba-ease)] ' +
                 // Nothing until the first measurement has landed; the house
                 // duration from then on.
-                '[transition-duration:0ms] data-[ready]:[transition-duration:var(--neba-duration)]',
+                '[transition-duration:0ms] data-[ready]:[transition-duration:var(--neba-duration)] ' +
                 // And not drawn until then either: unplaced, it is a dot in the
                 // groove's corner, and the chosen segment draws its own fill.
                 'invisible data-[ready]:visible'
-              ].join(' ')}
+              }
             />
           ) : null}
 

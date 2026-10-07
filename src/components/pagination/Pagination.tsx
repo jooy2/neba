@@ -393,12 +393,13 @@ export const Pagination = React.forwardRef<HTMLElement, PaginationProps>(
               <li
                 key={`slot-${index}`}
                 aria-hidden="true"
-                className={[
-                  'flex select-none items-center justify-center',
-                  'text-(--neba-muted-fg)',
-                  controlTextClasses[size],
+                className={
+                  'flex select-none items-center justify-center ' +
+                  'text-(--neba-muted-fg) ' +
+                  controlTextClasses[size] +
+                  ' ' +
                   ellipsisClasses[size]
-                ].join(' ')}
+                }
               >
                 …
               </li>

@@ -284,10 +284,10 @@ export const Statistic = React.forwardRef<HTMLDivElement, StatisticProps>(
       >
         {hasContent(label) || hasContent(icon) ? (
           <div
-            className={[
-              'flex min-w-0 items-center gap-1.5 font-medium text-(--neba-muted-fg)',
+            className={
+              'flex min-w-0 items-center gap-1.5 font-medium text-(--neba-muted-fg) ' +
               metaTextClasses[size]
-            ].join(' ')}
+            }
           >
             {hasContent(icon) ? <span className="flex shrink-0 items-center">{icon}</span> : null}
             {hasContent(label) ? <span className="min-w-0 truncate">{label}</span> : null}
@@ -298,10 +298,10 @@ export const Statistic = React.forwardRef<HTMLDivElement, StatisticProps>(
           floating in the middle of its cap height — the one detail that decides
           whether "42%" reads as one number or as a number and a symbol. */}
         <div
-          className={[
-            'flex min-w-0 flex-wrap items-baseline gap-1 font-semibold text-(--neba-fg) tabular-nums',
+          className={
+            'flex min-w-0 flex-wrap items-baseline gap-1 font-semibold text-(--neba-fg) tabular-nums ' +
             valueClasses[size]
-          ].join(' ')}
+          }
         >
           {hasContent(prefix) ? (
             <span className={`font-medium text-(--neba-muted-fg) ${affixClasses[size]}`}>

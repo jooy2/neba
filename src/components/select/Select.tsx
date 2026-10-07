@@ -184,36 +184,33 @@ export interface SelectProps
  * the worst of it: `--n-soft-hover` resolved to nothing, so hovering a row did
  * not light it at all.
  */
-const popupClasses = [
-  surfaceClasses,
-  'max-h-[min(20rem,var(--available-height))] overflow-y-auto overscroll-contain',
-  'min-w-[var(--anchor-width)] border bg-(--n-panel-press) p-1',
-  '[border-color:var(--n-line)]',
-  '[box-shadow:var(--neba-shadow-3),var(--neba-plate-glass)]',
-  '[outline:none]',
-  popupFadeClasses
-].join(' ');
+const popupClasses =
+  surfaceClasses +
+  ' max-h-[min(20rem,var(--available-height))] overflow-y-auto overscroll-contain ' +
+  'min-w-[var(--anchor-width)] border bg-(--n-panel-press) p-1 ' +
+  '[border-color:var(--n-line)] ' +
+  '[box-shadow:var(--neba-shadow-3),var(--neba-plate-glass)] ' +
+  '[outline:none] ' +
+  popupFadeClasses;
 
 /**
  * A group's heading. The same treatment a MenuGroup's label has, indented to
  * the row text rather than to the sheet, so the heading and the options under
  * it share a left edge and the tick gutter stays empty.
  */
-const groupLabelClasses = [
-  'py-1.5 pe-2 ps-7 font-semibold tracking-wide text-(--neba-muted-fg) uppercase'
-].join(' ');
+const groupLabelClasses =
+  'py-1.5 pe-2 ps-7 font-semibold tracking-wide text-(--neba-muted-fg) uppercase';
 
-const itemClasses = [
-  'relative flex cursor-pointer items-center gap-2 select-none',
-  'rounded-(--neba-radius-xs) py-1.5 pe-2 ps-7',
-  transitionClasses,
+const itemClasses =
+  'relative flex cursor-pointer items-center gap-2 select-none ' +
+  'rounded-(--neba-radius-xs) py-1.5 pe-2 ps-7 ' +
+  transitionClasses +
   // `data-highlighted` rather than `:hover`: it is also what the arrow keys
   // move, so the mouse and the keyboard light the same row.
-  'data-[highlighted]:bg-(--n-soft-hover) data-[highlighted]:text-(--n-on-tint)',
-  'data-[selected]:text-(--n-on-tint) data-[selected]:font-medium',
-  'data-[disabled]:cursor-not-allowed data-[disabled]:text-(--neba-disabled-fg)',
-  '[outline:none]'
-].join(' ');
+  ' data-[highlighted]:bg-(--n-soft-hover) data-[highlighted]:text-(--n-on-tint) ' +
+  'data-[selected]:text-(--n-on-tint) data-[selected]:font-medium ' +
+  'data-[disabled]:cursor-not-allowed data-[disabled]:text-(--neba-disabled-fg) ' +
+  '[outline:none]';
 
 /**
  * One value chosen from a list of them.
@@ -400,25 +397,25 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
         container asks it to be. */}
         <span className="flex min-w-0 flex-1 flex-col">
           <BaseUISelect.Value
-            className={[
-              'w-full truncate text-start',
+            className={
+              'w-full truncate text-start ' +
               // The placeholder is muted the same way a TextField's is, so an
               // empty select and an empty field read as equally empty.
               'data-[placeholder]:text-(--neba-muted-fg)'
-            ].join(' ')}
+            }
             placeholder={placeholder}
           />
           <WidthSizer samples={sizerSamples} />
         </span>
 
         <BaseUISelect.Icon
-          className={[
-            'flex h-[1lh] shrink-0 items-center text-(--neba-muted-fg)',
+          className={
+            'flex h-[1lh] shrink-0 items-center text-(--neba-muted-fg) ' +
             // The chevron is the one thing here that may turn: it is a
             // glyph, not a label, and nothing about it resamples.
-            '[transition:rotate_var(--neba-duration)_var(--neba-ease)]',
+            '[transition:rotate_var(--neba-duration)_var(--neba-ease)] ' +
             'data-[popup-open]:rotate-180'
-          ].join(' ')}
+          }
         >
           <ChevronIcon />
         </BaseUISelect.Icon>

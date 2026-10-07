@@ -162,22 +162,19 @@ const viewportClasses: Record<ToastPosition, string> = {
  * by default — level 3, the same as the Select popup and the Dialog.
  */
 const rootClasses: Record<NebaVariant, string> = {
-  solid: [
-    surfaceClasses,
-    'text-(--n-on-solid) bg-(--n-fill)',
-    '[box-shadow:var(--neba-shadow-3),var(--neba-plate-solid)]'
-  ].join(' '),
-  outline: [
-    surfaceClasses,
-    'border text-(--neba-fg) bg-(--n-panel-press)',
-    '[border-color:var(--n-line)]',
+  solid:
+    surfaceClasses +
+    ' text-(--n-on-solid) bg-(--n-fill) ' +
+    '[box-shadow:var(--neba-shadow-3),var(--neba-plate-solid)]',
+  outline:
+    surfaceClasses +
+    ' border text-(--neba-fg) bg-(--n-panel-press) ' +
+    '[border-color:var(--n-line)] ' +
+    '[box-shadow:var(--neba-shadow-3),var(--neba-plate-glass)]',
+  text:
+    surfaceClasses +
+    ' text-(--neba-fg) bg-(--n-panel-press) ' +
     '[box-shadow:var(--neba-shadow-3),var(--neba-plate-glass)]'
-  ].join(' '),
-  text: [
-    surfaceClasses,
-    'text-(--neba-fg) bg-(--n-panel-press)',
-    '[box-shadow:var(--neba-shadow-3),var(--neba-plate-glass)]'
-  ].join(' ')
 };
 
 const accentClasses: Record<NebaVariant, string> = {

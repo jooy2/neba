@@ -112,15 +112,14 @@ export interface TourProps extends Pick<NebaStyleProps, 'size' | 'color' | 'dens
 }
 
 /** The card. The same frosted sheet a Popover draws, at the same elevation. */
-const popupClasses = [
-  surfaceClasses,
-  'relative flex flex-col',
-  'border text-(--neba-fg) bg-(--n-panel-press)',
-  '[border-color:var(--n-line)]',
-  '[box-shadow:var(--neba-shadow-3),var(--neba-plate-glass)]',
-  '[outline:none]',
-  popupFadeClasses
-].join(' ');
+const popupClasses =
+  surfaceClasses +
+  ' relative flex flex-col ' +
+  'border text-(--neba-fg) bg-(--n-panel-press) ' +
+  '[border-color:var(--n-line)] ' +
+  '[box-shadow:var(--neba-shadow-3),var(--neba-plate-glass)] ' +
+  '[outline:none] ' +
+  popupFadeClasses;
 
 const maxWidthClasses: Record<NebaSize, string> = {
   xs: 'max-w-56',

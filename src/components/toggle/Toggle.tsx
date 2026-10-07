@@ -80,19 +80,20 @@ const iconOnlyClasses: Record<NebaSize, string> = {
   xl: `${controlSquareClasses.xl} px-0`
 };
 
-const baseClasses = [
-  // No cursor here: a disabled toggle takes `cursor-not-allowed`, and beside a
+const baseClasses = // No cursor here: a disabled toggle takes `cursor-not-allowed`, and beside a
   // `cursor-pointer` the two would be decided by stylesheet order.
   // `neba-toggle` is the hook the forced-colours block paints a pressed one
   // through.
-  'neba-toggle relative inline-flex shrink-0 select-none items-center justify-center',
-  'whitespace-nowrap align-middle font-medium leading-none',
-  '[-webkit-tap-highlight-color:transparent] [touch-action:manipulation]',
-  transitionClasses,
-  pressTransitionClasses,
-  focusRingClasses,
-  iconClasses
-].join(' ');
+  'neba-toggle relative inline-flex shrink-0 select-none items-center justify-center ' +
+  'whitespace-nowrap align-middle font-medium leading-none ' +
+  '[-webkit-tap-highlight-color:transparent] [touch-action:manipulation] ' +
+  transitionClasses +
+  ' ' +
+  pressTransitionClasses +
+  ' ' +
+  focusRingClasses +
+  ' ' +
+  iconClasses;
 
 /**
  * Off.
@@ -110,33 +111,30 @@ const baseClasses = [
  * colour, and the only thing left carrying the state was the ink.
  */
 const offClasses: Record<NebaVariant, string> = {
-  solid: [
-    surfaceClasses,
-    'text-(--neba-muted-fg) bg-(--neba-panel-hover)',
-    '[box-shadow:var(--n-elev),var(--neba-plate-solid)]',
-    'hover:bg-(--neba-panel-press) hover:text-(--neba-fg)',
-    'active:bg-(--neba-panel-press)'
-  ].join(' '),
-  outline: [
-    surfaceClasses,
-    'border text-(--neba-muted-fg) bg-(--neba-panel)',
+  solid:
+    surfaceClasses +
+    ' text-(--neba-muted-fg) bg-(--neba-panel-hover) ' +
+    '[box-shadow:var(--n-elev),var(--neba-plate-solid)] ' +
+    'hover:bg-(--neba-panel-press) hover:text-(--neba-fg) ' +
+    'active:bg-(--neba-panel-press)',
+  outline:
+    surfaceClasses +
+    ' border text-(--neba-muted-fg) bg-(--neba-panel) ' +
     // The neutral hairline too, and it does not warm towards the accent on
     // hover: a border moving into the colour family is the one move that reads
     // as the toggle going on under the pointer that has not pressed it yet.
-    '[border-color:var(--neba-border)]',
-    '[box-shadow:var(--n-elev),var(--neba-plate-glass)]',
-    'hover:bg-(--neba-panel-hover) hover:text-(--neba-fg)',
-    'active:bg-(--neba-panel-press)'
-  ].join(' '),
+    '[border-color:var(--neba-border)] ' +
+    '[box-shadow:var(--n-elev),var(--neba-plate-glass)] ' +
+    'hover:bg-(--neba-panel-hover) hover:text-(--neba-fg) ' +
+    'active:bg-(--neba-panel-press)',
   // The one place the family still shows while the toggle is off. A `text`
   // toggle has no plate to darken, and there is no neutral wash token to darken
   // it with — `--neba-panel*` is white, which is nothing over a white page. So
   // hover keeps the accent at its lightest step, and `on` sits a step above it.
-  text: [
-    'text-(--neba-muted-fg) bg-transparent',
-    'hover:bg-(--n-soft) hover:text-(--neba-fg)',
+  text:
+    'text-(--neba-muted-fg) bg-transparent ' +
+    'hover:bg-(--n-soft) hover:text-(--neba-fg) ' +
     'active:bg-(--n-soft-hover)'
-  ].join(' ')
 };
 
 /**
@@ -154,34 +152,31 @@ const offClasses: Record<NebaVariant, string> = {
  * that was true could come out the lighter of the two.
  */
 const onClasses: Record<NebaVariant, string> = {
-  solid: [
-    surfaceClasses,
-    'text-(--n-on-solid) bg-(--n-fill)',
-    '[box-shadow:var(--n-elev),var(--neba-plate-solid)]',
-    'hover:bg-(--n-fill-hover)',
-    'active:bg-(--n-fill-active)'
-  ].join(' '),
+  solid:
+    surfaceClasses +
+    ' text-(--n-on-solid) bg-(--n-fill) ' +
+    '[box-shadow:var(--n-elev),var(--neba-plate-solid)] ' +
+    'hover:bg-(--n-fill-hover) ' +
+    'active:bg-(--n-fill-active)',
   // The dyed plate stays put under the pointer and the press. Hover used to
   // swap it for the `--n-soft-*` wash, which is the accent over nothing and
   // paler than the plate, so an on toggle faded towards off as the pointer
   // arrived. What answers the pointer is the edge and the ink, both of which
   // move towards more rather than less.
-  outline: [
-    surfaceClasses,
-    'border text-(--n-on-tint) bg-(--n-panel-press)',
-    '[border-color:var(--n-line-hover)]',
-    '[box-shadow:var(--n-elev),var(--neba-plate-glass)]',
-    'hover:[border-color:var(--n-accent)] hover:text-(--neba-fg)',
-    'active:[border-color:var(--n-accent)]'
-  ].join(' '),
+  outline:
+    surfaceClasses +
+    ' border text-(--n-on-tint) bg-(--n-panel-press) ' +
+    '[border-color:var(--n-line-hover)] ' +
+    '[box-shadow:var(--n-elev),var(--neba-plate-glass)] ' +
+    'hover:[border-color:var(--n-accent)] hover:text-(--neba-fg) ' +
+    'active:[border-color:var(--n-accent)]',
   // A step up the wash from where it was, because the step below it is what an
   // *off* `text` toggle does on hover — the two were the same value, so hovering
   // one that was off drew it exactly as one that was on.
-  text: [
-    'text-(--n-on-tint) bg-(--n-soft-hover)',
-    'hover:bg-(--n-soft-press)',
+  text:
+    'text-(--n-on-tint) bg-(--n-soft-hover) ' +
+    'hover:bg-(--n-soft-press) ' +
     'active:bg-(--n-soft-press)'
-  ].join(' ')
 };
 
 /**

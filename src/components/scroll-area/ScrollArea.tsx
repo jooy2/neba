@@ -71,15 +71,14 @@ const fadeSizes: Record<NebaSize, string> = {
   xl: '2.5rem'
 };
 
-const scrollbarClasses = [
-  'flex touch-none select-none rounded-full p-px',
-  'bg-transparent hover:bg-(--n-soft)',
+const scrollbarClasses =
+  'flex touch-none select-none rounded-full p-px ' +
+  'bg-transparent hover:bg-(--n-soft) ' +
   // Opacity is the one thing a scrollbar is allowed to express a state with:
   // it is not a control changing what it is, it is an affordance staying out of
   // the way of the content until it is wanted.
-  'opacity-0 transition-[opacity,background-color] duration-(--neba-duration) ease-(--neba-ease)',
-  'data-[hovering]:opacity-100 data-[scrolling]:opacity-100 data-[scrolling]:duration-0'
-].join(' ');
+  'opacity-0 transition-[opacity,background-color] duration-(--neba-duration) ease-(--neba-ease) ' +
+  'data-[hovering]:opacity-100 data-[scrolling]:opacity-100 data-[scrolling]:duration-0';
 
 const thumbClasses = 'flex-1 rounded-full bg-(--n-thumb) hover:bg-(--n-thumb-hover)';
 

@@ -235,17 +235,15 @@ const railGapClasses: Record<NebaDensity, Record<NebaSize, string>> = {
  * dyed, exactly as on Box and Card. What carries the family is the numbers.
  */
 const variantClasses: Record<NebaVariant, string> = {
-  solid: [
-    surfaceClasses,
-    'text-(--neba-fg) bg-(--n-panel-hover)',
-    '[box-shadow:var(--n-elev),var(--neba-plate-solid)]'
-  ].join(' '),
-  outline: [
-    surfaceClasses,
-    'border text-(--neba-fg) bg-(--n-panel)',
-    '[border-color:var(--n-line)]',
-    '[box-shadow:var(--n-elev),var(--neba-plate-glass)]'
-  ].join(' '),
+  solid:
+    surfaceClasses +
+    ' text-(--neba-fg) bg-(--n-panel-hover) ' +
+    '[box-shadow:var(--n-elev),var(--neba-plate-solid)]',
+  outline:
+    surfaceClasses +
+    ' border text-(--neba-fg) bg-(--n-panel) ' +
+    '[border-color:var(--n-line)] ' +
+    '[box-shadow:var(--n-elev),var(--neba-plate-glass)]',
   text: 'text-(--neba-fg) bg-transparent'
 };
 
@@ -523,18 +521,14 @@ export const HowToSteps = React.forwardRef<HTMLDivElement, HowToStepsProps>(
                     transitionClasses,
                     done ? 'bg-(--n-fill)' : 'bg-(--n-line)',
                     vertical
-                      ? [
-                          'w-px',
-                          '[inset-inline-start:calc(0.25rem+var(--n-step-mark)/2)]',
-                          '[top:calc(0.25rem+var(--n-step-mark))]',
+                      ? 'w-px ' +
+                          '[inset-inline-start:calc(0.25rem+var(--n-step-mark)/2)] ' +
+                          '[top:calc(0.25rem+var(--n-step-mark))] ' +
                           '[height:calc(100%-var(--n-step-mark))]'
-                        ].join(' ')
-                      : [
-                          'h-px',
-                          '[inset-inline-start:calc(50%+var(--n-step-mark)/2)]',
-                          '[top:calc(0.25rem+var(--n-step-mark)/2)]',
+                      : 'h-px ' +
+                          '[inset-inline-start:calc(50%+var(--n-step-mark)/2)] ' +
+                          '[top:calc(0.25rem+var(--n-step-mark)/2)] ' +
                           '[width:calc(100%-var(--n-step-mark))]'
-                        ].join(' ')
                   )}
                 />
               ) : null}

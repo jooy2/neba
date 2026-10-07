@@ -96,17 +96,15 @@ export interface CarouselProps
  * on Box and Accordion. A carousel holds other people's pictures.
  */
 const variantClasses: Record<NonNullable<NebaStyleProps['variant']>, string> = {
-  solid: [
-    surfaceClasses,
-    'text-(--neba-fg) bg-(--n-panel-hover)',
-    '[box-shadow:var(--n-elev),var(--neba-plate-solid)]'
-  ].join(' '),
-  outline: [
-    surfaceClasses,
-    'border text-(--neba-fg) bg-(--n-panel)',
-    '[border-color:var(--n-line)]',
-    '[box-shadow:var(--n-elev),var(--neba-plate-glass)]'
-  ].join(' '),
+  solid:
+    surfaceClasses +
+    ' text-(--neba-fg) bg-(--n-panel-hover) ' +
+    '[box-shadow:var(--n-elev),var(--neba-plate-solid)]',
+  outline:
+    surfaceClasses +
+    ' border text-(--neba-fg) bg-(--n-panel) ' +
+    '[border-color:var(--n-line)] ' +
+    '[box-shadow:var(--n-elev),var(--neba-plate-glass)]',
   // No frame at all — the slides are the whole component. What to reach for when
   // the pictures already have edges of their own.
   text: 'text-(--neba-fg) bg-transparent'
@@ -424,12 +422,14 @@ export const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
         {...props}
       >
         <div
-          className={[
-            'relative min-w-0 overflow-hidden',
-            radiusClasses[size],
-            variantClasses[variant],
+          className={
+            'relative min-w-0 overflow-hidden ' +
+            radiusClasses[size] +
+            ' ' +
+            variantClasses[variant] +
+            ' ' +
             transitionClasses
-          ].join(' ')}
+          }
         >
           <div
             ref={trackRef}
@@ -441,14 +441,14 @@ export const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
             tabIndex={0}
             role="group"
             aria-label={label ?? messages.label}
-            className={[
-              'flex min-w-0 snap-x snap-mandatory overflow-x-auto scroll-smooth',
-              'motion-reduce:scroll-auto',
+            className={
+              'flex min-w-0 snap-x snap-mandatory overflow-x-auto scroll-smooth ' +
+              'motion-reduce:scroll-auto ' +
               // The strip is driven by buttons and by dragging; a scrollbar under
               // it is a third control saying the same thing.
-              '[scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
+              '[scrollbar-width:none] [&::-webkit-scrollbar]:hidden ' +
               'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:[outline-offset:-2px]'
-            ].join(' ')}
+            }
             onScroll={handleScroll}
           >
             {slides.map((slide, slideIndex) => (
@@ -568,20 +568,20 @@ export const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
                       type="button"
                       aria-label={nameSlide(dotIndex + 1, count)}
                       aria-current={dotIndex === index ? 'true' : undefined}
-                      className={[
+                      className={
                         // A dot is 6px and a finger is not: it is pressed at 24px
                         // high and across the gaps either side of it.
-                        'neba-hit-row relative cursor-pointer rounded-full',
+                        'neba-hit-row relative cursor-pointer rounded-full ' +
                         // Width and colour, never a transform: the current dot grows
                         // along the row instead of scaling, so nothing beside it moves.
-                        '[transition-property:width,background-color]',
-                        '[transition-duration:var(--neba-duration)]',
-                        '[transition-timing-function:var(--neba-ease)]',
-                        'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-2',
-                        dotIndex === index
+                        '[transition-property:width,background-color] ' +
+                        '[transition-duration:var(--neba-duration)] ' +
+                        '[transition-timing-function:var(--neba-ease)] ' +
+                        'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-2 ' +
+                        (dotIndex === index
                           ? `${dotClasses[size].current} bg-(--n-accent)`
-                          : `${dotClasses[size].rest} bg-(--n-line-hover) hover:bg-(--n-accent)`
-                      ].join(' ')}
+                          : `${dotClasses[size].rest} bg-(--n-line-hover) hover:bg-(--n-accent)`)
+                      }
                       onClick={() => go(dotIndex)}
                     />
                   ))

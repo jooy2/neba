@@ -186,17 +186,15 @@ const tailClasses: Record<ChatBubbleSide, string> = {
  * messages read as yours at a glance rather than one line at a time.
  */
 const variantClasses: Record<NebaVariant, string> = {
-  solid: [
-    surfaceClasses,
-    'text-(--n-on-solid) bg-(--n-fill)',
-    '[box-shadow:var(--n-elev),var(--neba-plate-solid)]'
-  ].join(' '),
-  outline: [
-    surfaceClasses,
-    'border text-(--neba-fg) bg-(--n-panel)',
-    '[border-color:var(--n-line)]',
-    '[box-shadow:var(--n-elev),var(--neba-plate-glass)]'
-  ].join(' '),
+  solid:
+    surfaceClasses +
+    ' text-(--n-on-solid) bg-(--n-fill) ' +
+    '[box-shadow:var(--n-elev),var(--neba-plate-solid)]',
+  outline:
+    surfaceClasses +
+    ' border text-(--neba-fg) bg-(--n-panel) ' +
+    '[border-color:var(--n-line)] ' +
+    '[box-shadow:var(--n-elev),var(--neba-plate-glass)]',
   text: 'text-(--neba-fg) bg-(--n-soft) [box-shadow:var(--n-elev)]'
 };
 
@@ -293,15 +291,14 @@ const statusToneClasses: Record<ChatBubbleStatus, string> = {
  * wash, on `outline` the text is the page's ink and the card is a grey one. A
  * fixed token would be invisible against one of the two.
  */
-const previewSurfaceClasses = [
-  'block overflow-hidden rounded-(--neba-radius-sm) border no-underline',
-  '[border-color:color-mix(in_oklab,currentColor_18%,transparent)]',
-  '[background-color:color-mix(in_oklab,currentColor_7%,transparent)]',
-  'hover:[background-color:color-mix(in_oklab,currentColor_12%,transparent)]',
-  '[transition-property:background-color] [transition-duration:var(--neba-duration)]',
-  '[transition-timing-function:var(--neba-ease)]',
-  'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-2'
-].join(' ');
+const previewSurfaceClasses =
+  'block overflow-hidden rounded-(--neba-radius-sm) border no-underline ' +
+  '[border-color:color-mix(in_oklab,currentColor_18%,transparent)] ' +
+  '[background-color:color-mix(in_oklab,currentColor_7%,transparent)] ' +
+  'hover:[background-color:color-mix(in_oklab,currentColor_12%,transparent)] ' +
+  '[transition-property:background-color] [transition-duration:var(--neba-duration)] ' +
+  '[transition-timing-function:var(--neba-ease)] ' +
+  'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-2';
 
 /**
  * The affordance stays out of the way of the message until the row is reached
@@ -312,12 +309,11 @@ const previewSurfaceClasses = [
  * A pointer that cannot hover has nothing to reveal it, so it is simply always
  * there on touch.
  */
-const actionsClasses = [
-  'shrink-0 opacity-0',
-  '[transition:opacity_var(--neba-duration)_var(--neba-ease)]',
-  'group-hover/bubble:opacity-100 group-focus-within/bubble:opacity-100',
-  '[@media(hover:none)]:opacity-100'
-].join(' ');
+const actionsClasses =
+  'shrink-0 opacity-0 ' +
+  '[transition:opacity_var(--neba-duration)_var(--neba-ease)] ' +
+  'group-hover/bubble:opacity-100 group-focus-within/bubble:opacity-100 ' +
+  '[@media(hover:none)]:opacity-100';
 
 /**
  * One message in a conversation.
@@ -364,13 +360,15 @@ export const ChatBubble = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
     const hasHeader = hasContent(name) || hasContent(time);
     const hasBody = typing || hasContent(children) || Boolean(preview);
 
-    const bubbleClasses = [
-      'flex min-w-0 flex-col overflow-hidden',
-      radiusClasses[size],
-      tailClasses[side],
-      variantClasses[variant],
-      transitionClasses
-    ].join(' ');
+    const bubbleClasses =
+      'flex min-w-0 flex-col overflow-hidden ' +
+      radiusClasses[size] +
+      ' ' +
+      tailClasses[side] +
+      ' ' +
+      variantClasses[variant] +
+      ' ' +
+      transitionClasses;
 
     const statusText = status ? (statusLabel ?? messages[status]) : '';
 
@@ -388,11 +386,12 @@ export const ChatBubble = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
         {hasContent(avatar) ? <div className="shrink-0">{avatar}</div> : null}
 
         <div
-          className={[
-            'flex min-w-0 max-w-[min(100%,32rem)] flex-col',
-            sheetHeaderGapClasses[size],
-            end ? 'items-end' : 'items-start'
-          ].join(' ')}
+          className={
+            'flex min-w-0 max-w-[min(100%,32rem)] flex-col ' +
+            sheetHeaderGapClasses[size] +
+            ' ' +
+            (end ? 'items-end' : 'items-start')
+          }
         >
           {hasHeader ? (
             <div className={`flex items-baseline gap-2 ${metaTextClasses[size]}`}>
@@ -413,11 +412,11 @@ export const ChatBubble = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
 
               {hasBody ? (
                 <div
-                  className={[
-                    bubblePaddingClasses[density][size],
-                    'flex min-w-0 flex-col gap-2',
+                  className={
+                    bubblePaddingClasses[density][size] +
+                    ' flex min-w-0 flex-col gap-2 ' +
                     sheetBodyClasses[size]
-                  ].join(' ')}
+                  }
                 >
                   {typing ? (
                     <TypingDots label={messages.typing} />
@@ -435,12 +434,13 @@ export const ChatBubble = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
 
           {status ? (
             <div
-              className={[
-                'flex items-center gap-1',
-                metaTextClasses[size],
-                statusToneClasses[status],
-                '[&_svg]:size-[1.15em] [&_svg]:shrink-0'
-              ].join(' ')}
+              className={
+                'flex items-center gap-1 ' +
+                metaTextClasses[size] +
+                ' ' +
+                statusToneClasses[status] +
+                ' [&_svg]:size-[1.15em] [&_svg]:shrink-0'
+              }
             >
               {statusIcons[status]}
               {/* The mark is the whole of what is drawn; the word behind it is for

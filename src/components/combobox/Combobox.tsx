@@ -265,13 +265,14 @@ interface Entry {
 }
 
 /** The field, and it is a TextField's shell to the pixel. */
-const shellBaseClasses = [
-  'group relative flex w-full cursor-text items-center',
-  '[-webkit-tap-highlight-color:transparent]',
-  transitionClasses,
-  fieldFocusTransitionClasses,
-  iconClasses
-].join(' ');
+const shellBaseClasses =
+  'group relative flex w-full cursor-text items-center ' +
+  '[-webkit-tap-highlight-color:transparent] ' +
+  transitionClasses +
+  ' ' +
+  fieldFocusTransitionClasses +
+  ' ' +
+  iconClasses;
 
 /**
  * With chips in it the field cannot have a fixed height — the chips wrap. The
@@ -300,37 +301,34 @@ const chipsInsetClasses: Record<NebaSize, string> = {
  * and every `var()` in here would otherwise resolve to nothing — a
  * `currentColor` border and a highlight that does not light.
  */
-const popupClasses = [
-  surfaceClasses,
-  'max-h-[min(20rem,var(--available-height))] overflow-y-auto overscroll-contain',
-  'w-[var(--anchor-width)] border bg-(--n-panel-press) p-1',
-  '[border-color:var(--n-line)]',
-  '[box-shadow:var(--neba-shadow-3),var(--neba-plate-glass)]',
-  '[outline:none]',
-  popupFadeClasses
-].join(' ');
+const popupClasses =
+  surfaceClasses +
+  ' max-h-[min(20rem,var(--available-height))] overflow-y-auto overscroll-contain ' +
+  'w-[var(--anchor-width)] border bg-(--n-panel-press) p-1 ' +
+  '[border-color:var(--n-line)] ' +
+  '[box-shadow:var(--neba-shadow-3),var(--neba-plate-glass)] ' +
+  '[outline:none] ' +
+  popupFadeClasses;
 
-const itemClasses = [
-  'relative flex cursor-pointer items-center gap-2 select-none',
-  'rounded-(--neba-radius-xs) py-1.5 pe-2 ps-7',
-  transitionClasses,
+const itemClasses =
+  'relative flex cursor-pointer items-center gap-2 select-none ' +
+  'rounded-(--neba-radius-xs) py-1.5 pe-2 ps-7 ' +
+  transitionClasses +
   // `data-highlighted` rather than `:hover`: it is also what the arrow keys
   // move, so the mouse and the keyboard light the same row.
-  'data-[highlighted]:bg-(--n-soft-hover) data-[highlighted]:text-(--n-on-tint)',
-  'data-[selected]:text-(--n-on-tint) data-[selected]:font-medium',
-  'data-[disabled]:cursor-not-allowed data-[disabled]:text-(--neba-disabled-fg)',
-  '[outline:none]'
-].join(' ');
+  ' data-[highlighted]:bg-(--n-soft-hover) data-[highlighted]:text-(--n-on-tint) ' +
+  'data-[selected]:text-(--n-on-tint) data-[selected]:font-medium ' +
+  'data-[disabled]:cursor-not-allowed data-[disabled]:text-(--neba-disabled-fg) ' +
+  '[outline:none]';
 
 /** The chevron and the ×, which sit in the field rather than in the list. */
-const adornmentClasses = [
-  'inline-flex h-[1lh] shrink-0 cursor-pointer items-center justify-center',
-  'rounded-(--neba-radius-xs) text-(--neba-muted-fg)',
-  '[transition:color_var(--neba-duration)_var(--neba-ease)]',
-  'hover:text-(--n-accent)',
-  'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-1',
-  'disabled:cursor-not-allowed disabled:text-(--neba-disabled-fg)'
-].join(' ');
+const adornmentClasses =
+  'inline-flex h-[1lh] shrink-0 cursor-pointer items-center justify-center ' +
+  'rounded-(--neba-radius-xs) text-(--neba-muted-fg) ' +
+  '[transition:color_var(--neba-duration)_var(--neba-ease)] ' +
+  'hover:text-(--n-accent) ' +
+  'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-1 ' +
+  'disabled:cursor-not-allowed disabled:text-(--neba-disabled-fg)';
 
 /*
  * What Base UI is told about an entry: the text the input and the filter read,
@@ -742,13 +740,13 @@ export function Combobox<Multiple extends boolean | undefined = false>(
         className={adornmentClasses}
       >
         <BaseUICombobox.Icon
-          className={[
+          className={
             // The chevron is the one thing here that may turn: it is a
             // glyph, not a label, and nothing about it resamples.
-            'flex items-center',
-            '[transition:rotate_var(--neba-duration)_var(--neba-ease)]',
+            'flex items-center ' +
+            '[transition:rotate_var(--neba-duration)_var(--neba-ease)] ' +
             'data-[popup-open]:rotate-180'
-          ].join(' ')}
+          }
         >
           <ChevronIcon />
         </BaseUICombobox.Icon>

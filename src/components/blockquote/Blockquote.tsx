@@ -99,19 +99,17 @@ const ruleClasses = 'border-s-2 [border-inline-start-color:var(--n-accent)]';
  * before there were surfaces to put one on.
  */
 const variantClasses: Record<NonNullable<NebaStyleProps['variant']>, string> = {
-  solid: [
-    surfaceClasses,
-    'bg-(--n-panel-hover)',
-    '[box-shadow:var(--n-elev),var(--neba-plate-solid)]'
-  ].join(' '),
+  solid:
+    surfaceClasses +
+    ' bg-(--n-panel-hover) ' +
+    '[box-shadow:var(--n-elev),var(--neba-plate-solid)]',
   // `border-s-2` again, after `border`, so the hairline on the other three edges
   // does not flatten the rule back to a pixel.
-  outline: [
-    surfaceClasses,
-    'border border-s-2 bg-(--n-panel)',
-    '[border-color:var(--n-line)]',
-    '[box-shadow:var(--n-elev),var(--neba-plate-glass)]'
-  ].join(' '),
+  outline:
+    surfaceClasses +
+    ' border border-s-2 bg-(--n-panel) ' +
+    '[border-color:var(--n-line)] ' +
+    '[box-shadow:var(--n-elev),var(--neba-plate-glass)]',
   text: 'bg-transparent'
 };
 
@@ -229,10 +227,10 @@ export const Blockquote = React.forwardRef<HTMLElement, BlockquoteProps>(
         {quote}
 
         <figcaption
-          className={[
-            'mt-2 flex flex-wrap items-baseline gap-x-1.5 text-(--neba-muted-fg)',
+          className={
+            'mt-2 flex flex-wrap items-baseline gap-x-1.5 text-(--neba-muted-fg) ' +
             metaTextClasses[size]
-          ].join(' ')}
+          }
         >
           {hasContent(author) ? (
             <span className="font-medium text-(--neba-fg)">

@@ -125,17 +125,15 @@ const chipScale: Record<NebaSize, NebaSize> = {
  * *is* the thing being coloured, so unlike a Box its panel takes the tint.
  */
 const restClasses: Record<NonNullable<NebaStyleProps['variant']>, string> = {
-  solid: [
-    surfaceClasses,
-    'text-(--n-on-solid) bg-(--n-fill)',
-    '[box-shadow:var(--n-elev),var(--neba-plate-solid)]'
-  ].join(' '),
-  outline: [
-    surfaceClasses,
-    'border text-(--n-on-tint) bg-(--n-panel)',
-    '[border-color:var(--n-line)]',
-    '[box-shadow:var(--n-elev),var(--neba-plate-glass)]'
-  ].join(' '),
+  solid:
+    surfaceClasses +
+    ' text-(--n-on-solid) bg-(--n-fill) ' +
+    '[box-shadow:var(--n-elev),var(--neba-plate-solid)]',
+  outline:
+    surfaceClasses +
+    ' border text-(--n-on-tint) bg-(--n-panel) ' +
+    '[border-color:var(--n-line)] ' +
+    '[box-shadow:var(--n-elev),var(--neba-plate-glass)]',
   text: 'text-(--n-on-tint) bg-(--n-soft)'
 };
 
@@ -158,18 +156,18 @@ const hoverClasses: Record<NonNullable<NebaStyleProps['variant']>, string> = {
   text: 'hover:bg-(--n-soft-hover) active:bg-(--n-soft-press)'
 };
 
-const baseClasses = [
-  // `items-center`, not `items-stretch`: everything in a chip — the icon, the
+const baseClasses = // `items-center`, not `items-stretch`: everything in a chip — the icon, the
   // label, the count plate, the × — is centred on one line. The pressable label
   // asks for the height it needs with `self-stretch` instead, so making the
   // shell stretch to suit it would knock every other child off the centre line.
-  'relative inline-flex max-w-full shrink-0 select-none items-center',
-  'align-middle font-medium leading-none whitespace-nowrap',
-  '[-webkit-tap-highlight-color:transparent] [touch-action:manipulation]',
-  transitionClasses,
-  pressTransitionClasses,
-  iconClasses
-].join(' ');
+  'relative inline-flex max-w-full shrink-0 select-none items-center ' +
+  'align-middle font-medium leading-none whitespace-nowrap ' +
+  '[-webkit-tap-highlight-color:transparent] [touch-action:manipulation] ' +
+  transitionClasses +
+  ' ' +
+  pressTransitionClasses +
+  ' ' +
+  iconClasses;
 
 /**
  * The label, when the chip is pressable, is its own `<button>` inside the shell
@@ -184,10 +182,9 @@ const baseClasses = [
  * height of the words, and `rounded-[inherit]` so the focus ring traces the
  * shell's corners rather than drawing a second, squarer rectangle inside them.
  */
-const labelButtonClasses = [
-  'flex min-w-0 flex-1 cursor-pointer items-center justify-center self-stretch rounded-[inherit]',
-  focusRingClasses
-].join(' ');
+const labelButtonClasses =
+  'flex min-w-0 flex-1 cursor-pointer items-center justify-center self-stretch rounded-[inherit] ' +
+  focusRingClasses;
 
 /**
  * The same label as a link. A browser draws an `<a>` in its own colour and
@@ -281,9 +278,9 @@ export const Chip = React.forwardRef<HTMLElement, ChipProps>(function Chip(rawPr
       {endIcon}
       {count !== null && count !== undefined && count !== false ? (
         <span
-          className={[
-            'ms-0.5 inline-flex shrink-0 items-center justify-center rounded-full px-1.5 py-px',
-            'text-[0.85em] leading-none font-semibold tabular-nums',
+          className={
+            'ms-0.5 inline-flex shrink-0 items-center justify-center rounded-full px-1.5 py-px ' +
+            'text-[0.85em] leading-none font-semibold tabular-nums ' +
             // On a filled chip the plate is a hole punched in the fill. On a
             // tinted or bare one it is a fill of its own, and that is a fix
             // rather than a preference: the plate used to be `--n-soft-press`,
@@ -292,10 +289,10 @@ export const Chip = React.forwardRef<HTMLElement, ChipProps>(function Chip(rawPr
             // count on a `text` chip read 4.2:1, and on a selected one 3.5:1.
             // A fill carries its own bed at 88% opacity, so the number reads the
             // same 4.6:1 or better wherever the chip happens to be sitting.
-            variant === 'solid'
+            (variant === 'solid'
               ? 'bg-(--neba-glow-on-fill) text-(--n-on-solid)'
-              : 'bg-(--n-fill) text-(--n-on-solid)'
-          ].join(' ')}
+              : 'bg-(--n-fill) text-(--n-on-solid)')
+          }
         >
           {count}
         </span>

@@ -161,15 +161,12 @@ const avatarRadiusClasses: Record<NebaSize, string> = {
  * saturated circles is a page nobody can read a name off.
  */
 const variantClasses: Record<NebaVariant, string> = {
-  solid: [surfaceClasses, 'text-(--n-on-solid) bg-(--n-fill)', '[box-shadow:var(--n-elev)]'].join(
-    ' '
-  ),
-  outline: [
-    surfaceClasses,
-    'border text-(--n-on-tint) bg-(--n-panel)',
-    '[border-color:var(--n-line)]',
-    '[box-shadow:var(--n-elev)]'
-  ].join(' '),
+  solid: surfaceClasses + ' text-(--n-on-solid) bg-(--n-fill) ' + '[box-shadow:var(--n-elev)]',
+  outline:
+    surfaceClasses +
+    ' border text-(--n-on-tint) bg-(--n-panel) ' +
+    '[border-color:var(--n-line)] ' +
+    '[box-shadow:var(--n-elev)]',
   // The plate carries its own bed, so it reads the same wherever it is dropped —
   // see `tintPlateClasses`.
   text: `text-(--n-on-tint) ${tintPlateClasses} [box-shadow:var(--n-elev)]`
@@ -197,15 +194,14 @@ const plateClasses: Record<NebaVariant, string> = {
   text: ''
 };
 
-const baseClasses = [
-  'relative inline-flex shrink-0 select-none items-center justify-center overflow-hidden',
-  'align-middle font-semibold tracking-wide whitespace-nowrap leading-none',
+const baseClasses =
+  'relative inline-flex shrink-0 select-none items-center justify-center overflow-hidden ' +
+  'align-middle font-semibold tracking-wide whitespace-nowrap leading-none ' +
   // A glyph handed to `children` is drawn against the circle, not against a
   // word, so it is sized off the box like the initials are rather than off the
   // `1.2em` an icon riding on a label takes.
-  '[&_svg]:pointer-events-none [&_svg]:size-[55%]',
-  transitionClasses
-].join(' ');
+  '[&_svg]:pointer-events-none [&_svg]:size-[55%] ' +
+  transitionClasses;
 
 /**
  * The default fallback: a shoulders-and-head silhouette, drawn here rather than

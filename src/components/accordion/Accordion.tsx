@@ -160,17 +160,15 @@ export interface AccordionItemProps extends Omit<
  * a second bordered rectangle inside it is a second rectangle.
  */
 const variantClasses: Record<NonNullable<NebaStyleProps['variant']>, string> = {
-  solid: [
-    surfaceClasses,
-    'text-(--neba-fg) bg-(--n-panel-hover)',
-    '[box-shadow:var(--n-elev),var(--neba-plate-solid)]'
-  ].join(' '),
-  outline: [
-    surfaceClasses,
-    'border text-(--neba-fg) bg-(--n-panel)',
-    '[border-color:var(--n-line)]',
-    '[box-shadow:var(--n-elev),var(--neba-plate-glass)]'
-  ].join(' '),
+  solid:
+    surfaceClasses +
+    ' text-(--neba-fg) bg-(--n-panel-hover) ' +
+    '[box-shadow:var(--n-elev),var(--neba-plate-solid)]',
+  outline:
+    surfaceClasses +
+    ' border text-(--neba-fg) bg-(--n-panel) ' +
+    '[border-color:var(--n-line)] ' +
+    '[box-shadow:var(--n-elev),var(--neba-plate-glass)]',
   text: 'text-(--neba-fg) bg-transparent'
 };
 
@@ -397,14 +395,16 @@ export const AccordionItem = React.forwardRef<HTMLDivElement, AccordionItemProps
         */}
         <BaseUIAccordion.Panel className={accordionPanelClasses}>
           <div
-            className={[
-              'text-(--neba-muted-fg)',
-              sheetBodyClasses[size],
-              padX,
+            className={
+              'text-(--neba-muted-fg) ' +
+              sheetBodyClasses[size] +
+              ' ' +
+              padX +
+              ' ' +
               // The header already paid for the space above; the body only owes
               // the space below it, or every closed section would look padded.
-              density === 'compact' ? 'pb-2' : 'pb-4'
-            ].join(' ')}
+              (density === 'compact' ? 'pb-2' : 'pb-4')
+            }
           >
             {children}
           </div>

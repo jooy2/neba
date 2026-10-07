@@ -120,17 +120,15 @@ export interface CollapsibleProps
  * "Show more" line owes the page no rectangle of its own.
  */
 const variantClasses: Record<NonNullable<NebaStyleProps['variant']>, string> = {
-  solid: [
-    surfaceClasses,
-    'text-(--neba-fg) bg-(--n-panel-hover)',
-    '[box-shadow:var(--n-elev),var(--neba-plate-solid)]'
-  ].join(' '),
-  outline: [
-    surfaceClasses,
-    'border text-(--neba-fg) bg-(--n-panel)',
-    '[border-color:var(--n-line)]',
-    '[box-shadow:var(--n-elev),var(--neba-plate-glass)]'
-  ].join(' '),
+  solid:
+    surfaceClasses +
+    ' text-(--neba-fg) bg-(--n-panel-hover) ' +
+    '[box-shadow:var(--n-elev),var(--neba-plate-solid)]',
+  outline:
+    surfaceClasses +
+    ' border text-(--neba-fg) bg-(--n-panel) ' +
+    '[border-color:var(--n-line)] ' +
+    '[box-shadow:var(--n-elev),var(--neba-plate-glass)]',
   text: 'text-(--neba-fg) bg-transparent'
 };
 
@@ -212,27 +210,32 @@ export const Collapsible = React.forwardRef<HTMLDivElement, CollapsibleProps>(
         ) : (
           <div className="flex w-full items-center">
             <BaseUICollapsible.Trigger
-              className={[
-                'flex min-w-0 flex-1 items-center text-start',
-                disclosureTriggerClasses,
-                padX,
-                padY,
-                gapClasses[size],
-                transitionClasses,
-                iconClasses,
+              className={
+                'flex min-w-0 flex-1 items-center text-start ' +
+                disclosureTriggerClasses +
+                ' ' +
+                padX +
+                ' ' +
+                padY +
+                ' ' +
+                gapClasses[size] +
+                ' ' +
+                transitionClasses +
+                ' ' +
+                iconClasses +
                 // Inset rather than offset. The sheet clips its children so the
                 // panel can be a window, and `overflow: hidden` clips a
                 // descendant's outline along with everything else — an offset
                 // ring on a trigger that fills the top of the sheet would be
                 // shaved off on three sides.
-                'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:[outline-offset:-2px]',
+                ' focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:[outline-offset:-2px] ' +
                 // Decided here: Base UI's trigger stays focusable while disabled,
                 // so it never carries the `disabled` attribute a `disabled:`
                 // variant would need.
-                disabled
+                (disabled
                   ? 'cursor-not-allowed bg-transparent text-(--neba-disabled-fg)'
-                  : 'cursor-pointer hover:bg-(--n-soft) data-[panel-open]:text-(--n-on-tint)'
-              ].join(' ')}
+                  : 'cursor-pointer hover:bg-(--n-soft) data-[panel-open]:text-(--n-on-tint)')
+              }
             >
               {hasContent(startIcon) ? (
                 <span className="flex h-[1lh] shrink-0 items-center text-(--neba-muted-fg)">

@@ -139,15 +139,14 @@ const maxWidthClasses: Record<NebaSize, string> = {
  * for the same reason it carries `--neba-shadow-3`: it is one of the few
  * surfaces in the library that is genuinely meant to float.
  */
-const popupClasses = [
-  surfaceClasses,
-  'relative flex flex-col',
-  'border text-(--neba-fg) bg-(--n-panel-press)',
-  '[border-color:var(--n-line)]',
-  '[box-shadow:var(--neba-shadow-3),var(--neba-plate-glass)]',
-  '[outline:none]',
-  popupFadeClasses
-].join(' ');
+const popupClasses =
+  surfaceClasses +
+  ' relative flex flex-col ' +
+  'border text-(--neba-fg) bg-(--n-panel-press) ' +
+  '[border-color:var(--n-line)] ' +
+  '[box-shadow:var(--neba-shadow-3),var(--neba-plate-glass)] ' +
+  '[outline:none] ' +
+  popupFadeClasses;
 
 /** The wedge, at roughly a third of the sheet's corner radius per step. */
 const arrowSizes: Record<NebaSize, number> = {
@@ -280,12 +279,12 @@ export function Popover(rawProps: PopoverProps) {
                 // on. It is drawn pointing down once and turned to match — a
                 // rotation of a glyph, which is the one allowance the
                 // no-transform rule makes.
-                className={[
-                  'data-[side=top]:bottom-[-1px]',
-                  'data-[side=bottom]:top-[-1px] data-[side=bottom]:rotate-180',
-                  'data-[side=left]:right-[-1px] data-[side=left]:-rotate-90',
+                className={
+                  'data-[side=top]:bottom-[-1px] ' +
+                  'data-[side=bottom]:top-[-1px] data-[side=bottom]:rotate-180 ' +
+                  'data-[side=left]:right-[-1px] data-[side=left]:-rotate-90 ' +
                   'data-[side=right]:left-[-1px] data-[side=right]:rotate-90'
-                ].join(' ')}
+                }
               >
                 <svg
                   width={arrowSize}

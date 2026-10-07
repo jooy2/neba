@@ -70,21 +70,21 @@ const triggerHeights: Record<NebaSize, string> = {
   xl: 'h-10'
 };
 
-const triggerClasses = [
-  'inline-flex shrink-0 cursor-pointer select-none items-center justify-center',
-  'whitespace-nowrap font-medium leading-none',
-  'text-(--neba-fg) bg-transparent',
-  '[-webkit-tap-highlight-color:transparent] [touch-action:manipulation]',
-  transitionClasses,
-  iconClasses,
-  'hover:bg-(--n-soft)',
+const triggerClasses =
+  'inline-flex shrink-0 cursor-pointer select-none items-center justify-center ' +
+  'whitespace-nowrap font-medium leading-none ' +
+  'text-(--neba-fg) bg-transparent ' +
+  '[-webkit-tap-highlight-color:transparent] [touch-action:manipulation] ' +
+  transitionClasses +
+  ' ' +
+  iconClasses +
+  ' hover:bg-(--n-soft) ' +
   // A menu bar is the one place where "this one is open" has to be legible from
   // across the bar, and it is still colour and nothing else: the word does not
   // move and the strip does not change height.
-  'data-[popup-open]:bg-(--n-soft-hover) data-[popup-open]:text-(--n-on-tint)',
-  'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:[outline-offset:-2px]',
-  'disabled:cursor-not-allowed disabled:text-(--neba-disabled-fg) disabled:hover:bg-transparent'
-].join(' ');
+  'data-[popup-open]:bg-(--n-soft-hover) data-[popup-open]:text-(--n-on-tint) ' +
+  'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:[outline-offset:-2px] ' +
+  'disabled:cursor-not-allowed disabled:text-(--neba-disabled-fg) disabled:hover:bg-transparent';
 
 /**
  * One menu on the bar: the word, and the rows behind it.
@@ -117,14 +117,19 @@ export function MenubarMenu({ label, startIcon, disabled = false, children }: Me
         <button
           type="button"
           disabled={disabled}
-          className={[
-            triggerClasses,
-            triggerHeights[size],
-            controlTextClasses[size],
-            gapClasses[size],
-            paddingXClasses[density === 'default' ? 'compact' : density][size],
+          className={
+            triggerClasses +
+            ' ' +
+            triggerHeights[size] +
+            ' ' +
+            controlTextClasses[size] +
+            ' ' +
+            gapClasses[size] +
+            ' ' +
+            paddingXClasses[density === 'default' ? 'compact' : density][size] +
+            ' ' +
             radiusClasses[size]
-          ].join(' ')}
+          }
         >
           {hasContent(startIcon) ? startIcon : null}
           {label}

@@ -175,21 +175,19 @@ const maxWidthClasses: Record<NebaSize, string> = {
  * to sit flat on the page would be a dialog that could be told to stop being a
  * dialog.
  */
-const popupClasses = [
-  surfaceClasses,
-  'relative flex w-full flex-col overflow-hidden',
-  'border text-(--neba-fg) bg-(--n-panel-press)',
-  '[border-color:var(--n-line)]',
-  '[box-shadow:var(--neba-shadow-3),var(--neba-plate-glass)]',
-  '[outline:none]',
-  popupFadeClasses
-].join(' ');
+const popupClasses =
+  surfaceClasses +
+  ' relative flex w-full flex-col overflow-hidden ' +
+  'border text-(--neba-fg) bg-(--n-panel-press) ' +
+  '[border-color:var(--n-line)] ' +
+  '[box-shadow:var(--neba-shadow-3),var(--neba-plate-glass)] ' +
+  '[outline:none] ' +
+  popupFadeClasses;
 
-const backdropClasses = [
-  'fixed inset-0 z-(--neba-z-portal) bg-(--neba-scrim)',
-  '[backdrop-filter:blur(2px)]',
-  popupFadeClasses
-].join(' ');
+const backdropClasses =
+  'fixed inset-0 z-(--neba-z-portal) bg-(--neba-scrim) ' +
+  '[backdrop-filter:blur(2px)] ' +
+  popupFadeClasses;
 
 /** The internal hairline: the same `--n-line` as the sheet's own edge. */
 const dividerClasses = 'border-t [border-color:var(--n-line)]';

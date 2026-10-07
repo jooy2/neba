@@ -124,11 +124,12 @@ export const Meter = React.forwardRef<HTMLDivElement, MeterProps>(function Meter
     >
       {label || showValue ? (
         <div
-          className={[
-            'flex items-baseline gap-2',
-            label ? 'justify-between' : 'justify-end',
+          className={
+            'flex items-baseline gap-2 ' +
+            (label ? 'justify-between' : 'justify-end') +
+            ' ' +
             metaTextClasses[size]
-          ].join(' ')}
+          }
         >
           {label ? (
             <BaseUIMeter.Label className="min-w-0 truncate text-(--neba-fg)">

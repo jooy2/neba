@@ -288,26 +288,24 @@ const viewportClasses: Record<NebaSide, string> = {
  * travels in from that edge rather than fading, and an inline one does not move
  * at all.
  */
-const panelClasses = [
-  surfaceClasses,
-  'relative flex flex-col overflow-hidden',
+const panelClasses =
+  surfaceClasses +
+  ' relative flex flex-col overflow-hidden ' +
   // A drawer kept in the DOM is closed with the `hidden` attribute, which is
   // only a user-agent rule, and `flex` outranks it. Without this a closed
   // drawer under `keepMounted` would be drawn anyway.
-  '[&[hidden]]:hidden',
-  'text-(--neba-fg) bg-(--n-panel-press)',
-  '[border-color:var(--n-line)]',
-  '[outline:none]'
-].join(' ');
+  '[&[hidden]]:hidden ' +
+  'text-(--neba-fg) bg-(--n-panel-press) ' +
+  '[border-color:var(--n-line)] ' +
+  '[outline:none]';
 
 const overlayShadowClasses = '[box-shadow:var(--neba-shadow-3),var(--neba-plate-glass)]';
 const inlineShadowClasses = '[box-shadow:var(--neba-plate-glass)]';
 
-const backdropClasses = [
-  'fixed inset-0 z-(--neba-z-portal) bg-(--neba-scrim)',
-  '[backdrop-filter:blur(2px)]',
-  popupFadeClasses
-].join(' ');
+const backdropClasses =
+  'fixed inset-0 z-(--neba-z-portal) bg-(--neba-scrim) ' +
+  '[backdrop-filter:blur(2px)] ' +
+  popupFadeClasses;
 
 /**
  * The screen's insets, as transparent borders on the edges a panel runs to.

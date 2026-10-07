@@ -225,11 +225,13 @@ export const Rating = React.forwardRef<HTMLDivElement, RatingProps>(function Rat
         )}
       >
         <span
-          className={[
-            starClasses,
-            iconSizeClasses[size],
-            disabled ? 'text-(--neba-disabled-fg)' : 'text-(--n-empty)'
-          ].join(' ')}
+          className={
+            starClasses +
+            ' ' +
+            iconSizeClasses[size] +
+            ' ' +
+            (disabled ? 'text-(--neba-disabled-fg)' : 'text-(--n-empty)')
+          }
         >
           {emptyIcon ?? <StarOutlineIcon />}
         </span>
@@ -253,12 +255,15 @@ export const Rating = React.forwardRef<HTMLDivElement, RatingProps>(function Rat
           style={{ width: `${fill * 100}%` }}
         >
           <span
-            className={[
-              starClasses,
-              iconSizeClasses[size],
-              disabled ? 'text-(--neba-disabled-fg)' : 'text-(--n-fill)',
+            className={
+              starClasses +
+              ' ' +
+              iconSizeClasses[size] +
+              ' ' +
+              (disabled ? 'text-(--neba-disabled-fg)' : 'text-(--n-fill)') +
+              ' ' +
               transitionClasses
-            ].join(' ')}
+            }
           >
             {icon ?? <StarIcon />}
           </span>
@@ -272,13 +277,13 @@ export const Rating = React.forwardRef<HTMLDivElement, RatingProps>(function Rat
               return (
                 <label
                   key={score}
-                  className={[
+                  className={
                     // Pressed at a finger's height, and across into the gap
                     // between two stars. A half star's two targets meet in the
                     // middle, so those only grow up and down.
-                    'neba-hit-row absolute inset-y-0',
-                    disabled ? 'cursor-not-allowed' : 'cursor-pointer'
-                  ].join(' ')}
+                    'neba-hit-row absolute inset-y-0 ' +
+                    (disabled ? 'cursor-not-allowed' : 'cursor-pointer')
+                  }
                   style={
                     {
                       insetInlineStart: `${(part * 100) / stepsPerStar}%`,

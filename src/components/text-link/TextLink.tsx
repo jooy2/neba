@@ -178,26 +178,24 @@ const lineClasses: ReadonlyArray<readonly [number, string, string]> = [
  * and adding one there would put a property on every control in the library
  * that no control draws.
  */
-const transition = [
-  '[transition-property:color,text-decoration-color]',
-  '[transition-duration:var(--neba-duration)]',
-  '[transition-timing-function:var(--neba-ease)]'
-].join(' ');
+const transition =
+  '[transition-property:color,text-decoration-color] ' +
+  '[transition-duration:var(--neba-duration)] ' +
+  '[transition-timing-function:var(--neba-ease)]';
 
-const baseClasses = [
-  // Both a style hook and the specificity: every guard below is written through
+const baseClasses = // Both a style hook and the specificity: every guard below is written through
   // this class, which puts it above whatever the host page says about an `<a>`.
   // It is also what a consumer's own stylesheet can exempt, the way the docs do.
-  'neba-link',
-  'cursor-pointer',
+  'neba-link ' +
+  'cursor-pointer ' +
   // The glyph rides on the label at just under its cap height, rather than at
   // the `1.2em` an icon inside a control takes: this one sits in a sentence,
   // and an icon as tall as the line spaces the words around it apart.
-  '[&_svg]:pointer-events-none [&_svg]:inline [&_svg]:size-[0.95em] [&_svg]:shrink-0',
-  transition,
-  focusRingClasses,
-  'focus-visible:rounded-[0.25rem]'
-].join(' ');
+  '[&_svg]:pointer-events-none [&_svg]:inline [&_svg]:size-[0.95em] [&_svg]:shrink-0 ' +
+  transition +
+  ' ' +
+  focusRingClasses +
+  ' focus-visible:rounded-[0.25rem]';
 
 /**
  * A link, in a sentence or on its own.

@@ -195,14 +195,14 @@ export interface NumberFieldProps
 }
 
 /** The shell is a TextField's, to the pixel — see `fieldRestClasses`. */
-const shellBaseClasses = [
-  // No cursor here: it is decided with the state, as on TextField.
-  'group relative flex w-full items-center',
-  '[-webkit-tap-highlight-color:transparent]',
-  transitionClasses,
-  fieldFocusTransitionClasses,
-  iconClasses
-].join(' ');
+const shellBaseClasses = // No cursor here: it is decided with the state, as on TextField.
+  'group relative flex w-full items-center ' +
+  '[-webkit-tap-highlight-color:transparent] ' +
+  transitionClasses +
+  ' ' +
+  fieldFocusTransitionClasses +
+  ' ' +
+  iconClasses;
 
 /**
  * A stepper. Square, tracking the text rather than the control, so the same
@@ -212,22 +212,21 @@ const shellBaseClasses = [
  * run into `min` changes colour family, the way every other inert control in
  * the library does.
  */
-const stepperClasses = [
-  'relative inline-flex size-[1.7em] shrink-0 cursor-pointer items-center justify-center',
+const stepperClasses =
+  'relative inline-flex size-[1.7em] shrink-0 cursor-pointer items-center justify-center ' +
   // Pressed at the height of a finger, and along the row only into the gap:
   // at `xs` and `sm` the pair is under 24px, and grown that way too each would
   // lie over the other.
-  'neba-hit-row',
-  'rounded-(--neba-radius-xs) text-(--neba-muted-fg) select-none',
-  '[&_svg]:size-[0.9em] [&_svg]:shrink-0',
-  '[-webkit-tap-highlight-color:transparent] [touch-action:manipulation]',
-  '[transition:background-color_var(--neba-duration)_var(--neba-ease),color_var(--neba-duration)_var(--neba-ease)]',
-  'active:[transition-duration:0ms]',
-  'hover:bg-(--n-soft) hover:text-(--n-on-tint)',
-  'active:bg-(--n-soft-press)',
-  'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-1',
-  'disabled:cursor-not-allowed disabled:bg-transparent disabled:text-(--neba-disabled-fg)'
-].join(' ');
+  'neba-hit-row ' +
+  'rounded-(--neba-radius-xs) text-(--neba-muted-fg) select-none ' +
+  '[&_svg]:size-[0.9em] [&_svg]:shrink-0 ' +
+  '[-webkit-tap-highlight-color:transparent] [touch-action:manipulation] ' +
+  '[transition:background-color_var(--neba-duration)_var(--neba-ease),color_var(--neba-duration)_var(--neba-ease)] ' +
+  'active:[transition-duration:0ms] ' +
+  'hover:bg-(--n-soft) hover:text-(--n-on-tint) ' +
+  'active:bg-(--n-soft-press) ' +
+  'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-1 ' +
+  'disabled:cursor-not-allowed disabled:bg-transparent disabled:text-(--neba-disabled-fg)';
 
 /**
  * A field that only holds a number.

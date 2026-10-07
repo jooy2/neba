@@ -98,31 +98,31 @@ const iconOnlyClasses: Record<NebaSize, string> = {
   xl: `${controlSquareClasses.xl} px-0`
 };
 
-const baseClasses = [
-  'relative inline-flex shrink-0 select-none items-center justify-center',
-  'whitespace-nowrap align-middle font-medium leading-none',
-  '[-webkit-tap-highlight-color:transparent] [touch-action:manipulation]',
-  transitionClasses,
-  pressTransitionClasses,
-  focusRingClasses,
-  iconClasses
-].join(' ');
+const baseClasses =
+  'relative inline-flex shrink-0 select-none items-center justify-center ' +
+  'whitespace-nowrap align-middle font-medium leading-none ' +
+  '[-webkit-tap-highlight-color:transparent] [touch-action:manipulation] ' +
+  transitionClasses +
+  ' ' +
+  pressTransitionClasses +
+  ' ' +
+  focusRingClasses +
+  ' ' +
+  iconClasses;
 
 const restClasses: Record<NonNullable<NebaStyleProps['variant']>, string> = {
-  solid: [
-    surfaceClasses,
-    'text-(--n-on-solid) bg-(--n-fill)',
-    '[box-shadow:var(--n-elev),var(--neba-plate-solid)]'
-  ].join(' '),
+  solid:
+    surfaceClasses +
+    ' text-(--n-on-solid) bg-(--n-fill) ' +
+    '[box-shadow:var(--n-elev),var(--neba-plate-solid)]',
   // Not a white box with a colored border — a panel of the same frosted acrylic,
   // dyed faintly with its own accent. The hairline is mostly the glass edge
   // catching light, with just enough accent in it to name the color.
-  outline: [
-    surfaceClasses,
-    'border text-(--n-on-tint) bg-(--n-panel)',
-    '[border-color:var(--n-line)]',
-    '[box-shadow:var(--n-elev),var(--neba-plate-glass)]'
-  ].join(' '),
+  outline:
+    surfaceClasses +
+    ' border text-(--n-on-tint) bg-(--n-panel) ' +
+    '[border-color:var(--n-line)] ' +
+    '[box-shadow:var(--n-elev),var(--neba-plate-glass)]',
   // Nothing to catch the light on, and nothing to cast a shadow.
   text: 'text-(--n-on-tint) bg-transparent'
 };
@@ -133,18 +133,16 @@ const restClasses: Record<NonNullable<NebaStyleProps['variant']>, string> = {
  * surface reading as a key being pushed into its socket.
  */
 const hoverClasses: Record<NonNullable<NebaStyleProps['variant']>, string> = {
-  solid: [
-    'hover:bg-(--n-fill-hover)',
-    'hover:[box-shadow:var(--n-elev-hover),var(--neba-plate-solid)]',
-    'active:bg-(--n-fill-active)',
-    'active:[box-shadow:var(--n-elev-press),var(--neba-plate-solid)]'
-  ].join(' '),
-  outline: [
-    'hover:bg-(--n-panel-hover) hover:[border-color:var(--n-line-hover)]',
-    'hover:[box-shadow:var(--n-elev-hover),var(--neba-plate-glass)]',
-    'active:bg-(--n-panel-press)',
-    'active:[box-shadow:var(--n-elev-press),var(--neba-plate-glass)]'
-  ].join(' '),
+  solid:
+    'hover:bg-(--n-fill-hover) ' +
+    'hover:[box-shadow:var(--n-elev-hover),var(--neba-plate-solid)] ' +
+    'active:bg-(--n-fill-active) ' +
+    'active:[box-shadow:var(--n-elev-press),var(--neba-plate-solid)]',
+  outline:
+    'hover:bg-(--n-panel-hover) hover:[border-color:var(--n-line-hover)] ' +
+    'hover:[box-shadow:var(--n-elev-hover),var(--neba-plate-glass)] ' +
+    'active:bg-(--n-panel-press) ' +
+    'active:[box-shadow:var(--n-elev-press),var(--neba-plate-glass)]',
   text: 'hover:bg-(--n-soft) active:bg-(--n-soft-hover)'
 };
 
@@ -153,18 +151,18 @@ const hoverClasses: Record<NonNullable<NebaStyleProps['variant']>, string> = {
  * most of the saturation, and stops reacting.
  */
 const readOnlyClasses: Record<NonNullable<NebaStyleProps['variant']>, string> = {
-  solid: [
-    surfaceClasses,
-    readOnlyFilterClasses,
-    'cursor-default text-(--n-on-solid) bg-(--n-fill)',
-    '[box-shadow:var(--neba-plate-solid)]'
-  ].join(' '),
-  outline: [
-    surfaceClasses,
-    readOnlyFilterClasses,
-    'cursor-default border text-(--n-on-tint) bg-(--n-panel)',
-    '[border-color:var(--n-line)] [box-shadow:var(--neba-plate-glass)]'
-  ].join(' '),
+  solid:
+    surfaceClasses +
+    ' ' +
+    readOnlyFilterClasses +
+    ' cursor-default text-(--n-on-solid) bg-(--n-fill) ' +
+    '[box-shadow:var(--neba-plate-solid)]',
+  outline:
+    surfaceClasses +
+    ' ' +
+    readOnlyFilterClasses +
+    ' cursor-default border text-(--n-on-tint) bg-(--n-panel) ' +
+    '[border-color:var(--n-line)] [box-shadow:var(--neba-plate-glass)]',
   text: `${readOnlyFilterClasses} cursor-default text-(--n-on-tint) bg-transparent`
 };
 
@@ -221,7 +219,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         : readOnly
           ? readOnlyClasses[variant]
           : restClasses[variant],
-      !disabled && !inert ? [hoverClasses[variant], 'neba-glow', 'cursor-pointer'].join(' ') : '',
+      !disabled && !inert ? hoverClasses[variant] + ' neba-glow ' + 'cursor-pointer' : '',
       loading ? 'cursor-progress' : '',
       fullWidth ? 'w-full' : '',
       className ?? ''

@@ -134,22 +134,21 @@ const trackRowPaddingClasses: Record<NebaSize, string> = {
  * switch is not a sheet — it is a track something runs along, and a track with
  * corners is a track the thumb would have to climb out of.
  */
-const trackBaseClasses = [
-  'relative inline-flex shrink-0 border',
+const trackBaseClasses =
+  'relative inline-flex shrink-0 border ' +
   // Wide enough already at every step; it is the height that is short of the
   // 24px a target owes a finger, and the rule grows only the axis that is.
-  hitAreaClasses,
-  '[-webkit-tap-highlight-color:transparent] [touch-action:manipulation]',
-  'rounded-full',
+  hitAreaClasses +
+  ' [-webkit-tap-highlight-color:transparent] [touch-action:manipulation] ' +
+  'rounded-full ' +
   // The thumb's offset has to be in the property list here, which it is not in the shared
   // transition: this is the only component in the library where something
   // actually moves. It is the thumb, it carries no text, and it is the whole
   // point of the control.
-  '[transition-property:background-color,border-color,box-shadow]',
-  '[transition-duration:var(--neba-duration-fill),var(--neba-duration),var(--neba-duration)]',
-  '[transition-timing-function:var(--neba-ease)]',
-  'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-2'
-].join(' ');
+  '[transition-property:background-color,border-color,box-shadow] ' +
+  '[transition-duration:var(--neba-duration-fill),var(--neba-duration),var(--neba-duration)] ' +
+  '[transition-timing-function:var(--neba-ease)] ' +
+  'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-2';
 
 /**
  * No plate on the track, for the reason a Checkbox's tick has none: a 1px white
@@ -166,36 +165,32 @@ const trackBaseClasses = [
  * the light on. It is read straight off the token rather than through a slot,
  * because a groove is never dyed: the family arrives when the switch is on.
  */
-const restTrackClasses = [
-  surfaceClasses,
-  'cursor-pointer bg-(--neba-groove) [border-color:var(--n-line)]',
-  'hover:bg-(--neba-groove-hover) hover:[border-color:var(--n-line-hover)]',
-  'data-[checked]:bg-(--n-fill) data-[checked]:[border-color:transparent]',
-  'data-[checked]:hover:bg-(--n-fill-hover)'
-].join(' ');
+const restTrackClasses =
+  surfaceClasses +
+  ' cursor-pointer bg-(--neba-groove) [border-color:var(--n-line)] ' +
+  'hover:bg-(--neba-groove-hover) hover:[border-color:var(--n-line-hover)] ' +
+  'data-[checked]:bg-(--n-fill) data-[checked]:[border-color:transparent] ' +
+  'data-[checked]:hover:bg-(--n-fill-hover)';
 
-const readOnlyTrackClasses = [
-  surfaceClasses,
-  'cursor-default bg-(--neba-groove) [border-color:var(--n-line)]',
-  '[filter:saturate(0.55)]',
-  'data-[checked]:bg-(--n-fill) data-[checked]:[border-color:transparent]'
-].join(' ');
+const readOnlyTrackClasses =
+  surfaceClasses +
+  ' cursor-default bg-(--neba-groove) [border-color:var(--n-line)] ' +
+  '[filter:saturate(0.55)] ' +
+  'data-[checked]:bg-(--n-fill) data-[checked]:[border-color:transparent]';
 
-const disabledTrackClasses = [
-  'cursor-not-allowed bg-transparent [border-color:var(--neba-disabled-border)] shadow-none',
-  'data-[checked]:bg-(--neba-disabled-bg)'
-].join(' ');
+const disabledTrackClasses =
+  'cursor-not-allowed bg-transparent [border-color:var(--neba-disabled-border)] shadow-none ' +
+  'data-[checked]:bg-(--neba-disabled-bg)';
 
 /**
  * The thumb is white in both states rather than taking the accent: it is the
  * light on the track, not a second coloured object, and a coloured thumb on a
  * coloured track is two things fighting for the same 16 pixels.
  */
-const thumbClasses = [
-  'absolute inset-y-0.5 start-0.5 aspect-square rounded-full bg-(--neba-surface)',
-  '[box-shadow:var(--neba-shadow-1)]',
-  '[transition:inset-inline-start_var(--neba-duration)_var(--neba-ease)]'
-].join(' ');
+const thumbClasses =
+  'absolute inset-y-0.5 start-0.5 aspect-square rounded-full bg-(--neba-surface) ' +
+  '[box-shadow:var(--neba-shadow-1)] ' +
+  '[transition:inset-inline-start_var(--neba-duration)_var(--neba-ease)]';
 
 /**
  * An immediate on/off.

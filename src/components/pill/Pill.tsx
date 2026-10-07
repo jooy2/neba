@@ -113,17 +113,15 @@ export interface PillProps
  * than a sheet holding somebody else's content.
  */
 const restClasses: Record<NonNullable<NebaStyleProps['variant']>, string> = {
-  solid: [
-    surfaceClasses,
-    'text-(--n-on-solid) bg-(--n-fill)',
-    '[box-shadow:var(--n-elev),var(--neba-plate-solid)]'
-  ].join(' '),
-  outline: [
-    surfaceClasses,
-    'border text-(--n-on-tint) bg-(--n-panel)',
-    '[border-color:var(--n-line)]',
-    '[box-shadow:var(--n-elev),var(--neba-plate-glass)]'
-  ].join(' '),
+  solid:
+    surfaceClasses +
+    ' text-(--n-on-solid) bg-(--n-fill) ' +
+    '[box-shadow:var(--n-elev),var(--neba-plate-solid)]',
+  outline:
+    surfaceClasses +
+    ' border text-(--n-on-tint) bg-(--n-panel) ' +
+    '[border-color:var(--n-line)] ' +
+    '[box-shadow:var(--n-elev),var(--neba-plate-glass)]',
   // Where a reader asked for reduced transparency the blur is gone, and a
   // wash of ten per cent over busy content is no ground to read on, so there
   // the wash is laid over the page's surface instead. Under the media query
@@ -316,10 +314,10 @@ export const Pill = React.forwardRef<HTMLDivElement, PillProps>(function Pill(ra
           and this is what is in it. */}
       {hasContent(title) || hasContent(description) || hasContent(children) ? (
         <span
-          className={[
-            'flex min-w-0 flex-1 flex-col items-center justify-center text-center',
+          className={
+            'flex min-w-0 flex-1 flex-col items-center justify-center text-center ' +
             centerPaddingClasses[density][size]
-          ].join(' ')}
+          }
         >
           {hasContent(title) ? <span className="max-w-full truncate">{title}</span> : null}
           {hasContent(description) ? (
@@ -360,20 +358,23 @@ export const Pill = React.forwardRef<HTMLDivElement, PillProps>(function Pill(ra
       {...props}
     >
       <div
-        className={[
+        className={
           // `min-h` rather than a fixed height: one line keeps the stadium the
           // radius ladder is cut for, and a title with a description under it
           // grows into a rounded rectangle instead of being clipped. `py-1`
           // costs nothing in the one-line case — the minimum is taller than the
           // line plus the padding — and is what keeps two lines off the edges.
-          'flex shrink-0 items-center py-1',
-          rowMinHeightClasses[size],
-          gapClasses[size],
+          'flex shrink-0 items-center py-1 ' +
+          rowMinHeightClasses[size] +
+          ' ' +
+          gapClasses[size] +
+          ' ' +
           // With a pressable middle the padding belongs to the button, so its hit
           // area covers the whole row rather than just the words.
-          interactive ? 'ps-0' : padX,
-          hasContent(endIcon) ? 'pe-1' : interactive ? 'pe-0' : ''
-        ].join(' ')}
+          (interactive ? 'ps-0' : padX) +
+          ' ' +
+          (hasContent(endIcon) ? 'pe-1' : interactive ? 'pe-0' : '')
+        }
       >
         {interactive ? (
           // A real `<button>` inside the shell rather than a handler on the
@@ -384,21 +385,26 @@ export const Pill = React.forwardRef<HTMLDivElement, PillProps>(function Pill(ra
           // rewrites on parse.
           <button
             type="button"
-            className={[
-              'relative flex min-w-0 flex-1 cursor-pointer items-center justify-center self-stretch',
+            className={
+              'relative flex min-w-0 flex-1 cursor-pointer items-center justify-center self-stretch ' +
               // The lozenge's own radius and a ring drawn inside the edge: the
               // shell clips, and a ring two pixels outside the button was cut
               // off at the start of the row and at every corner.
-              pillRadiusClasses[size],
-              gapClasses[size],
-              padX,
-              insetRingClasses,
+              pillRadiusClasses[size] +
+              ' ' +
+              gapClasses[size] +
+              ' ' +
+              padX +
+              ' ' +
+              insetRingClasses +
               // The light and the press, on the one part a press presses.
-              'neba-glow',
-              hoverClasses[variant],
-              transitionClasses,
+              ' neba-glow ' +
+              hoverClasses[variant] +
+              ' ' +
+              transitionClasses +
+              ' ' +
               pressTransitionClasses
-            ].join(' ')}
+            }
             // It writes the two slots `neba-glow` reads, or the spotlight sat in
             // the middle of the button and stayed there.
             onPointerMove={trackPointer(undefined, true)}
@@ -422,11 +428,11 @@ export const Pill = React.forwardRef<HTMLDivElement, PillProps>(function Pill(ra
       {hasDetails ? (
         <div
           id={detailsId}
-          className={[
-            'overflow-hidden',
-            '[transition:height_var(--neba-duration)_var(--neba-ease)]',
+          className={
+            'overflow-hidden ' +
+            '[transition:height_var(--neba-duration)_var(--neba-ease)] ' +
             'motion-reduce:[transition-duration:0ms]'
-          ].join(' ')}
+          }
           style={{ height: expanded ? (detailsHeight ?? 'auto') : 0 }}
           // `inert` rather than `aria-hidden`: a collapsed panel is a zero-height
           // box that its content is still perfectly focusable inside, and

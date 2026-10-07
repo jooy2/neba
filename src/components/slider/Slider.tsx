@@ -167,17 +167,16 @@ const indicatorClasses = `neba-slider-indicator rounded-full bg-(--n-fill) ${tra
  * grows a ring on hover and focus rather than growing itself — the no-transform
  * rule is not relaxed just because this particular part has no label on it.
  */
-const thumbClasses = [
-  'neba-slider-thumb rounded-full border bg-(--neba-surface)',
-  surfaceClasses,
-  '[border-color:var(--n-line-hover)]',
-  '[box-shadow:var(--neba-shadow-1),var(--neba-plate-glass)]',
-  'cursor-grab select-none active:cursor-grabbing',
-  transitionClasses,
-  'hover:[box-shadow:var(--neba-shadow-2),0_0_0_4px_var(--n-soft)]',
-  'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-2',
-  'data-[dragging]:[box-shadow:var(--neba-shadow-1),0_0_0_6px_var(--n-soft-hover)]'
-].join(' ');
+const thumbClasses =
+  'neba-slider-thumb rounded-full border bg-(--neba-surface) ' +
+  surfaceClasses +
+  ' [border-color:var(--n-line-hover)] ' +
+  '[box-shadow:var(--neba-shadow-1),var(--neba-plate-glass)] ' +
+  'cursor-grab select-none active:cursor-grabbing ' +
+  transitionClasses +
+  ' hover:[box-shadow:var(--neba-shadow-2),0_0_0_4px_var(--n-soft)] ' +
+  'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-2 ' +
+  'data-[dragging]:[box-shadow:var(--neba-shadow-1),0_0_0_6px_var(--n-soft-hover)]';
 
 /**
  * Disabled is the three parts in the disabled tokens a Button uses, not the
@@ -186,11 +185,10 @@ const thumbClasses = [
  */
 const disabledRailClasses = 'neba-slider-rail rounded-full bg-(--neba-disabled-bg)';
 const disabledIndicatorClasses = 'neba-slider-indicator rounded-full bg-(--neba-disabled-fg)';
-const disabledThumbClasses = [
-  'neba-slider-thumb rounded-full border bg-(--neba-surface)',
-  surfaceClasses,
-  '[border-color:var(--neba-disabled-border)] shadow-none'
-].join(' ');
+const disabledThumbClasses =
+  'neba-slider-thumb rounded-full border bg-(--neba-surface) ' +
+  surfaceClasses +
+  ' [border-color:var(--neba-disabled-border)] shadow-none';
 
 /**
  * The marks a `marks` of `true` stands for: one at every step.

@@ -511,10 +511,8 @@ export interface DataTableProps<Row>
  * inside a cell is inline — see the note on `paddingXValues` — and a slot is
  * the one way a class can still reach in there.
  */
-const rowClasses = [
-  '[--n-row:transparent]',
-  '[transition:background-color_var(--neba-duration)_var(--neba-ease)]'
-].join(' ');
+const rowClasses =
+  '[--n-row:transparent] ' + '[transition:background-color_var(--neba-duration)_var(--neba-ease)]';
 
 /**
  * The zebra, and the one place this component leaves the panel ladder.
@@ -542,14 +540,13 @@ const stripeSlot = { '--n-stripe': 'color-mix(in oklab, var(--neba-fg) 4%, trans
  * `<th>` around it carries `aria-sort`, which is what says *how* it is sorted;
  * the button only says that pressing changes it.
  */
-const sortButtonClasses = [
-  'group/sort flex w-full min-w-0 cursor-pointer items-center gap-1',
-  'text-inherit [outline:none]',
-  '[transition:color_var(--neba-duration)_var(--neba-ease)]',
-  'hover:text-(--n-accent)',
-  'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-1',
-  '[&_svg]:pointer-events-none [&_svg]:size-[1.15em] [&_svg]:shrink-0'
-].join(' ');
+const sortButtonClasses =
+  'group/sort flex w-full min-w-0 cursor-pointer items-center gap-1 ' +
+  'text-inherit [outline:none] ' +
+  '[transition:color_var(--neba-duration)_var(--neba-ease)] ' +
+  'hover:text-(--n-accent) ' +
+  'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-1 ' +
+  '[&_svg]:pointer-events-none [&_svg]:size-[1.15em] [&_svg]:shrink-0';
 
 /**
  * The grab area, wider than the line it draws.

@@ -253,15 +253,14 @@ export type MenuSeparatorProps = React.ComponentPropsWithoutRef<'div'>;
  * select *is* a menu that remembers what you picked, and two floating lists of
  * rows that do not match are two lists the eye has to learn separately.
  */
-const popupClasses = [
-  surfaceClasses,
-  'max-h-[min(24rem,var(--available-height))] min-w-40 overflow-y-auto overscroll-contain',
-  'border bg-(--n-panel-press) p-1',
-  '[border-color:var(--n-line)]',
-  '[box-shadow:var(--neba-shadow-3),var(--neba-plate-glass)]',
-  '[outline:none]',
-  popupFadeClasses
-].join(' ');
+const popupClasses =
+  surfaceClasses +
+  ' max-h-[min(24rem,var(--available-height))] min-w-40 overflow-y-auto overscroll-contain ' +
+  'border bg-(--n-panel-press) p-1 ' +
+  '[border-color:var(--n-line)] ' +
+  '[box-shadow:var(--neba-shadow-3),var(--neba-plate-glass)] ' +
+  '[outline:none] ' +
+  popupFadeClasses;
 
 /**
  * A row's padding, and a ladder of its own rather than Box's.
@@ -618,11 +617,12 @@ export function MenuGroup({ label, children, className }: MenuGroupProps) {
     <BaseUIMenu.Group className={className}>
       {hasContent(label) ? (
         <BaseUIMenu.GroupLabel
-          className={[
-            rowPaddingClasses[density][size],
-            metaTextClasses[size],
-            'font-semibold tracking-wide text-(--neba-muted-fg) uppercase'
-          ].join(' ')}
+          className={
+            rowPaddingClasses[density][size] +
+            ' ' +
+            metaTextClasses[size] +
+            ' font-semibold tracking-wide text-(--neba-muted-fg) uppercase'
+          }
         >
           {label}
         </BaseUIMenu.GroupLabel>

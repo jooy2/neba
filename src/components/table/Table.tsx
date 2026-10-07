@@ -161,10 +161,8 @@ const cellPaddingYValues: Record<NebaDensity, Record<NebaSize, string>> = {
  * which classes then set — a custom property is invisible to a host stylesheet,
  * so a one-class variant wins there without a fight.
  */
-const rowClasses = [
-  '[--n-row:transparent]',
-  '[transition:background-color_var(--neba-duration)_var(--neba-ease)]'
-].join(' ');
+const rowClasses =
+  '[--n-row:transparent] ' + '[transition:background-color_var(--neba-duration)_var(--neba-ease)]';
 
 /**
  * What a row that answers a press needs beyond the pointer treatment.
@@ -180,10 +178,9 @@ const rowClasses = [
  * inside from the table they belong to, and costs a screen reader the column
  * headers, the row position and the count.
  */
-const clickableRowClasses = [
-  'cursor-pointer [outline:none]',
-  'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:[outline-offset:-2px]'
-].join(' ');
+const clickableRowClasses =
+  'cursor-pointer [outline:none] ' +
+  'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:[outline-offset:-2px]';
 
 /**
  * The rule between rows is the same `--n-line` a Card scores its sections with,

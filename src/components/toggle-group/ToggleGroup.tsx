@@ -63,13 +63,9 @@ const overlapClasses: Record<NebaOrientation, string> = {
   vertical: '[&>*:not(:first-child)]:-mt-px'
 };
 
-const baseClasses = [
-  // The display is decided with `fullWidth`: `flex` beside `inline-flex` is two
+const baseClasses = // The display is decided with `fullWidth`: `flex` beside `inline-flex` is two
   // utilities for one property, and which won was stylesheet order.
-  'align-middle',
-  '[&>*]:relative [&>*:hover]:z-10 [&>*:focus-visible]:z-10',
-  '[&>*]:shrink-0'
-].join(' ');
+  'align-middle ' + '[&>*]:relative [&>*:hover]:z-10 [&>*:focus-visible]:z-10 ' + '[&>*]:shrink-0';
 
 /**
  * A set of toggles that share one state.
