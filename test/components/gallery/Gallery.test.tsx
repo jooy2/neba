@@ -6,12 +6,13 @@
  *
  * The sources are data URIs so nothing depends on the network.
  */
+import { Profiler } from 'react';
 import type * as React from 'react';
-import { describe, expect, it, vi } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { renderToString } from 'react-dom/server';
 import { hydrateRoot } from 'react-dom/client';
 import { render } from 'vitest-browser-react';
-import { userEvent } from 'vitest/browser';
+import { page, userEvent } from 'vitest/browser';
 import { Gallery, type NebaGalleryItem } from 'neba';
 import { viewerChunk } from '../../../src/components/gallery/Gallery.js';
 
@@ -240,6 +241,68 @@ describe('Gallery', () => {
       expect(picture.closest<HTMLElement>('[style*="aspect-ratio"]')?.style.aspectRatio).toMatch(
         /^1( \/ 1)?$/
       );
+    });
+  });
+
+  // Every layout asked which breakpoint the window was at, so a grid drew
+  // every tile, and every Image in it, again each time the window crossed one.
+  describe('crossing a breakpoint', () => {
+    let size: [number, number];
+
+    beforeAll(() => {
+      size = [window.innerWidth, window.innerHeight];
+    });
+
+    afterAll(async () => {
+      await page.viewport(...size);
+    });
+
+    it('draws a grid no more, and deals a masonry into its new columns', async () => {
+      await page.viewport(600, 800);
+
+      let grid = 0;
+      let masonry = 0;
+      const screen = await render(
+        <>
+          <Profiler id="grid" onRender={() => (grid += 1)}>
+            <Gallery items={items} label="Grid" columns={{ xs: 2, md: 3 }} />
+          </Profiler>
+          <Profiler id="masonry" onRender={() => (masonry += 1)}>
+            <Gallery items={items} label="Masonry" layout="masonry" columns={{ xs: 2, md: 3 }} />
+          </Profiler>
+        </>
+      );
+      const lanes = () =>
+        screen.getByRole('list', { name: 'Masonry' }).element().querySelectorAll(':scope > li')
+          .length;
+
+      // Every picture has arrived and said so, which Firefox may do twice, and
+      // nothing else is still drawing: a tenth of a second without a commit.
+      await expect
+        .poll(() =>
+          [...screen.container.querySelectorAll('img[alt]:not([alt=""])')].every((picture) =>
+            picture.classList.contains('opacity-100')
+          )
+        )
+        .toBe(true);
+      await expect
+        .poll(async () => {
+          const before = grid + masonry;
+
+          await new Promise((resolve) => setTimeout(resolve, 100));
+
+          return grid + masonry - before;
+        })
+        .toBe(0);
+      expect(lanes()).toBe(2);
+
+      grid = 0;
+      masonry = 0;
+      await page.viewport(900, 800);
+
+      await expect.poll(lanes).toBe(3);
+      expect(masonry).toBeGreaterThan(0);
+      expect(grid).toBe(0);
     });
   });
 

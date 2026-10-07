@@ -392,6 +392,79 @@ const pictureHoverClasses: Record<NebaGalleryHover, string> = {
   zoom: 'group-hover/tile:[transform:scale(1.06)] group-has-[:focus-visible]/tile:[transform:scale(1.06)] supports-[not_selector(:has(*))]:group-focus-within/tile:[transform:scale(1.06)]'
 };
 
+interface MasonryLanesProps {
+  items: readonly NebaGalleryItem[];
+  /** The column counts, by breakpoint, with the baseline filled in. */
+  lanes: NebaResponsive<number>;
+  fallbackRatio: number;
+  space: string;
+  /** Draws one tile, with everything the Gallery knows as of its last render. */
+  tile: (item: NebaGalleryItem, index: number, style: React.CSSProperties) => React.ReactNode;
+}
+
+/**
+ * A masonry's columns, and the two hooks only a masonry needs.
+ *
+ * The one layout that has to know its column count in JavaScript is the one
+ * that deals tiles into columns; every other layout reads the same count out
+ * of the cascade without React hearing about the resize. Asked in the Gallery
+ * itself, the breakpoint and the end of hydration were questions every layout
+ * answered, so a grid, a quilt or a justified wall drew every tile, and every
+ * Image in it, again each time the window crossed a breakpoint and once more
+ * after hydrating. Asked here, they draw this and nothing else.
+ */
+function MasonryLanes({ items, lanes, fallbackRatio, space, tile }: MasonryLanesProps) {
+  const laneCount = Math.max(1, useBreakpointValue(lanes) ?? 2);
+  const hydrated = useHydrated();
+  const ratios = items.map((item) => shownRatioOf(item, fallbackRatio));
+  const dealt = (count: number, visibility: string) =>
+    deal(ratios, count).map((lane, index) => (
+      <li
+        // Keyed by the deal as well as the place, so the lanes a server drew
+        // for the width the reader turns out to have are the ones React keeps
+        // once it knows that width.
+        key={`${count}-${index}`}
+        // A lane is a list item holding a list, rather than a `<div>` between
+        // the `<ul>` and its `<li>`s, which is markup a screen reader reads as
+        // a list with nothing in it.
+        className={cx('m-0 flex min-w-0 flex-1 list-none flex-col', visibility)}
+        style={{ gap: space }}
+      >
+        <ul className="m-0 flex list-none flex-col p-0" style={{ gap: space }}>
+          {lane.map((at) => tile(items[at], at, {}))}
+        </ul>
+      </li>
+    ));
+
+  /*
+   * A server does not know how wide the window is. So until hydration every
+   * deal the breakpoints call for is drawn, each shown only across its own
+   * widths by the same classes `Show` uses — the reader sees the right one in
+   * the first frame, where a single deal for the narrowest width used to be
+   * redrawn into four columns the moment the page hydrated, moving every tile
+   * on it. The hidden ones are `display: none`, so a lazy picture in them is
+   * not fetched, and they go once React knows the width.
+   */
+  const steps = breakpoints.map((breakpoint) => ({
+    breakpoint,
+    count: Math.max(1, Math.round(valueAt(lanes, breakpoint) ?? 2))
+  }));
+  const ranges = steps.filter(
+    (step, index) => index === 0 || step.count !== steps[index - 1].count
+  );
+
+  return hydrated || ranges.length === 1
+    ? dealt(Math.max(1, Math.round(laneCount)), '')
+    : ranges.flatMap((range, index) => {
+        const next = ranges[index + 1];
+
+        return dealt(
+          range.count,
+          cx(hiddenBelowClasses[range.breakpoint], next ? hiddenFromClasses[next.breakpoint] : '')
+        );
+      });
+}
+
 /** The wash a caption is written on, so the words survive a pale photograph. */
 const captionScrimClasses =
   '[background:linear-gradient(to_top,color-mix(in_oklab,#000_72%,transparent),transparent)]';
@@ -474,11 +547,6 @@ export const Gallery = React.forwardRef<HTMLUListElement, GalleryProps>(
     };
 
     const lanes = withBaseline(columns ?? defaultColumns, 2);
-    // The one number a layout has to know in JavaScript, and only `masonry`
-    // does: the columns it deals into. Every other layout reads the same value
-    // out of the cascade without React hearing about the resize.
-    const laneCount = Math.max(1, useBreakpointValue(lanes) ?? 2);
-    const hydrated = useHydrated();
 
     const space =
       typeof gap === 'string' && gap in gapValues
@@ -722,58 +790,15 @@ export const Gallery = React.forwardRef<HTMLUListElement, GalleryProps>(
     let children: React.ReactNode;
 
     if (layout === 'masonry') {
-      const ratios = items.map((item) => shownRatioOf(item, fallbackRatio));
-      const dealt = (count: number, visibility: string) =>
-        deal(ratios, count).map((lane, index) => (
-          <li
-            // Keyed by the deal as well as the place, so the lanes a server
-            // drew for the width the reader turns out to have are the ones
-            // React keeps once it knows that width.
-            key={`${count}-${index}`}
-            // A lane is a list item holding a list, rather than a `<div>`
-            // between the `<ul>` and its `<li>`s, which is markup a screen
-            // reader reads as a list with nothing in it.
-            className={cx('m-0 flex min-w-0 flex-1 list-none flex-col', visibility)}
-            style={{ gap: space }}
-          >
-            <ul className="m-0 flex list-none flex-col p-0" style={{ gap: space }}>
-              {lane.map((at) => tile(items[at], at, {}))}
-            </ul>
-          </li>
-        ));
-
-      /*
-       * The one layout that has to know its column count in JavaScript, and a
-       * server does not know how wide the window is. So until hydration every
-       * deal the breakpoints call for is drawn, each shown only across its own
-       * widths by the same classes `Show` uses — the reader sees the right one
-       * in the first frame, where a single deal for the narrowest width used
-       * to be redrawn into four columns the moment the page hydrated, moving
-       * every tile on it. The hidden ones are `display: none`, so a lazy
-       * picture in them is not fetched, and they go once React knows the width.
-       */
-      const steps = breakpoints.map((breakpoint) => ({
-        breakpoint,
-        count: Math.max(1, Math.round(valueAt(lanes, breakpoint) ?? 2))
-      }));
-      const ranges = steps.filter(
-        (step, index) => index === 0 || step.count !== steps[index - 1].count
+      children = (
+        <MasonryLanes
+          items={items}
+          lanes={lanes}
+          fallbackRatio={fallbackRatio}
+          space={space}
+          tile={tile}
+        />
       );
-
-      children =
-        hydrated || ranges.length === 1
-          ? dealt(Math.max(1, Math.round(laneCount)), '')
-          : ranges.flatMap((range, index) => {
-              const next = ranges[index + 1];
-
-              return dealt(
-                range.count,
-                cx(
-                  hiddenBelowClasses[range.breakpoint],
-                  next ? hiddenFromClasses[next.breakpoint] : ''
-                )
-              );
-            });
     } else if (layout === 'justified') {
       children = items.map((item, index) => {
         const each = shownRatioOf(item, fallbackRatio);
