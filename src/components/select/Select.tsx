@@ -9,7 +9,6 @@ import {
   controlTextLeadingClasses,
   cx,
   disabledClasses,
-  fieldFocusTransitionClasses,
   fieldHeightClasses,
   fieldReadOnlyClasses,
   fieldRestClasses,
@@ -19,7 +18,6 @@ import {
   fieldSheetReadOnlyClasses,
   gapClasses,
   hasContent,
-  iconClasses,
   metaTextClasses,
   paddingXClasses,
   popupFadeClasses,
@@ -27,6 +25,7 @@ import {
   readOnlyFilterClasses,
   stackGapClasses,
   surfaceClasses,
+  selectTriggerClasses,
   surfaceSlots,
   transitionClasses
 } from '../../internal/styles.js';
@@ -171,15 +170,6 @@ export interface SelectProps
    */
   classNames?: NebaSlots<SelectSlot>;
 }
-
-/** The trigger is a TextField's shell, to the pixel. */
-const triggerBaseClasses = [
-  'group relative flex w-full cursor-pointer items-center select-none',
-  '[-webkit-tap-highlight-color:transparent] [touch-action:manipulation]',
-  transitionClasses,
-  fieldFocusTransitionClasses,
-  iconClasses
-].join(' ');
 
 /**
  * The popup is the one surface in the library that is *supposed* to float, so
@@ -373,7 +363,7 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
         aria-label={ariaLabel}
         aria-labelledby={ariaLabelledBy}
         className={cx(
-          triggerBaseClasses,
+          selectTriggerClasses,
           fieldHeightClasses[size],
           controlTextLeadingClasses[size],
           radiusClasses[size],

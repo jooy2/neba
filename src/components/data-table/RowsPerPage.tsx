@@ -13,20 +13,18 @@ import {
   controlTextLeadingClasses,
   cx,
   disabledClasses,
-  fieldFocusTransitionClasses,
   fieldHeightClasses,
   fieldRestClasses,
   fieldRingClasses,
   fieldSheetClasses,
   fieldSheetDisabledClasses,
   gapClasses,
-  iconClasses,
   metaTextClasses,
   paddingXClasses,
   radiusClasses,
+  selectTriggerClasses,
   stackGapClasses,
-  surfaceSlots,
-  transitionClasses
+  surfaceSlots
 } from '../../internal/styles.js';
 import type { NebaColor, NebaDensity, NebaLabelPlacement, NebaSize } from '../../types.js';
 
@@ -90,12 +88,6 @@ export interface RowsPerPageProps {
   onChange: (value: number) => void;
 }
 
-/** The Select's trigger, to the class. Kept in step with it by the DataTable's tests. */
-const triggerBaseClasses =
-  'group relative flex w-full cursor-pointer items-center select-none ' +
-  '[-webkit-tap-highlight-color:transparent] [touch-action:manipulation] ' +
-  `${transitionClasses} ${fieldFocusTransitionClasses} ${iconClasses}`;
-
 /**
  * The closed Select, drawn without the Select.
  *
@@ -136,7 +128,7 @@ const RowsPerPageStandIn = React.forwardRef<
       data-neba-stand-in=""
       onPointerMove={trackPointer(undefined, !disabled)}
       className={cx(
-        triggerBaseClasses,
+        selectTriggerClasses,
         fieldHeightClasses[size],
         controlTextLeadingClasses[size],
         radiusClasses[size],

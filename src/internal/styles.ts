@@ -701,6 +701,16 @@ export function clampSlot(lines: number | undefined): React.CSSProperties | unde
 export const iconClasses = '[&_svg]:pointer-events-none [&_svg]:size-[1.2em] [&_svg]:shrink-0';
 
 /**
+ * A Select's trigger: a TextField's shell, to the pixel. Here rather than in
+ * `Select.tsx` because a DataTable's rows-per-page control draws the closed
+ * Select before the Select's own chunk arrives, and the two must not drift.
+ */
+export const selectTriggerClasses =
+  'group relative flex w-full cursor-pointer items-center select-none ' +
+  '[-webkit-tap-highlight-color:transparent] [touch-action:manipulation] ' +
+  `${transitionClasses} ${fieldFocusTransitionClasses} ${iconClasses}`;
+
+/**
  * What a panel opening on a measured height does, apart from reading it.
  *
  * The height *is* animated, which looks like an exception to the rule against
