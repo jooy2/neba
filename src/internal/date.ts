@@ -171,6 +171,19 @@ export function isSameMonth(a: Date | null | undefined, b: Date | null | undefin
   );
 }
 
+/**
+ * A state updater that moves a held month to the one `date` is in, and keeps
+ * the object it already holds when that is the same month.
+ *
+ * Every picker puts its calendar back on the chosen month when the popup
+ * opens, from an effect on `open`. Handed a fresh `Date` there, React saw a
+ * new state on every open and drew the trigger, its sizer and the field
+ * around it a second time to arrive at the month it was already holding.
+ */
+export function toMonthOf(date: Date): (current: Date) => Date {
+  return (current) => (isSameMonth(current, date) ? current : startOfMonth(date));
+}
+
 /** Holds a date inside `[min, max]`, at whatever precision the bounds carry. */
 export function clampDate(date: Date, min?: Date | null, max?: Date | null): Date {
   if (isValidDate(min) && date.getTime() < min.getTime()) {

@@ -37,6 +37,7 @@ import {
   toISODate,
   toISOMonth,
   toISOYear,
+  toMonthOf,
   yearPageStart
 } from '../../src/internal/date.js';
 
@@ -131,6 +132,16 @@ describe('comparison', () => {
     expect(startOfDay(evening).getHours()).toBe(0);
     expect(startOfMonth(evening).getDate()).toBe(1);
     expect(startOfMonth(evening).getHours()).toBe(0);
+  });
+
+  // A picker puts its calendar back on the chosen month each time it opens,
+  // and a new object for the month it already held was a render for nothing.
+  it('keeps the month it holds when moved to a day in that month', () => {
+    const june = makeDate(2026, 5, 1);
+
+    expect(toMonthOf(evening)(june)).toBe(june);
+    expect(toMonthOf(makeDate(2026, 6, 27))(june)).toEqual(makeDate(2026, 6, 1));
+    expect(toMonthOf(makeDate(2025, 5, 10))(june)).toEqual(makeDate(2025, 5, 1));
   });
 });
 

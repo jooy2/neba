@@ -16,6 +16,7 @@ import {
   startOfDay,
   startOfMonth,
   toISODate,
+  toMonthOf,
   today,
   withPlaceholder
 } from '../../internal/date.js';
@@ -162,7 +163,7 @@ export const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePick
 
     React.useEffect(() => {
       if (open) {
-        setMonth(startOfMonth(start ?? defaultMonth ?? today()));
+        setMonth(toMonthOf(start ?? defaultMonth ?? today()));
       } else {
         // An abandoned half-selection does not survive the popup closing.
         setAnchor(null);
@@ -229,7 +230,7 @@ export const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePick
       setPreview(null);
       commit(range);
       if (isValidDate(range.start)) {
-        setMonth(startOfMonth(range.start));
+        setMonth(toMonthOf(range.start));
       }
       if (closeOnSelect) {
         setOpen(false);

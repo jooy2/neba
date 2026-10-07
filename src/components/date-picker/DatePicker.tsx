@@ -17,6 +17,7 @@ import {
   toISODate,
   toISOMonth,
   toISOYear,
+  toMonthOf,
   today,
   withPlaceholder
 } from '../../internal/date.js';
@@ -208,7 +209,7 @@ export const DatePicker = React.forwardRef<HTMLButtonElement, DatePickerProps>(
     // which reads as the control having forgotten its own value.
     React.useEffect(() => {
       if (open) {
-        setMonth(startOfMonth(isValidDate(value) ? value : (defaultMonth ?? today())));
+        setMonth(toMonthOf(isValidDate(value) ? value : (defaultMonth ?? today())));
       }
       // Only when the popup opens — following `value` here would drag the calendar
       // out from under someone typing into a form elsewhere on the page.
@@ -244,7 +245,7 @@ export const DatePicker = React.forwardRef<HTMLButtonElement, DatePickerProps>(
       // reset it to midnight every time the day is corrected.
       const next = isValidDate(value) ? mergeDateAndTime(unit, value) : unit;
       commit(next);
-      setMonth(startOfMonth(next));
+      setMonth(toMonthOf(next));
       if (closeOnSelect) {
         setOpen(false);
       }

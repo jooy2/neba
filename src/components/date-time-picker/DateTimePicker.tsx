@@ -23,6 +23,7 @@ import {
   startOfMonth,
   timeUnitRange,
   toISODateTime,
+  toMonthOf,
   today,
   withPlaceholder,
   withTime,
@@ -152,7 +153,7 @@ export const DateTimePicker = React.forwardRef<HTMLButtonElement, DateTimePicker
 
     React.useEffect(() => {
       if (open) {
-        setMonth(startOfMonth(isValidDate(value) ? value : (defaultMonth ?? today())));
+        setMonth(toMonthOf(isValidDate(value) ? value : (defaultMonth ?? today())));
       }
       // Only when the popup opens — following `value` here would drag the
       // calendar out from under someone typing into a form elsewhere.
@@ -208,7 +209,7 @@ export const DateTimePicker = React.forwardRef<HTMLButtonElement, DateTimePicker
       // an ordered task, and nobody reads a popup in the order it was written.
       const next = isValidDate(value) ? mergeDateAndTime(date, value) : startOfDay(date);
       commit(next);
-      setMonth(startOfMonth(next));
+      setMonth(toMonthOf(next));
       if (closeOnSelect) {
         setOpen(false);
       }
@@ -316,7 +317,7 @@ export const DateTimePicker = React.forwardRef<HTMLButtonElement, DateTimePicker
                 disabled={nowBlocked}
                 onClick={() => {
                   commit(nowValue);
-                  setMonth(startOfMonth(nowValue));
+                  setMonth(toMonthOf(nowValue));
                 }}
               >
                 {labels.now}
