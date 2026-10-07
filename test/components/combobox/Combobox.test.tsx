@@ -609,6 +609,55 @@ describe('Combobox', () => {
       expect(screen.container.querySelector('[data-analytics="framework"]')).not.toBeNull();
     });
   });
+
+  describe('autofill', () => {
+    const CITIES = [
+      { value: 'icn', label: 'Seoul' },
+      { value: 'nrt', label: 'Tokyo' }
+    ];
+
+    /** What a browser does to the input it autofills. */
+    function autofill(input: HTMLInputElement, text: string) {
+      Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')?.set?.call(input, text);
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+
+    it('writes autoComplete on the input that submits the value, not the one typed into', async () => {
+      const screen = await render(
+        <form aria-label="Address">
+          <Combobox items={CITIES} label="City" name="city" autoComplete="address-level2" />
+        </form>
+      );
+      const input = screen.getByRole('form').element().querySelector('input[name="city"]');
+
+      expect(input).toHaveAttribute('autocomplete', 'address-level2');
+      await expect.element(screen.getByRole('combobox')).toHaveAttribute('autocomplete', 'off');
+    });
+
+    it('chooses the option a browser fills in', async () => {
+      const onValueChange = vi.fn();
+      const screen = await render(
+        <form aria-label="Address">
+          <Combobox
+            items={CITIES}
+            label="City"
+            name="city"
+            autoComplete="address-level2"
+            onValueChange={onValueChange}
+          />
+        </form>
+      );
+      const input = screen
+        .getByRole('form')
+        .element()
+        .querySelector('input[name="city"]') as HTMLInputElement;
+
+      autofill(input, 'Tokyo');
+
+      await expect.element(screen.getByRole('combobox')).toHaveValue('Tokyo');
+      expect(onValueChange).toHaveBeenCalledWith('nrt');
+    });
+  });
   /**
    * The keys a Combobox cares about are the list's, and Base UI acts on them
    * before anything on the root could see them — so `shortcuts` is the only way

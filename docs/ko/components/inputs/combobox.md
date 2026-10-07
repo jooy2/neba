@@ -139,6 +139,14 @@ interface ComboboxOption {
 
 shortcut은 `<input>`에 붙어 목록이 키를 처리하기 **전에** 실행되지만, 목록이 하는 일을 **대신하지는** 않습니다. `Enter`에 건 shortcut은 확정과 함께 실행되지 그것을 막지 않습니다. 키를 온전히 가져야 한다면 목록이 쓰지 않는 조합을 고르세요.
 
+### autoComplete
+
+`autoComplete`는 이 필드에 무엇이 들어가는지 브라우저에 알려, 주소 폼의 다른 칸과 함께 autofill로 채워지게 합니다. 값을 제출하는 숨은 input에 붙고, 채워진 값이 옵션의 `value`나 label과 같으면 그 옵션이 선택됩니다. 글자를 입력하는 `<input>`은 `autocomplete="off"`를 유지하므로, 브라우저가 기억해 둔 입력 목록이 Combobox의 목록 위에 열리지 않습니다. `multiple` Combobox는 autofill을 받지 않습니다.
+
+```tsx
+<Combobox label="City" name="city" autoComplete="address-level2" items={cities} />
+```
+
 ### classNames
 
 `className`은 루트(라벨과 shell, 그 아래 두 줄을 담는 열)에 붙고, `<input>` 자체는 `classNames.control`로 갑니다.

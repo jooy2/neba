@@ -201,6 +201,17 @@ export interface ComboboxProps<Multiple extends boolean | undefined = false>
   required?: boolean;
   /** Identifies the field when a form is submitted. */
   name?: string;
+  /**
+   * What the browser may fill the field in with, such as `country` or
+   * `address-level2`. It is written on the hidden input that submits the
+   * value, and an autofilled value that matches an option's value or label
+   * chooses that option. A `multiple` combobox ignores autofill, since a
+   * browser fills in one value.
+   *
+   * Not the `<input>` the reader types into: that one stays `off`, so the
+   * browser's own list of past entries does not open over the combobox's.
+   */
+  autoComplete?: string;
   /** The popup is open. Use with `onOpenChange` for a controlled popup. */
   open?: boolean;
   /** Whether the popup starts open. */
@@ -402,6 +413,7 @@ export function Combobox<Multiple extends boolean | undefined = false>(
     readOnly = false,
     required = false,
     name,
+    autoComplete,
     open,
     defaultOpen,
     onOpenChange,
@@ -791,6 +803,7 @@ export function Combobox<Multiple extends boolean | undefined = false>(
       <BaseUICombobox.Root<Entry, boolean>
         id={id}
         name={name}
+        autoComplete={autoComplete}
         items={listItems}
         multiple={isMultiple}
         value={baseValue}

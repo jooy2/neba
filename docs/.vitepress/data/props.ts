@@ -5519,6 +5519,14 @@ export const propTables: Record<string, PropRow[]> = {
       }
     },
     {
+      name: 'autoComplete',
+      type: 'string',
+      description: {
+        ko: '브라우저 autofill 힌트. 값을 제출하는 숨은 input에 붙고, 채워진 값이 옵션의 value나 label과 같으면 그 옵션을 고릅니다',
+        en: "The browser's autofill hint, written on the hidden input that submits the value. A filled-in value that matches an option's value or label chooses it"
+      }
+    },
+    {
       name: 'required',
       type: 'boolean',
       description: {
@@ -9216,6 +9224,14 @@ export const propTables: Record<string, PropRow[]> = {
       description: {
         ko: '폼 제출 시의 필드 이름',
         en: 'Identifies the field when a form is submitted'
+      }
+    },
+    {
+      name: 'autoComplete',
+      type: 'string',
+      description: {
+        ko: '브라우저 autofill 힌트. 값을 제출하는 숨은 input에 붙고, 채워진 값이 옵션의 value나 label과 같으면 그 옵션을 고릅니다. 글자를 입력하는 input은 계속 off이고, multiple에서는 autofill을 받지 않습니다',
+        en: "The browser's autofill hint, written on the hidden input that submits the value. A filled-in value that matches an option's value or label chooses it. The input the reader types into stays off, and a multiple combobox takes no autofill"
       }
     },
     ...inertProps,

@@ -139,6 +139,14 @@ The arrows move the highlight, `Escape` closes the popup and `Enter` commits. Th
 
 A shortcut is bound to the `<input>` and runs before the list acts on the key, but it does not _replace_ what the list does. A shortcut on `Enter` fires alongside the commit, not instead of it. Bind a combination the list does not use when you need the key to yourself.
 
+### autoComplete
+
+`autoComplete` tells the browser what the field holds, so its autofill can fill it in with the rest of an address form. It is written on the hidden input that submits the value, and a filled-in value that matches an option's `value` or label chooses that option. The `<input>` the reader types into keeps `autocomplete="off"`, so the browser's list of past entries does not open over the combobox's own. A `multiple` combobox takes no autofill.
+
+```tsx
+<Combobox label="City" name="city" autoComplete="address-level2" items={cities} />
+```
+
 ### classNames
 
 `className` lands on the root (the column holding the label, the shell and the two lines under it), so the `<input>` is reached through `classNames.control`.

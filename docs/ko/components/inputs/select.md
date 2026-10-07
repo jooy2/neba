@@ -97,6 +97,14 @@ group은 **이웃한 옵션들의 묶음**이라 배열 순서가 곧 목록 순
 
 </Demo>
 
+### autoComplete
+
+`autoComplete`는 이 Select에 무엇이 들어가는지 브라우저에 알려, 주소 폼의 다른 칸과 함께 autofill로 채워지게 합니다. 값을 제출하는 숨은 input에 붙고, 채워진 값이 옵션의 `value`나 label과 같으면 그 옵션이 선택됩니다.
+
+```tsx
+<Select label="Country" name="country" autoComplete="country" items={countries} />
+```
+
 ### classNames
 
 `className`은 루트(라벨과 trigger, 그 아래 두 줄을 담는 열)에 붙고, trigger 자체는 `classNames.control`로 갑니다.

@@ -97,6 +97,14 @@ A group is a **run of adjacent options**, so the array's order is the list's ord
 
 </Demo>
 
+### autoComplete
+
+`autoComplete` tells the browser what the select holds, so its autofill can fill it in with the rest of an address form. It is written on the hidden input that submits the value, and a filled-in value that matches an option's `value` or label chooses that option.
+
+```tsx
+<Select label="Country" name="country" autoComplete="country" items={countries} />
+```
+
 ### classNames
 
 `className` lands on the root (the column holding the label, the trigger and the two lines under it), so the trigger is reached through `classNames.control`.

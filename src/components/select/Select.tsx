@@ -156,6 +156,13 @@ export interface SelectProps
   required?: boolean;
   /** Identifies the field when a form is submitted. */
   name?: string;
+  /**
+   * What the browser may fill the select in with, such as `country` or
+   * `address-level1`. It is written on the hidden input that submits the
+   * value, and an autofilled value that matches an option's value or label
+   * chooses that option.
+   */
+  autoComplete?: string;
   id?: string;
   /**
    * Class names for the parts behind the root. `className` is the root — the
@@ -253,6 +260,7 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
       readOnly = false,
       required = false,
       name,
+      autoComplete,
       id,
       className,
       classNames,
@@ -460,6 +468,7 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
         <BaseUISelect.Root
           id={id}
           name={name}
+          autoComplete={autoComplete}
           items={baseItems}
           value={value}
           defaultValue={defaultValue}

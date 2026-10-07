@@ -514,6 +514,54 @@ describe('Select', () => {
       expect(screen.container.querySelector('[data-analytics="plan"]')).not.toBeNull();
     });
   });
+
+  describe('autofill', () => {
+    const COUNTRIES = [
+      { value: 'kr', label: 'Korea' },
+      { value: 'jp', label: 'Japan' }
+    ];
+
+    /** What a browser does to the input it autofills. */
+    function autofill(input: HTMLInputElement, text: string) {
+      Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')?.set?.call(input, text);
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+
+    it('writes autoComplete on the input that submits the value', async () => {
+      const screen = await render(
+        <form aria-label="Address">
+          <Select items={COUNTRIES} label="Country" name="country" autoComplete="country" />
+        </form>
+      );
+      const input = screen.getByRole('form').element().querySelector('input[name="country"]');
+
+      expect(input).toHaveAttribute('autocomplete', 'country');
+    });
+
+    it('chooses the option a browser fills in', async () => {
+      const onValueChange = vi.fn();
+      const screen = await render(
+        <form aria-label="Address">
+          <Select
+            items={COUNTRIES}
+            label="Country"
+            name="country"
+            autoComplete="country"
+            onValueChange={onValueChange}
+          />
+        </form>
+      );
+      const input = screen
+        .getByRole('form')
+        .element()
+        .querySelector('input[name="country"]') as HTMLInputElement;
+
+      autofill(input, 'Japan');
+
+      await expect.element(screen.getByRole('combobox')).toHaveTextContent('Japan');
+      expect(onValueChange).toHaveBeenCalledWith('jp');
+    });
+  });
   describe('slots', () => {
     it('puts a class name on every part it was given one for', async () => {
       const screen = await render(

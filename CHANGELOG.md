@@ -2,6 +2,10 @@
 
 ## vNext (2026--)
 
+### Added
+
+- **`autoComplete` on `Select` and `Combobox`**, so a browser's autofill can fill them in with the rest of a form: `autoComplete="country"` on a country list. It is written on the hidden input that submits the value, and a filled-in value that matches an option's `value` or label chooses that option. A Combobox's own text input keeps `autocomplete="off"`, and a `multiple` Combobox takes no autofill.
+
 ### Changed
 
 - **A `Combobox` filters its list only when the query, the options or `filter` change.** The functions it handed Base UI were new on every render, so every render of anything above it, a keystroke in another field of the same form included, ran the filter over every option again. A `filter` of your own is no longer called on a render that changes none of those, as long as it is the same function from one render to the next.
