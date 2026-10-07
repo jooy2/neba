@@ -916,6 +916,13 @@ describe('DataTable', () => {
           await expect
             .element(screen.getByRole('option', { name: '25' }))
             .toHaveAttribute('data-highlighted');
+          // The list takes the focus in an effect after it mounts, and a key
+          // pressed before then goes wherever the focus still was.
+          await expect
+            .poll(
+              () => screen.getByRole('listbox').query()?.contains(document.activeElement) ?? false
+            )
+            .toBe(true);
 
           await userEvent.keyboard('{ArrowDown}{Enter}');
 
