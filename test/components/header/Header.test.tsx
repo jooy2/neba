@@ -1,7 +1,13 @@
-import { describe, expect, it } from 'vitest';
+import * as React from 'react';
+import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { Header } from 'neba';
-import { headerFloorSteps } from '../../../src/internal/page-layout.js';
+import {
+  PageLayoutContext,
+  PageLayoutSlotContext,
+  headerFloorSteps,
+  type PageLayoutContextValue
+} from '../../../src/internal/page-layout.js';
 
 describe('Header', () => {
   describe('rendering', () => {
@@ -169,6 +175,98 @@ describe('Header', () => {
 
       expect(element.style.getPropertyValue('--n-line')).toBe('var(--neba-success-line)');
       expect(element.style.getPropertyValue('--n-panel')).toBe('var(--neba-panel)');
+    });
+  });
+
+  describe('ref', () => {
+    /** A layout of the test's own, whose `register` can be counted. */
+    function Slotted({
+      register,
+      children
+    }: {
+      register: PageLayoutContextValue['register'];
+      children: React.ReactNode;
+    }) {
+      const value = React.useMemo(
+        () => ({
+          present: true,
+          register,
+          collapseBelow: 'none' as const,
+          open: { start: false, end: false },
+          setOpen: () => {},
+          scroll: 'page' as const
+        }),
+        [register]
+      );
+
+      return (
+        <PageLayoutContext.Provider value={value}>
+          <PageLayoutSlotContext.Provider value="header">{children}</PageLayoutSlotContext.Provider>
+        </PageLayoutContext.Provider>
+      );
+    }
+
+    // Each registration restarts the layout's observers and rewrites its
+    // height on the layout's root, which invalidates the style of the page.
+    it('registers with the layout once, however often an inline ref changes', async () => {
+      const register = vi.fn();
+      const nodes: (HTMLElement | null)[] = [];
+      const page = (count: number) => (
+        <Slotted register={register}>
+          <Header ref={(node) => void nodes.push(node)}>{count}</Header>
+        </Slotted>
+      );
+      const screen = await render(page(0));
+
+      await screen.rerender(page(1));
+      await screen.rerender(page(2));
+
+      const bar = screen.getByRole('banner').element();
+
+      expect(register.mock.calls).toEqual([['header', bar]]);
+      // Every new ref is still handed the bar, and every old one let go of it.
+      expect(nodes).toEqual([bar, null, bar, null, bar]);
+    });
+
+    it('moves the bar from one ref to the next, and lets go of it on unmount', async () => {
+      const first = React.createRef<HTMLElement>();
+      const second = React.createRef<HTMLElement>();
+      const screen = await render(<Header ref={first} />);
+      const bar = screen.getByRole('banner').element();
+
+      expect(first.current).toBe(bar);
+
+      await screen.rerender(<Header ref={second} />);
+
+      expect(first.current).toBeNull();
+      expect(second.current).toBe(bar);
+
+      await screen.unmount();
+
+      expect(second.current).toBeNull();
+    });
+
+    it('registers again when `position` changes, so the room for it is measured again', async () => {
+      const register = vi.fn();
+      const screen = await render(
+        <Slotted register={register}>
+          <Header />
+        </Slotted>
+      );
+
+      await screen.rerender(
+        <Slotted register={register}>
+          <Header position="fixed" />
+        </Slotted>
+      );
+
+      const bar = screen.getByRole('banner').element();
+
+      expect(register.mock.calls).toEqual([
+        ['header', bar],
+        ['header', null],
+        ['header', bar]
+      ]);
     });
   });
 });

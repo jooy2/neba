@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useLayoutEffectOnClient } from './layout-effect.js';
 import { useMediaQuery, widthBelow } from './media.js';
 import { hiddenBelowClasses, hiddenFromClasses } from './responsive.js';
 import type { NebaBreakpoint, NebaPosition, NebaSide, NebaSize } from '../types.js';
@@ -126,6 +127,64 @@ export const PageLayoutSlotContext = React.createContext<PageLayoutSlot | null>(
  * "nobody said", which a standalone sidebar reads as `start`.
  */
 export const SidebarSideContext = React.createContext<SidebarSide | null>(null);
+
+/** Hands a node to a ref of either kind. */
+function assignRef<T>(ref: React.ForwardedRef<T>, node: T | null) {
+  if (typeof ref === 'function') ref(node);
+  else if (ref) ref.current = node;
+}
+
+/**
+ * The ref a Header or a Footer puts on its bar: it hands the bar to the layout
+ * when the bar fills that slot, and forwards it to the caller's own ref.
+ *
+ * Stable for as long as the slot and `position` are, which is the point of it.
+ * A callback ref that changes is detached and attached again on every commit,
+ * and each of those registered the bar anew — restarting both of the layout's
+ * `ResizeObserver`s and writing the bar's height as `0px` and back onto the
+ * layout's root, which invalidates the style of the whole page. A caller who
+ * writes `ref={(node) => …}` inline hands the bar a new ref on every render, so
+ * every render of a page with a Header in it did all of that. `position` is
+ * kept in the dependencies on purpose: a bar switched to `fixed` has the same
+ * height and fires no resize, and the room reserved for it is what changed.
+ *
+ * The caller's ref is therefore read from a ref of its own rather than closed
+ * over. When it changes, the old one is handed `null` and the new one the bar,
+ * which is what React does for a ref that changes, one phase later.
+ */
+export function useBarRef(
+  slot: PageLayoutSlot,
+  ref: React.ForwardedRef<HTMLElement>,
+  position: NebaPosition
+): (node: HTMLElement | null) => void {
+  const { register } = React.useContext(PageLayoutContext);
+  // Only the one the layout was handed is its bar.
+  const slotted = React.useContext(PageLayoutSlotContext) === slot;
+  const nodeRef = React.useRef<HTMLElement | null>(null);
+  const forwardedRef = React.useRef(ref);
+
+  useLayoutEffectOnClient(() => {
+    const previous = forwardedRef.current;
+
+    if (previous === ref) return;
+
+    forwardedRef.current = ref;
+    assignRef(previous, null);
+    assignRef(ref, nodeRef.current);
+  }, [ref]);
+
+  return React.useCallback(
+    (node: HTMLElement | null) => {
+      nodeRef.current = node;
+
+      if (slotted) register(slot, node);
+
+      assignRef(forwardedRef.current, node);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- `position` re-attaches the ref on purpose
+    [register, slot, slotted, position]
+  );
+}
 
 /**
  * A Header's floor at each size, in steps of Tailwind's spacing scale.

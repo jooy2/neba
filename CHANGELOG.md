@@ -36,6 +36,8 @@
 
 - **A breakpoint moved in your Tailwind theme reaches `PageLayout`, `Sidebar` and `useBreakpoint` even when the stylesheet loads after the first render.** The widths were read once, at the first render that asked, and if the stylesheet had not finished loading by then the defaults were kept for the life of the page. A read that finds none of the widths is no longer kept.
 
+- **A `Header` or a `Footer` given a `ref` written inline no longer makes its `PageLayout` measure it again on every render.** A new ref on each render detached and attached the bar again, and the layout restarted its observers and rewrote the bar's height on its root as `0px` and back, which made the browser recalculate the style of the whole page. The bar now registers once, and your ref is still handed the element whenever it changes.
+
 ## 1.18.1 (2026-10-07)
 
 ### Added

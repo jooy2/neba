@@ -280,18 +280,25 @@ export const PageLayout = React.forwardRef<HTMLDivElement, PageLayoutProps>(
      * floating navigation's highlight is: nothing in the tree depends on the
      * numbers except a handful of CSS declarations, and a `setState` here would
      * re-render the whole page on every resize.
+     *
+     * Both bars are read before anything is written, and only a value that
+     * changed is written. A property set on the root invalidates the style of
+     * everything under it, so a write between the two reads made the second one
+     * recalculate the whole page's style to answer, and rewriting a value that
+     * had not moved did the same for the next reader.
      */
     const measure = React.useCallback(() => {
       const root = rootRef.current;
       if (!root) return;
+
+      const values: [string, string][] = [];
 
       for (const slot of SLOTS) {
         const node = slotsRef.current[slot];
         const span = slot === 'header' ? headerSpan : footerSpan;
 
         if (!node) {
-          root.style.setProperty(`--n-layout-${slot}`, '0px');
-          root.style.setProperty(`--n-layout-${slot}-inset`, '0px');
+          values.push([`--n-layout-${slot}`, '0px'], [`--n-layout-${slot}-inset`, '0px']);
           continue;
         }
 
@@ -301,8 +308,14 @@ export const PageLayout = React.forwardRef<HTMLDivElement, PageLayoutProps>(
 
         // A bar that only spans the content column has the sidebars *beside* it,
         // not under it, so it takes nothing off the top of theirs.
-        root.style.setProperty(`--n-layout-${slot}`, pinned && span === 'full' ? extent : '0px');
-        root.style.setProperty(`--n-layout-${slot}-inset`, position === 'fixed' ? extent : '0px');
+        values.push(
+          [`--n-layout-${slot}`, pinned && span === 'full' ? extent : '0px'],
+          [`--n-layout-${slot}-inset`, position === 'fixed' ? extent : '0px']
+        );
+      }
+
+      for (const [name, value] of values) {
+        if (root.style.getPropertyValue(name) !== value) root.style.setProperty(name, value);
       }
     }, [headerSpan, footerSpan]);
 

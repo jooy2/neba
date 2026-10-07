@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
 import { boxPaddingXClasses, boxPaddingYClasses } from '../box/Box.js';
-import { PageLayoutContext, PageLayoutSlotContext } from '../../internal/page-layout.js';
+import { useBarRef } from '../../internal/page-layout.js';
 import {
   cx,
   measureValue,
@@ -161,23 +161,7 @@ export const Footer = React.forwardRef<HTMLElement, FooterProps>(function Footer
     ...props
   } = useStyleDefaults(rawProps, ['size', 'density', 'variant']);
 
-  const layout = React.useContext(PageLayoutContext);
-  const { register } = layout;
-  // Only the one the layout was handed is its bar. `position` is in the
-  // dependencies so a bar switched to `fixed` is measured again: the same
-  // height fires no resize, and the space reserved for it is what changed.
-  const slotted = React.useContext(PageLayoutSlotContext) === 'footer';
-
-  const setRef = React.useCallback(
-    (node: HTMLElement | null) => {
-      if (slotted) register('footer', node);
-
-      if (typeof ref === 'function') ref(node);
-      else if (ref) ref.current = node;
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- `position` re-attaches the ref on purpose
-    [register, ref, slotted, position]
-  );
+  const setRef = useBarRef('footer', ref, position);
 
   const classNames = cx(
     'w-full min-w-0',
