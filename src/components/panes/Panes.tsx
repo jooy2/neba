@@ -4,7 +4,7 @@ import * as React from 'react';
 import { beginPointerDrag, drawnScale } from '../../internal/drag.js';
 import { useLayoutEffectOnClient } from '../../internal/layout-effect.js';
 import { observeResize } from '../../internal/observe.js';
-import { cx, toPixels, transitionClasses } from '../../internal/styles.js';
+import { cx, lengthUnit, toPixels, transitionClasses } from '../../internal/styles.js';
 import type { NebaColor, NebaOrientation, NebaSize } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
 import { panesMessages, useMessages } from '../../internal/i18n.js';
@@ -162,13 +162,16 @@ function shareBasis(fraction: number, gutter: number): string {
  * share of the split depends on how big the split turns out to be. A number
  * and a percentage are the same share at every size, and a string that is no
  * length at all is no size, which is how the measurement reads it as well.
+ *
+ * Asked during render, so it only reads the unit: converting a `rem` to know
+ * that it is one read the root's font size off the page on every render.
  */
 function isLength(value: PaneSize | undefined): value is string {
-  return (
-    typeof value === 'string' &&
-    !/%\s*$/.test(value) &&
-    toPixels(value, { percentOf: 0, relativeTo: null }) !== undefined
-  );
+  if (typeof value !== 'string') return false;
+
+  const unit = lengthUnit(value);
+
+  return unit !== undefined && unit !== '%';
 }
 
 /**

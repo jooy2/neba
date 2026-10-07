@@ -497,6 +497,26 @@ describe('Panes', () => {
       }
     });
 
+    // Telling a length from a share used to convert it, and converting a `rem`
+    // read the root's font size off the page on every render.
+    it('reads nothing off the page to tell a length from a share', () => {
+      const read = vi.spyOn(window, 'getComputedStyle');
+
+      try {
+        const html = renderToString(
+          <Panes>
+            <Pane defaultSize="15rem">One</Pane>
+            <Pane>Two</Pane>
+          </Panes>
+        );
+
+        expect(html).toContain('15rem');
+        expect(read).not.toHaveBeenCalled();
+      } finally {
+        read.mockRestore();
+      }
+    });
+
     // A share needs no measuring, so the server already writes the fraction the
     // measurement would, and the handle already says what it is.
     it('writes a split given in shares exactly as it will be measured', () => {

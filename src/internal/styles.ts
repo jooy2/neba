@@ -1104,6 +1104,21 @@ export function toLength(value: number | string | undefined): string | undefined
 const LENGTH = /^\s*(-?[\d.]+)\s*(px|rem|em|%)\s*$/;
 
 /**
+ * Which of the four units a length is written in, or `undefined` for a string
+ * `toPixels` would not read. The same test `toPixels` makes, without converting:
+ * converting a `rem` reads the root's font size, which is a style read, and a
+ * render that only needs to know *whether* something is a length has no reason
+ * to make one.
+ */
+export function lengthUnit(value: string): 'px' | 'rem' | 'em' | '%' | undefined {
+  const match = LENGTH.exec(value);
+
+  if (!match || Number.isNaN(Number(match[1]))) return undefined;
+
+  return match[2] as 'px' | 'rem' | 'em' | '%';
+}
+
+/**
  * The other direction: a CSS length a caller wrote, as the number a drag can do
  * arithmetic on.
  *

@@ -11,8 +11,8 @@
  * because the components need one; these are arithmetic, and arithmetic is
  * cheaper and sharper to check directly.
  */
-import { describe, expect, it } from 'vitest';
-import { toLength, toPixels } from '../../src/internal/styles.js';
+import { describe, expect, it, vi } from 'vitest';
+import { lengthUnit, toLength, toPixels } from '../../src/internal/styles.js';
 
 describe('toLength', () => {
   it('reads a number as pixels', () => {
@@ -88,5 +88,35 @@ describe('toPixels', () => {
     // Pixels on a Sidebar and a percentage on a Panes. That is a question about
     // the prop, and it is answered at the two call sites rather than here.
     expect(toPixels('30', { percentOf: 100 })).toBeUndefined();
+  });
+});
+
+describe('lengthUnit', () => {
+  it('names the unit of every length `toPixels` reads', () => {
+    expect(lengthUnit('240px')).toBe('px');
+    expect(lengthUnit(' 15rem ')).toBe('rem');
+    expect(lengthUnit('2em')).toBe('em');
+    expect(lengthUnit('25 %')).toBe('%');
+  });
+
+  it('turns away what `toPixels` turns away', () => {
+    for (const value of ['calc(100% - 2rem)', 'auto', '12', '1.2.3px']) {
+      expect(lengthUnit(value)).toBeUndefined();
+      expect(toPixels(value, { percentOf: 100 })).toBeUndefined();
+    }
+  });
+
+  // It is asked during render, where reading the root's font size to convert a
+  // `rem` is a style read for an answer nobody needed.
+  it('reads nothing off the page', () => {
+    const read = vi.spyOn(window, 'getComputedStyle');
+
+    try {
+      lengthUnit('15rem');
+
+      expect(read).not.toHaveBeenCalled();
+    } finally {
+      read.mockRestore();
+    }
   });
 });
