@@ -25,6 +25,8 @@ import {
   formatTimeValue,
   labelInk,
   labelledPoints,
+  areaPath,
+  barPath,
   linePath,
   markPath,
   rampStep,
@@ -636,6 +638,61 @@ describe('arcPath', () => {
   it('draws an ordinary slice without a NaN in it', () => {
     expect(arcPath(50, 50, 40, 0, 0, 90)).not.toContain('NaN');
     expect(arcPath(50, 50, 40, 20, 90, 200)).not.toContain('NaN');
+  });
+});
+
+/*
+ * A float prints with up to seventeen significant digits, and a 3,000-point
+ * line written with all of them was a 110 kB `d` attribute.
+ */
+describe('path data', () => {
+  /** Every number written into a path, as it was written. */
+  const numbers = (path: string) => path.match(/-?\d+(?:\.\d+)?/g) ?? [];
+  const finest = (path: string) =>
+    Math.max(0, ...numbers(path).map((number) => number.split('.')[1]?.length ?? 0));
+
+  const thirds = [
+    { x: 1 / 3, y: 20 / 3 },
+    { x: 10 / 3, y: 40 / 7 },
+    { x: 20 / 3, y: 2 / 7 }
+  ];
+
+  it('writes every coordinate to a hundredth of a pixel', () => {
+    const paths = [
+      linePath(thirds, 'linear'),
+      linePath(thirds, 'smooth'),
+      linePath(thirds, 'step'),
+      areaPath(thirds, 100 / 3, 'smooth'),
+      barPath(1 / 3, 2 / 3, 10 / 3, 50 / 3, 4, 'up'),
+      barPath(1 / 3, 2 / 3, 10 / 3, 50 / 3, 0, 'right'),
+      markPath('circle', 1 / 3, 2 / 3, 13 / 3),
+      markPath('triangle', 1 / 3, 2 / 3, 13 / 3),
+      markPath('cross', 1 / 3, 2 / 3, 13 / 3),
+      arcPath(100 / 3, 100 / 3, 80 / 3, 10 / 3, 10, 130),
+      ringPath(100 / 3, 100 / 3, 80 / 3, -100, 100)
+    ];
+
+    for (const path of paths) {
+      expect(finest(path)).toBeLessThanOrEqual(2);
+      expect(path).not.toContain('NaN');
+    }
+  });
+
+  it('puts each point within half a hundredth of where it was', () => {
+    expect(linePath(thirds, 'linear')).toBe('M0.33 6.67L3.33 5.71L6.67 0.29');
+  });
+
+  // Each relative step of the outline is rounded once and reused, so its
+  // sideways steps add up to nothing and the edge `Z` closes it with is
+  // upright, as the other eleven are.
+  it('brings a cross drawn in relative steps back level with where it started', () => {
+    const steps = markPath('cross', 1 / 3, 2 / 3, 13 / 3).replace(/^M[^h]+/, '');
+    const across = [...steps.matchAll(/h(-?[\d.]+)/g)].reduce(
+      (total, [, amount]) => total + Number(amount),
+      0
+    );
+
+    expect(across).toBeCloseTo(0, 9);
   });
 });
 

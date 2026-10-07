@@ -1381,6 +1381,25 @@ export function bandScale(count: number, length: number, ratio: number): BandSca
 }
 
 /**
+ * A coordinate as it is written into path data: to the nearest hundredth of a
+ * pixel.
+ *
+ * A float prints with up to seventeen significant digits, and a path written
+ * from them carries every one: a line of three thousand points was a 110 kB
+ * `d` attribute, most of it digits past anything a screen can show, and all of
+ * it in the server's HTML and parsed again by the browser. A hundredth is finer
+ * than any display draws, so nothing on screen moves.
+ *
+ * Every builder below writes its numbers through this, the relative ones
+ * included. Where an outline is drawn in relative steps that come back on
+ * themselves — a bar's corners, a circle, a cross — each step is rounded once
+ * and reused, so the shape still closes exactly where it started.
+ */
+function px(value: number): number {
+  return Math.round(value * 100) / 100;
+}
+
+/**
  * A path through the points, in whichever of the three shapes was asked for.
  *
  * `null` breaks the path rather than interpolating across it — the `M` that
@@ -1407,23 +1426,23 @@ export function linePath(
     if (run.length === 1) {
       // A lone point between two gaps has no line to be part of. Draw it as a
       // zero-length stroke, which a round cap renders as the dot it is.
-      path.push(`M${run[0].x} ${run[0].y}h0`);
+      path.push(`M${px(run[0].x)} ${px(run[0].y)}h0`);
     } else if (curve === 'step') {
-      path.push(`M${run[0].x} ${run[0].y}`);
+      path.push(`M${px(run[0].x)} ${px(run[0].y)}`);
 
       for (let i = 1; i < run.length; i++) {
         const middle = (run[i - 1].x + run[i].x) / 2;
 
-        path.push(`H${middle}V${run[i].y}H${run[i].x}`);
+        path.push(`H${px(middle)}V${px(run[i].y)}H${px(run[i].x)}`);
       }
     } else if (curve === 'smooth') {
-      path.push(`M${run[0].x} ${run[0].y}`);
+      path.push(`M${px(run[0].x)} ${px(run[0].y)}`);
       path.push(monotonePath(run));
     } else {
-      path.push(`M${run[0].x} ${run[0].y}`);
+      path.push(`M${px(run[0].x)} ${px(run[0].y)}`);
 
       for (let i = 1; i < run.length; i++) {
-        path.push(`L${run[i].x} ${run[i].y}`);
+        path.push(`L${px(run[i].x)} ${px(run[i].y)}`);
       }
     }
 
@@ -1479,9 +1498,9 @@ function monotonePath(points: readonly { x: number; y: number }[]): string {
     const dx = (points[i + 1].x - points[i].x) / 3;
 
     segments.push(
-      `C${points[i].x + dx} ${points[i].y + tangents[i] * dx}` +
-        ` ${points[i + 1].x - dx} ${points[i + 1].y - tangents[i + 1] * dx}` +
-        ` ${points[i + 1].x} ${points[i + 1].y}`
+      `C${px(points[i].x + dx)} ${px(points[i].y + tangents[i] * dx)}` +
+        ` ${px(points[i + 1].x - dx)} ${px(points[i + 1].y - tangents[i + 1] * dx)}` +
+        ` ${px(points[i + 1].x)} ${px(points[i + 1].y)}`
     );
   }
 
@@ -1562,30 +1581,36 @@ export function barPath(
   radius: number,
   end: 'up' | 'down' | 'left' | 'right'
 ): string {
-  const r = Math.max(0, Math.min(radius, width / 2, height / 2));
+  const r = px(Math.max(0, Math.min(radius, width / 2, height / 2)));
 
   if (r === 0 || width <= 0 || height <= 0) {
-    return `M${x} ${y}h${width}v${height}h${-width}Z`;
+    return `M${px(x)} ${px(y)}h${px(width)}v${px(height)}h${px(-width)}Z`;
   }
 
   // Every path below is drawn clockwise on screen, which is what makes the
   // sweep flag `1` on all four corners. Reversing one and leaving the flag is
-  // how a rounded corner comes out as a bite taken from the bar.
+  // how a rounded corner comes out as a bite taken from the bar. The arcs are
+  // relative and `r` is already rounded, so every absolute number around them
+  // is rounded on its own and nothing accumulates.
   const arc = (dx: number, dy: number) => `a${r} ${r} 0 0 1 ${dx} ${dy}`;
+  const left = px(x);
+  const top = px(y);
+  const right = px(x + width);
+  const bottom = px(y + height);
 
   if (end === 'up') {
-    return `M${x} ${y + height}V${y + r}${arc(r, -r)}H${x + width - r}${arc(r, r)}V${y + height}Z`;
+    return `M${left} ${bottom}V${px(y + r)}${arc(r, -r)}H${px(x + width - r)}${arc(r, r)}V${bottom}Z`;
   }
 
   if (end === 'down') {
-    return `M${x} ${y}H${x + width}V${y + height - r}${arc(-r, r)}H${x + r}${arc(-r, -r)}Z`;
+    return `M${left} ${top}H${right}V${px(y + height - r)}${arc(-r, r)}H${px(x + r)}${arc(-r, -r)}Z`;
   }
 
   if (end === 'right') {
-    return `M${x} ${y}H${x + width - r}${arc(r, r)}V${y + height - r}${arc(-r, r)}H${x}Z`;
+    return `M${left} ${top}H${px(x + width - r)}${arc(r, r)}V${px(y + height - r)}${arc(-r, r)}H${left}Z`;
   }
 
-  return `M${x + width} ${y + height}H${x + r}${arc(-r, -r)}V${y + r}${arc(r, -r)}H${x + width}Z`;
+  return `M${right} ${bottom}H${px(x + r)}${arc(-r, -r)}V${px(y + r)}${arc(r, -r)}H${right}Z`;
 }
 
 /**
@@ -1634,25 +1659,28 @@ const shapeScale: Record<MarkShape, number> = {
  * the hover treatment are then unarguably the same on all five.
  */
 export function markPath(shape: MarkShape, cx: number, cy: number, r: number): string {
-  const size = Math.max(0, r) * shapeScale[shape];
+  const size = px(Math.max(0, r) * shapeScale[shape]);
 
   if (size === 0) {
     return '';
   }
 
+  const x = px(cx);
+  const y = px(cy);
+
   if (shape === 'circle') {
     return (
-      `M${cx - size} ${cy}a${size} ${size} 0 1 0 ${size * 2} 0` +
-      `a${size} ${size} 0 1 0 ${-size * 2} 0Z`
+      `M${px(cx - size)} ${y}a${size} ${size} 0 1 0 ${px(size * 2)} 0` +
+      `a${size} ${size} 0 1 0 ${px(-size * 2)} 0Z`
     );
   }
 
   if (shape === 'square') {
-    return `M${cx - size} ${cy - size}h${size * 2}v${size * 2}h${-size * 2}Z`;
+    return `M${px(cx - size)} ${px(cy - size)}h${px(size * 2)}v${px(size * 2)}h${px(-size * 2)}Z`;
   }
 
   if (shape === 'diamond') {
-    return `M${cx} ${cy - size}L${cx + size} ${cy}L${cx} ${cy + size}L${cx - size} ${cy}Z`;
+    return `M${x} ${px(cy - size)}L${px(cx + size)} ${y}L${x} ${px(cy + size)}L${px(cx - size)} ${y}Z`;
   }
 
   if (shape === 'triangle') {
@@ -1662,18 +1690,22 @@ export function markPath(shape: MarkShape, cx: number, cy: number, r: number): s
     const points = [0, 120, 240].map((degrees) => {
       const radians = ((degrees - 90) * Math.PI) / 180;
 
-      return `${cx + size * Math.cos(radians)} ${cy + size * Math.sin(radians)}`;
+      return `${px(cx + size * Math.cos(radians))} ${px(cy + size * Math.sin(radians))}`;
     });
 
     return `M${points.join('L')}Z`;
   }
 
-  const arm = size / 3;
+  // The arm and the step are rounded once and used throughout, so the twelve
+  // relative steps of the outline come back exactly to where they started.
+  const arm = px(size / 3);
+  const reach = px(size - arm);
+  const across = px(arm * 2);
 
   return (
-    `M${cx - arm} ${cy - size}h${arm * 2}v${size - arm}h${size - arm}v${arm * 2}` +
-    `h${-(size - arm)}v${size - arm}h${-arm * 2}v${-(size - arm)}h${-(size - arm)}` +
-    `v${-arm * 2}h${size - arm}Z`
+    `M${px(cx - arm)} ${px(cy - size)}h${across}v${reach}h${reach}v${across}` +
+    `h${-reach}v${reach}h${-across}v${-reach}h${-reach}` +
+    `v${-across}h${reach}Z`
   );
 }
 
@@ -1696,23 +1728,21 @@ export function ringPath(cx: number, cy: number, radius: number, from: number, t
   const point = (degrees: number) => {
     const radians = ((degrees - 90) * Math.PI) / 180;
 
-    return `${cx + radius * Math.cos(radians)} ${cy + radius * Math.sin(radians)}`;
+    return `${px(cx + radius * Math.cos(radians))} ${px(cy + radius * Math.sin(radians))}`;
   };
+  const r = px(radius);
 
   // A full circle cannot be one arc — start and end are the same point, and the
   // renderer draws nothing at all. Two half-arcs are the standard answer.
   if (Math.abs(to - from) >= 360) {
     const half = from + 180;
 
-    return (
-      `M${point(from)}A${radius} ${radius} 0 1 1 ${point(half)}` +
-      `A${radius} ${radius} 0 1 1 ${point(from)}`
-    );
+    return `M${point(from)}A${r} ${r} 0 1 1 ${point(half)}` + `A${r} ${r} 0 1 1 ${point(from)}`;
   }
 
   const large = Math.abs(to - from) > 180 ? 1 : 0;
 
-  return `M${point(from)}A${radius} ${radius} 0 ${large} 1 ${point(to)}`;
+  return `M${point(from)}A${r} ${r} 0 ${large} 1 ${point(to)}`;
 }
 
 /**
@@ -1734,8 +1764,10 @@ export function arcPath(
   const point = (radius: number, degrees: number) => {
     const radians = ((degrees - 90) * Math.PI) / 180;
 
-    return `${cx + radius * Math.cos(radians)} ${cy + radius * Math.sin(radians)}`;
+    return `${px(cx + radius * Math.cos(radians))} ${px(cy + radius * Math.sin(radians))}`;
   };
+  const out = px(outer);
+  const hole = px(inner);
 
   const sweep = Math.abs(to - from) >= 360;
 
@@ -1745,23 +1777,23 @@ export function arcPath(
     const half = from + 180;
 
     return inner > 0
-      ? `M${point(outer, from)}A${outer} ${outer} 0 1 1 ${point(outer, half)}` +
-          `A${outer} ${outer} 0 1 1 ${point(outer, from)}Z` +
-          `M${point(inner, from)}A${inner} ${inner} 0 1 0 ${point(inner, half)}` +
-          `A${inner} ${inner} 0 1 0 ${point(inner, from)}Z`
-      : `M${point(outer, from)}A${outer} ${outer} 0 1 1 ${point(outer, half)}` +
-          `A${outer} ${outer} 0 1 1 ${point(outer, from)}Z`;
+      ? `M${point(outer, from)}A${out} ${out} 0 1 1 ${point(outer, half)}` +
+          `A${out} ${out} 0 1 1 ${point(outer, from)}Z` +
+          `M${point(inner, from)}A${hole} ${hole} 0 1 0 ${point(inner, half)}` +
+          `A${hole} ${hole} 0 1 0 ${point(inner, from)}Z`
+      : `M${point(outer, from)}A${out} ${out} 0 1 1 ${point(outer, half)}` +
+          `A${out} ${out} 0 1 1 ${point(outer, from)}Z`;
   }
 
   const large = Math.abs(to - from) > 180 ? 1 : 0;
 
   if (inner <= 0) {
-    return `M${cx} ${cy}L${point(outer, from)}A${outer} ${outer} 0 ${large} 1 ${point(outer, to)}Z`;
+    return `M${px(cx)} ${px(cy)}L${point(outer, from)}A${out} ${out} 0 ${large} 1 ${point(outer, to)}Z`;
   }
 
   return (
-    `M${point(outer, from)}A${outer} ${outer} 0 ${large} 1 ${point(outer, to)}` +
-    `L${point(inner, to)}A${inner} ${inner} 0 ${large} 0 ${point(inner, from)}Z`
+    `M${point(outer, from)}A${out} ${out} 0 ${large} 1 ${point(outer, to)}` +
+    `L${point(inner, to)}A${hole} ${hole} 0 ${large} 0 ${point(inner, from)}Z`
   );
 }
 
