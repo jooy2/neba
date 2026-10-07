@@ -8,7 +8,7 @@ import type {
   BottomNavigationLabels,
   BottomNavigationValue
 } from '../../internal/bottom-navigation.js';
-import { observeResize } from '../../internal/observe.js';
+import { watchTile } from '../../internal/tile.js';
 import { cx, surfaceClasses, surfaceSlots, transitionClasses } from '../../internal/styles.js';
 import type {
   NebaDensity,
@@ -249,6 +249,8 @@ export const FloatingBottomNavigation = React.forwardRef<
 
   const rootRef = React.useRef<HTMLElement | null>(null);
   const tileRef = React.useRef<HTMLSpanElement>(null);
+  /** The box last written onto the tile, and which tile it was written onto. */
+  const placed = React.useRef<{ tile: HTMLElement; box: string } | null>(null);
 
   const setRootRef = React.useCallback(
     (node: HTMLElement | null) => {
@@ -286,10 +288,35 @@ export const FloatingBottomNavigation = React.forwardRef<
     // A `value` no destination carries takes nothing, and a tile left where the
     // last one was would say it is still current.
     const current = root.querySelector<HTMLElement>('[data-nav-item][aria-current]');
-    tile.hidden = !current;
     if (!current) {
+      tile.hidden = true;
       tile.removeAttribute('data-ready');
+      placed.current = null;
       return;
+    }
+
+    // Every read before any write. An offset read after an attribute was
+    // written makes the browser work the styles and the layout out again just
+    // to answer, and this used to write two first.
+    const x = current.offsetLeft;
+    const y = current.offsetTop;
+    const width = current.offsetWidth;
+    const height = current.offsetHeight;
+    const box = `${x} ${y} ${width} ${height}`;
+
+    // A destination that resized without moving the tile's box, or a change to
+    // the bar that left the current one where it was, writes nothing.
+    if (
+      placed.current?.tile === tile &&
+      placed.current.box === box &&
+      !tile.hidden &&
+      tile.hasAttribute('data-ready')
+    ) {
+      return;
+    }
+
+    if (tile.hidden) {
+      tile.hidden = false;
     }
 
     // A tile that has only just mounted has nowhere to travel *from*, so its
@@ -299,10 +326,11 @@ export const FloatingBottomNavigation = React.forwardRef<
       tile.removeAttribute('data-ready');
     }
 
-    tile.style.setProperty('--n-nav-x', `${current.offsetLeft}px`);
-    tile.style.setProperty('--n-nav-y', `${current.offsetTop}px`);
-    tile.style.setProperty('--n-nav-w', `${current.offsetWidth}px`);
-    tile.style.setProperty('--n-nav-h', `${current.offsetHeight}px`);
+    tile.style.setProperty('--n-nav-x', `${x}px`);
+    tile.style.setProperty('--n-nav-y', `${y}px`);
+    tile.style.setProperty('--n-nav-w', `${width}px`);
+    tile.style.setProperty('--n-nav-h', `${height}px`);
+    placed.current = { tile, box };
 
     if (instant) {
       // Reading a layout property commits the four writes above while the
@@ -315,9 +343,12 @@ export const FloatingBottomNavigation = React.forwardRef<
   }, []);
 
   // Before the browser paints, or the tile is visibly at nothing for a frame.
+  // Not on `children`, which is a new object on every render of whatever is
+  // above the bar: a name that changes, a destination added and a reorder are
+  // the destinations' own business, and `watchTile` hears about each of them.
   useLayoutEffectOnClient(() => {
     measure(true);
-  }, [measure, value, variant, size, density, labels, children]);
+  }, [measure, value, variant, size, density, labels]);
 
   React.useEffect(() => {
     const root = rootRef.current;
@@ -327,17 +358,18 @@ export const FloatingBottomNavigation = React.forwardRef<
 
     // Under `labels="selected"` a press starts two names travelling, and the
     // measurement above is taken as they set off — before the new name has any
-    // width. When the bar changes width on the way the resize catches the rest,
-    // but two names of the same width leave the bar as wide as it was, and the
-    // tile stayed at the narrow box it was first sent to. The end of the names'
-    // own transition sends it to where the destination finished.
+    // width. Each destination's own resize now follows the name as it grows,
+    // and the bar's catches the rest when the bar changes width on the way.
+    // The end of the names' own transition stays as the last word: it sends the
+    // tile to where the destination finished in a browser with no
+    // `ResizeObserver`, and costs nothing where the tile is already there.
     const settle = (event: TransitionEvent) => {
       if (event.propertyName === 'grid-template-columns') {
         measure(true);
       }
     };
 
-    const stop = observeResize(root, () => measure(false));
+    const stop = watchTile(root, '[data-nav-item]', 'aria-current', measure);
     root.addEventListener('transitionend', settle);
 
     return () => {

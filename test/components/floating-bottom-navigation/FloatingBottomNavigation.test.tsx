@@ -7,6 +7,11 @@ function drawn(screen: Awaited<ReturnType<typeof render>>, name: string) {
   return screen.getByText(name).element().closest('[data-drawn]') !== null;
 }
 
+/** Two frames, which is long enough for a ResizeObserver to have spoken. */
+function nextFrames() {
+  return new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+}
+
 /** The highlight, which is the bar's own rather than the current item's. */
 function tile(screen: Awaited<ReturnType<typeof render>>) {
   return screen
@@ -320,6 +325,99 @@ describe('FloatingBottomNavigation', () => {
       );
 
       expect(tile(screen)?.style.getPropertyValue('--n-nav-w')).toBe(`${home.offsetWidth}px`);
+    });
+
+    // A name is the destination's own business, and the bar used to hear about
+    // it by measuring again on every new `children`, which is every render.
+    it('follows a name that changes size', async () => {
+      const bar = (name: string) => (
+        <FloatingBottomNavigation value="home" labels="all" data-testid="bar">
+          <BottomNavigationItem value="home">{name}</BottomNavigationItem>
+          <BottomNavigationItem value="search">Search</BottomNavigationItem>
+        </FloatingBottomNavigation>
+      );
+      const screen = await render(bar('Home'));
+
+      await expect.poll(() => tile(screen)?.hidden).toBe(false);
+      await nextFrames();
+
+      const before = tile(screen)?.style.getPropertyValue('--n-nav-w');
+
+      await screen.rerender(bar('Home and everything in it'));
+
+      const home = screen
+        .getByRole('button', { name: 'Home and everything in it' })
+        .element() as HTMLElement;
+
+      await expect
+        .poll(() => tile(screen)?.style.getPropertyValue('--n-nav-w'))
+        .toBe(`${home.offsetWidth}px`);
+      expect(tile(screen)?.style.getPropertyValue('--n-nav-w')).not.toBe(before);
+    });
+
+    it('follows the current destination when the bar is reordered', async () => {
+      const bar = (order: string[]) => (
+        <FloatingBottomNavigation value="search" labels="all" data-testid="bar">
+          {order.map((value) => (
+            <BottomNavigationItem key={value} value={value}>
+              {value}
+            </BottomNavigationItem>
+          ))}
+        </FloatingBottomNavigation>
+      );
+      const screen = await render(bar(['home', 'inbox', 'search']));
+
+      await expect.poll(() => tile(screen)?.hidden).toBe(false);
+      await nextFrames();
+
+      const before = tile(screen)?.style.getPropertyValue('--n-nav-x');
+
+      await screen.rerender(bar(['search', 'home', 'inbox']));
+
+      const search = screen.getByRole('button', { name: 'search' }).element() as HTMLElement;
+
+      await expect
+        .poll(() => tile(screen)?.style.getPropertyValue('--n-nav-x'))
+        .toBe(`${search.offsetLeft}px`);
+      expect(tile(screen)?.style.getPropertyValue('--n-nav-x')).not.toBe(before);
+    });
+
+    // Every render of the parent was a new `children`, and every new `children`
+    // was a measurement: a layout of the page, to read four offsets that had
+    // not moved.
+    it('reads no layout when its parent renders again with the same destinations', async () => {
+      const bar = () => (
+        <FloatingBottomNavigation value="home" data-testid="bar">
+          <BottomNavigationItem value="home">Home</BottomNavigationItem>
+          <BottomNavigationItem value="search">Search</BottomNavigationItem>
+        </FloatingBottomNavigation>
+      );
+      const screen = await render(bar());
+      const root = screen.getByTestId('bar').element();
+
+      await expect.poll(() => tile(screen)?.hidden).toBe(false);
+      await nextFrames();
+
+      const original = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'offsetLeft');
+      let reads = 0;
+
+      Object.defineProperty(HTMLElement.prototype, 'offsetLeft', {
+        configurable: true,
+        get(this: HTMLElement) {
+          if (root.contains(this)) reads += 1;
+
+          return original?.get?.call(this);
+        }
+      });
+
+      try {
+        await screen.rerender(bar());
+        await nextFrames();
+      } finally {
+        if (original) Object.defineProperty(HTMLElement.prototype, 'offsetLeft', original);
+      }
+
+      expect(reads).toBe(0);
     });
 
     it('is not drawn at all until a destination is current', async () => {

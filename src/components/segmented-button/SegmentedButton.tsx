@@ -5,7 +5,7 @@ import { useLayoutEffectOnClient } from '../../internal/layout-effect.js';
 import { glowClasses, trackPointer } from '../../internal/glow.js';
 import { Radio as BaseUIRadio } from '@base-ui/react/radio';
 import { RadioGroup as BaseUIRadioGroup } from '@base-ui/react/radio-group';
-import { observeResize } from '../../internal/observe.js';
+import { watchTile } from '../../internal/tile.js';
 import {
   controlHeightClasses,
   controlSlots,
@@ -284,6 +284,8 @@ export const SegmentedButton = React.forwardRef<HTMLDivElement, SegmentedButtonP
 
     const rootRef = React.useRef<HTMLDivElement>(null);
     const tileRef = React.useRef<HTMLSpanElement>(null);
+    /** The box last written onto the tile, and which tile it was written onto. */
+    const placed = React.useRef<{ tile: HTMLElement; box: string } | null>(null);
 
     /**
      * Writes the chosen segment's box onto the tile as four custom properties.
@@ -309,14 +311,47 @@ export const SegmentedButton = React.forwardRef<HTMLDivElement, SegmentedButtonP
       // last choice was would say that choice is still made. It goes away, and
       // like a first choice it appears in place when a segment matches again.
       const active = root.querySelector<HTMLElement>('[data-segment][data-checked]');
-      tile.hidden = !active;
       if (!active) {
+        tile.hidden = true;
         tile.removeAttribute('data-ready');
         root.removeAttribute('data-placed');
+        placed.current = null;
         return;
       }
 
-      tile.toggleAttribute('data-off', active.hasAttribute('data-disabled'));
+      // Every read before any write. An offset read after an attribute was
+      // written makes the browser work the styles and the layout out again just
+      // to answer, and this used to write two attributes first.
+      //
+      // `offsetLeft`/`offsetTop` are measured from the offsetParent's padding
+      // edge, and `left`/`top` on an absolutely positioned child resolve against
+      // the same box — so the trough's own padding is already accounted for and
+      // must not be subtracted again.
+      const x = active.offsetLeft;
+      const y = active.offsetTop;
+      const width = active.offsetWidth;
+      const height = active.offsetHeight;
+      const off = active.hasAttribute('data-disabled');
+      const box = `${x} ${y} ${width} ${height}`;
+
+      if (tile.hasAttribute('data-off') !== off) {
+        tile.toggleAttribute('data-off', off);
+      }
+
+      // A segment that resized without moving the tile's box, or a change to
+      // the set that left the chosen one where it was, writes nothing.
+      if (
+        placed.current?.tile === tile &&
+        placed.current.box === box &&
+        !tile.hidden &&
+        tile.hasAttribute('data-ready')
+      ) {
+        return;
+      }
+
+      if (tile.hidden) {
+        tile.hidden = false;
+      }
 
       // A tile that has only just mounted has nowhere to travel *from*, so its
       // first placement is instant however it was asked for — that is what makes
@@ -327,14 +362,11 @@ export const SegmentedButton = React.forwardRef<HTMLDivElement, SegmentedButtonP
         tile.removeAttribute('data-ready');
       }
 
-      // `offsetLeft`/`offsetTop` are measured from the offsetParent's padding
-      // edge, and `left`/`top` on an absolutely positioned child resolve against
-      // the same box — so the trough's own padding is already accounted for and
-      // must not be subtracted again.
-      tile.style.setProperty('--n-seg-x', `${active.offsetLeft}px`);
-      tile.style.setProperty('--n-seg-y', `${active.offsetTop}px`);
-      tile.style.setProperty('--n-seg-w', `${active.offsetWidth}px`);
-      tile.style.setProperty('--n-seg-h', `${active.offsetHeight}px`);
+      tile.style.setProperty('--n-seg-x', `${x}px`);
+      tile.style.setProperty('--n-seg-y', `${y}px`);
+      tile.style.setProperty('--n-seg-w', `${width}px`);
+      tile.style.setProperty('--n-seg-h', `${height}px`);
+      placed.current = { tile, box };
 
       if (instant) {
         // Reading a layout property commits the four writes above while the
@@ -351,9 +383,12 @@ export const SegmentedButton = React.forwardRef<HTMLDivElement, SegmentedButtonP
     }, []);
 
     // Before the browser paints, or the tile is visibly at nothing for a frame.
+    // Not on `children`, which is a new object on every render of whatever is
+    // above the set: a label that changes, a segment added and a reorder are
+    // the segments' own business, and `watchTile` hears about each of them.
     useLayoutEffectOnClient(() => {
       measure(true);
-    }, [measure, value, variant, size, density, fullWidth, disabled, children]);
+    }, [measure, value, variant, size, density, fullWidth, disabled]);
 
     React.useEffect(() => {
       const root = rootRef.current;
@@ -361,7 +396,7 @@ export const SegmentedButton = React.forwardRef<HTMLDivElement, SegmentedButtonP
         return;
       }
 
-      return observeResize(root, () => measure(false));
+      return watchTile(root, '[data-segment]', 'data-checked', measure);
     }, [measure]);
 
     const context = React.useMemo(

@@ -156,6 +156,7 @@ The same rule applies to the values behind those names, which is what `src/inter
 | `glow.ts` | Where the pointer is on a surface lit by it |
 | `wheel.ts` | A wheel turned onto a horizontal strip |
 | `observe.ts` | One `ResizeObserver`, and one `IntersectionObserver` per threshold |
+| `tile.ts` | What tells a SegmentedButton's or a FloatingBottomNavigation's tile that its items changed |
 | `cache.ts` | `memoise`, bounded |
 | `search.ts` | Folding a haystack and a needle for matching |
 | `media.ts`, `link.ts`, `new-tab.tsx` | One `MediaQueryList` per query, the locale a server-rendered page hydrates with, safe `rel` and `href`, and the words a link that opens a new tab ends with |

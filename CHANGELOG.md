@@ -24,6 +24,8 @@
 
 - **A `ColorPicker` does less on each pointer move of a drag.** Every move across the square or a rail parsed all sixteen swatches again to work out which one to tick. They are now parsed once per `swatches` list; pass the same array between renders, as the default does, to keep it that way.
 
+- **A `SegmentedButton` and a `FloatingBottomNavigation` no longer lay the page out each time their parent renders.** Both measured the chosen item again on every new `children`, which is every render of the component above them, to place a tile that had not moved. They now measure when the value changes or when an item itself does: a label that changes size, an item added or removed, or the set reordered.
+
 ### Fixed
 
 - **A `multiple` `Combobox` keeps the error a `Form` put on it while the page around it renders again, and a single one keeps what is typed after a value its `items` do not have.** The value handed to Base UI was a new object on every render, which Base UI took for a new choice: it cleared the field's errors, so a server error vanished the moment the reader typed in another field, and in single mode it wrote the chosen label back into the input, so typing after a custom value such as `defaultValue="Foo"` did nothing. The value now stays the same object for as long as it holds the same entries, including when `value` or `items` is written inline.

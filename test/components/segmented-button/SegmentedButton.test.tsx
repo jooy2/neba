@@ -22,6 +22,37 @@ function tile(root: Element): HTMLElement | null {
   return root.querySelector(':scope > span[aria-hidden="true"]');
 }
 
+/** Two frames, which is long enough for a ResizeObserver to have spoken. */
+function nextFrames() {
+  return new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+}
+
+/**
+ * Counts the reads of `offsetLeft` on anything inside `root` until `stop`.
+ * Reading an offset is what lays the page out, and it is the first thing a
+ * measurement of the tile does.
+ */
+function countOffsetReads(root: Element) {
+  const original = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'offsetLeft');
+  const reads = {
+    count: 0,
+    stop: () => {
+      if (original) Object.defineProperty(HTMLElement.prototype, 'offsetLeft', original);
+    }
+  };
+
+  Object.defineProperty(HTMLElement.prototype, 'offsetLeft', {
+    configurable: true,
+    get(this: HTMLElement) {
+      if (root.contains(this)) reads.count += 1;
+
+      return original?.get?.call(this);
+    }
+  });
+
+  return reads;
+}
+
 describe('SegmentedButton', () => {
   describe('rendering', () => {
     // A segmented button *is* "exactly one of these", so it is a radio group —
@@ -320,6 +351,88 @@ describe('SegmentedButton', () => {
       for (const name of ['Day', 'Week', 'Month']) {
         await expect.element(screen.getByRole('radio', { name })).not.toBeChecked();
       }
+    });
+
+    // A label is the segment's own business, and the set used to hear about it
+    // by measuring again on every new `children`, which is every render.
+    it('follows a label that changes size', async () => {
+      // Nothing loads Tailwind here, and a ResizeObserver says nothing about an
+      // inline box, so each segment is given the display its classes give it.
+      const set = (label: string) => (
+        <SegmentedButton aria-label="Range" value="week">
+          <Segment value="day" style={{ display: 'inline-flex' }}>
+            Day
+          </Segment>
+          <Segment value="week" style={{ display: 'inline-flex' }}>
+            {label}
+          </Segment>
+        </SegmentedButton>
+      );
+      const screen = await render(set('Week'));
+      const box = tile(screen.getByRole('radiogroup').element()) as HTMLElement;
+      const before = box.style.getPropertyValue('--n-seg-w');
+
+      await nextFrames();
+
+      await screen.rerender(set('Week of the year'));
+
+      const week = screen.getByRole('radio', { name: 'Week of the year' }).element() as HTMLElement;
+
+      await expect
+        .poll(() => box.style.getPropertyValue('--n-seg-w'))
+        .toBe(`${week.offsetWidth}px`);
+      expect(box.style.getPropertyValue('--n-seg-w')).not.toBe(before);
+    });
+
+    it('follows the chosen segment when the set is reordered', async () => {
+      const set = (order: string[]) => (
+        <SegmentedButton aria-label="Range" value="month">
+          {order.map((value) => (
+            <Segment key={value} value={value}>
+              {value}
+            </Segment>
+          ))}
+        </SegmentedButton>
+      );
+      const screen = await render(set(['day', 'week', 'month']));
+      const box = tile(screen.getByRole('radiogroup').element()) as HTMLElement;
+      const before = box.style.getPropertyValue('--n-seg-x');
+
+      // Past what the observers say when they first start watching, which
+      // would measure again whatever the reorder did.
+      await nextFrames();
+
+      await screen.rerender(set(['month', 'day', 'week']));
+
+      const month = screen.getByRole('radio', { name: 'month' }).element() as HTMLElement;
+
+      await expect
+        .poll(() => box.style.getPropertyValue('--n-seg-x'))
+        .toBe(`${month.offsetLeft}px`);
+      expect(box.style.getPropertyValue('--n-seg-x')).not.toBe(before);
+    });
+
+    // Every render of the parent was a new `children`, and every new `children`
+    // was a measurement: a layout of the page, to read four offsets that had
+    // not moved.
+    it('reads no layout when its parent renders again with the same segments', async () => {
+      const screen = await render(<Basic value="week" />);
+      const group = screen.getByRole('radiogroup').element();
+
+      await expect.element(group).toHaveAttribute('data-placed');
+      // What the observers say when they first start watching, out of the way.
+      await nextFrames();
+
+      const reads = countOffsetReads(group);
+
+      try {
+        await screen.rerender(<Basic value="week" />);
+        await nextFrames();
+      } finally {
+        reads.stop();
+      }
+
+      expect(reads.count).toBe(0);
     });
 
     // The whole point of the component moves, and it moves without a transform:
