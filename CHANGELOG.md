@@ -22,6 +22,8 @@
 
 - **A `Select` no longer renders every option again each time it renders.** Once the trigger has had the focus, the list stays mounted, hidden, so that the first press opens it at once, and every option in it was drawn again on each later render: a controlled Select of 250 countries in a form drew 250 rows on every keystroke in another field. The rows are now kept until `items`, `size` or `classNames.item` changes.
 
+- **A `ColorPicker` does less on each pointer move of a drag.** Every move across the square or a rail parsed all sixteen swatches again to work out which one to tick. They are now parsed once per `swatches` list; pass the same array between renders, as the default does, to keep it that way.
+
 ### Fixed
 
 - **A `multiple` `Combobox` keeps the error a `Form` put on it while the page around it renders again, and a single one keeps what is typed after a value its `items` do not have.** The value handed to Base UI was a new object on every render, which Base UI took for a new choice: it cleared the field's errors, so a server error vanished the moment the reader typed in another field, and in single mode it wrote the chosen label back into the input, so typing after a custom value such as `defaultValue="Foo"` did nothing. The value now stays the same object for as long as it holds the same entries, including when `value` or `items` is written inline.

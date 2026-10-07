@@ -363,6 +363,27 @@ function ColorPanel({
   const pure = cssColor({ h: hsv.h, s: 100, v: 100 });
   const solid = cssColor(hsv);
 
+  /* Each swatch parsed, and written as hex for the comparison that marks the
+     chosen one, once per list. The panel renders on every pointer move of a
+     drag, and doing it inline parsed and formatted all sixteen swatches, and
+     formatted the current colour sixteen times, on each of them. */
+  const swatchList = React.useMemo(
+    () =>
+      swatches
+        ? swatches.map((swatch) => {
+            const parsed = parseColor(swatch);
+
+            return {
+              swatch,
+              parsed,
+              hex: parsed ? formatColor(parsed.hsv, parsed.alpha, 'hex') : null
+            };
+          })
+        : [],
+    [swatches]
+  );
+  const currentHex = swatchList.length > 0 ? formatColor(hsv, alphaValue, 'hex') : null;
+
   /** Pointer capture on the element itself, so a drag off the panel keeps working. */
   const track = (handler: (event: React.PointerEvent<HTMLElement>) => void) => ({
     onPointerDown: (event: React.PointerEvent<HTMLElement>) => {
@@ -588,13 +609,10 @@ function ColorPanel({
         </div>
       ) : null}
 
-      {swatches && swatches.length > 0 ? (
+      {swatchList.length > 0 ? (
         <div role="group" aria-label={labels.swatches} className="grid grid-cols-8 gap-1">
-          {swatches.map((swatch) => {
-            const parsed = parseColor(swatch);
-            const chosen =
-              parsed !== null &&
-              formatColor(parsed.hsv, parsed.alpha, 'hex') === formatColor(hsv, alphaValue, 'hex');
+          {swatchList.map(({ swatch, parsed, hex }) => {
+            const chosen = parsed !== null && hex === currentHex;
 
             return (
               <button

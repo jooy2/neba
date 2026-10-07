@@ -4,6 +4,23 @@ import { render } from 'vitest-browser-react';
 import { ColorPicker } from 'neba';
 import { ko, registerMessages } from 'neba/locales';
 
+/* `parseColor`, counting its calls and otherwise untouched. How often the
+   panel parses is what one test below is about, and nothing on screen says. */
+const parses = vi.hoisted(() => ({ count: 0 }));
+
+vi.mock('../../../src/internal/color.js', async (importOriginal) => {
+  const original = await importOriginal<typeof import('../../../src/internal/color.js')>();
+
+  return {
+    ...original,
+    parseColor: (...args: Parameters<typeof original.parseColor>) => {
+      parses.count += 1;
+
+      return original.parseColor(...args);
+    }
+  };
+});
+
 /* The library ships English; a `locale` prop answers for a language the
    project has registered. These assertions are about the prop, so the
    languages they name are registered here the way a consumer would. */
@@ -168,6 +185,23 @@ describe('ColorPicker', () => {
 
       expect(onValueChange).toHaveBeenCalled();
       expect(rail.element()).toHaveAttribute('aria-valuenow', '2');
+    });
+
+    // The panel renders on every move of a drag, and each render parsed all
+    // sixteen swatches again.
+    it('parses its swatches once, not on every move of a rail', async () => {
+      const screen = await render(<ColorPicker inline defaultValue="#ff0000" />);
+      const rail = screen.getByRole('slider', { name: 'Hue' });
+
+      (rail.element() as HTMLElement).focus();
+
+      const before = parses.count;
+
+      await userEvent.keyboard('{ArrowRight}{ArrowRight}{ArrowRight}{ArrowRight}');
+      await expect.element(rail).toHaveAttribute('aria-valuenow', '8');
+
+      // The value written back is read once per move; the swatches never are.
+      expect(parses.count - before).toBeLessThanOrEqual(4);
     });
 
     it('takes a bigger step when shift is held', async () => {
