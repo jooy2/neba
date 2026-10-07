@@ -1,5 +1,7 @@
 import * as React from 'react';
 import { describe, expect, it, vi } from 'vitest';
+import { renderToString } from 'react-dom/server';
+import { hydrateRoot } from 'react-dom/client';
 import { render } from 'vitest-browser-react';
 import { userEvent } from 'vitest/browser';
 import { DataTable, type DataTableColumn } from 'neba';
@@ -2921,5 +2923,78 @@ describe('cell ink', () => {
     const cell = screen.container.querySelector('tbody td');
 
     expect(cell?.getAttribute('style')).toContain('--n-cell-ink');
+  });
+});
+
+describe('server rendering', () => {
+  /** Lets a hydration commit, and the render that follows it, run. */
+  const settle = () => new Promise((resolve) => setTimeout(resolve, 60));
+
+  /**
+   * Renders the element to a string, puts it in the page, hydrates it, and
+   * reports what React had to say about the two renders disagreeing. `between`
+   * runs after the server render and before the hydrating one.
+   */
+  async function hydrateServerHtml(element: React.ReactElement, between?: () => void) {
+    const html = renderToString(element);
+    const host = document.createElement('div');
+
+    host.innerHTML = html;
+    document.body.append(host);
+    between?.();
+
+    const recoverable: string[] = [];
+    const root = hydrateRoot(host, element, {
+      onRecoverableError: (error) => recoverable.push(String((error as Error)?.message ?? error))
+    });
+
+    await settle();
+
+    return {
+      html,
+      host,
+      recoverable,
+      cleanup() {
+        root.unmount();
+        host.remove();
+      }
+    };
+  }
+
+  // A table with no `locale` is written in en-US until hydration is over and
+  // in the runtime's own language after it. Keyed on the locale as it was
+  // handed over, that step built a new collator, sorted every row again and
+  // drew every row again, in a browser that already spoke en-US.
+  it('neither sorts nor draws its rows again when hydration hands it the runtime locale', async () => {
+    const byCity = vi.fn((a: Person, b: Person) => a.city.localeCompare(b.city));
+    const draw = vi.fn((row: Person) => row.name);
+    const element = (
+      <DataTable
+        headers={[
+          { key: 'name', label: 'Name', render: draw },
+          { key: 'city', label: 'City', compare: byCity }
+        ]}
+        items={manyItems(40)}
+        getRowKey={key}
+        defaultSort={[{ key: 'city', direction: 'desc' }]}
+      />
+    );
+    let sorted = 0;
+    const page = await hydrateServerHtml(element, () => {
+      sorted = byCity.mock.calls.length;
+      byCity.mockClear();
+      draw.mockClear();
+    });
+
+    try {
+      expect(page.recoverable).toEqual([]);
+      expect(sorted).toBeGreaterThan(0);
+      // The hydrating render sorts and draws once, as the server did, and
+      // nothing after it does either.
+      expect(byCity).toHaveBeenCalledTimes(sorted);
+      expect(draw).toHaveBeenCalledTimes(40);
+    } finally {
+      page.cleanup();
+    }
   });
 });

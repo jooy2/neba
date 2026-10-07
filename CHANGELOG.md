@@ -78,6 +78,8 @@
 
 - **A server-rendered `PieChart` no longer says it is empty.** A pie has no size until it has measured itself, so its server HTML said "Nothing here" and carried no hidden table, no description and no tab stop, which is what a crawler and a reader without JavaScript got. Until it is measured the box is now empty and the table, the description and the tab stop are written around it, as a `GaugeChart` already did. A donut's `center` is written in the middle of the box from the first render; a `semi` one's still waits for the width.
 
+- **A server-rendered `DataTable` with no `locale` no longer sorts and draws every row again just after it hydrates.** The table is written in en-US until hydration is over and in the reader's language after it, and that step rebuilt the collator, re-ran a `defaultSort` over every row and drew every row on screen again, even in a browser that already spoke en-US. The table now compares the locales each formatter settles on, so nothing is redone when they are the same; a browser in another language still gets its own order and its own dates.
+
 ## 1.18.1 (2026-10-07)
 
 ### Added

@@ -24,6 +24,7 @@ import {
   type SortEntry
 } from '../../internal/data-table.js';
 import { beginPointerDrag, drawnScale } from '../../internal/drag.js';
+import { memoise } from '../../internal/cache.js';
 import { dateFormatter } from '../../internal/format.js';
 import { emptyMessages, fillMessage, tableMessages, useMessages } from '../../internal/i18n.js';
 import { searchHaystack, searchText } from '../../internal/search.js';
@@ -658,6 +659,41 @@ function plainCell(value: unknown, locale: string | undefined): React.ReactNode 
   return value as React.ReactNode;
 }
 
+/** What a locale comes to for each of the three `Intl` objects the table builds. */
+interface ResolvedLocales {
+  collator: string;
+  number: string;
+  date: string;
+}
+
+const resolvedLocales = new Map<string, ResolvedLocales>();
+
+/**
+ * The locale each of the table's `Intl` objects settles on, for what was asked.
+ *
+ * A server-rendered table with no `locale` is drawn in `en-US` until hydration
+ * is over and in the runtime's own language after it, so the locale it is
+ * handed goes from `'en-US'` to `undefined` one render after the page
+ * hydrates. Keyed on that, the collator was built again, every row was sorted
+ * again and every row on screen was drawn again — on a reader whose runtime
+ * already spoke `en-US`, and so for nothing. Keyed on what the locale resolves
+ * to instead, the two are the same string and nothing is rebuilt; a runtime
+ * in another language still gets its own order and its own dates.
+ *
+ * One answer per object rather than one for all three, because they do not
+ * agree: a collator resolves `en-GB` to `en`, whose order is the same, while a
+ * date written in `en-GB` is not one written in `en`. The answer includes the
+ * extensions each object reads, so building from it is building from the
+ * locale it came from.
+ */
+function resolveLocales(locale: string | undefined): ResolvedLocales {
+  return memoise(resolvedLocales, locale ?? '', () => ({
+    collator: new Intl.Collator(locale).resolvedOptions().locale,
+    number: new Intl.NumberFormat(locale).resolvedOptions().locale,
+    date: new Intl.DateTimeFormat(locale).resolvedOptions().locale
+  }));
+}
+
 /** The `<tr>` drawn for a key, or `null` when the window has not drawn it. */
 function rowElement(body: HTMLTableSectionElement, key: string): HTMLTableRowElement | null {
   for (let index = 0; index < body.rows.length; index += 1) {
@@ -795,7 +831,8 @@ interface RowLook<Row> {
   edits: boolean;
   size: NebaSize;
   color: NebaColor;
-  intlLocale: string | undefined;
+  /** What a date in a plain cell is written in, as `resolveLocales` settled it. */
+  dateLocale: string;
   /** The id of the first half of every tick's name. */
   tickNameId: string;
   /** What a tick is called when there is no first cell to name it after. */
@@ -991,7 +1028,7 @@ function DataTableRow<Row>({
             ) : column.render ? (
               column.render(entry.row, position)
             ) : (
-              plainCell((entry.row as Record<string, unknown>)[column.key], look.intlLocale)
+              plainCell((entry.row as Record<string, unknown>)[column.key], look.dateLocale)
             )}
           </td>
         );
@@ -1118,7 +1155,7 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
 
   const messages = useMessages(tableMessages, locale);
   const emptyText = useMessages(emptyMessages, locale);
-  const intlLocale = useIntlLocale(locale);
+  const resolved = resolveLocales(useIntlLocale(locale));
   const reactId = React.useId();
 
   const rowHeight = rowHeightProp ?? dataRowHeights[density][size];
@@ -1244,11 +1281,13 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
   /*
    * The collator is built once per locale rather than per comparison: building
    * one is the expensive half of `localeCompare`, and a sort of a hundred
-   * thousand rows calls it a million times.
+   * thousand rows calls it a million times. Once per locale it *resolves* to,
+   * so the step out of hydration does not sort every row again for a reader
+   * whose runtime speaks what the server wrote — see `resolveLocales`.
    */
   const collator = React.useMemo(
-    () => new Intl.Collator(intlLocale, { numeric: true, sensitivity: 'base' }),
-    [intlLocale]
+    () => new Intl.Collator(resolved.collator, { numeric: true, sensitivity: 'base' }),
+    [resolved.collator]
   );
 
   const [uncontrolledSort, setUncontrolledSort] = React.useState<readonly DataTableSort[]>(
@@ -2590,7 +2629,7 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
 
   /* -- The footer ---------------------------------------------------------- */
 
-  const number = React.useMemo(() => new Intl.NumberFormat(intlLocale), [intlLocale]);
+  const number = React.useMemo(() => new Intl.NumberFormat(resolved.number), [resolved.number]);
   const showFooter = footer ?? paging === 'pages';
 
   const rangeText = fillMessage(messages.range, {
@@ -2644,7 +2683,7 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
       edits: handlesEdits,
       size,
       color,
-      intlLocale,
+      dateLocale: resolved.date,
       tickNameId,
       selectRowLabel: messages.selectRow
     }),
@@ -2667,7 +2706,7 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
       handlesEdits,
       size,
       color,
-      intlLocale,
+      resolved.date,
       tickNameId,
       messages.selectRow
     ]
