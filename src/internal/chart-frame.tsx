@@ -2230,8 +2230,17 @@ export function CartesianChart(rawProps: CartesianProps) {
      that placed its dots twice would eventually place them in two places. And
      the same array from one render to the next while the layout holds, so a
      chart's own memo of them holds too: a scatter re-sorted and re-pathed every
-     one of its marks on each move of the pointer. */
-  const markList = React.useMemo(() => (marks ? marks(layout) : noMarks), [marks, layout]);
+     one of its marks on each move of the pointer.
+
+     Not before there is a width to place them in. A server render and the
+     render that hydrates it have none, so a builder run there laid a scatter
+     of five thousand points out against a plot no pixels wide and threw every
+     one of them away when the measurement arrived. */
+  const drawable = width > 0;
+  const markList = React.useMemo(
+    () => (marks && drawable ? marks(layout) : noMarks),
+    [marks, drawable, layout]
+  );
 
   /* What a reference is called and what it says, for the hidden list under the
      table. A value-axis number goes through the chart's own `format`; a

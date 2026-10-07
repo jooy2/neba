@@ -36,6 +36,8 @@
 
 - **A chart writes its paths to a hundredth of a pixel.** Every coordinate in a line, an area, a bar, a mark and an arc was written with all seventeen digits a float prints, so a 3,000-point line was a 110 kB `d` attribute in the server's HTML; it is 39 kB now, and a smoothed area of the same series went from 531 kB to 215 kB. Nothing on screen moves. A test that compared a path string written from fractional coordinates sees the rounded numbers.
 
+- **A `ScatterChart` and a `TimelineChart` no longer lay out their marks on the server.** Every mark was placed against a plot with no width in the server render and again in the render that hydrates it, and then thrown away when the chart measured itself. Those two renders now skip it, which on a 5,000-point scatter is that many marks less work before the page responds.
+
 ### Fixed
 
 - **A `multiple` `Combobox` keeps the error a `Form` put on it while the page around it renders again, and a single one keeps what is typed after a value its `items` do not have.** The value handed to Base UI was a new object on every render, which Base UI took for a new choice: it cleared the field's errors, so a server error vanished the moment the reader typed in another field, and in single mode it wrote the chosen label back into the input, so typing after a custom value such as `defaultValue="Foo"` did nothing. The value now stays the same object for as long as it holds the same entries, including when `value` or `items` is written inline.

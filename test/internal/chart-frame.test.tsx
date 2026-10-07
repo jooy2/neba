@@ -8,6 +8,7 @@
  * the plot traced again for a picture that has not changed.
  */
 import { describe, expect, it, vi } from 'vitest';
+import { renderToString } from 'react-dom/server';
 import { render } from 'vitest-browser-react';
 import {
   CartesianChart,
@@ -143,6 +144,25 @@ describe('CartesianChart', () => {
 
     expect(build.mock.calls.length).toBe(calls);
     expect(seen[seen.length - 1].marks).toBe(marks);
+  });
+
+  // A server render has no width, so marks built there were laid out against a
+  // plot no pixels wide and thrown away when the measurement arrived.
+  it('builds no marks before there is a width to place them in', () => {
+    const build = vi.fn((): ChartMark[] => []);
+
+    renderToString(
+      <CartesianChart
+        label="Spend"
+        xScale="value"
+        series={[{ name: 'A', data: [{ x: 0, y: 4 }] }]}
+        marks={build}
+      >
+        {() => null}
+      </CartesianChart>
+    );
+
+    expect(build).not.toHaveBeenCalled();
   });
 
   it('keeps the layout while the legend is pointed at', async () => {
