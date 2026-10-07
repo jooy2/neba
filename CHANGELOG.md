@@ -92,6 +92,8 @@
 
 - **An `Image`'s blurred letterbox and its picture `placeholder` are requested the way the picture is.** The blurred copy comes before the picture and had no fetch priority, so a `priority` picture with `letterbox="blur"` was met first at low priority, and React 19's automatic preload was built from the copy without `fetchpriority="high"`. A picture placeholder ignored `loading`, so a lazy `Gallery` of forty tiles with URL placeholders asked for forty thumbnails before anybody scrolled. The copy now asks for the file exactly as the picture does, and the stand-in waits under `loading="lazy"` as the picture does; a `priority` tile's stand-in is still fetched at once.
 
+- **A `TreeView` has its tab stop from the first render, server HTML included, and no longer draws every row twice as it mounts.** The tree gave the stop to its first row in an effect, which drew every row again after each mount and each hydration, and a server-rendered tree could not be reached with Tab until the page had hydrated. With no row chosen, the first top-level row now takes the stop as it is drawn. A tree with a chosen row still moves the stop there once it has mounted.
+
 ## 1.18.1 (2026-10-07)
 
 ### Added

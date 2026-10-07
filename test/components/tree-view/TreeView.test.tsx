@@ -1,5 +1,7 @@
+import { Profiler } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { renderToString } from 'react-dom/server';
+import { hydrateRoot } from 'react-dom/client';
 import { render } from 'vitest-browser-react';
 import { userEvent } from 'vitest/browser';
 import { Button, TreeItem, TreeView } from 'neba';
@@ -412,6 +414,64 @@ describe('TreeView', () => {
             ?.getAttribute('data-neba-value')
         )
         .toBe('readme');
+    });
+
+    // The stop was given out by an effect after the first render, which drew
+    // every row a second time after each mount and each hydration, and left
+    // the server's HTML with no way into the tree from the keyboard.
+    it('gives the first row the tab stop in the render that draws it', async () => {
+      let commits = 0;
+      const screen = await render(
+        <Profiler id="tree" onRender={() => (commits += 1)}>
+          <Sample defaultExpanded={['src']} />
+        </Profiler>
+      );
+
+      await new Promise((resolve) => setTimeout(resolve, 50));
+
+      expect(commits).toBe(1);
+      expect(
+        screen.container
+          .querySelector('[role="treeitem"][tabindex="0"]')
+          ?.getAttribute('data-neba-value')
+      ).toBe('src');
+    });
+
+    it('writes the tab stop into the server HTML, and hydrates without drawing again', async () => {
+      let commits = 0;
+      const element = (
+        <Profiler id="tree" onRender={() => (commits += 1)}>
+          <Sample defaultExpanded={['src']} />
+        </Profiler>
+      );
+      const html = renderToString(element);
+      const host = document.createElement('div');
+      const recoverable: unknown[] = [];
+
+      host.innerHTML = html;
+
+      expect(
+        Array.from(host.querySelectorAll('[role="treeitem"][tabindex="0"]')).map((row) =>
+          row.getAttribute('data-neba-value')
+        )
+      ).toEqual(['src']);
+
+      document.body.append(host);
+      commits = 0;
+
+      const root = hydrateRoot(host, element, {
+        onRecoverableError: (error) => recoverable.push(error)
+      });
+
+      try {
+        await new Promise((resolve) => setTimeout(resolve, 50));
+
+        expect(recoverable).toEqual([]);
+        expect(commits).toBe(1);
+      } finally {
+        root.unmount();
+        host.remove();
+      }
     });
 
     it('holds exactly one tab stop however many rows there are', async () => {

@@ -59,7 +59,8 @@ interface TreeViewContextValue {
   toggle: (value: TreeViewValue) => void;
   select: (value: TreeViewValue) => void;
   activate: (key: string) => void;
-  register: (key: string, api: TreeItemApi) => () => void;
+  /** `first` is whether the row is holding the tab stop the render gave it. */
+  register: (key: string, api: TreeItemApi, first: boolean) => () => void;
 }
 
 /**
@@ -108,6 +109,19 @@ const TreeViewContext = React.createContext<TreeViewContextValue>({
  * long as it stays shut.
  */
 const TreeClosingContext = React.createContext(false);
+
+/**
+ * Whether a row stands in the first of the tree's top-level places, which is
+ * where the tab stop is while no row is active and none is chosen.
+ *
+ * A tree that only learnt where its first row was from an effect drew every
+ * row once without a tab stop and then drew every row again to give one out,
+ * after each mount and each hydration — and the server's HTML had no way into
+ * the tree from the keyboard at all. The tree knows its own top-level places
+ * while it renders, so it says which one is first, and the row there takes the
+ * stop in the same render. A row passes `false` down to the rows under it.
+ */
+const TreeFirstContext = React.createContext(false);
 
 export interface TreeViewProps
   extends
@@ -447,11 +461,18 @@ export const TreeView = React.forwardRef<HTMLUListElement, TreeViewProps>(
     }, []);
 
     const apisRef = React.useRef(new Map<string, TreeItemApi>());
-    const register = React.useCallback((key: string, api: TreeItemApi) => {
+    /** The rows drawn in the first top-level place, which is one row in any ordinary tree. */
+    const firstRef = React.useRef(new Set<string>());
+    const register = React.useCallback((key: string, api: TreeItemApi, first: boolean) => {
       apisRef.current.set(key, api);
+
+      if (first) {
+        firstRef.current.add(key);
+      }
 
       return () => {
         apisRef.current.delete(key);
+        firstRef.current.delete(key);
       };
     }, []);
 
@@ -542,10 +563,18 @@ export const TreeView = React.forwardRef<HTMLUListElement, TreeViewProps>(
      * before its parent's — so by the time this runs the map is exactly what is on
      * screen, and "is the tab stop still there" is a lookup rather than a
      * `querySelectorAll` over a tree that may hold thousands of rows.
+     *
+     * The second line is the tree nobody has touched: no row active and none
+     * chosen, so the stop is on the row in the first top-level place, which the
+     * render already gave it. Only a first place holding no row, or several —
+     * a fragment of rows, a component that drew nothing — falls through to the
+     * rows themselves. A chosen row is still found here, since whether it is
+     * showing is a question about which branches are open.
      */
     // eslint-disable-next-line react-hooks/exhaustive-deps
     React.useEffect(() => {
       if (activeKey !== null && apisRef.current.has(activeKey)) return;
+      if (activeKey === null && selectedValues.length === 0 && firstRef.current.size === 1) return;
 
       const root = rootRef.current;
       if (!root) return;
@@ -705,7 +734,14 @@ export const TreeView = React.forwardRef<HTMLUListElement, TreeViewProps>(
           onKeyDown={handleKeyDown}
           {...props}
         >
-          {children}
+          {React.Children.toArray(children).map((child, index) => (
+            <TreeFirstContext.Provider
+              key={React.isValidElement(child) && child.key !== null ? child.key : index}
+              value={index === 0}
+            >
+              {child}
+            </TreeFirstContext.Provider>
+          ))}
         </ul>
       </TreeViewContext.Provider>
     );
@@ -787,10 +823,15 @@ export const TreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(function 
   };
 
   const closing = React.useContext(TreeClosingContext);
+  /*
+   * The tab stop a tree nobody has touched starts on, given out by the render
+   * rather than by an effect after it. See `TreeFirstContext`.
+   */
+  const first = React.useContext(TreeFirstContext) && activeKey === null && selectedKeys.size === 0;
 
   React.useEffect(
-    () => (closing ? undefined : register(key, apiRef.current)),
-    [closing, key, register]
+    () => (closing ? undefined : register(key, apiRef.current, first)),
+    [closing, key, register, first]
   );
 
   /*
@@ -946,7 +987,7 @@ export const TreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(function 
       aria-selected={isSelected ? true : multiple && selectable ? false : undefined}
       aria-disabled={disabled || undefined}
       data-neba-value={key}
-      tabIndex={activeKey === key ? 0 : -1}
+      tabIndex={activeKey === key || first ? 0 : -1}
       // Not `outline-none`: that utility zeroes `--tw-outline-style`, the same
       // variable the row's own ring is drawn through.
       className={cx('group/tree-item relative block [outline:none]', className)}
@@ -1012,7 +1053,7 @@ export const TreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(function 
         >
           <ul role="group" className="min-h-0 list-none overflow-hidden ps-(--n-tree-indent)">
             <TreeClosingContext.Provider value={closing || !isExpanded}>
-              {children}
+              <TreeFirstContext.Provider value={false}>{children}</TreeFirstContext.Provider>
             </TreeClosingContext.Provider>
           </ul>
         </div>
