@@ -44,6 +44,8 @@
 
 - **A `Collapsible` or an `Accordion` with its default props no longer prints a Base UI warning in a development build.** Both handed Base UI `keepMounted={false}` beside `hiddenUntilFound`, a pair it warns about because a panel hidden until found stays in the DOM anyway. `keepMounted` now reaches it only when `hiddenUntilFound` is off; nothing renders differently.
 
+- **A `NebaProvider` given an inline `onColorSchemeChange` no longer re-renders everything that reads `useColorScheme` on each of its renders.** The handler was part of what made the context value, so a new function on every render made a new value too. The newest handler is still the one a change reaches.
+
 ## 1.18.1 (2026-10-07)
 
 ### Added

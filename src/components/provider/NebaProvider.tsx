@@ -132,9 +132,26 @@ export function NebaProvider({
   const systemIsDark = useMediaQuery(DARK_QUERY);
   const resolved = colorScheme === 'system' ? (systemIsDark ? 'dark' : 'light') : colorScheme;
 
+  /*
+   * The newest handler, read through a ref rather than listed below. The
+   * natural way to write it is inline, which is a new function on every render
+   * of whatever renders the provider; listed, it made `setColorScheme` new as
+   * well, and with it the context value, so every reader of `useColorScheme`
+   * rendered again each time. Written in an effect, for the reason
+   * `useShortcut` gives: a ref written while rendering lies if React throws the
+   * render away. Only ever called from an event, after the effect has run.
+   */
+  const onColorSchemeChangeRef = React.useRef(onColorSchemeChange);
+
+  React.useEffect(() => {
+    onColorSchemeChangeRef.current = onColorSchemeChange;
+  });
+
+  const controlled = colorSchemeProp !== undefined;
+
   const setColorScheme = React.useCallback(
     (next: NebaColorScheme) => {
-      if (colorSchemeProp === undefined) {
+      if (!controlled) {
         setChosen(next);
       }
       if (storageKey !== false) {
@@ -145,9 +162,9 @@ export function NebaProvider({
           // still applies for this visit; only remembering it is lost.
         }
       }
-      onColorSchemeChange?.(next);
+      onColorSchemeChangeRef.current?.(next);
     },
-    [colorSchemeProp, storageKey, onColorSchemeChange]
+    [controlled, storageKey]
   );
 
   React.useEffect(() => {

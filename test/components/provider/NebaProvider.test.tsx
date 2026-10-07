@@ -501,6 +501,36 @@ describe('colour scheme', () => {
 
     expect(seen.join()).toContain('<NebaProvider>');
   });
+
+  // An inline handler is a new function on every render of whatever renders
+  // the provider, and it used to make a new context value with it.
+  it('does not re-render its readers for a new inline onColorSchemeChange', async () => {
+    let commits = 0;
+    const Reader = memo(function Reader() {
+      return (
+        <Profiler id="reader" onRender={() => (commits += 1)}>
+          <Switcher />
+        </Profiler>
+      );
+    });
+    const seen: string[] = [];
+    const Page = ({ tick }: { tick: number }) => (
+      <NebaProvider storageKey={false} onColorSchemeChange={(next) => seen.push(`${tick}:${next}`)}>
+        <Reader />
+      </NebaProvider>
+    );
+    const screen = await render(<Page tick={0} />);
+    const before = commits;
+
+    await screen.rerender(<Page tick={1} />);
+
+    expect(commits).toBe(before);
+
+    // And the handler a change reaches is still the newest one.
+    await screen.getByRole('button', { name: 'Dark' }).click();
+
+    expect(seen).toEqual(['1:dark']);
+  });
 });
 
 describe('direction', () => {
