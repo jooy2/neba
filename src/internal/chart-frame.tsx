@@ -1777,8 +1777,11 @@ export function CartesianChart(rawProps: CartesianProps) {
   const [columnIndex, setColumnIndex] = React.useState<number | null>(null);
   /** Which entry of `markList` the pointer is on — the other way to be active. */
   const [markIndex, setMarkIndex] = React.useState<number | null>(null);
-  /** Where the pointer is along the value axis. `null` when it arrived by key. */
-  const [pointer, setPointer] = React.useState<number | null>(null);
+  /**
+   * In `item` mode over a column, the series whose mark the pointer is nearest.
+   * `null` when the crosshair arrived by key, which reads the whole column.
+   */
+  const [pointerSeries, setPointerSeries] = React.useState<number | null>(null);
 
   /* Keyed on what the options *say* rather than on their identity, for the
      reason `internal/format.ts` is: `format` is an options object and the
@@ -2504,6 +2507,72 @@ export function CartesianChart(rawProps: CartesianProps) {
     return found;
   };
 
+  /**
+   * Where each reading in a column is drawn along the value axis, as the span
+   * from the end nearer zero to the far one. Unstacked, that is the value
+   * itself; stacked, a segment starts where the one below it ends, with the
+   * same sign split `extentOf` and the marks use — two segments of 10 are drawn
+   * from 0 to 10 and from 10 to 20, not both at 10. Each on its own series'
+   * scale: with two value axes, a number's place on the plot is not a property
+   * of the number.
+   */
+  const spansOf = (readings: readonly { seriesIndex: number; value: number | null }[]) => {
+    const spans = new Map<number, [number, number]>();
+    let above = 0;
+    let below = 0;
+
+    for (const reading of readings) {
+      const value = reading.value ?? 0;
+      const from = !stacked ? value : value < 0 ? below : above;
+      const to = !stacked ? value : from + value;
+
+      if (stacked && value < 0) {
+        below = to;
+      } else if (stacked) {
+        above = to;
+      }
+
+      spans.set(reading.seriesIndex, [
+        valuePx(from, reading.seriesIndex),
+        valuePx(to, reading.seriesIndex)
+      ]);
+    }
+
+    return spans;
+  };
+
+  /**
+   * `item` mode over a column: the series whose mark at column `index` is
+   * nearest `at`, a point along the value axis. The category is already decided
+   * by where the pointer is across the plot, so the only question left is which
+   * of the series stacked at that category it is closest to. Nothing inside a
+   * segment counts as a distance, and a tie goes to the series passed first.
+   */
+  const nearestSeries = (index: number, at: number): number | null => {
+    const readings = series.flatMap((_, seriesIndex) => {
+      const value = values[seriesIndex]?.[index]?.value;
+
+      return visibility.visible[seriesIndex] && value !== null && value !== undefined
+        ? [{ seriesIndex, value }]
+        : [];
+    });
+    const spans = spansOf(readings);
+    let found: number | null = null;
+    let best = Infinity;
+
+    for (const { seriesIndex } of readings) {
+      const [from, to] = spans.get(seriesIndex) ?? [at, at];
+      const distance = Math.max(0, Math.min(from, to) - at, at - Math.max(from, to));
+
+      if (distance < best) {
+        best = distance;
+        found = seriesIndex;
+      }
+    }
+
+    return found;
+  };
+
   /** Where the pointer sits along the *value* axis — `item` mode's other half. */
   const valueAt = (clientX: number, clientY: number) => {
     const host = hostRef.current;
@@ -2527,7 +2596,7 @@ export function CartesianChart(rawProps: CartesianProps) {
   const clearActive = () => {
     setColumnIndex(null);
     setMarkIndex(null);
-    setPointer(null);
+    setPointerSeries(null);
   };
 
   useReleaseOutside(hostRef, activeIndex !== null, clearActive);
@@ -2544,20 +2613,25 @@ export function CartesianChart(rawProps: CartesianProps) {
       const next = nearestMark(event.clientX, event.clientY);
 
       if (next !== markIndex) setMarkIndex(next);
-    } else {
-      const next = indexAt(event.clientX, event.clientY);
 
-      if (next !== columnIndex) setColumnIndex(next);
+      return;
     }
 
-    // Only `item` mode over a column reads this, and only it may pay for it.
-    // The index above settles to the same value everywhere inside one column,
-    // so React bails out of the re-render — but a pointer offset is a fresh
-    // pixel on every event, and storing one the tooltip never consults would
-    // re-lay the whole chart out for each pixel the pointer moves. A chart of
-    // marks never consults it: its item is the mark.
-    if (tooltipMode === 'item' && !marks) {
-      setPointer(valueAt(event.clientX, event.clientY));
+    const next = indexAt(event.clientX, event.clientY);
+
+    if (next !== columnIndex) setColumnIndex(next);
+
+    // Only `item` mode over a column narrows the column, and it is worked out
+    // here rather than in the render: what the render needs is which series,
+    // and that stays the same across most of a column. The pointer's own
+    // offset was stored instead, a fresh pixel on every event, and the whole
+    // chart was laid out again for each pixel the pointer moved inside one
+    // bar — thirty renders for thirty one-pixel moves.
+    if (tooltipMode === 'item') {
+      const at = valueAt(event.clientX, event.clientY);
+      const nearest = next === null || at === null ? null : nearestSeries(next, at);
+
+      if (nearest !== pointerSeries) setPointerSeries(nearest);
     }
   };
 
@@ -2572,7 +2646,7 @@ export function CartesianChart(rawProps: CartesianProps) {
   };
 
   const step = (delta: number) => {
-    setPointer(null);
+    setPointerSeries(null);
 
     const current = marks ? markIndex : columnIndex;
 
@@ -2629,56 +2703,21 @@ export function CartesianChart(rawProps: CartesianProps) {
           ];
         });
 
-  /* `item` is the whole column narrowed to the one mark the pointer is nearest,
-     measured along the *value* axis — the category is already decided by where
-     the pointer is across the plot, so the only question left is which of the
-     series stacked at that category it is closest to. */
   /* A chart whose marks are not cells of a grid answers for its own panel. */
   const supplied = activeMark && markTooltip ? markTooltip(activeMark) : null;
 
-  /* Where each item in the column is drawn along the value axis, as the span
-     from the end nearer zero to the far one. Unstacked, that is the value
-     itself; stacked, a segment starts where the one below it ends, with the
-     same sign split `extentOf` and the marks use — two segments of 10 are
-     drawn from 0 to 10 and from 10 to 20, not both at 10. Each on its own
-     series' scale: with two value axes, a number's place on the plot is not a
-     property of the number. */
-  const drawnSpans = new Map<number, [number, number]>();
-  let above = 0;
-  let below = 0;
+  /* Where each item in the column is drawn, which a horizontal chart's panel
+     is anchored by — see `spansOf`. */
+  const drawnSpans = spansOf(column);
 
-  for (const item of column) {
-    const value = item.value ?? 0;
-    const from = !stacked ? value : value < 0 ? below : above;
-    const to = !stacked ? value : from + value;
-
-    if (stacked && value < 0) {
-      below = to;
-    } else if (stacked) {
-      above = to;
-    }
-    drawnSpans.set(item.seriesIndex, [
-      valuePx(from, item.seriesIndex),
-      valuePx(to, item.seriesIndex)
-    ]);
-  }
-
-  /** How far the pointer is from an item's mark: nothing inside a segment. */
-  const distanceTo = (item: ChartTooltipItem, at: number) => {
-    const [from, to] = drawnSpans.get(item.seriesIndex) ?? [at, at];
-
-    return Math.max(0, Math.min(from, to) - at, at - Math.max(from, to));
-  };
-
-  const items = supplied
-    ? supplied.items
-    : tooltipMode === 'item' && column.length > 1 && pointer !== null
-      ? [
-          column.reduce((nearest, item) =>
-            distanceTo(item, pointer) < distanceTo(nearest, pointer) ? item : nearest
-          )
-        ]
-      : column;
+  /* `item` mode's one reading, picked by the pointer handler — see
+     `nearestSeries`. A series that is no longer in the column, after the data
+     changed under a still pointer, reads the column until the pointer moves. */
+  const picked =
+    tooltipMode === 'item' && column.length > 1 && pointerSeries !== null
+      ? column.find((item) => item.seriesIndex === pointerSeries)
+      : undefined;
+  const items = supplied ? supplied.items : picked ? [picked] : column;
 
   /* Where the panel hangs, and what it is titled. A column is anchored on its
      own centre and titled with the category every series in it shares; a mark

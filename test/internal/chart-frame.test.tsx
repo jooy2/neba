@@ -180,6 +180,52 @@ describe('CartesianChart', () => {
     expect(build).not.toHaveBeenCalled();
   });
 
+  // `item` mode stored the pointer's own offset, a fresh pixel on every move,
+  // and the whole chart rendered again for each pixel it moved inside a bar.
+  it('does not render again while the pointer stays on one reading in item mode', async () => {
+    const seen: CartesianContext[] = [];
+    const screen = await render(
+      <CartesianChart
+        label="Load"
+        height={220}
+        tooltip={{ mode: 'item' }}
+        series={[
+          { name: 'A', data: [10, 20] },
+          { name: 'B', data: [90, 80] }
+        ]}
+      >
+        {(context) => {
+          seen.push(context);
+
+          return null;
+        }}
+      </CartesianChart>
+    );
+
+    const plot = screen.getByRole('img', { name: 'Load' });
+
+    await expect.element(plot).toBeInTheDocument();
+    await expect.poll(() => seen.length).toBeGreaterThan(0);
+
+    const width = plot.element().getBoundingClientRect().width;
+    const status = screen.getByRole('status');
+
+    // Near the top of the first column, which is B's reading of 90.
+    pointAt(plot.element(), width * 0.25, 20);
+    await expect.element(status).toMatchTextContent('B: 90');
+
+    const renders = seen.length;
+
+    for (let pixel = 1; pixel <= 10; pixel++) {
+      pointAt(plot.element(), width * 0.25, 20 + pixel);
+    }
+
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    expect(seen.length).toBe(renders);
+    await expect.element(status).toMatchTextContent('B: 90');
+  });
+
   it('keeps the layout while the legend is pointed at', async () => {
     const seen: CartesianContext[] = [];
     const screen = await render(

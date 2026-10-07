@@ -48,6 +48,8 @@
 
 - **A `HeatmapChart` answers the pointer without drawing every cell again.** Each cell the pointer entered formatted, measured and cut the label of every cell on the grid: 16 ms a move on a 40 by 60 grid with `valueLabels="all"` under a fourfold CPU slowdown, and 27 ms at worst. What a cell draws is now worked out once per layout and only the cells around the pointer are drawn again, 2.6 ms a move and 7 ms at worst. Each cell's `<rect>` carries `data-row` and `data-index`, which the chart's one pointer listener reads.
 
+- **A chart with `tooltip.mode: 'item'` no longer redraws for every pixel the pointer moves.** Over a column it kept the pointer's exact offset and redrew the whole chart each time it changed: 30 one-pixel moves inside one bar of a 365-category BarChart were 32 renders and 214 ms under a fourfold CPU slowdown. It keeps which series the pointer is nearest now, and the same moves draw nothing. The series a reading names is the same as before.
+
 ### Fixed
 
 - **A `multiple` `Combobox` keeps the error a `Form` put on it while the page around it renders again, and a single one keeps what is typed after a value its `items` do not have.** The value handed to Base UI was a new object on every render, which Base UI took for a new choice: it cleared the field's errors, so a server error vanished the moment the reader typed in another field, and in single mode it wrote the chosen label back into the input, so typing after a custom value such as `defaultValue="Foo"` did nothing. The value now stays the same object for as long as it holds the same entries, including when `value` or `items` is written inline.
