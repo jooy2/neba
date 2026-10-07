@@ -4,8 +4,10 @@ import * as React from 'react';
 import { Button } from '../button/Button.js';
 import {
   Calendar,
+  askOnEveryRender,
   usePickerLabels,
   usePickerSamples,
+  type CalendarProps,
   type PickerLabels
 } from '../../internal/calendar.js';
 import { ArrowRightIcon, CalendarIcon } from '../../internal/icons.js';
@@ -97,6 +99,87 @@ export interface DateRangePickerProps extends PickerShellProps {
   name?: string;
 }
 
+/** What both panels are handed alike. */
+type SharedCalendarProps = Omit<
+  CalendarProps,
+  'month' | 'onMonthChange' | 'rangeStart' | 'rangeEnd' | 'onPreviewChange'
+>;
+
+interface RangeCalendarsProps {
+  /** The first of the two clicks, while the second has not landed. */
+  anchor: Date | null;
+  start: Date | null;
+  end: Date | null;
+  month: Date;
+  onMonthChange: (month: Date) => void;
+  twoUp: boolean;
+  calendarProps: SharedCalendarProps;
+}
+
+/**
+ * The panels, and the day the pointer is over while a range is half chosen.
+ *
+ * The band follows the pointer from cell to cell, which is a render for every
+ * cell it enters. The day under the pointer is held here rather than in the
+ * picker so that render is the panels' alone: the trigger, the field and the
+ * popup around them have nothing that depends on it.
+ */
+function RangeCalendars({
+  anchor,
+  start,
+  end,
+  month,
+  onMonthChange,
+  twoUp,
+  calendarProps
+}: RangeCalendarsProps) {
+  // Tagged with the anchor it was measured from, so a new first click starts
+  // the band at that click rather than at wherever the pointer last was.
+  const [hovered, setHovered] = React.useState<{ anchor: Date; day: Date } | null>(null);
+  const preview = anchor !== null && hovered?.anchor === anchor ? hovered.day : anchor;
+  const secondMonth = React.useMemo(() => addMonths(month, 1), [month]);
+
+  // What the band is drawn between: the finished range, or the anchor and
+  // whatever the pointer is currently over.
+  const bandStart = anchor ?? start;
+  const bandEnd = anchor !== null ? preview : end;
+
+  const onPreviewChange = (date: Date | null) => {
+    if (anchor !== null) {
+      setHovered(date === null ? null : { anchor, day: date });
+    }
+  };
+
+  return (
+    <>
+      <Calendar
+        {...calendarProps}
+        rangeStart={bandStart}
+        rangeEnd={bandEnd}
+        onPreviewChange={onPreviewChange}
+        month={month}
+        onMonthChange={onMonthChange}
+        showNextButton={!twoUp}
+        autoFocus
+      />
+
+      {twoUp ? (
+        <Calendar
+          {...calendarProps}
+          rangeStart={bandStart}
+          rangeEnd={bandEnd}
+          onPreviewChange={onPreviewChange}
+          month={secondMonth}
+          // The right panel is a month ahead, so moving it means moving the
+          // pair. Both headers drive one number.
+          onMonthChange={(next) => onMonthChange(addMonths(next, -1))}
+          showPreviousButton={false}
+        />
+      ) : null}
+    </>
+  );
+}
+
 /**
  * A span between two days.
  *
@@ -161,17 +244,19 @@ export const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePick
     // controlled caller is never handed a range with only one end — half a
     // selection is this component's business, not the form's.
     const [anchor, setAnchor] = React.useState<Date | null>(null);
-    const [preview, setPreview] = React.useState<Date | null>(null);
 
     const [month, setMonth] = React.useState(() => startOfMonth(start ?? defaultMonth ?? today()));
 
     React.useEffect(() => {
       if (open) {
+        // The popup is the external system: it follows `open`, and the updater
+        // keeps the month it holds when it is already the one wanted, so this
+        // settles in one pass.
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setMonth(toMonthOf(start ?? defaultMonth ?? today()));
       } else {
         // An abandoned half-selection does not survive the popup closing.
         setAnchor(null);
-        setPreview(null);
       }
       // Only when the popup opens — following `start` here would drag the
       // calendar out from under someone typing into a form elsewhere.
@@ -205,7 +290,6 @@ export const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePick
       // a range lost it the moment the first day was pressed.
       if (anchor === null) {
         setAnchor(day);
-        setPreview(day);
         return;
       }
 
@@ -215,12 +299,10 @@ export const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePick
       // had not meant to choose.
       if (compareDay(day, anchor) < 0) {
         setAnchor(day);
-        setPreview(day);
         return;
       }
 
       setAnchor(null);
-      setPreview(null);
       commit({ start: anchor, end: day });
 
       if (closeOnSelect) {
@@ -231,7 +313,6 @@ export const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePick
     const applyPreset = (preset: DateRangePreset) => {
       const range = typeof preset.value === 'function' ? preset.value() : preset.value;
       setAnchor(null);
-      setPreview(null);
       commit(range);
       if (isValidDate(range.start)) {
         setMonth(toMonthOf(range.start));
@@ -241,11 +322,6 @@ export const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePick
       }
     };
 
-    // What the band is drawn between: the finished range, or the anchor and
-    // whatever the pointer is currently over.
-    const bandStart = anchor ?? start;
-    const bandEnd = anchor !== null ? preview : end;
-
     const write = (date: Date | null, fallback: React.ReactNode) =>
       isValidDate(date) ? (
         formatDate(date, intlLocale, format)
@@ -253,7 +329,6 @@ export const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePick
         <span className="text-(--neba-muted-fg)">{fallback ?? ''}</span>
       );
 
-    const secondMonth = addMonths(month, 1);
     const twoUp = monthCount === 2;
 
     // Every date either half could show, so neither end of the trigger changes
@@ -265,23 +340,16 @@ export const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePick
     // so the footer is the only place that can say it where it will be read.
     const hint = anchor !== null ? labels.end : start === null ? labels.start : null;
 
-    const calendarProps = {
+    const calendarProps: SharedCalendarProps = {
       size,
       color,
       locale,
       weekStartsOn: firstDay,
       selected: [start, end, anchor],
-      rangeStart: bandStart,
-      rangeEnd: bandEnd,
       onSelect: select,
-      onPreviewChange: (date: Date | null) => {
-        if (anchor !== null) {
-          setPreview(date ?? anchor);
-        }
-      },
       minDate,
       maxDate,
-      shouldDisableDate,
+      shouldDisableDate: askOnEveryRender(shouldDisableDate),
       // With both panels showing six full weeks, the 1st of August is a
       // trailing day of the July panel *and* the first day of the August one.
       // Two cells with the same name in one popup is ambiguous to a pointer and
@@ -368,24 +436,15 @@ export const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePick
               </div>
             ) : null}
 
-            <Calendar
-              {...calendarProps}
+            <RangeCalendars
+              anchor={anchor}
+              start={start}
+              end={end}
               month={month}
               onMonthChange={setMonth}
-              showNextButton={!twoUp}
-              autoFocus
+              twoUp={twoUp}
+              calendarProps={calendarProps}
             />
-
-            {twoUp ? (
-              <Calendar
-                {...calendarProps}
-                month={secondMonth}
-                // The right panel is a month ahead, so moving it means moving
-                // the pair. Both headers drive one number.
-                onMonthChange={(next) => setMonth(addMonths(next, -1))}
-                showPreviousButton={false}
-              />
-            ) : null}
           </div>
 
           {clearable || hint !== null ? (
@@ -403,7 +462,6 @@ export const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePick
                   density="compact"
                   onClick={() => {
                     setAnchor(null);
-                    setPreview(null);
                     commit(EMPTY);
                     setOpen(false);
                   }}

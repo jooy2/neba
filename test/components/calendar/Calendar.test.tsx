@@ -384,6 +384,29 @@ describe('Calendar', () => {
    * Korean product write out all twenty to stop a calendar saying "Previous
    * month" over dates `Intl` had already translated.
    */
+  describe('shouldDisableDate', () => {
+    it('asks again when the calendar renders again with the same function', async () => {
+      // A function that keeps its identity while the data it reads changes:
+      // the grid keeps its answers per month, and must not keep them past a
+      // render of the calendar.
+      const blocked = new Set<number>();
+      const check = (date: Date) => blocked.has(date.getDate());
+      const screen = await render(
+        <Calendar locale={LOCALE} defaultMonth={JULY} shouldDisableDate={check} />
+      );
+      const day = screen.getByRole('gridcell', { name: 'Wednesday, July 15, 2026' });
+
+      await expect.element(day).not.toHaveAttribute('aria-disabled');
+
+      blocked.add(15);
+      await screen.rerender(
+        <Calendar locale={LOCALE} defaultMonth={JULY} shouldDisableDate={check} />
+      );
+
+      await expect.element(day).toHaveAttribute('aria-disabled', 'true');
+    });
+  });
+
   describe('locale', () => {
     it('names its steppers and its footer in the language it was given', async () => {
       const screen = await render(<Calendar locale="ko" defaultMonth={JULY} />);

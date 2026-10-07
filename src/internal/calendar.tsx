@@ -103,6 +103,28 @@ export function usePickerLabels(
 }
 
 /**
+ * A caller's `shouldDisableDate`, as a new function on every render of the
+ * component the caller rendered.
+ *
+ * The day grid works out which days can be chosen once per month and asks
+ * again only when this changes identity, which is what keeps a moving range
+ * band from calling it sixty times per cell crossed. Handed the caller's own
+ * function, that memo would also stop asking when the caller's tree renders
+ * again with the same function reading data that has since changed — a
+ * `useCallback` with a dependency missing, or a module-level function over a
+ * set the page mutates — and a day that used to grey out on that render would
+ * stay choosable. A wrapper made here is new whenever the Calendar or picker
+ * renders, so the grid asks exactly as often as it did before it kept the
+ * answers, while a band moving inside the popup, which renders below this,
+ * leaves it alone.
+ */
+export function askOnEveryRender(
+  check: ((date: Date) => boolean) | undefined
+): ((date: Date) => boolean) | undefined {
+  return check ? (date) => check(date) : undefined;
+}
+
+/**
  * Every string a picker's trigger could show, for the `WidthSizer` that holds
  * it at the widest of them.
  *
@@ -882,6 +904,71 @@ function isRtl(element: Element): boolean {
   return getComputedStyle(element).direction === 'rtl';
 }
 
+/** What a day cell does when it is pressed, entered or typed at. */
+interface DayActions {
+  select: (date: Date) => void;
+  preview: (date: Date) => void;
+  keyDown: (event: React.KeyboardEvent<HTMLButtonElement>, date: Date) => void;
+}
+
+interface DayCellProps extends Omit<
+  CellProps,
+  'children' | 'className' | 'onClick' | 'onPointerEnter' | 'onKeyDown'
+> {
+  date: Date;
+  /** What `renderDay` drew under the number, if anything. */
+  extra: React.ReactNode;
+  /** Read when something happens rather than when the cell is drawn. */
+  actions: { readonly current: DayActions };
+}
+
+/**
+ * One day of the day grid, drawn again only when something it draws changed.
+ *
+ * A DateRangePicker moves the band with the pointer, and every cell the
+ * pointer entered drew both of its months again, every day on them formatting
+ * its full date and asking the caller's `shouldDisableDate` once more. The
+ * grid works those answers out once per month, every prop here is a primitive
+ * or keeps its identity, and the handlers are read through `actions` when they
+ * fire — so a move of the band draws the cells whose state it changed and
+ * skips the rest.
+ */
+const DayCell = React.memo(function DayCell({
+  date,
+  extra,
+  actions,
+  label,
+  selected,
+  inRange,
+  rangeEdge,
+  current,
+  muted,
+  disabled,
+  focused,
+  size
+}: DayCellProps) {
+  return (
+    <Cell
+      label={label}
+      selected={selected}
+      inRange={inRange}
+      rangeEdge={rangeEdge}
+      current={current}
+      muted={muted}
+      disabled={disabled}
+      focused={focused}
+      size={size}
+      className={cx('size-(--n-cell)', controlTextClasses[size])}
+      onClick={() => actions.current.select(date)}
+      onPointerEnter={() => actions.current.preview(date)}
+      onKeyDown={(event) => actions.current.keyDown(event, date)}
+    >
+      {date.getDate()}
+      {extra}
+    </Cell>
+  );
+});
+
 function DayGrid({
   labelledBy,
   multiselectable,
@@ -900,14 +987,37 @@ function DayGrid({
   onPreviewChange,
   onMoveFocus
 }: DayGridProps) {
-  const weeks = calendarWeeks(month, weekStartsOn);
   const short = weekdayLabels(locale, weekStartsOn, 'short');
   const long = weekdayLabels(locale, weekStartsOn, 'long');
-  const fullDate = dateFormatter(locale, { dateStyle: 'full' });
   const band = orderedRange(rangeStart, rangeEnd);
   // Marked only past hydration: a server in another time zone has another
   // today, and a mark the two renders disagree about is a hydration error.
   const now = useHydrated() ? today() : null;
+
+  // What a day says that only the month can change: its name, which month it
+  // belongs to, and whether it can be chosen. Keyed on the month's time rather
+  // than the object, which a two-month picker builds afresh for its second
+  // panel on every render. A hole is a hole, so it is never named or asked.
+  const shownMonth = month.getTime();
+  const weeks = React.useMemo(() => {
+    const fullDate = dateFormatter(locale, { dateStyle: 'full' });
+    const shown = new Date(shownMonth);
+
+    return calendarWeeks(shown, weekStartsOn).map((week) =>
+      week.map((date) => {
+        const outside = !isSameMonth(date, shown);
+        const hole = outside && !showOutsideDays;
+
+        return {
+          date,
+          outside,
+          hole,
+          label: hole ? '' : fullDate.format(date),
+          disabled: hole ? false : isDisabled(date)
+        };
+      })
+    );
+  }, [shownMonth, weekStartsOn, locale, showOutsideDays, isDisabled]);
 
   const onKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>, date: Date) => {
     const offsetInWeek = (date.getDay() - weekStartsOn + 7) % 7;
@@ -934,6 +1044,23 @@ function DayGrid({
     onMoveFocus(move());
   };
 
+  // The newest handlers, for the cells to read when something happens. Written
+  // in an effect rather than while rendering, which is the rule `useShortcut`
+  // states, and a layout effect so they are in place before any event can be.
+  const actions = React.useRef<DayActions>({
+    select: onSelect,
+    preview: (date) => onPreviewChange?.(date),
+    keyDown: onKeyDown
+  });
+
+  useLayoutEffectOnClient(() => {
+    actions.current = {
+      select: onSelect,
+      preview: (date) => onPreviewChange?.(date),
+      keyDown: onKeyDown
+    };
+  });
+
   return (
     <div
       role="grid"
@@ -959,12 +1086,10 @@ function DayGrid({
 
       {weeks.map((week, weekIndex) => (
         <div role="row" key={weekIndex} className="grid grid-cols-7">
-          {week.map((date) => {
-            const outside = !isSameMonth(date, month);
-
+          {week.map(({ date, outside, hole, label, disabled }) => {
             // A hole the size of a cell rather than a missing one: the grid has
             // to keep its seven columns and six rows whatever month it is on.
-            if (outside && !showOutsideDays) {
+            if (hole) {
               return (
                 <span
                   key={date.getTime()}
@@ -982,10 +1107,11 @@ function DayGrid({
             const atEnd = band !== null && within && isSameDay(date, band[1]);
 
             return (
-              <Cell
+              <DayCell
                 key={date.getTime()}
+                date={date}
                 size={size}
-                label={fullDate.format(date)}
+                label={label}
                 selected={isChosen}
                 inRange={within && !isChosen}
                 rangeEdge={
@@ -1001,16 +1127,11 @@ function DayGrid({
                 }
                 current={now !== null && isSameDay(date, now)}
                 muted={outside}
-                disabled={isDisabled(date)}
+                disabled={disabled}
                 focused={isSameDay(date, focusedDate)}
-                className={cx('size-(--n-cell)', controlTextClasses[size])}
-                onClick={() => onSelect(date)}
-                onPointerEnter={() => onPreviewChange?.(date)}
-                onKeyDown={(event) => onKeyDown(event, date)}
-              >
-                {date.getDate()}
-                {renderDay ? renderDay(date) : null}
-              </Cell>
+                extra={renderDay ? renderDay(date) : null}
+                actions={actions}
+              />
             );
           })}
         </div>

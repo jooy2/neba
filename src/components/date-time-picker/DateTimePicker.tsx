@@ -5,6 +5,7 @@ import { Button } from '../button/Button.js';
 import {
   Calendar,
   TimeGrid,
+  askOnEveryRender,
   usePickerLabels,
   usePickerSamples,
   type PickerLabels
@@ -272,7 +273,7 @@ export const DateTimePicker = React.forwardRef<HTMLButtonElement, DateTimePicker
               onSelect={selectDay}
               minDate={minDate}
               maxDate={maxDate}
-              shouldDisableDate={shouldDisableDate}
+              shouldDisableDate={askOnEveryRender(shouldDisableDate)}
               labels={labels}
               autoFocus
             />

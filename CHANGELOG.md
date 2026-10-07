@@ -70,6 +70,8 @@
 
 - **An inline `Calendar` no longer carries the pickers' trigger and popup classes.** Two class strings the pickers share were built with a call a bundler could not drop, so a page that drew only a `Calendar` carried both. A `Calendar` alone is 0.1 kB smaller gzipped; nothing it draws changes.
 
+- **A `DateRangePicker` redraws only the days the band reaches or leaves as the pointer moves.** While a range was half chosen, every cell the pointer entered drew the trigger, the popup and every day of both months again, and called `shouldDisableDate` for all of them: twenty cells crossed were 1,240 calls. Now a move calls it not at all, and takes about half the time. The band looks and moves as before. `shouldDisableDate` is still asked again each time the picker renders, so a function that reads data of its own sees that data change as before.
+
 ### Fixed
 
 - **A `multiple` `Combobox` keeps the error a `Form` put on it while the page around it renders again, and a single one keeps what is typed after a value its `items` do not have.** The value handed to Base UI was a new object on every render, which Base UI took for a new choice: it cleared the field's errors, so a server error vanished the moment the reader typed in another field, and in single mode it wrote the chosen label back into the input, so typing after a custom value such as `defaultValue="Foo"` did nothing. The value now stays the same object for as long as it holds the same entries, including when `value` or `items` is written inline.

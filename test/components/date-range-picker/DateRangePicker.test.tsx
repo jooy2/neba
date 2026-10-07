@@ -223,6 +223,56 @@ describe('DateRangePicker', () => {
     });
   });
 
+  describe('the band under the pointer', () => {
+    /** Whether a day is drawn inside the band, and not at one of its ends. */
+    const inBand = (element: Element) => element.className.split(' ').includes('bg-(--n-soft)');
+
+    it('follows the pointer from the first press, and starts again at a new one', async () => {
+      const screen = await render(
+        <DateRangePicker locale={LOCALE} label="Stay" defaultMonth={JULY} />
+      );
+      const day = (name: string) => screen.getByRole('gridcell', { name });
+
+      await screen.getByRole('button', { name: 'Stay', exact: false }).click();
+      await day('Friday, July 3, 2026').click();
+      await userEvent.hover(day('Thursday, July 9, 2026'));
+
+      await expect.poll(() => inBand(day('Monday, July 6, 2026').element())).toBe(true);
+      expect(inBand(day('Sunday, July 12, 2026').element())).toBe(false);
+
+      // Before the start, so a new start: the band is the new press alone.
+      await day('Wednesday, July 1, 2026').click();
+
+      await expect.poll(() => inBand(day('Monday, July 6, 2026').element())).toBe(false);
+      expect(inBand(day('Thursday, July 2, 2026').element())).toBe(false);
+    });
+
+    // Every cell the pointer entered drew both months again, and asked the
+    // caller about all sixty-two days on them each time.
+    it('does not ask shouldDisableDate again as the pointer moves', async () => {
+      const shouldDisableDate = vi.fn(() => false);
+      const screen = await render(
+        <DateRangePicker
+          locale={LOCALE}
+          label="Stay"
+          defaultMonth={JULY}
+          shouldDisableDate={shouldDisableDate}
+        />
+      );
+      const day = (name: string) => screen.getByRole('gridcell', { name });
+
+      await screen.getByRole('button', { name: 'Stay', exact: false }).click();
+      await day('Friday, July 3, 2026').click();
+      shouldDisableDate.mockClear();
+
+      await userEvent.hover(day('Thursday, July 9, 2026'));
+      await userEvent.hover(day('Monday, August 3, 2026'));
+
+      await expect.poll(() => inBand(day('Friday, July 31, 2026').element())).toBe(true);
+      expect(shouldDisableDate).not.toHaveBeenCalled();
+    });
+  });
+
   describe('presets', () => {
     it('applies a preset and closes', async () => {
       const onValueChange = vi.fn();

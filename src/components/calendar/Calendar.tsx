@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import {
+  askOnEveryRender,
   Calendar as CalendarGrid,
   usePickerLabels,
   type PickerLabels
@@ -326,7 +327,7 @@ export const Calendar = React.forwardRef<HTMLDivElement, CalendarProps>(
           granularity={granularity}
           minDate={minDate}
           maxDate={maxDate}
-          shouldDisableDate={shouldDisableDate}
+          shouldDisableDate={askOnEveryRender(shouldDisableDate)}
           showOutsideDays={showOutsideDays}
           renderDay={renderDay}
           multiselectable={mode !== 'single'}

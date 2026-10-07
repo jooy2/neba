@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { Button } from '../button/Button.js';
 import {
+  askOnEveryRender,
   Calendar,
   usePickerLabels,
   usePickerSamples,
@@ -316,7 +317,7 @@ export const DatePicker = React.forwardRef<HTMLButtonElement, DatePickerProps>(
             granularity={granularity}
             minDate={minDate}
             maxDate={maxDate}
-            shouldDisableDate={shouldDisableDate}
+            shouldDisableDate={askOnEveryRender(shouldDisableDate)}
             labels={labels}
             autoFocus
           />
