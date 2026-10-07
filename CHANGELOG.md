@@ -120,6 +120,8 @@
 
 - **A server-rendered `SegmentedButton` no longer shows a faint bloom in its chosen segment as the page hydrates.** The fill the segment draws until its tile is placed shares a layer with the pointer light, and the light's own transition faded that layer out over a quarter of a second as a soft glow in the middle of the segment. It now goes in the same frame the tile arrives.
 
+- **`useOnScreen` answers for an element something else is already watching.** The library shares one `IntersectionObserver` per threshold, and an element it had already reported was not reported again until it moved, so a `useOnScreen` on an element an `Animate*` or a `Carousel` was watching at the same threshold stayed `false` while the element sat on screen. It is now told where things stand as soon as it starts watching.
+
 ## 1.18.1 (2026-10-07)
 
 ### Added

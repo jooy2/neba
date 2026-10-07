@@ -110,6 +110,13 @@ interface VisibilityGroup {
   observer: IntersectionObserver;
   /** Keyed inside the group, so one element watched at two thresholds is two rows. */
   watchers: Map<Element, Set<VisibilityCallback>>;
+  /**
+   * The last answer for each element, so a watcher that arrives after it is
+   * told where things stand. The observer reports a change and nothing else,
+   * and a second watcher on an element that has already been reported would
+   * otherwise wait for the element to move before it heard anything at all.
+   */
+  last: Map<Element, boolean>;
 }
 
 const visibilityGroups = new Map<string, VisibilityGroup>();
@@ -124,15 +131,19 @@ function visibilityShared(threshold: number, rootMargin: string): VisibilityGrou
 
   if (!group) {
     const watchers = new Map<Element, Set<VisibilityCallback>>();
+    const last = new Map<Element, boolean>();
 
     group = {
       watchers,
+      last,
       observer: new IntersectionObserver(
         (entries) => {
           for (const entry of entries) {
             const listeners = watchers.get(entry.target);
 
             if (listeners) {
+              last.set(entry.target, entry.isIntersecting);
+
               // Copied before iterating: a watcher is allowed to stop watching
               // from inside its own callback, and a `Set` mutated mid-loop
               // drops whatever came after it.
@@ -154,6 +165,10 @@ function visibilityShared(threshold: number, rootMargin: string): VisibilityGrou
 
 /**
  * Watches whether one element is on screen. Returns the function that stops.
+ *
+ * On screen means at least `threshold` of it is showing; `0` is any of it. A
+ * watcher is told when that answer changes, and one that arrives after the
+ * element was first reported is told the answer as it stands.
  *
  * `rootMargin` grows the screen it is measured against, for work that should
  * start before the element arrives rather than as it does.
@@ -187,6 +202,18 @@ export function observeVisibility(
     watchers = new Set();
     group.watchers.set(element, watchers);
     group.observer.observe(element);
+  } else if (group.last.has(element)) {
+    // Already reported, so the observer has nothing new to say until the
+    // element moves. Told in a microtask rather than now, because a caller that
+    // stops watching from inside its own callback has not been handed the
+    // function that stops it yet.
+    queueMicrotask(() => {
+      const visible = group.last.get(element);
+
+      if (visible !== undefined && group.watchers.get(element)?.has(onVisible)) {
+        onVisible(visible);
+      }
+    });
   }
 
   watchers.add(onVisible);
@@ -202,6 +229,7 @@ export function observeVisibility(
 
     if (set.size === 0) {
       group.watchers.delete(element);
+      group.last.delete(element);
       group.observer.unobserve(element);
 
       // And the group goes with the last element, since only that can empty it.

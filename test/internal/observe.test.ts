@@ -272,6 +272,79 @@ describe('observeVisibility', () => {
     disconnect.mockRestore();
   });
 
+  // The threshold is what an `Animate*` waits for, and a wrapper that caps it
+  // for a tall element relies on the answer being measured against it rather
+  // than against any overlap at all.
+  it('answers false for an element showing less than its threshold', async () => {
+    const element = host(100);
+    const onVisible = vi.fn();
+
+    element.style.cssText = 'position:fixed;left:0;top:calc(100vh - 10px);width:100px;height:100px';
+
+    const stop = observeVisibility(element, 0.5, onVisible);
+
+    await vi.waitFor(() => expect(onVisible).toHaveBeenCalled());
+    expect(onVisible).toHaveBeenLastCalledWith(false);
+
+    element.style.top = '0px';
+
+    await vi.waitFor(() => expect(onVisible).toHaveBeenLastCalledWith(true));
+
+    stop?.();
+  });
+
+  // The observer reports changes, and an element already reported has none to
+  // report until it moves. A second watcher heard nothing at all.
+  it('tells a watcher that arrives after the element was reported', async () => {
+    const element = host(100);
+    const first = vi.fn();
+    const late = vi.fn();
+
+    const stopFirst = observeVisibility(element, 0.43, first);
+
+    await vi.waitFor(() => expect(first).toHaveBeenCalledWith(true));
+
+    const stopLate = observeVisibility(element, 0.43, late);
+
+    await vi.waitFor(() => expect(late).toHaveBeenCalledWith(true));
+    expect(first).toHaveBeenCalledTimes(1);
+
+    stopFirst?.();
+    stopLate?.();
+  });
+
+  // Told in a microtask, so a watcher that stops from inside its first answer
+  // has the function that stops it by then.
+  it('lets a late watcher stop from inside the answer it is handed', async () => {
+    const element = host(100);
+    const first = vi.fn();
+
+    const stopFirst = observeVisibility(element, 0.47, first);
+
+    await vi.waitFor(() => expect(first).toHaveBeenCalled());
+
+    let stop: (() => void) | null = null;
+    let handed = false;
+    const once = vi.fn(() => {
+      handed = stop !== null;
+      stop?.();
+    });
+
+    stop = observeVisibility(element, 0.47, once);
+
+    await vi.waitFor(() => expect(once).toHaveBeenCalledTimes(1));
+    expect(handed).toBe(true);
+
+    // Off the screen: the watcher that stayed hears it, and the one that
+    // stopped does not.
+    element.style.cssText = 'position:fixed;top:200vh;width:100px;height:20px';
+
+    await vi.waitFor(() => expect(first).toHaveBeenLastCalledWith(false));
+    expect(once).toHaveBeenCalledTimes(1);
+
+    stopFirst?.();
+  });
+
   // Dropped and built again is the ordinary case on a page that mounts and
   // unmounts the same wrapper, so the second watcher has to be told as much as
   // the first was.
