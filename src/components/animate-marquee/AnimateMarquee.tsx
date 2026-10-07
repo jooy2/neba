@@ -4,6 +4,7 @@ import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
 import { isInfinite, lengthValue, useAnimationRun } from '../../internal/animate.js';
 import { inertValue } from '../../internal/inert.js';
+import { useLayoutEffectOnClient } from '../../internal/layout-effect.js';
 import { usePrefersReducedMotion } from '../../internal/media.js';
 import { observeResize } from '../../internal/observe.js';
 import { cx } from '../../internal/styles.js';
@@ -173,7 +174,44 @@ export const AnimateMarquee = React.forwardRef<HTMLElement, AnimateMarqueeProps>
     // An explicit duration wins; otherwise the measurement decides, and until
     // the first measurement lands there is a sane number rather than `0ms`,
     // which browsers read as "finish immediately".
-    const runDuration = duration ?? (travel > 0 ? (travel / speed) * 1000 : 12000);
+    const runDuration = Math.round(duration ?? (travel > 0 ? (travel / speed) * 1000 : 12000));
+
+    /*
+     * Where the strip has got to, carried over a change of duration.
+     *
+     * A running animation whose duration changes keeps its current time and
+     * reads its place off the new duration, so the strip jumped: once after
+     * hydration, when the measured duration replaced the twelve seconds a
+     * server has to guess, and again on every resize. The time is scaled by the
+     * same ratio as the duration, before the frame is painted, which leaves
+     * every copy where it was and moving at the new speed. Scaled rather than
+     * wrapped to one pass, so a strip with a `repeat` count stays on the pass it
+     * was on.
+     */
+    const ranFor = React.useRef<number | null>(null);
+
+    useLayoutEffectOnClient(() => {
+      const previous = ranFor.current;
+      const box = boxRef.current;
+
+      ranFor.current = runDuration;
+
+      if (previous === null || previous === runDuration || !box?.getAnimations) {
+        return;
+      }
+
+      for (const animation of box.getAnimations({ subtree: true })) {
+        const time = Number(animation.currentTime);
+
+        if (
+          animation instanceof CSSAnimation &&
+          animation.animationName.startsWith('neba-anim-marquee') &&
+          time > delay
+        ) {
+          animation.currentTime = delay + ((time - delay) * runDuration) / previous;
+        }
+      }
+    }, [runDuration, delay]);
 
     const track = (index: number) => (
       <span
@@ -219,7 +257,7 @@ export const AnimateMarquee = React.forwardRef<HTMLElement, AnimateMarqueeProps>
           // at both ends of a loop that has no ends, which reads as the page
           // stuttering.
           ...(easing ? { '--n-anim-ease': easing } : {}),
-          '--n-anim-duration': `${Math.round(runDuration)}ms`,
+          '--n-anim-duration': `${runDuration}ms`,
           '--n-anim-delay': `${delay}ms`,
           '--n-anim-repeat': repeat === 'infinite' ? 'infinite' : String(repeat),
           '--n-anim-direction': reverse

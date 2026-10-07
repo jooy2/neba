@@ -132,6 +132,8 @@
 
 - **`AnimateTyping`, `AnimateScramble` and `AnimateCounter` show their final text from the first paint to a reader who has asked for less motion, and with scripting off.** The answer was drawn by the script, so until the page hydrated such a reader saw an empty line, a line of noise or the `from` number, and with scripting off they never saw anything else. The stylesheet draws the final text now, and the page does not change when the script arrives.
 
+- **`AnimateMarquee` no longer jumps when it measures itself.** A server-rendered strip ran at a guessed twelve seconds until the page hydrated, and the measured duration that replaced it, and every one after a resize, moved the strip to a different place in one frame. It now carries on from where it was, at the new speed.
+
 ## 1.18.1 (2026-10-07)
 
 ### Added
