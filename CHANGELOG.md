@@ -28,6 +28,8 @@
 
 - **A `SegmentedButton` and a `FloatingBottomNavigation` no longer lay the page out each time their parent renders.** Both measured the chosen item again on every new `children`, which is every render of the component above them, to place a tile that had not moved. They now measure when the value changes or when an item itself does: a label that changes size, an item added or removed, or the set reordered.
 
+- **A component given a `locale` renders once when a server-rendered page hydrates, not twice.** Every component that writes a number or a date rendered a second time once hydration was over, whether or not anything could change; with `locale`, or `defaults.locale` on a `NebaProvider`, that second render is gone. On a page of 400 `Statistic` and `Meter`, the work after hydration fell from about 6.9 ms to 1.6 ms. A component with no `locale` still switches from `en-US` to the reader's language after hydration, as before.
+
 ### Fixed
 
 - **A `multiple` `Combobox` keeps the error a `Form` put on it while the page around it renders again, and a single one keeps what is typed after a value its `items` do not have.** The value handed to Base UI was a new object on every render, which Base UI took for a new choice: it cleared the field's errors, so a server error vanished the moment the reader typed in another field, and in single mode it wrote the chosen label back into the input, so typing after a custom value such as `defaultValue="Foo"` did nothing. The value now stays the same object for as long as it holds the same entries, including when `value` or `items` is written inline.

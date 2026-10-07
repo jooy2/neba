@@ -429,6 +429,33 @@ describe('server-rendered and hydrated in another language', () => {
     }
   });
 
+  it('renders a component with a named locale once, and not again after hydration', async () => {
+    const commits = (locale?: string) => {
+      const phases: string[] = [];
+      const element = (
+        <React.Profiler id="statistic" onRender={(_, phase) => phases.push(phase)}>
+          <Statistic label="Revenue" value={48210} locale={locale} />
+        </React.Profiler>
+      );
+
+      return { phases, element };
+    };
+
+    // The unnamed locale has to change once hydration is over, which is the
+    // render this test would miss if the Profiler could not see one.
+    const unnamed = commits();
+    const first = await serverThenHydrate(unnamed.element);
+
+    first.cleanup();
+    expect(unnamed.phases).toEqual(['mount', 'update']);
+
+    const named = commits('fr-FR');
+    const second = await serverThenHydrate(named.element);
+
+    second.cleanup();
+    expect(named.phases).toEqual(['mount']);
+  });
+
   it("writes a run's duration in the language of the sentence around it", async () => {
     const page = await serverThenHydrate(
       <Reasoning duration={2400}>Weighed the two options.</Reasoning>

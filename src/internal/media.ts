@@ -214,7 +214,16 @@ export const HYDRATION_LOCALE = 'en-US';
  * with the server about the library's own words instead.
  */
 export function useIntlLocale(locale: string | undefined): string | undefined {
-  const hydrated = useHydrated();
+  // `useHydrated`, except that the server answer depends on whether there is
+  // anything to pin. React renders a component again after hydration only when
+  // the two answers differ, and with a named locale the value returned is the
+  // same in both renders — so it answers `true` on both sides and spares every
+  // component that formats with a `locale` a second render it had no use for.
+  const hydrated = React.useSyncExternalStore(
+    subscribeToNothing,
+    pastHydration,
+    locale === undefined ? duringHydration : pastHydration
+  );
 
   return locale ?? (hydrated ? undefined : HYDRATION_LOCALE);
 }
