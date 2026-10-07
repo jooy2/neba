@@ -255,7 +255,8 @@
      fill is only 88% opaque, and the pair has to clear 4.5:1 over a white page
      — which pins every family with white text to the high 40s / low 50s. A
      brighter *fill* means a dark ink, which is why `warning` is the one family
-     that already goes there. Verified per step, including hover and active.
+     that already goes there. Verified per step, including hover and active, in
+     every theme: `test/styles/fill-contrast.test.ts` holds it.
 
      `success` moved 152 → 148 and `info` 218 → 223. Both are hue regions where
      sRGB is starved at mid lightness, and a few degrees toward the gamut's wide
@@ -518,7 +519,7 @@
     --neba-shadow-ambient: rgb(0 0 0 / 0.55);
 
     --neba-primary-solid: oklch(57% 0.208 262);
-    --neba-primary-solid-hover: oklch(62% 0.181 262);
+    --neba-primary-solid-hover: oklch(61% 0.181 262);
     --neba-primary-solid-active: oklch(48% 0.196 262);
     --neba-primary-on-solid: oklch(99% 0.004 262);
     --neba-primary-accent: oklch(78% 0.103 262);
@@ -537,7 +538,7 @@
 
     --neba-warning-solid: oklch(76% 0.145 80);
     --neba-warning-solid-hover: oklch(81% 0.154 80);
-    --neba-warning-solid-active: oklch(66% 0.126 80);
+    --neba-warning-solid-active: oklch(69.5% 0.126 80);
     --neba-warning-on-solid: oklch(25% 0.06 70);
     --neba-warning-accent: oklch(82% 0.14 80);
 
@@ -659,7 +660,7 @@
   --neba-shadow-ambient: rgb(0 0 0 / 0.55);
 
   --neba-primary-solid: oklch(57% 0.208 262);
-  --neba-primary-solid-hover: oklch(62% 0.181 262);
+  --neba-primary-solid-hover: oklch(61% 0.181 262);
   --neba-primary-solid-active: oklch(48% 0.196 262);
   --neba-primary-on-solid: oklch(99% 0.004 262);
   --neba-primary-accent: oklch(78% 0.103 262);
@@ -678,7 +679,7 @@
 
   --neba-warning-solid: oklch(76% 0.145 80);
   --neba-warning-solid-hover: oklch(81% 0.154 80);
-  --neba-warning-solid-active: oklch(66% 0.126 80);
+  --neba-warning-solid-active: oklch(69.5% 0.126 80);
   --neba-warning-on-solid: oklch(25% 0.06 70);
   --neba-warning-accent: oklch(82% 0.14 80);
 
