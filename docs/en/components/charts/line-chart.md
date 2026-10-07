@@ -230,6 +230,8 @@ The module that writes the file is **fetched when the button is pressed**, so a 
 
 The legend appears automatically from two series up and is left off below that. `side` and `align` place it; clicking an entry hides its series, and the survivors keep the colour they had. A hidden series stays hidden when new data puts the series in another order, as long as it keeps its `name`. `legend={false}` removes it, `interactive: false` makes it a key rather than a control.
 
+The legend takes a row of its own outside `height`, or a column beside the plot, so a chart that gains its legend after the first render grows by it and moves what is around it. That happens when the series arrive after the chart first appears, or when a second series is added to one. Hand the chart its series from the first render, with their `name`s and an empty `data` while the numbers load, or set `legend` to `true` to draw it for a single series as well.
+
 `showValue` writes each series' value at the active column beside its name. Each row keeps room for the widest value its series holds while no column is active too, so the legend stays the same size as the pointer comes and goes.
 
 <Demo src="line-chart/legend">

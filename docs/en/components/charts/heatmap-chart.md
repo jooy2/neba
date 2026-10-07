@@ -92,6 +92,8 @@ A `treemap` names its tiles on their own faces and reads neither axis.
 
 The legend is a scale bar with its two ends labelled, not a list of swatches. On a `diverging` scale the midpoint is named under the middle of the bar. `legend={false}` leaves it off, and `legend`'s own `side` moves it.
 
+The bar is drawn only once there is data to scale, and it takes room of its own outside `height`: a row under the plot, unless `side` puts it elsewhere. A heatmap rendered empty while its data loads therefore grows by that row when the data arrives, and moves whatever is under it. Give the chart its data in the render it first appears in, or keep the room on the container, with a `min-height` that includes the row.
+
 ## Accessibility
 
 - The data is also rendered as a **visually hidden table**, captioned with `label`, one row per series and one column per category. A treemap's columns are every tile name its groups use, and each value sits under its own name. Past 500 cells, the caption and the header row are written at once and the rows are added in small batches just after the chart first draws, so a server-rendered page does not carry them in its HTML. The plot itself is described by one sentence with the number of values and their range, so a focus does not read the table out.
