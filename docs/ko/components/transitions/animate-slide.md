@@ -43,6 +43,8 @@ import { AnimateSlide } from 'neba';
 
 CSS 길이 또는 픽셀 수입니다. 기본값 `'100%'`는 요소 자신의 너비 또는 높이입니다. 짧은 거리는 등장이 아니라 살짝 미는 정도이고, 그런 것을 목록 전체에 하나씩 걸고 싶다면 [AnimateAppear](./animate-appear)를 쓰세요.
 
+도착하기 전까지 기본값은 요소를 자기 너비나 높이만큼 제자리 밖에 두므로, 컨테이너 바깥으로 나갈 수 있습니다. 휴대폰에서는 오른쪽에서 들어오는 슬라이드가 그동안 페이지 폭을 넓힙니다. `overflow: hidden`인 상자로 감싸면 안쪽에 머뭅니다.
+
 <Demo src="animate-slide/distance">
 
 <<< @/.vitepress/demos/animate-slide/distance.tsx

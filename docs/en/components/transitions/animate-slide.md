@@ -43,6 +43,8 @@ Put it in a box with `overflow: hidden` and the effect is a panel appearing from
 
 A CSS length or a number in pixels. `'100%'` (the default) is the element's own width or height. A short distance is a nudge rather than an entrance; for a whole list of those, one after another, use [AnimateAppear](./animate-appear).
 
+Until it has arrived, the default holds the element a whole width or height past where it belongs, which can be outside its container: on a phone, a slide from the right widens the page for that long. A box with `overflow: hidden` around it keeps it inside.
+
 <Demo src="animate-slide/distance">
 
 <<< @/.vitepress/demos/animate-slide/distance.tsx
