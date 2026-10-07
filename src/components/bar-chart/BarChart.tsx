@@ -205,6 +205,10 @@ function Bars({ context, stacked, rounded, barSize, valueLabels, size }: BarsPro
   // of thing as one written under it, and two sizes of number on one chart
   // reads as two levels of importance that are not there.
   const labelSize = chartFontSizes[size];
+  // Read only where a label is written. The formatter changes once after a
+  // server-rendered page hydrates with no `locale`, and a chart with no labels
+  // laid every bar out again for a number it never writes.
+  const labelFormat = valueLabels === 'none' ? null : formatFor;
 
   const placed = React.useMemo(() => {
     const drawn = values
@@ -314,7 +318,7 @@ function Bars({ context, stacked, rounded, barSize, valueLabels, size }: BarsPro
                   // the gap between two bands, and the hue is what says
                   // which of the two it belongs to.
                   fill: labelInk(value.color ?? color),
-                  text: value.label ?? formatFor(index)(value.value)
+                  text: value.label ?? labelFormat!(index)(value.value)
                 }
         });
       });
@@ -337,7 +341,7 @@ function Bars({ context, stacked, rounded, barSize, valueLabels, size }: BarsPro
     valuePx,
     categoryPx,
     zeroPxOf,
-    formatFor,
+    labelFormat,
     stacked,
     rounded,
     barSize,
