@@ -723,6 +723,22 @@ describe('the published package', () => {
       expect(orphans).toEqual([]);
     });
 
+    // A caller who writes `classNames` out of their own object — a theme, a
+    // variant map — needs the union by name, and a slot type a component
+    // declares but its barrel does not export could only be had as
+    // `NonNullable<Props['classNames']>`.
+    it('exports every slot union from the barrel of its component', () => {
+      const hidden = slotUnions()
+        .filter((union) => union.path.includes('/components/'))
+        .filter((union) => {
+          const barrel = union.path.replace(/\/[^/]+\.tsx$/, '/index.ts');
+          return !new RegExp(`\\b${union.name}\\b`).test(sources[barrel] ?? '');
+        })
+        .map((union) => `${union.path}: ${union.name}`);
+
+      expect(hidden).toEqual([]);
+    });
+
     /**
      * `className` is the root on every component in the library. A `root` key
      * beside it would be a second spelling of an idea that already has one,

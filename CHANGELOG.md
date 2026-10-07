@@ -62,6 +62,8 @@ All exports grew 13.3 kB. About 3.6 kB of that is the code of the new chunks, wh
 
 - **`open`, `defaultOpen` and `onOpenChange` on `Select`**, as `Combobox`, `TreeSelect` and the pickers already have. `defaultOpen` starts the list open, `open` with `onOpenChange` controls it, and `onOpenChange` is called with the new state whenever the reader opens or closes it.
 
+- **Every component's `classNames` slot type is exported from the package.** Fifteen were declared but left out of their barrels, so a caller writing `classNames` in a variable of its own could only name the type as `NonNullable<Props['classNames']>`: `CheckboxSlot`, `CheckboxGroupSlot`, `ComboboxSlot`, `DialogSlot`, `FloatingActionButtonSlot`, `NumberFieldSlot`, `RadioSlot`, `RadioGroupSlot`, `SelectSlot`, `SliderSlot`, `SwitchSlot`, `TableSlot`, `TextFieldSlot`, `ToastSlot` and `TourSlot`.
+
 ### Changed
 
 - **A `Combobox` filters its list only when the query, the options or `filter` change.** The functions it handed Base UI were new on every render, so every render of anything above it, a keystroke in another field of the same form included, ran the filter over every option again. A `filter` of your own is no longer called on a render that changes none of those, as long as it is the same function from one render to the next.

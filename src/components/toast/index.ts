@@ -4,5 +4,6 @@ export type {
   ToastData,
   ToastOptions,
   ToastPosition,
-  ToastProviderProps
+  ToastProviderProps,
+  ToastSlot
 } from './Toast.js';
