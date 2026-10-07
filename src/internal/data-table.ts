@@ -358,10 +358,21 @@ export function virtualWindow(
  * A key that is no longer in the list (a row the current filter hides) yields
  * an empty range rather than a range from one end, which is what an index of
  * `-1` would silently produce.
+ *
+ * `positions` is where each key sits in `order`, for a caller that already
+ * holds it. A drag asks this once for every row it reaches, and finding the two
+ * ends by walking the list was two passes over every key in the table per row:
+ * on a hundred thousand rows, most of the frame went on finding where the run
+ * starts rather than on the run.
  */
-export function keysBetween(order: readonly string[], from: string, to: string): string[] {
-  const a = order.indexOf(from);
-  const b = order.indexOf(to);
+export function keysBetween(
+  order: readonly string[],
+  from: string,
+  to: string,
+  positions?: ReadonlyMap<string, number>
+): string[] {
+  const a = positions ? (positions.get(from) ?? -1) : order.indexOf(from);
+  const b = positions ? (positions.get(to) ?? -1) : order.indexOf(to);
 
   if (a === -1 || b === -1) {
     return [];

@@ -1450,11 +1450,19 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
    * the current rows, and none of them can be re-bound on every render without
    * tearing a drag in half. They read this instead.
    */
-  const latest = React.useRef({ paged, pagedKeys, byKey, selectedKeys, selectedValues, multiple });
+  const latest = React.useRef({
+    paged,
+    pagedKeys,
+    pageIndex,
+    byKey,
+    selectedKeys,
+    selectedValues,
+    multiple
+  });
   // Read by handlers and by window listeners, never during a render — and
   // re-binding those per render is what a drag cannot survive.
   // eslint-disable-next-line react-hooks/refs
-  latest.current = { paged, pagedKeys, byKey, selectedKeys, selectedValues, multiple };
+  latest.current = { paged, pagedKeys, pageIndex, byKey, selectedKeys, selectedValues, multiple };
 
   /**
    * Turns a set of string keys back into what the caller handed over.
@@ -1525,20 +1533,23 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
   /** Shift: the run between the anchor and here, replacing what was chosen. */
   const selectRange = React.useCallback(
     (key: string, additive: boolean) => {
-      const order = latest.current.pagedKeys;
+      const { pagedKeys: order, pageIndex: positions } = latest.current;
       const anchor = anchorRef.current ?? order[0];
 
       if (anchor === undefined) {
         return;
       }
 
-      const run = keysBetween(order, anchor, key);
+      // Through the positions, not along the list: a drag takes the run again
+      // for every row it reaches, and two walks over every key in the table to
+      // find the ends was the cost of each one.
+      const run = keysBetween(order, anchor, key, positions);
 
       if (run.length === 0) {
         // The anchor is not displayed — on another page, or hidden by a
         // search — so there is no run to take. The row still answers, as a
         // plain press or a Ctrl press would, and becomes the anchor.
-        if (order.includes(key)) {
+        if (positions.has(key)) {
           anchorRef.current = key;
           commitSelection(additive ? [...new Set([...latest.current.selectedKeys, key])] : [key]);
         }
@@ -2031,7 +2042,7 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
       return;
     }
 
-    const index = activeKey === null ? -1 : latest.current.pagedKeys.indexOf(activeKey);
+    const index = activeKey === null ? -1 : (latest.current.pageIndex.get(activeKey) ?? -1);
     /*
      * The box measured on the press rather than kept: only a virtual body
      * measures itself as it goes, and a bounded table that is not virtual went

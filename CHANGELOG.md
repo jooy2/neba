@@ -54,6 +54,8 @@
 
 - **A `BarChart`, a `TimelineChart` and a `LineChart` or `AreaChart` with `markers="all"` or `valueLabels` draw less as the crosshair moves.** Every bar, span, dot and label was worked out again each time the crosshair reached a new column, for the two that changed. Under a fourfold CPU slowdown a column change went from 7.6 ms to 2.9 ms on a BarChart of 365 categories in three series, from 7.9 ms to 3.0 ms on a LineChart of three 400-point series with every dot and label, and a span change from 4.3 ms to 2.3 ms on a TimelineChart of 1,200 spans.
 
+- **Dragging a run of rows in a `DataTable` no longer walks every row on each frame.** Each row the drag reached looked up where the run began and ended by searching the whole list of displayed rows twice, which on a hundred thousand rows was most of the frame; the arrow keys did the same to find the active row. Both are now a lookup in the positions the table already keeps, and the rows chosen are the same.
+
 ### Fixed
 
 - **A `multiple` `Combobox` keeps the error a `Form` put on it while the page around it renders again, and a single one keeps what is typed after a value its `items` do not have.** The value handed to Base UI was a new object on every render, which Base UI took for a new choice: it cleared the field's errors, so a server error vanished the moment the reader typed in another field, and in single mode it wrote the chosen label back into the input, so typing after a custom value such as `defaultValue="Foo"` did nothing. The value now stays the same object for as long as it holds the same entries, including when `value` or `items` is written inline.

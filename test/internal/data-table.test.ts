@@ -252,4 +252,18 @@ describe('keysBetween', () => {
     expect(keysBetween(order, 'zz', 'c')).toEqual([]);
     expect(keysBetween(order, 'c', 'zz')).toEqual([]);
   });
+
+  // A drag asked this once per row it reached, and each answer walked every
+  // key in the table twice to find where the run began and ended.
+  it('finds the two ends through the positions it is handed, without walking the list', () => {
+    const positions = new Map(order.map((key, index) => [key, index]));
+    const unwalkable = Object.assign([...order], {
+      indexOf: () => {
+        throw new Error('walked the list');
+      }
+    });
+
+    expect(keysBetween(unwalkable, 'd', 'b', positions)).toEqual(['b', 'c', 'd']);
+    expect(keysBetween(unwalkable, 'zz', 'c', positions)).toEqual([]);
+  });
 });
