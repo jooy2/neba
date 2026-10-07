@@ -221,6 +221,119 @@ describe('Chip', () => {
     });
   });
 
+  // A chip that leads somewhere was a button with an `onClick`, which a
+  // crawler cannot follow and a reader cannot open in a new tab.
+  describe('href', () => {
+    it('makes the label a link to the address', async () => {
+      const screen = await render(<Chip href="/tags/react">React</Chip>);
+      const link = screen.getByRole('link', { name: 'React' });
+
+      await expect.element(link).toHaveAttribute('href', '/tags/react');
+      expect(screen.getByRole('button').query()).toBeNull();
+    });
+
+    it('answers the pointer the way a pressable chip does', async () => {
+      const screen = await render(
+        <Chip href="/tags/react" data-testid="chip">
+          React
+        </Chip>
+      );
+
+      expect(screen.getByTestId('chip').element().className).toContain('hover:');
+    });
+
+    it('keeps the delete button beside the link rather than inside it', async () => {
+      const onDelete = vi.fn();
+      const screen = await render(
+        <Chip href="/tags/react" onDelete={onDelete}>
+          React
+        </Chip>
+      );
+      const link = screen.getByRole('link', { name: 'React' }).element();
+      const remove = screen.getByRole('button', { name: 'Remove React' }).element();
+
+      expect(link.contains(remove)).toBe(false);
+      expect(link.parentElement).toBe(remove.parentElement);
+
+      await screen.getByRole('button', { name: 'Remove React' }).click();
+
+      expect(onDelete).toHaveBeenCalledTimes(1);
+    });
+
+    it('opens a new tab safely, and says that it does', async () => {
+      const screen = await render(
+        <Chip href="https://react.dev" target="_blank" rel="tag">
+          React
+        </Chip>
+      );
+      const link = screen.getByRole('link', { name: 'React (opens in a new tab)' });
+
+      await expect.element(link).toHaveAttribute('target', '_blank');
+      await expect.element(link).toHaveAttribute('rel', 'tag noopener noreferrer');
+    });
+
+    it('leaves rel as it was given for a link that opens here', async () => {
+      const screen = await render(
+        <Chip href="/tags/react" rel="tag">
+          React
+        </Chip>
+      );
+
+      await expect
+        .element(screen.getByRole('link', { name: 'React' }))
+        .toHaveAttribute('rel', 'tag');
+    });
+
+    it('is the current one of its set, not a pressed button, when selected', async () => {
+      const screen = await render(
+        <Chip href="/tags/react" selected>
+          React
+        </Chip>
+      );
+      const link = screen.getByRole('link', { name: 'React' });
+
+      await expect.element(link).toHaveAttribute('aria-current', 'true');
+      await expect.element(link).not.toHaveAttribute('aria-pressed');
+    });
+
+    it('is not a link while disabled', async () => {
+      const screen = await render(
+        <Chip href="/tags/react" disabled data-testid="chip">
+          React
+        </Chip>
+      );
+
+      await expect.element(screen.getByText('React')).toBeInTheDocument();
+      expect(screen.getByRole('link').query()).toBeNull();
+      expect(screen.getByTestId('chip').element()).toHaveAttribute('aria-disabled', 'true');
+    });
+
+    it('drops an address with a scheme that runs code', async () => {
+      const onClick = vi.fn();
+      const screen = await render(
+        <Chip href="javascript:alert(1)" onClick={onClick}>
+          React
+        </Chip>
+      );
+
+      expect(screen.getByRole('link').query()).toBeNull();
+      await expect.element(screen.getByRole('button', { name: 'React' })).toBeInTheDocument();
+    });
+
+    it('still calls onClick, for a router that takes the navigation over', async () => {
+      const onClick = vi.fn((event: React.MouseEvent) => event.preventDefault());
+      const screen = await render(
+        <Chip href="/tags/react" onClick={onClick}>
+          React
+        </Chip>
+      );
+
+      await screen.getByRole('link', { name: 'React' }).click();
+
+      expect(onClick).toHaveBeenCalledTimes(1);
+    });
+  });
+
   describe('style props', () => {
     it('maps colour and elevation onto the token slots', async () => {
       const screen = await render(

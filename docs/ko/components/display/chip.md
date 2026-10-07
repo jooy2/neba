@@ -53,6 +53,16 @@ Chip의 `size`는 컨트롤 높이보다 한 단계 아래입니다. `md` Chip�
 
 </Demo>
 
+### href · target · rel
+
+`href`를 주면 라벨이 링크가 됩니다. 태그에서 그 태그의 페이지로, 주제에서 그 주제의 목록으로 가는 Chip에 씁니다. 크롤러가 따라갈 수 있고 사용자가 새 탭으로 열 수 있다는 점이 `onClick`을 준 Chip과 다릅니다. `target`과 `rel`은 `<a>`에 그대로 전달됩니다. 현재 탭이 아닌 `target`이면 `rel`에 `noopener noreferrer`가 더해지고, 링크의 접근성 이름 끝에 새 탭에서 열린다는 안내가 `locale`의 언어로 붙습니다. `onDelete`의 삭제 버튼은 링크 안이 아니라 옆에 놓입니다. 선택된 링크 Chip은 눌린 상태 대신 `aria-current="true"`로 표시되고, `disabled`인 Chip은 링크가 되지 않습니다.
+
+<Demo src="chip/links">
+
+<<< @/.vitepress/demos/chip/links.tsx
+
+</Demo>
+
 ### size
 
 <Demo src="chip/sizes">
@@ -63,6 +73,6 @@ Chip의 `size`는 컨트롤 높이보다 한 단계 아래입니다. `md` Chip�
 
 ## 접근성
 
-- 겉은 항상 `<span>`입니다. `onClick`을 주면 내용을 감싸는 `<button>`이 생기고, `onDelete`를 주면 그 옆에 두 번째 `<button>`이 놓입니다. 두 버튼은 중첩되지 않으므로 각각 키보드로 닿을 수 있습니다.
+- 겉은 항상 `<span>`입니다. `onClick`을 주면 내용을 감싸는 `<button>`이, `href`를 주면 `<a>`가 생기고, `onDelete`를 주면 그 옆에 두 번째 `<button>`이 놓입니다. 둘은 중첩되지 않으므로 각각 키보드로 닿을 수 있습니다.
 - 삭제 버튼은 Chip의 라벨이 문자열이면 "Remove Draft"처럼 그 라벨을 넣어 이름을 붙이므로, Chip이 여러 개여도 스크린 리더가 버튼을 구분할 수 있습니다. 라벨이 노드라면 `deleteLabel`로 무엇을 지우는지 밝혀 주세요.
 - 삭제 버튼의 접근성 이름은 `locale`이 정합니다. `deleteLabel`로 직접 쓸 수도 있습니다.

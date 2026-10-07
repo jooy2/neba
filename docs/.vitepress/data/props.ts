@@ -6390,11 +6390,35 @@ export const propTables: Record<string, PropRow[]> = {
       }
     },
     {
+      name: 'href',
+      type: 'string',
+      description: {
+        ko: '넘기면 라벨이 진짜 a가 됩니다. 삭제 버튼은 링크 옆에 따로 놓입니다. disabled이면 링크가 되지 않습니다',
+        en: 'Passing it turns the label into a real anchor. The delete button stays beside the link. A disabled chip is not a link'
+      }
+    },
+    {
+      name: 'target',
+      type: 'string',
+      description: {
+        ko: '링크가 열리는 곳. href가 없으면 무시됩니다. 이 탭이 아닌 곳으로 열면 rel에 noopener noreferrer가 더해집니다',
+        en: 'Where the link opens. Ignored without href. Anything other than this tab also gets noopener noreferrer added to rel'
+      }
+    },
+    {
+      name: 'rel',
+      type: 'string',
+      description: {
+        ko: '링크의 rel. 덮어쓰는 것이 아니라 합쳐집니다. nofollow를 쓴다고 새 탭의 보호가 사라지지는 않습니다',
+        en: "The link's rel. Merged rather than replaced, so writing nofollow does not take the protection off a link that still opens elsewhere"
+      }
+    },
+    {
       name: 'selected',
       type: 'boolean',
       description: {
-        ko: '선택됨. 색 계열을 바꾸는 대신 표면을 한 단계 깊게 만듭니다. false를 포함해 값을 주면 누를 수 있는 Chip이 aria-pressed를 가진 토글이 됩니다',
-        en: 'Chosen. Deepens the surface a step rather than changing the colour family. Passing it, false included, makes a pressable chip a toggle with aria-pressed'
+        ko: '선택됨. 색 계열을 바꾸는 대신 표면을 한 단계 깊게 만듭니다. false를 포함해 값을 주면 누를 수 있는 Chip이 aria-pressed를 가진 토글이 됩니다. 링크 Chip에서는 aria-current="true"가 됩니다',
+        en: 'Chosen. Deepens the surface a step rather than changing the colour family. Passing it, false included, makes a pressable chip a toggle with aria-pressed. On a link chip it is aria-current="true" instead'
       }
     },
     {

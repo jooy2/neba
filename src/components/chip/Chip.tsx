@@ -3,6 +3,8 @@
 import * as React from 'react';
 import { actionMessages, fillMessage, useMessages } from '../../internal/i18n.js';
 import { CloseIcon } from '../../internal/icons.js';
+import { safeHref, safeRel } from '../../internal/link.js';
+import { NewTabNote } from '../../internal/new-tab.js';
 import { transitionProps } from '../../internal/animate.js';
 import {
   chipRemoveClasses,
@@ -72,6 +74,24 @@ export interface ChipProps
    * screen reader. A chip with `onClick` and no `selected` is a plain button.
    */
   selected?: boolean;
+  /**
+   * Makes the chip's label a link to this address: a tag that leads to its
+   * page, a filter that is a URL. A crawler can follow it and a reader can
+   * open it in a new tab, neither of which a button with an `onClick` offers.
+   * With `onDelete` the × stays a button of its own beside the link, never
+   * inside it.
+   *
+   * A scheme other than `http`, `https`, `mailto` and `tel` is dropped, and a
+   * `disabled` chip is not a link.
+   */
+  href?: string;
+  /** Where the link opens. Anything but this tab also gets `rel="noopener noreferrer"`. */
+  target?: string;
+  /**
+   * The link's `rel` — `tag`, `nofollow`, `sponsored`. The two tokens a new tab
+   * needs are merged into it rather than written over it.
+   */
+  rel?: string;
   /** Unavailable. Drops the colour family for neutral grey, as everywhere else. */
   disabled?: boolean;
   children?: React.ReactNode;
@@ -170,12 +190,21 @@ const labelButtonClasses = [
 ].join(' ');
 
 /**
+ * The same label as a link. A browser draws an `<a>` in its own colour and
+ * underlines it, and the chip's colour is the shell's, so the link takes it
+ * back.
+ */
+const labelLinkClasses = `${labelButtonClasses} text-inherit no-underline`;
+
+/**
  * A compact token: a tag, a filter, a status, an entity plucked out of a list.
  *
  * The shell is always a `<span>`. What changes is what is inside it: a plain run
- * of content, or — when `onClick` is given — a real `<button>` wrapping that
- * content, plus a second button for `onDelete`. Both are reachable by keyboard,
- * and neither is nested inside the other.
+ * of content, a real `<button>` wrapping that content when `onClick` is given,
+ * or an `<a>` wrapping it when `href` is, plus a second button for `onDelete`.
+ * Both are reachable by keyboard, and neither is nested inside the other, which
+ * is as true of a link as of a button: interactive content inside an `<a>` is
+ * invalid too.
  *
  * An inert `<span>` carrying a click handler is the single most common way a
  * component library loses its keyboard users, and a `<button>` inside a
@@ -197,6 +226,9 @@ export const Chip = React.forwardRef<HTMLElement, ChipProps>(function Chip(rawPr
     deleteLabel,
     transition,
     selected,
+    href: hrefProp,
+    target,
+    rel,
     disabled = false,
     className,
     style,
@@ -206,7 +238,8 @@ export const Chip = React.forwardRef<HTMLElement, ChipProps>(function Chip(rawPr
   } = useStyleDefaults(rawProps, ['size', 'density', 'variant', 'locale']);
 
   const messages = useMessages(actionMessages, locale);
-  const interactive = Boolean(onClick) && !disabled;
+  const href = disabled ? undefined : safeHref(hrefProp);
+  const interactive = (href !== undefined || Boolean(onClick)) && !disabled;
   const step = chipScale[size];
   const animation = transitionProps(transition);
 
@@ -278,7 +311,21 @@ export const Chip = React.forwardRef<HTMLElement, ChipProps>(function Chip(rawPr
       aria-disabled={disabled && !interactive ? true : undefined}
       {...props}
     >
-      {interactive ? (
+      {href !== undefined ? (
+        <a
+          href={href}
+          target={target}
+          rel={safeRel(target, rel)}
+          // A link is not a toggle, so a chosen one is the current one of its
+          // set rather than a pressed button.
+          aria-current={selected ? 'true' : undefined}
+          className={`${labelLinkClasses} ${gapClasses[step]} ${padX}`}
+          onClick={onClick as React.MouseEventHandler<HTMLAnchorElement>}
+        >
+          {label}
+          <NewTabNote target={target} locale={locale} />
+        </a>
+      ) : interactive ? (
         <button
           type="button"
           // Only a chip that says whether it is on is a toggle. One that merely
