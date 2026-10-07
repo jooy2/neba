@@ -13,7 +13,7 @@
   "exceptions": [
     {
       "feature": "css.selectors.has",
-      "reason": "The focus ring around a field shell, a Rating star and a selectable DataTable. A field still shows focus through its border or fill and a DataTable through its active row, and a Rating falls back to :focus-within under @supports not selector(:has(*))."
+      "reason": "The focus ring around a field shell, a Rating star and a selectable DataTable, and the pill or line a server-rendered Tabs bar draws on its chosen tab until the indicator is measured. A field still shows focus through its border or fill and a DataTable through its active row, a Rating falls back to :focus-within under @supports not selector(:has(*)), and the chosen tab is told apart by its colour alone until the page hydrates."
     },
     {
       "feature": "css.types.length.lh",

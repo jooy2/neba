@@ -52,6 +52,8 @@
 
 - **A server-rendered `Mockup` is drawn from the first paint whatever it was sized with.** Without a `width` or `height` in pixels, the device was hidden until hydration had measured its box, so content on its screen could not count for Largest Contentful Paint until the JavaScript had run, and with JavaScript off it never showed. CSS now works the scale out until the box is measured, and the measurement lands on the same scale, so nothing moves at hydration.
 
+- **A server-rendered `Tabs` bar shows which tab is chosen from the first paint.** The pill under the chosen tab of a `solid` bar, and the line under it on the other two, appeared only once the page had hydrated, because the indicator is placed by a measurement. Until then the chosen tab now draws the same thing itself and hands it to the indicator in the same frame, so nothing moves or fades. Firefox 113 to 120 lack the `:has()` this relies on and show the tab by its colour alone until hydration, as before.
+
 ## 1.18.1 (2026-10-07)
 
 ### Added

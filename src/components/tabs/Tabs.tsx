@@ -592,8 +592,12 @@ export const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(function Tabs(ra
           ref={listRef}
           activateOnFocus={activateOnFocus}
           loopFocus={loopFocus}
+          // `neba-tabs-list` and `data-indicator` are hooks for the rule in
+          // `styles.css` that draws the indicator on the chosen tab until Base UI
+          // has measured where the indicator goes.
+          data-indicator={variant === 'solid' ? 'tile' : wraps ? 'underline' : 'bar'}
           className={cx(
-            'relative shrink-0',
+            'neba-tabs-list relative shrink-0',
             listClasses[variant][orientation],
             variant === 'solid' ? radiusClasses[size] : '',
             fullWidth && orientation === 'horizontal' ? 'w-full' : '',
@@ -638,7 +642,7 @@ export const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(function Tabs(ra
 
           <BaseUITabs.Indicator
             className={[
-              'pointer-events-none',
+              'neba-tabs-indicator pointer-events-none',
               wraps && variant !== 'solid'
                 ? wrappedIndicatorClasses[orientation]
                 : indicatorClasses[variant][orientation],

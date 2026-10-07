@@ -2376,6 +2376,80 @@
 }
 
 /* ---------------------------------------------------------------------------
+ * A tab bar before its indicator is placed
+ *
+ * The pill or bar under the chosen tab is Base UI's indicator, and Base UI
+ * keeps it `hidden` until it has measured the chosen tab, which only happens
+ * once the page is running. A server-rendered `solid` bar therefore had no
+ * pill under the chosen tab until hydration, and the other two had no line.
+ * Until the indicator is shown, the chosen tab draws the same thing itself,
+ * and hands it over in the frame the indicator appears: both follow the one
+ * `hidden` attribute, so there is no frame with two and no frame with none.
+ *
+ * On `::after` rather than the tab's own background, which has a transition
+ * and would fade out over the indicator. `::after` is the tab's afterglow,
+ * which a tab leaves transparent, so the fade it goes back to shows nothing.
+ * `:has()` is past the browser floor in Firefox 113 to 120, where the whole
+ * rule is dropped and the tab is told apart by its colour until hydration, as
+ * it was before.
+ * ------------------------------------------------------------------------- */
+
+.neba-tabs-list:has(> .neba-tabs-indicator[hidden]) > [data-active]::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 1;
+  transition: none;
+}
+
+/* `solid`: the tile, the same sheet as the indicator's. */
+.neba-tabs-list[data-indicator='tile']:has(> .neba-tabs-indicator[hidden]) > [data-active]::after {
+  inset: 0;
+  border-radius: inherit;
+  background: var(--n-panel-press);
+  background-image: var(--neba-grain), var(--neba-sheen);
+  background-blend-mode: overlay, normal;
+  box-shadow: var(--neba-shadow-1), var(--neba-plate-glass);
+  backdrop-filter: var(--neba-blur);
+}
+
+/* `outline` and `text`: a 2px line on the edge the bar runs along. */
+.neba-tabs-list[data-indicator='bar']:has(> .neba-tabs-indicator[hidden]) > [data-active]::after {
+  inset: auto 0 0;
+  height: 2px;
+  border-radius: 9999px;
+  background: var(--n-accent);
+}
+
+.neba-tabs-list[data-indicator='bar'][data-orientation='vertical']:has(
+    > .neba-tabs-indicator[hidden]
+  )
+  > [data-active]::after {
+  inset-block: 0;
+  inset-inline: auto 0;
+  width: 2px;
+  height: auto;
+}
+
+/* A bar that wraps: the line is the tab's own bottom edge, or its end edge. */
+.neba-tabs-list[data-indicator='underline']:has(> .neba-tabs-indicator[hidden])
+  > [data-active]::after {
+  inset: 0;
+  border-radius: 9999px;
+  border-bottom: 2px solid var(--n-accent);
+  background: transparent;
+}
+
+.neba-tabs-list[data-indicator='underline'][data-orientation='vertical']:has(
+    > .neba-tabs-indicator[hidden]
+  )
+  > [data-active]::after {
+  border-bottom: 0;
+  border-inline-end: 2px solid var(--n-accent);
+}
+
+/* ---------------------------------------------------------------------------
  * Tree guides
  *
  * The rail down a level of a TreeView, and — in `folder` — the elbow from that
