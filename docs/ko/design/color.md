@@ -173,6 +173,7 @@ Neba의 다크 테마는 `prefers-color-scheme`을 따르고, `.dark` / `[data-t
 --neba-disabled-fg
 --neba-disabled-border
 --neba-glass-bg       /* 염료 없는 아크릴 — 계열 panel이 섞여 들어가는 바탕 */
+--neba-backing        /* 판과 채움이 놓이는 바탕 — 평소에는 transparent, 투명도 줄이기에서는 페이지 색 */
 ```
 
 비활성 상태가 계열 색을 흐리는 대신 **버리는** 이유는 [디자인 언어](./design-language)에 있습니다. 흐린 강조색은 주요 액션이라는 뜻을 그대로 남긴 채 흐리기만 합니다.

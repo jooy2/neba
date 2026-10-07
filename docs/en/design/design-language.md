@@ -25,6 +25,24 @@ Every filled surface is four layers, in this order and at these strengths.
 | Grain    | `--neba-grain`        | A noise tile composited in `overlay`                  |
 | Edge     | `--neba-plate-solid`  | A bright top line plus a 1px white hairline all round |
 
+`--neba-blur: none` on its own does not turn the acrylic off. It leaves every translucent sheet showing the page sharply through it, so the text behind a menu or a Card runs into the text on it. A product that wants no blur also lays the sheets on the page colour with `--neba-backing`, which is what the reduced-transparency rule below does. Set both on every theme root, because the backing resolves against that root's own surface:
+
+```css
+:root,
+.dark,
+.light,
+[data-theme='dark'],
+[data-theme='light'] {
+  --neba-backing: var(--neba-surface);
+  --neba-blur: none;
+}
+
+/* The system dark theme declares the blur on `:root` at a higher specificity. */
+:root:not(.light):not([data-theme='light']) {
+  --neba-blur: none;
+}
+```
+
 ### Translucency is tuned with the blur, not just the alpha
 
 Lowering the alpha does not by itself make glass. **The blur radius is what decides whether the backdrop is legible.** At 16px a grid line behind the control smears into flat colour and the surface reads opaque again. Held at 9px, the backdrop is present but never resolves into something you could read.
@@ -36,6 +54,10 @@ Lowering the alpha does not by itself make glass. **The blur radius is what deci
 That rule is about a **dyed** fill. `--neba-glass-bg` (the base under the outline and text variants, and the default surface of Card, Box and TextField) has no colour in it, so alpha is the only axis there is. Here alpha does not decide whether the backdrop is legible; it decides **whether the sheet reads as white**.
 
 In the light theme, 42% let through more of the page than of the sheet itself. On any backdrop that is not pure white, that backdrop's grey came straight up through it and the whole surface went dull. **That is why it is 66%**: the blur is still 9px, so the backdrop is just as unreadable as before. The dark theme went the other way, from 7% to 5%: on a near-black page every step of opacity lightens the sheet the ink is read on, and [colour](./color) measures the ink there.
+
+### Reduced transparency makes the sheets opaque
+
+When the reader's system asks for reduced transparency, every surface drops the blur and turns opaque. Each sheet and fill is laid on `--neba-surface` instead of on whatever is behind it, so it is the colour the acrylic has over a plain page and its text keeps the contrast measured there. In the dark theme a sheet inside another sheet is no longer a step lighter than the one around it; its hairline still shows where it starts. Washes, grooves, hairlines and the scrim behind a modal stay as they are. Chrome and Edge 118 and later read the setting, and [other browsers](../browser-support#differences-inside-the-range) keep the acrylic.
 
 ### Container surfaces are never dyed
 

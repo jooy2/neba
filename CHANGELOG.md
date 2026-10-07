@@ -80,6 +80,8 @@
 
 - **An `Image` is not drawn again when its file reports that it loaded a second time.** Firefox can fire `load` after the picture was already read as loaded from the cache, and every Image, and so every `Gallery` tile, rendered once more for a size it already had.
 
+- **Surfaces turn opaque and drop the backdrop blur when the reader's system asks for reduced transparency.** The setting was ignored, so every sheet stayed translucent over a blurred page, and the blur is also what costs the most while a page with many surfaces scrolls. Each sheet and fill is now laid on `--neba-surface`, the colour it has over a plain page, and so is a `text` `Pill`, whose wash is all it has to stand on; other washes, hairlines and the scrim behind a modal stay as they are. Chrome and Edge 118 and later read the setting, and nothing changes for a reader who has not turned it on. To turn the blur off for everyone, set `--neba-blur: none` together with the new `--neba-backing: var(--neba-surface)` on every theme root, as the design-language page shows: `--neba-blur: none` alone leaves the sheets see-through.
+
 ### Fixed
 
 - **A `multiple` `Combobox` keeps the error a `Form` put on it while the page around it renders again, and a single one keeps what is typed after a value its `items` do not have.** The value handed to Base UI was a new object on every render, which Base UI took for a new choice: it cleared the field's errors, so a server error vanished the moment the reader typed in another field, and in single mode it wrote the chosen label back into the input, so typing after a custom value such as `defaultValue="Foo"` did nothing. The value now stays the same object for as long as it holds the same entries, including when `value` or `items` is written inline.

@@ -124,7 +124,16 @@ const restClasses: Record<NonNullable<NebaStyleProps['variant']>, string> = {
     '[border-color:var(--n-line)]',
     '[box-shadow:var(--n-elev),var(--neba-plate-glass)]'
   ].join(' '),
-  text: `${surfaceClasses} text-(--n-on-tint) bg-(--n-soft)`
+  // Where a reader asked for reduced transparency the blur is gone, and a
+  // wash of ten per cent over busy content is no ground to read on, so there
+  // the wash is laid over the page's surface instead. Under the media query
+  // only: as a layer of its own the wash composites a shade differently, and
+  // without the preference the pill must stay what it was.
+  text:
+    `${surfaceClasses} text-(--n-on-tint) bg-(--n-soft) ` +
+    '[@media(prefers-reduced-transparency:reduce)]:bg-(--neba-backing) ' +
+    '[@media(prefers-reduced-transparency:reduce)]:[background-image:var(--neba-grain),var(--neba-sheen),linear-gradient(var(--n-soft),var(--n-soft))] ' +
+    '[@media(prefers-reduced-transparency:reduce)]:[background-blend-mode:overlay,normal,normal]'
 };
 
 /**

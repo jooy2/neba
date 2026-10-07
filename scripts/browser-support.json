@@ -28,6 +28,10 @@
       "reason": "Swaps ScrollArea's left and right edge fades in a right-to-left layout, and turns the Skeleton and indeterminate ProgressLinear sweeps around in one. Without it the fades are not swapped, and a sweep runs leftwards only inside an element with dir=\"rtl\" — inside an LTR island in such an element as well."
     },
     {
+      "feature": "css.at-rules.media.prefers-reduced-transparency",
+      "reason": "Makes the surfaces opaque and takes the backdrop blur off for a reader whose system asks for reduced transparency. A browser without the media feature never matches the block, so the reader gets the translucent surfaces over a blurred backdrop that every reader without the setting gets."
+    },
+    {
       "feature": "css.properties.scrollbar-width",
       "reason": "Hides the scrollbar of a strip that draws its own controls. The same rule hides it through ::-webkit-scrollbar in the browsers that lack this property."
     },

@@ -173,6 +173,7 @@ The neutral tokens live in the same file.
 --neba-disabled-fg
 --neba-disabled-border
 --neba-glass-bg       /* the undyed acrylic a family panel is mixed into */
+--neba-backing        /* what the sheets and fills are laid over: transparent, or the page colour under reduced transparency */
 ```
 
 Why a disabled control **drops** its family rather than fading it is in [Design language](./design-language): a faded accent still says "this is the primary action", only blurrier.

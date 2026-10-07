@@ -100,6 +100,16 @@
   --neba-fill-alpha: 88%;
   --neba-blur: blur(9px) saturate(1.5);
 
+  /* What every translucent sheet and fill is laid over before it reaches the
+     page. `transparent` is the acrylic: the page shows through, and the blur
+     above is what keeps it from being read. `var(--neba-surface)` stops it,
+     and each sheet comes out the colour the acrylic has over a plain page —
+     which is what the reduced-transparency block below the dark theme sets,
+     together with `--neba-blur: none`. One value for both themes, so it is declared here
+     only; the rule that changes it has to name every theme root, because the
+     surface it resolves against is that root's. */
+  --neba-backing: transparent;
+
   /* How much of the family's accent a focus ring is. The ring sits 2px off the
      control, so what it is read against is the page, and on a white sheet 55%
      of any accent is 2.2 to 2.6:1 — under the 3:1 a focus indicator needs, on
@@ -129,8 +139,12 @@
      any backdrop that is not pure white it settled into grey. Raising it to 66%
      is the one place alpha is the right lever rather than the blur: the blur
      decides whether the backdrop is *legible*, and 9px still hides it. This
-     decides whether the sheet reads as white, and it has to. */
-  --neba-glass-bg: rgb(255 255 255 / 0.66);
+     decides whether the sheet reads as white, and it has to.
+
+     The white is mixed into `--neba-backing` rather than written with an
+     alpha, and so are the panel steps below. Into `transparent` the two are
+     the same colour. */
+  --neba-glass-bg: color-mix(in srgb, white 66%, var(--neba-backing));
 
   /* The container surface, in the three strengths a panel-shaped component
      needs — Box, Card and TextField read these directly.
@@ -146,9 +160,9 @@
 
      The ladder is opacity, not lightness — the sheet catches more light as it
      is engaged, rather than turning grey. */
-  --neba-panel: rgb(255 255 255 / 0.66);
-  --neba-panel-hover: rgb(255 255 255 / 0.82);
-  --neba-panel-press: rgb(255 255 255 / 0.92);
+  --neba-panel: color-mix(in srgb, white 66%, var(--neba-backing));
+  --neba-panel-hover: color-mix(in srgb, white 82%, var(--neba-backing));
+  --neba-panel-press: color-mix(in srgb, white 92%, var(--neba-backing));
 
   /* The one surface in the library that is a groove rather than a sheet: the
      track a Switch's thumb runs along.
@@ -165,7 +179,13 @@
      surface here does — the blur behind it is what makes it acrylic rather than
      paint — and it stays neutral because the family is what "on" says. On the
      dark theme the panel was already darker than the thumb, so these are the
-     panel's own two steps and nothing moves. */
+     panel's own two steps and nothing moves.
+
+     It is not mixed into `--neba-backing`, and neither is any wash: a groove,
+     a `soft` tint or a hairline is cut into a sheet or laid on one, and once
+     the sheet is opaque nothing behind it shows through them either. Mixed
+     into the page's own colour, a track inside a dark Card would be the
+     Card's colour and the groove would be gone. */
   --neba-groove: rgb(16 24 40 / 0.14);
   --neba-groove-hover: rgb(16 24 40 / 0.19);
 
@@ -481,11 +501,11 @@
     --neba-plate-top: rgb(255 255 255 / 0.16);
     --neba-sheen: linear-gradient(148deg, rgb(255 255 255 / 0.09), rgb(255 255 255 / 0) 52%);
 
-    --neba-glass-bg: rgb(255 255 255 / 0.05);
+    --neba-glass-bg: color-mix(in srgb, white 5%, var(--neba-backing));
 
-    --neba-panel: rgb(255 255 255 / 0.05);
-    --neba-panel-hover: rgb(255 255 255 / 0.07);
-    --neba-panel-press: rgb(255 255 255 / 0.09);
+    --neba-panel: color-mix(in srgb, white 5%, var(--neba-backing));
+    --neba-panel-hover: color-mix(in srgb, white 7%, var(--neba-backing));
+    --neba-panel-press: color-mix(in srgb, white 9%, var(--neba-backing));
 
     --neba-groove: rgb(255 255 255 / 0.05);
     --neba-groove-hover: rgb(255 255 255 / 0.07);
@@ -622,11 +642,11 @@
   --neba-plate-top: rgb(255 255 255 / 0.16);
   --neba-sheen: linear-gradient(148deg, rgb(255 255 255 / 0.09), rgb(255 255 255 / 0) 52%);
 
-  --neba-glass-bg: rgb(255 255 255 / 0.05);
+  --neba-glass-bg: color-mix(in srgb, white 5%, var(--neba-backing));
 
-  --neba-panel: rgb(255 255 255 / 0.05);
-  --neba-panel-hover: rgb(255 255 255 / 0.07);
-  --neba-panel-press: rgb(255 255 255 / 0.09);
+  --neba-panel: color-mix(in srgb, white 5%, var(--neba-backing));
+  --neba-panel-hover: color-mix(in srgb, white 7%, var(--neba-backing));
+  --neba-panel-press: color-mix(in srgb, white 9%, var(--neba-backing));
 
   --neba-groove: rgb(255 255 255 / 0.05);
   --neba-groove-hover: rgb(255 255 255 / 0.07);
@@ -720,6 +740,53 @@
 }
 
 /* ---------------------------------------------------------------------------
+ * Reduced transparency
+ *
+ * A reader whose system is set to reduce transparency gets opaque sheets and no
+ * backdrop blur. Taking the blur away alone is not enough, and is worse than
+ * leaving it: the blur is what keeps the page behind a sheet from being read,
+ * so with nothing else changed a menu over a paragraph in the dark theme is
+ * nine per cent of white over sharp text, and a light Card shows a ghost of the
+ * words under it.
+ *
+ * So the sheets and the fills are laid on the page's own surface instead of on
+ * whatever is behind them. Each one comes out the colour the acrylic has over a
+ * plain page — plain white for every light sheet, white over white being
+ * white — and its ink was measured on exactly that colour. What is lost
+ * is the compounding on the dark side: a sheet inside a sheet is no longer
+ * lighter than the one around it, because both are laid on the page. The
+ * hairline and the plate edge still say where the inner one begins, and the
+ * muted ink reads better on it than it did. Washes, grooves and hairlines stay
+ * as they are; they sit on a sheet, and the sheet is opaque now. The scrim
+ * behind a modal stays as well, since showing the page dimmed is its job.
+ *
+ * It also takes the most expensive thing off the page: a backdrop filter is
+ * applied again on every frame the page moves, so a scroll pays for the blur
+ * under every surface on the screen.
+ *
+ * Every theme root is named, because `var(--neba-surface)` resolves on the
+ * element that declares it, and on `:root` alone a `.dark` box inside a light
+ * page would lay its sheets on the light page's white.
+ * ------------------------------------------------------------------------- */
+
+@media (prefers-reduced-transparency: reduce) {
+  :root,
+  .dark,
+  .light,
+  [data-theme='dark'],
+  [data-theme='light'] {
+    --neba-backing: var(--neba-surface);
+    --neba-blur: none;
+  }
+
+  /* The system-dark block declares the blur on `:root` at three classes'
+     weight, which the one class above does not beat. */
+  :root:not(.light):not([data-theme='light']) {
+    --neba-blur: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
  * Derived tokens
  *
  * Fills, tints, hairlines and focus rings are all one base color at different
@@ -743,6 +810,12 @@
  * blue — and the worst family on the strongest wash clears 4.5:1 in both.
  * `accent` itself is untouched, so what a TextLink or a Statistic's delta is
  * written in on the bare sheet does not change.
+ *
+ * A fill is the family's solid mixed into `--neba-backing` rather than into
+ * `transparent`, so that it turns opaque with the sheets when the reader asks
+ * for less transparency. It keeps `--neba-fill-alpha` when it does: the ink on
+ * a fill was solved against that much of it over the page, and the whole solid
+ * instead would take the dark theme's primary hover from about 4.5:1 to 3.6:1.
  * ------------------------------------------------------------------------- */
 
 :root,
@@ -769,17 +842,17 @@
   --neba-primary-fill: color-mix(
     in srgb,
     var(--neba-primary-solid) var(--neba-fill-alpha),
-    transparent
+    var(--neba-backing)
   );
   --neba-primary-fill-hover: color-mix(
     in srgb,
     var(--neba-primary-solid-hover) var(--neba-fill-alpha),
-    transparent
+    var(--neba-backing)
   );
   --neba-primary-fill-active: color-mix(
     in srgb,
     var(--neba-primary-solid-active) var(--neba-fill-alpha),
-    transparent
+    var(--neba-backing)
   );
   --neba-primary-soft: color-mix(in srgb, var(--neba-primary-accent) 10%, transparent);
   --neba-primary-soft-hover: color-mix(in srgb, var(--neba-primary-accent) 17%, transparent);
@@ -807,17 +880,17 @@
   --neba-secondary-fill: color-mix(
     in srgb,
     var(--neba-secondary-solid) var(--neba-fill-alpha),
-    transparent
+    var(--neba-backing)
   );
   --neba-secondary-fill-hover: color-mix(
     in srgb,
     var(--neba-secondary-solid-hover) var(--neba-fill-alpha),
-    transparent
+    var(--neba-backing)
   );
   --neba-secondary-fill-active: color-mix(
     in srgb,
     var(--neba-secondary-solid-active) var(--neba-fill-alpha),
-    transparent
+    var(--neba-backing)
   );
   --neba-secondary-soft: color-mix(in srgb, var(--neba-secondary-accent) 10%, transparent);
   --neba-secondary-soft-hover: color-mix(in srgb, var(--neba-secondary-accent) 17%, transparent);
@@ -845,17 +918,17 @@
   --neba-success-fill: color-mix(
     in srgb,
     var(--neba-success-solid) var(--neba-fill-alpha),
-    transparent
+    var(--neba-backing)
   );
   --neba-success-fill-hover: color-mix(
     in srgb,
     var(--neba-success-solid-hover) var(--neba-fill-alpha),
-    transparent
+    var(--neba-backing)
   );
   --neba-success-fill-active: color-mix(
     in srgb,
     var(--neba-success-solid-active) var(--neba-fill-alpha),
-    transparent
+    var(--neba-backing)
   );
   --neba-success-soft: color-mix(in srgb, var(--neba-success-accent) 10%, transparent);
   --neba-success-soft-hover: color-mix(in srgb, var(--neba-success-accent) 17%, transparent);
@@ -883,17 +956,17 @@
   --neba-warning-fill: color-mix(
     in srgb,
     var(--neba-warning-solid) var(--neba-fill-alpha),
-    transparent
+    var(--neba-backing)
   );
   --neba-warning-fill-hover: color-mix(
     in srgb,
     var(--neba-warning-solid-hover) var(--neba-fill-alpha),
-    transparent
+    var(--neba-backing)
   );
   --neba-warning-fill-active: color-mix(
     in srgb,
     var(--neba-warning-solid-active) var(--neba-fill-alpha),
-    transparent
+    var(--neba-backing)
   );
   --neba-warning-soft: color-mix(in srgb, var(--neba-warning-accent) 12%, transparent);
   --neba-warning-soft-hover: color-mix(in srgb, var(--neba-warning-accent) 20%, transparent);
@@ -921,17 +994,17 @@
   --neba-danger-fill: color-mix(
     in srgb,
     var(--neba-danger-solid) var(--neba-fill-alpha),
-    transparent
+    var(--neba-backing)
   );
   --neba-danger-fill-hover: color-mix(
     in srgb,
     var(--neba-danger-solid-hover) var(--neba-fill-alpha),
-    transparent
+    var(--neba-backing)
   );
   --neba-danger-fill-active: color-mix(
     in srgb,
     var(--neba-danger-solid-active) var(--neba-fill-alpha),
-    transparent
+    var(--neba-backing)
   );
   --neba-danger-soft: color-mix(in srgb, var(--neba-danger-accent) 10%, transparent);
   --neba-danger-soft-hover: color-mix(in srgb, var(--neba-danger-accent) 17%, transparent);
@@ -956,16 +1029,20 @@
     transparent
   );
 
-  --neba-info-fill: color-mix(in srgb, var(--neba-info-solid) var(--neba-fill-alpha), transparent);
+  --neba-info-fill: color-mix(
+    in srgb,
+    var(--neba-info-solid) var(--neba-fill-alpha),
+    var(--neba-backing)
+  );
   --neba-info-fill-hover: color-mix(
     in srgb,
     var(--neba-info-solid-hover) var(--neba-fill-alpha),
-    transparent
+    var(--neba-backing)
   );
   --neba-info-fill-active: color-mix(
     in srgb,
     var(--neba-info-solid-active) var(--neba-fill-alpha),
-    transparent
+    var(--neba-backing)
   );
   --neba-info-soft: color-mix(in srgb, var(--neba-info-accent) 10%, transparent);
   --neba-info-soft-hover: color-mix(in srgb, var(--neba-info-accent) 17%, transparent);
@@ -2778,6 +2855,19 @@
   inline-size: 60%;
   background-image: linear-gradient(90deg, transparent, var(--n-panel-press), transparent);
   animation: neba-skeleton-sweep 1.5s var(--neba-ease) infinite;
+}
+
+/* Where a reader asked for reduced transparency the panel colours are laid on
+   the page's surface, which in the dark theme is darker than the wash a
+   placeholder is drawn in, so the highlight crossed it as a shadow. Screened,
+   it can only ever lighten what it passes over: white over a light placeholder
+   is white as before, and the dark theme's lifts it as its nine per cent of
+   white used to. The pulse that stands in for the sweep under reduced motion
+   is the same layer and is screened with it. */
+@media (prefers-reduced-transparency: reduce) {
+  .neba-skeleton::after {
+    mix-blend-mode: screen;
+  }
 }
 
 /*
