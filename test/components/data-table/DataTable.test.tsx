@@ -516,7 +516,9 @@ describe('DataTable', () => {
         <DataTable headers={headers} items={items} getRowKey={key} searchable height={200} />
       );
 
-      await expect.poll(() => read).toBe(items.length);
+      // Each slice waits for the browser to be idle, up to a second when it is
+      // not, and a busy runner takes several of those to get through them all.
+      await expect.poll(() => read, { timeout: 15_000 }).toBe(items.length);
 
       await screen.getByRole('searchbox').fill('City 999');
 

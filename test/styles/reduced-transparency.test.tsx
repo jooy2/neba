@@ -176,20 +176,45 @@ describe('prefers-reduced-transparency', () => {
 
   // The fills and the panels are mixed into the backing, so with nothing asked
   // for they come out exactly as translucent as they were.
-  it('leaves the backing transparent without the preference', () => {
-    withThemeRoots((roots) => {
-      for (const root of roots) {
-        expect(getComputedStyle(root).getPropertyValue('--neba-backing').trim()).toBe(
-          'transparent'
-        );
-      }
-    });
+  // The machine's own setting decides what "without" means here: a macOS
+  // runner has Reduce transparency turned on, and Chromium reads it. So
+  // Chromium is told there is no preference, and an engine that cannot be told
+  // is asked only where the machine has none.
+  it('leaves the backing transparent without the preference', async (context) => {
+    const session = server.browser === 'chromium' ? cdp() : null;
+
+    if (session) {
+      await session.send('Emulation.setEmulatedMedia', {
+        features: [{ name: 'prefers-reduced-transparency', value: 'no-preference' }]
+      });
+    } else if (matchMedia('(prefers-reduced-transparency: reduce)').matches) {
+      context.skip();
+    }
+
+    try {
+      withThemeRoots((roots) => {
+        for (const root of roots) {
+          expect(getComputedStyle(root).getPropertyValue('--neba-backing').trim()).toBe(
+            'transparent'
+          );
+        }
+      });
+    } finally {
+      await session?.send('Emulation.setEmulatedMedia', { features: [] });
+    }
   });
 
   it.runIf(server.browser === 'chromium')(
     'turns the surfaces opaque and drops the blur when the reader asks',
     async () => {
       const session = cdp();
+
+      // From no preference, whatever the machine is set to, so the change
+      // below is the preference's doing.
+      await session.send('Emulation.setEmulatedMedia', {
+        features: [{ name: 'prefers-reduced-transparency', value: 'no-preference' }]
+      });
+
       const screen = await render(
         <>
           <Card title="Page" data-testid="page">
@@ -257,11 +282,15 @@ describe('prefers-reduced-transparency', () => {
 
           expect(dark).not.toBe(light);
         }
+
+        await session.send('Emulation.setEmulatedMedia', {
+          features: [{ name: 'prefers-reduced-transparency', value: 'no-preference' }]
+        });
+
+        expect(matchMedia('(prefers-reduced-transparency: reduce)').matches).toBe(false);
       } finally {
         await session.send('Emulation.setEmulatedMedia', { features: [] });
       }
-
-      expect(matchMedia('(prefers-reduced-transparency: reduce)').matches).toBe(false);
     }
   );
 });
