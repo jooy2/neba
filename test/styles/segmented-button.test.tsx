@@ -77,8 +77,22 @@ describe('a server-rendered SegmentedButton under the stylesheet', () => {
     try {
       await vi.waitFor(() => expect(group).toHaveAttribute('data-placed'));
 
-      // Back to the pointer light, which has no colour of its own.
+      // Back to the pointer light, which has no colour of its own, and with no
+      // fade out of the fill's opacity, which drew the light as a bloom. Asked
+      // of the transitions rather than of the opacity: a pointer left over the
+      // segment by an earlier file holds the light at 1 on hover.
       expect(getComputedStyle(chosen, '::before').backgroundColor).toBe('rgba(0, 0, 0, 0)');
+      expect(
+        document
+          .getAnimations()
+          .filter(
+            (animation) =>
+              animation instanceof CSSTransition &&
+              animation.effect instanceof KeyframeEffect &&
+              animation.effect.target === chosen &&
+              animation.effect.pseudoElement === '::before'
+          )
+      ).toHaveLength(0);
       expect(getComputedStyle(tile).visibility).toBe('visible');
 
       await new Promise((resolve) => setTimeout(resolve, 100));

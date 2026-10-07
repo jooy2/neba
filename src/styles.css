@@ -2375,6 +2375,12 @@
   box-shadow: none;
 }
 
+/* The frame the tile arrives in. The light's own opacity transition would
+   otherwise fade the stand-in out under the tile as a bloom. */
+.neba-segmented[data-settling] .neba-segment::before {
+  transition: none;
+}
+
 /* ---------------------------------------------------------------------------
  * A tab bar before its indicator is placed
  *

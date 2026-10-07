@@ -378,7 +378,19 @@ export const SegmentedButton = React.forwardRef<HTMLDivElement, SegmentedButtonP
       tile.setAttribute('data-ready', '');
       // Takes the stand-in fill off the chosen segment, in the same frame as
       // the tile arrives under it. See "A segmented button before its tile is
-      // placed" in `styles.css`.
+      // placed" in `styles.css`. The pseudo-element that held the fill is also
+      // the pointer light, whose opacity has a transition of its own; without
+      // `data-settling` for that one frame, the fill's `opacity: 1` would fade
+      // out over it as a bloom in the middle of the chosen segment.
+      if (!root.hasAttribute('data-placed')) {
+        root.setAttribute('data-settling', '');
+        root.setAttribute('data-placed', '');
+        // The new opacity has to be worked out while `data-settling` is still
+        // there, or a browser that next works styles out after the frame below
+        // sees only the transition coming back. Once per set, at placement.
+        void getComputedStyle(active, '::before').opacity;
+        requestAnimationFrame(() => root.removeAttribute('data-settling'));
+      }
       root.setAttribute('data-placed', '');
     }, []);
 

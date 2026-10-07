@@ -116,6 +116,8 @@
 
 - **An `await confirm(…)` no longer hangs when its `ConfirmProvider` unmounts.** A question on the sheet, or waiting behind one, was never answered if the provider went away first, so the code after the `await` never ran and kept whatever it held. Those awaits now resolve `false`, as a cancel does, and a `confirm()` called after the provider is gone resolves `false` at once. While the provider is mounted, only the reader answers.
 
+- **A server-rendered `SegmentedButton` no longer shows a faint bloom in its chosen segment as the page hydrates.** The fill the segment draws until its tile is placed shares a layer with the pointer light, and the light's own transition faded that layer out over a quarter of a second as a soft glow in the middle of the segment. It now goes in the same frame the tile arrives.
+
 ## 1.18.1 (2026-10-07)
 
 ### Added
