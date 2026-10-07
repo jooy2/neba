@@ -1,7 +1,10 @@
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { userEvent } from 'vitest/browser';
-import { CommandPalette } from 'neba';
+import { renderToString } from 'react-dom/server';
+import { hydrateRoot } from 'react-dom/client';
+import { CommandPalette, type CommandItem } from 'neba';
+import { sheetChunk } from '../../../src/components/command-palette/CommandPalette.js';
 import { readOS } from '../../../src/internal/keys.js';
 
 const ITEMS = [
@@ -383,6 +386,126 @@ describe('CommandPalette', () => {
       await screen.getByRole('combobox').fill('nothing matches this');
 
       await expect.element(screen.getByText('No commands found')).toHaveClass('slot-empty');
+    });
+  });
+
+  /*
+   * The sheet — Base UI's Dialog and Autocomplete — is a chunk of its own. It
+   * was in the bundle every page with a palette needed before it could draw,
+   * for a popup that starts shut.
+   */
+  describe('the sheet', () => {
+    it('is fetched once the page is idle, and mounted only by an open', async () => {
+      const load = vi.spyOn(sheetChunk, 'load');
+
+      try {
+        const screen = await render(<CommandPalette items={ITEMS} shortcut="Alt+P" />);
+
+        await vi.waitFor(() => expect(load).toHaveBeenCalled());
+        expect(screen.getByRole('dialog').query()).toBeNull();
+
+        await userEvent.keyboard('{Alt>}p{/Alt}');
+
+        await expect.element(screen.getByRole('dialog')).toBeInTheDocument();
+      } finally {
+        load.mockRestore();
+      }
+    });
+
+    // Mounted by the open, the dialog mounted already open, and Base UI plays
+    // no enter transition for a popup that does.
+    it('fades the first open in, as it does every later one', async () => {
+      let started = false;
+      const observer = new MutationObserver((records) => {
+        for (const record of records) {
+          const nodes = record.type === 'attributes' ? [record.target] : [...record.addedNodes];
+
+          started ||= nodes.some(
+            (node) =>
+              node instanceof Element &&
+              (node.matches('[data-starting-style]') ||
+                node.querySelector('[data-starting-style]') !== null)
+          );
+        }
+      });
+
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: ['data-starting-style']
+      });
+
+      try {
+        const screen = await render(<CommandPalette items={ITEMS} shortcut="Alt+P" />);
+
+        await userEvent.keyboard('{Alt>}p{/Alt}');
+        await expect.element(screen.getByRole('dialog')).toBeInTheDocument();
+
+        expect(started).toBe(true);
+      } finally {
+        observer.disconnect();
+      }
+    });
+
+    // A component fetched on demand suspends in a server render, where
+    // `renderToString` gives up on its boundary.
+    it('draws nothing on a server, and opens one that starts open once it has hydrated', async () => {
+      const element = <CommandPalette items={ITEMS} shortcut={false} defaultOpen />;
+      const host = document.createElement('div');
+      const recoverable = vi.fn();
+
+      host.innerHTML = renderToString(element);
+      document.body.append(host);
+
+      expect(host.innerHTML).toBe('');
+
+      const root = hydrateRoot(host, element, { onRecoverableError: recoverable });
+
+      try {
+        await expect
+          .poll(() => document.querySelector('[role="dialog"][aria-label="Command palette"]'))
+          .not.toBeNull();
+        expect(recoverable).not.toHaveBeenCalled();
+      } finally {
+        root.unmount();
+        host.remove();
+      }
+    });
+
+    // Folding a command for the search normalizes every word it answers to,
+    // and a page that hands a shut palette a new list did it for nothing.
+    it('folds the commands for searching only while it is open', async () => {
+      const commands = (...labels: string[]): CommandItem[] =>
+        labels.map((label) => ({ value: label, label, keywords: ['other words'] }));
+      const screen = await render(
+        <CommandPalette items={commands('Alpha', 'Beta')} shortcut={false} open />
+      );
+
+      await expect.element(screen.getByText('Alpha')).toBeInTheDocument();
+      await screen.rerender(
+        <CommandPalette items={commands('Alpha', 'Beta')} shortcut={false} open={false} />
+      );
+      await expect.element(screen.getByRole('dialog')).not.toBeInTheDocument();
+
+      const normalize = vi.spyOn(String.prototype, 'normalize');
+
+      try {
+        await screen.rerender(
+          <CommandPalette items={commands('Gamma', 'Delta')} shortcut={false} open={false} />
+        );
+
+        expect(normalize).not.toHaveBeenCalled();
+
+        await screen.rerender(
+          <CommandPalette items={commands('Gamma', 'Delta')} shortcut={false} open />
+        );
+        await expect.element(screen.getByText('Gamma')).toBeInTheDocument();
+
+        expect(normalize).toHaveBeenCalled();
+      } finally {
+        normalize.mockRestore();
+      }
     });
   });
 });

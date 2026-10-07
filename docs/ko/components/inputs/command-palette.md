@@ -50,6 +50,10 @@ import { CommandPalette } from 'neba';
 
 팔레트를 여는 키이며 window에 바인딩됩니다. `Mod`는 Mac에서 Command, 그 밖에서는 Control입니다. [Shortcut](../display/shortcut)이 그리는 것과 같은 표기를, 쓰는 대신 읽습니다. `false`는 아무것도 바인딩하지 않습니다. 키보드를 직접 관리하는 애플리케이션을 위한 것입니다.
 
+### open · defaultOpen
+
+`open`과 `onOpenChange`로 팔레트를 제어하고, `defaultOpen`은 비제어 팔레트를 열린 채로 시작합니다. 시트의 코드는 팔레트가 mount된 뒤 페이지가 처음 한가해질 때 받아 오고, 시트는 처음 열릴 때 mount됩니다. 그래서 페이지가 그리기 전에 받아야 하는 것에는 아무것도 더하지 않습니다. 서버에서 렌더링한 페이지에서 열린 채로 시작하는 팔레트는 hydration이 끝난 뒤에 열립니다.
+
 ### onSelect
 
 각 명령이 자기 `onSelect`를 가질 수 있고, 팔레트의 `onSelect`는 그 뒤에 항목과 함께 호출됩니다. 어느 쪽이든 팔레트는 닫히며, 입력한 검색어는 닫히는 길에 버려집니다.

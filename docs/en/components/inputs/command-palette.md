@@ -50,6 +50,10 @@ Extra words the query is matched against but that are never drawn: the name some
 
 The keystroke that opens the palette, bound on the window. `Mod` is Command on a Mac and Control everywhere else: the same spelling [Shortcut](../display/shortcut) draws, read rather than written. `false` binds nothing, for an application that owns its own keyboard.
 
+### open · defaultOpen
+
+`open` and `onOpenChange` control the palette, and `defaultOpen` starts an uncontrolled one open. The sheet's code is fetched once the page is first idle after the palette mounts, and the sheet is mounted by the first open, so it adds nothing to what a page needs before it draws. On a server-rendered page, a palette that starts open opens once the page has hydrated.
+
 ### onSelect
 
 Each command may carry its own `onSelect`; the palette's runs after it, with the item. The palette closes either way, and the query is dropped on the way out.

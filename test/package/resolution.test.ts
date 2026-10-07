@@ -244,6 +244,19 @@ function ringReadsWithNoSlot(): string[] {
 /** The four slots every field-shaped component has, from `NebaFieldSlot`. */
 const fieldSlots = ['label', 'control', 'description', 'error'];
 
+/**
+ * A module's source, followed by the source of every module it fetches with an
+ * `import()`. A CommandPalette draws its sheet from a chunk of its own, so the
+ * slots its props offer are read in a file beside it rather than in it.
+ */
+function withFetchedModules(path: string, source: string): string {
+  const fetched = [...source.matchAll(/import\(\s*['"](\.[^'"]+)['"]\s*\)/g)]
+    .map((match) => moduleAt(path, match[1]))
+    .filter((module) => module !== undefined);
+
+  return [source, ...fetched].join('\n');
+}
+
 /** Every `classNames?: NebaSlots<X>` in the library, with the names `X` holds. */
 function slotUnions(): Array<{ path: string; name: string; slots: string[]; source: string }> {
   const unions: Array<{ path: string; name: string; slots: string[]; source: string }> = [];
@@ -257,7 +270,7 @@ function slotUnions(): Array<{ path: string; name: string; slots: string[]; sour
       unions.push({
         path,
         name,
-        source,
+        source: withFetchedModules(path, source),
         slots: declaration === null ? [] : slotNames(declaration[1])
       });
     }
@@ -552,12 +565,16 @@ describe('the published package', () => {
     // Not left out by accident. A TextLink is the size of the sentence it is in,
     // so an application's `size` would enlarge every link in running text;
     // Image's `size` is its watermark's, a Confirm's the one its options carry,
-    // and the Gallery viewer is handed its locale by the Gallery.
+    // the Gallery viewer is handed its locale by the Gallery, and the
+    // CommandPalette's sheet is handed all three by the palette.
     const exceptions = new Set([
       'text-link/TextLink.tsx:size',
       'image/Image.tsx:size',
       'confirm/Confirm.tsx:size',
-      'gallery/GalleryViewer.tsx:locale'
+      'gallery/GalleryViewer.tsx:locale',
+      'command-palette/CommandPaletteSheet.tsx:size',
+      'command-palette/CommandPaletteSheet.tsx:density',
+      'command-palette/CommandPaletteSheet.tsx:locale'
     ]);
 
     it('fills every provider axis a component destructures', () => {
