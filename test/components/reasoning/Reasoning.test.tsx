@@ -1,3 +1,4 @@
+import { Profiler } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { renderToString } from 'react-dom/server';
 import { render } from 'vitest-browser-react';
@@ -72,6 +73,32 @@ describe('Reasoning', () => {
     // And a run shorter than the first tick said nothing at all.
     it('reports a run under a second', async () => {
       expect(await thinkFor(900)).toBe('Thought for 900ms');
+    });
+
+    // The heading says "Thinking" until the stream ends, so a clock counting
+    // the seconds redrew the whole panel every second for a number that was
+    // not on the screen.
+    it('does not render again while it thinks', async () => {
+      vi.useFakeTimers();
+
+      try {
+        let commits = 0;
+
+        await render(
+          <Profiler id="reasoning" onRender={() => (commits += 1)}>
+            <Reasoning streaming>Weighing two options.</Reasoning>
+          </Profiler>
+        );
+
+        const settled = commits;
+
+        await vi.advanceTimersByTimeAsync(5000);
+        await vi.advanceTimersByTimeAsync(100);
+
+        expect(commits).toBe(settled);
+      } finally {
+        vi.useRealTimers();
+      }
     });
   });
 

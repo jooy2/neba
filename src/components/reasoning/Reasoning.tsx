@@ -4,7 +4,7 @@ import * as React from 'react';
 import { Collapsible as BaseUICollapsible } from '@base-ui/react/collapsible';
 import { boxPaddingXClasses, boxPaddingYClasses } from '../box/Box.js';
 import { ChevronIcon, SpinnerIcon } from '../../internal/icons.js';
-import { formatDuration, useElapsed } from '../../internal/run.js';
+import { formatDuration, useRunClock } from '../../internal/run.js';
 import {
   fillMessage,
   reasoningMessages,
@@ -205,7 +205,10 @@ export const Reasoning = React.forwardRef<HTMLDivElement, ReasoningProps>(
       }
     }
 
-    const millis = useElapsed(streaming, duration);
+    // The total only: while the stream runs the heading says "Thinking", so a
+    // count here would redraw the whole panel every second for a number that
+    // is not on the screen.
+    const millis = useRunClock(streaming, duration).total;
     const spent = millis === null ? null : formatDuration(millis, locale);
     const heading = hasContent(label)
       ? label

@@ -4,7 +4,7 @@ import * as React from 'react';
 import { Collapsible as BaseUICollapsible } from '@base-ui/react/collapsible';
 import { boxPaddingXClasses, boxPaddingYClasses } from '../box/Box.js';
 import { ChevronIcon } from '../../internal/icons.js';
-import { formatDuration, runColor, runIcon, useElapsed } from '../../internal/run.js';
+import { RunTime, runColor, runIcon, useRunClock } from '../../internal/run.js';
 import {
   runMessages,
   toolMessages,
@@ -245,7 +245,9 @@ export const ToolCall = React.forwardRef<HTMLDivElement, ToolCallProps>(
       previous.current = status;
     }, [status, controlled]);
 
-    const millis = useElapsed(status === 'running', duration);
+    // The start and the total; the count between them is `RunTime`'s, so a
+    // second going by redraws the number rather than the whole call.
+    const clock = useRunClock(status === 'running', duration);
     const family = runColor(status, color);
     const mark = icon === undefined ? runIcon(status) : icon;
     const body = bodyOf(status, result, error);
@@ -276,13 +278,11 @@ export const ToolCall = React.forwardRef<HTMLDivElement, ToolCallProps>(
 
         <span className="flex-1" />
 
-        {millis === null ? null : (
-          <span
-            className={cx('shrink-0 tabular-nums text-(--neba-muted-fg)', metaTextClasses[size])}
-          >
-            {formatDuration(millis, locale)}
-          </span>
-        )}
+        <RunTime
+          {...clock}
+          locale={locale}
+          className={cx('shrink-0 tabular-nums text-(--neba-muted-fg)', metaTextClasses[size])}
+        />
       </>
     );
 

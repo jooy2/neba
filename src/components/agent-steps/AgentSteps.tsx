@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useRender } from '@base-ui/react/use-render';
 import { childKey } from '../../internal/children.js';
-import { formatDuration, runColor, runIcon, useElapsed } from '../../internal/run.js';
+import { RunTime, runColor, runIcon, useRunClock } from '../../internal/run.js';
 import { runMessages, useMessages, type RunMessages } from '../../internal/i18n.js';
 import {
   cx,
@@ -171,7 +171,9 @@ export const AgentStep = React.forwardRef<HTMLLIElement, AgentStepProps>(functio
   const labels = steps?.labels ?? fallback;
   const family = runColor(status, color ?? steps?.color ?? 'primary');
 
-  const millis = useElapsed(status === 'running', duration);
+  // The start and the total; the count between them is `RunTime`'s, so a
+  // second going by redraws the number rather than the step.
+  const clock = useRunClock(status === 'running', duration);
   const mark = icon === undefined ? runIcon(status) : icon;
 
   return (
@@ -247,16 +249,14 @@ export const AgentStep = React.forwardRef<HTMLLIElement, AgentStepProps>(functio
             </span>
           ) : null}
 
-          {millis === null ? null : (
-            <span
-              className={cx(
-                'ms-auto shrink-0 tabular-nums text-(--neba-muted-fg)',
-                metaTextClasses[size]
-              )}
-            >
-              {formatDuration(millis, steps?.locale)}
-            </span>
-          )}
+          <RunTime
+            {...clock}
+            locale={steps?.locale}
+            className={cx(
+              'ms-auto shrink-0 tabular-nums text-(--neba-muted-fg)',
+              metaTextClasses[size]
+            )}
+          />
         </div>
 
         {hasContent(children) ? (
