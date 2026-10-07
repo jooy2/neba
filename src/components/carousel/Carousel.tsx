@@ -215,6 +215,16 @@ export const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
 
     const [uncontrolled, setUncontrolled] = React.useState(defaultValue);
     const index = Math.min(Math.max(value ?? uncontrolled, 0), Math.max(count - 1, 0));
+    /*
+     * The slide the strip opens on, kept from the first render. The effect
+     * below scrolls there, but only once the page is running, so a server's
+     * HTML showed the first slide until hydration and then jumped.
+     * `scroll-initial-target` on that slide has the browser open the strip
+     * there from the first paint; where it is not supported the effect still
+     * does it, as before. It only decides where the strip *starts*, so it is
+     * left where it was put.
+     */
+    const [initialIndex] = React.useState(index);
 
     const trackRef = React.useRef<HTMLDivElement>(null);
     // Set while the index is catching up with a scroll the reader performed. The
@@ -454,6 +464,11 @@ export const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
                 // describe. The strip is scrollable, so everything in it is
                 // genuinely reachable — hiding it would be a lie.
                 className="w-full shrink-0 grow-0 basis-full snap-start"
+                style={
+                  slideIndex === initialIndex && initialIndex > 0
+                    ? ({ scrollInitialTarget: 'nearest' } as React.CSSProperties)
+                    : undefined
+                }
               >
                 {slide}
               </div>

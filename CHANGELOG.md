@@ -48,6 +48,8 @@
 
 - **A `NebaProvider` given an inline `onColorSchemeChange` no longer re-renders everything that reads `useColorScheme` on each of its renders.** The handler was part of what made the context value, so a new function on every render made a new value too. The newest handler is still the one a change reaches.
 
+- **A server-rendered `Carousel` opens on its `defaultValue` from the first paint in Chrome and Edge 133 and later.** The strip was moved there once the page had hydrated, so it showed the first slide until then and jumped. The opening slide now carries `scroll-initial-target`, which those browsers honour before any script runs. Firefox and Safari do not support it yet and still move the strip at hydration, as before.
+
 ## 1.18.1 (2026-10-07)
 
 ### Added

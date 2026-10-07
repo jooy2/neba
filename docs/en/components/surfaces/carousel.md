@@ -54,6 +54,8 @@ A picture fills the frame, so there is nothing to pad in and the arrows sit over
 
 Controlled, the strip can be driven by something else on the page. `onValueChange` also fires when the slide changed because somebody swiped.
 
+A server-rendered strip opens on `value` or `defaultValue` from the first paint in Chrome and Edge 133 and later. Other browsers show the first slide until the page hydrates and then move to it; [browser support](../../browser-support#differences-inside-the-range) lists the difference.
+
 <Demo src="carousel/controlled">
 
 <<< @/.vitepress/demos/carousel/controlled.tsx

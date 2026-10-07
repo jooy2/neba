@@ -54,6 +54,8 @@ import { Carousel } from 'neba';
 
 controlled로 쓰면 페이지의 다른 컨트롤로 슬라이드를 옮길 수 있습니다. 사용자가 스와이프해서 슬라이드가 바뀐 경우에도 `onValueChange`가 호출됩니다.
 
+서버에서 렌더링한 strip은 Chrome과 Edge 133 이상에서 첫 페인트부터 `value`나 `defaultValue` 슬라이드로 열립니다. 다른 브라우저는 hydration 전까지 첫 슬라이드를 보여 주다가 hydration이 끝나면 그 슬라이드로 옮겨 갑니다. 이 차이는 [브라우저 지원](../../browser-support#지원-범위-안에서-달라지는-점)에 정리돼 있습니다.
+
 <Demo src="carousel/controlled">
 
 <<< @/.vitepress/demos/carousel/controlled.tsx

@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+import { renderToString } from 'react-dom/server';
 import { render } from 'vitest-browser-react';
 import { Carousel } from 'neba';
 import { ko, registerMessages } from 'neba/locales';
@@ -263,6 +264,39 @@ describe('Carousel', () => {
         sheet.remove();
       }
     });
+
+    // The effect only runs once the page is running, so a server's HTML showed
+    // the first slide until hydration. `scroll-initial-target` opens the strip
+    // on the right one from the first paint where the browser has it.
+    it('marks the slide a defaultValue opens on in the server HTML', () => {
+      const host = document.createElement('div');
+
+      host.innerHTML = renderToString(<Carousel defaultValue={2}>{slides}</Carousel>);
+
+      // The attribute as written: an engine without the property drops it from
+      // the parsed style, and the server's HTML is what is being checked.
+      const marked = [...host.querySelectorAll('[aria-roledescription="slide"]')].map(
+        (slide) => slide.getAttribute('style') ?? ''
+      );
+
+      expect(marked).toEqual(['', '', 'scroll-initial-target:nearest']);
+      expect(renderToString(<Carousel>{slides}</Carousel>)).not.toContain('scroll-initial-target');
+    });
+
+    it.skipIf(!CSS.supports('scroll-initial-target', 'nearest'))(
+      'leaves the mark where it was when the slide changes',
+      async () => {
+        const screen = await render(<Carousel defaultValue={1}>{slides}</Carousel>);
+
+        await screen.getByRole('button', { name: 'Slide 3 of 3' }).click();
+
+        const marked = [
+          ...screen.container.querySelectorAll<HTMLElement>('[aria-roledescription="slide"]')
+        ].map((slide) => slide.style.getPropertyValue('scroll-initial-target'));
+
+        expect(marked).toEqual(['', 'nearest', '']);
+      }
+    );
 
     it('starts on defaultValue', async () => {
       const screen = await render(<Carousel defaultValue={2}>{slides}</Carousel>);
