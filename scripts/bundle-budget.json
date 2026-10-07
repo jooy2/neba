@@ -13,7 +13,7 @@
       "id": "chip",
       "label": "Chip",
       "imports": ["Chip"],
-      "budget": 3.8
+      "budget": 5.5
     },
     {
       "id": "line-chart",
@@ -31,7 +31,7 @@
       "id": "image",
       "label": "Image",
       "imports": ["Image"],
-      "budget": 9.4
+      "budget": 9.5
     },
     {
       "id": "gallery",
@@ -43,7 +43,7 @@
       "id": "data-table",
       "label": "DataTable",
       "imports": ["DataTable"],
-      "budget": 34.7
+      "budget": 34.9
     },
     {
       "id": "command-palette",
@@ -74,7 +74,7 @@
         "Chip",
         "Typography"
       ],
-      "budget": 75.5
+      "budget": 75.6
     },
     {
       "id": "app-25",
@@ -106,7 +106,7 @@
         "Chip",
         "Typography"
       ],
-      "budget": 123.2
+      "budget": 123.8
     },
     {
       "id": "page-shell",
@@ -132,13 +132,13 @@
         "Typography"
       ],
       "locales": ["ko"],
-      "budget": 79.7
+      "budget": 79.8
     },
     {
       "id": "everything",
       "label": "every export",
       "imports": null,
-      "budget": 317.6
+      "budget": 317.9
     },
     {
       "id": "a2ui",
@@ -146,13 +146,13 @@
       "from": "neba/a2ui",
       "imports": ["createNebaCatalog"],
       "external": ["@a2ui/react", "@a2ui/web_core", "zod"],
-      "budget": 95.7
+      "budget": 95.9
     },
     {
       "id": "stylesheet",
       "label": "neba/styles.css — every page carries it",
       "file": "styles.css",
-      "budget": 27
+      "budget": 27.2
     }
   ]
 }

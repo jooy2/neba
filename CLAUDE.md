@@ -356,7 +356,7 @@ An `<a>` is the other one, and TextLink answers it the other way. Inline styles 
 
 | Source | Output | Exported as | For |
 | --- | --- | --- | --- |
-| `src/standalone.css` | `dist/styles.css` | `neba/styles.css` | a project with no Tailwind — compiled, ~27.0 kB gzipped |
+| `src/standalone.css` | `dist/styles.css` | `neba/styles.css` | a project with no Tailwind — compiled, ~27.2 kB gzipped |
 | `src/styles.css` | `dist/tailwind.css` | `neba/tailwind.css` | a project that runs Tailwind v4 itself |
 
 `src/styles.css` is the token sheet: the custom properties, the `.neba-glow` layers, and its own `@source '.'`. `src/standalone.css` is a four-line build entry that puts `src/reset.css`, Tailwind's theme and utilities, and that token sheet in order; Tailwind compiles it here so the consumer never runs Tailwind at all. `tailwindcss` is and stays a devDependency.
@@ -381,19 +381,19 @@ Where it stands, gzipped, with `react`/`react-dom` external:
 | ----------------------------- | -------- | --------------------------- |
 | `Divider`                     | 2.7 kB   | 1.0 kB                      |
 | `Button`                      | 5.0 kB   | 2.3 kB                      |
-| `Chip`                        | 3.8 kB   | 3.8 kB                      |
+| `Chip`                        | 5.5 kB   | 3.9 kB                      |
 | `LineChart`                   | 18.1 kB  | 16.6 kB                     |
 | `CodeBlock`                   | 5.9 kB   | 5.6 kB                      |
-| `Image`                       | 9.4 kB   | 7.7 kB                      |
-| `Gallery`                     | 12.8 kB  | 11.0 kB                     |
-| `DataTable`                   | 34.7 kB  | 22.7 kB                     |
+| `Image`                       | 9.5 kB   | 7.8 kB                      |
+| `Gallery`                     | 12.8 kB  | 11.1 kB                     |
+| `DataTable`                   | 34.9 kB  | 23.0 kB                     |
 | `CommandPalette`              | 1.9 kB   | 1.9 kB                      |
-| `InlineCitation`              | 6.7 kB   | 4.9 kB                      |
-| 12 components — a typical app | 75.5 kB  | 16.9 kB                     |
-| 25 components — a large one   | 123.2 kB | 24.9 kB                     |
-| a whole page shell            | 13.8 kB  | 10.6 kB                     |
-| all 187 exports               | 317.6 kB | 180.4 kB                    |
-| `neba/a2ui`, peers external   | 95.7 kB  | 31.8 kB                     |
+| `InlineCitation`              | 6.7 kB   | 5.0 kB                      |
+| 12 components — a typical app | 75.6 kB  | 17.1 kB                     |
+| 25 components — a large one   | 123.8 kB | 25.4 kB                     |
+| a whole page shell            | 13.8 kB  | 10.7 kB                     |
+| all 187 exports               | 317.9 kB | 180.6 kB                    |
+| `neba/a2ui`, peers external   | 95.9 kB  | 32.1 kB                     |
 
 The **Bundle** column is [scripts/bundle-budget.json](scripts/bundle-budget.json), so `npm run size` keeps it honest. The second column is not budgeted and is the same measurement with `@base-ui/react` and `highlight.js` external as well — what is left once the dependencies are taken out. `Divider` is not a budgeted scenario; it is here because it is the smallest thing the library exports, and the row says what the floor is. The nine components of the `agent` group are 3.6 kB of own code for a `ToolCall` down to 1.2 kB for a `StreamingText`, and an `InlineCitation` is 6.7 kB before it is touched: its preview is a `HoverCard`, 26.6 kB of Base UI's floating machinery, fetched the first time a pointer, the focus or a finger reaches a citation, as the Image viewer is.
 
@@ -401,13 +401,13 @@ The page shell row is `PageLayout` with `Header`, `Footer`, `Sidebar`, `SidebarT
 
 The Image and Gallery rows are the same arrangement one step smaller. `Image` used to be 23.4 kB: `preview` opens a Dialog and is off by default, so a static import put 20 kB of Base UI into the bundle of every page that drew a thumbnail. Both reach it through `React.lazy` now — Gallery through a whole viewer of its own — so the chunk is fetched after the first paint by the pages that turn the prop on. Every number in this table is what a page needs **before it draws**: the entry plus every chunk statically reachable from it, which is what `measure-bundle.mjs` walks the import graph to work out. A chunk that is both statically and dynamically imported is not free.
 
-A `DataTable` does the same with the Select in its footer, which only `paging="pages"` draws: it was half of the table, 65.4 kB with it and 34.8 kB without. `data-table/RowsPerPage.tsx` fetches it as a paging table mounts and draws a stand-in of the closed control until it is here — always on the server and in the hydrating render, so nothing suspends there and no Suspense boundary is sent. The stand-in reads the trigger's classes from `selectTriggerClasses` in `internal/styles.ts`, as the Select does, and draws the rest of the closed control after it; `test/styles/rows-per-page.test.tsx` is what keeps the two box for box, so a change to the Select's markup is a change to the stand-in as well. A press on the stand-in is not lost: the Select arrives with `defaultOpen` if the stand-in still holds the focus by then, so it reads as one press that took a moment.
+A `DataTable` does the same with the Select in its footer, which only `paging="pages"` draws: it was half of the table, 65.4 kB with it and 34.9 kB without. `data-table/RowsPerPage.tsx` fetches it as a paging table mounts and draws a stand-in of the closed control until it is here — always on the server and in the hydrating render, so nothing suspends there and no Suspense boundary is sent. The stand-in reads the trigger's classes from `selectTriggerClasses` in `internal/styles.ts`, as the Select does, and draws the rest of the closed control after it; `test/styles/rows-per-page.test.tsx` is what keeps the two box for box, so a change to the Select's markup is a change to the stand-in as well. A press on the stand-in is not lost: the Select arrives with `defaultOpen` if the stand-in still holds the focus by then, so it reads as one press that took a moment.
 
 A `CommandPalette` is the same arrangement taken all the way: it draws nothing until it opens, so its entry is the shortcut, the open state and a `React.lazy` of `CommandPaletteSheet.tsx`, 1.9 kB against 38.7 kB, and the sheet is fetched while the browser is idle after the palette mounts, so the first `Mod+K` does not wait on the network.
 
 The CodeBlock row is the whole of what a page downloads before it draws a block, and it is 5.8 kB because **the grammars are not in it**. highlight.js is reached through `import()` — the core in one chunk, one chunk per language — so a block that colours TypeScript fetches about 11 kB more _after_ the first paint, one that colours nothing fetches none of it, and the thirty-four grammars are 63.5 kB of chunks a page never asks for in full. `npm run size` prints that async total beside every scenario, unbudgeted, so it can never quietly become the entry's problem: the day the import turns static, the 5.8 kB becomes 69.3.
 
-Registering one language adds about 4.2 kB on top — the whole of that language's module, since `registerMessages` is handed every namespace at once. That is the `app-12-ko` scenario minus `app-12`, so `npm run size` keeps the number honest. Plus `neba/styles.css`, which is 27.0 kB gzipped and very nearly fixed: a single `Button` needs most of it, so the marginal cost of a component is well under 0.1 kB. `npm run size` weighs it as a scenario of its own — the one that names a `file` in `dist/` rather than an import list, because a stylesheet is the one thing a consumer downloads that no import shakes. It was a number measured by hand and written into this document before that, which is a number that drifts the moment nobody re-measures. A responsive slot is the one thing that moves it by more than a rounding error — four media blocks that every page carries whether or not anything on it is responsive — which is the second half of why the list of responsive axes is short. The notch is the other: the rules that draw a field's edge around a label on it are 0.9 kB of the sheet, carried by pages whose fields all keep their labels on top. **Splitting the stylesheet per component was measured and rejected** — it would buy a twelve-component app about 5 kB while duplicating the shared two thirds across ninety-six files.
+Registering one language adds about 4.2 kB on top — the whole of that language's module, since `registerMessages` is handed every namespace at once. That is the `app-12-ko` scenario minus `app-12`, so `npm run size` keeps the number honest. Plus `neba/styles.css`, which is 27.2 kB gzipped and very nearly fixed: a single `Button` needs most of it, so the marginal cost of a component is well under 0.1 kB. `npm run size` weighs it as a scenario of its own — the one that names a `file` in `dist/` rather than an import list, because a stylesheet is the one thing a consumer downloads that no import shakes. It was a number measured by hand and written into this document before that, which is a number that drifts the moment nobody re-measures. A responsive slot is the one thing that moves it by more than a rounding error — four media blocks that every page carries whether or not anything on it is responsive — which is the second half of why the list of responsive axes is short. The notch is the other: the rules that draw a field's edge around a label on it are 0.9 kB of the sheet, carried by pages whose fields all keep their labels on top. **Splitting the stylesheet per component was measured and rejected** — it would buy a twelve-component app about 5 kB while duplicating the shared two thirds across ninety-six files.
 
 CodeBlock's eight ported themes are the one deliberate exception to that marginal cost: they are 0.8 kB gzipped of the sheet, which everybody carries and only a CodeBlock user sees. The alternative was measured too — ship them as JS token objects and tree-shake per theme — and rejected, because it costs the two things that make the CSS form worth having: `theme` stays a string, and a consumer's own `[data-code-theme='ours']` block is a theme with nothing to import and nothing to register. The derived slots are what keep the number to 0.8: `dim`, `rule`, `hover` and the two a marked line uses are mixed from each theme's own `bg` and `fg`, so a theme is fourteen declarations rather than nineteen.
 

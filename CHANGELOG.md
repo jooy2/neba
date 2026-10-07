@@ -19,26 +19,26 @@
 | What you import               | 1.18.1   | vNext    |
 | ----------------------------- | -------- | -------- |
 | `Button`                      | 5.0 kB   | 5.0 kB   |
-| `Chip`                        | 3.4 kB   | 3.8 kB   |
+| `Chip`                        | 3.4 kB   | 5.5 kB   |
 | `LineChart`                   | 17.1 kB  | 18.1 kB  |
 | `CodeBlock`                   | 5.8 kB   | 5.9 kB   |
-| `Image`                       | 9.0 kB   | 9.4 kB   |
+| `Image`                       | 9.0 kB   | 9.5 kB   |
 | `Gallery`                     | 12.3 kB  | 12.8 kB  |
-| `DataTable`                   | 65.4 kB  | 34.7 kB  |
+| `DataTable`                   | 65.4 kB  | 34.9 kB  |
 | `CommandPalette`              | 38.7 kB  | 1.9 kB   |
 | `InlineCitation`              | 31.7 kB  | 6.7 kB   |
 | a whole page shell            | 30.5 kB  | 13.8 kB  |
-| 12 components — a typical app | 74.5 kB  | 75.5 kB  |
-| 12 components, with Korean    | 78.7 kB  | 79.7 kB  |
-| 25 components — a large one   | 122.2 kB | 123.2 kB |
-| all exports                   | 304.3 kB | 317.6 kB |
-| `neba/styles.css`             | 26.4 kB  | 27.0 kB  |
+| 12 components — a typical app | 74.5 kB  | 75.6 kB  |
+| 12 components, with Korean    | 78.7 kB  | 79.8 kB  |
+| 25 components — a large one   | 122.2 kB | 123.8 kB |
+| all exports                   | 304.3 kB | 317.9 kB |
+| `neba/styles.css`             | 26.4 kB  | 27.2 kB  |
 
 Each figure is what a page downloads before it draws, gzipped, with `react` and `react-dom` external. The four rows that fell are the parts of Base UI a page used to carry for something closed: a `Sidebar`'s drawer, which a desktop page never opens, a paging `DataTable`'s rows-per-page Select, which a scrolling table never draws, a `CommandPalette`'s whole dialog, and an `InlineCitation`'s preview card. Each is now a chunk of its own, fetched when it can first be needed.
 
-A `Chip` grew 0.4 kB for `href`: the safe `rel` and `href` rules and the words a link that opens a new tab ends with, which every link in the library carries. An `Image` and a `Gallery` grew 0.4 kB for the shared observer a `Skeleton` now holds its sweep still with while it is off screen. A `LineChart` grew 1.0 kB for the hidden table's rows added in runs, the marks laid out once per layout, the transition it draws in after hydration and the room a legend keeps for `showValue`. The two apps grew about 1.0 kB, spread across what they import: `useToastActions`, a `Chip`'s link support, the sampling of labels that are elements, which a `Select` and a legend share, and a tab bar that binds the wheel only while it overflows.
+A `Chip` alone grew 2.1 kB for `href` and `render`: the safe `rel` and `href` rules and the words a link that opens a new tab ends with, which every link in the library carries, and Base UI's `useRender`, which a page with a `Button` on it already has. An `Image` and a `Gallery` grew 0.5 kB for the shared observer a `Skeleton` now holds its sweep still with while it is off screen, and the helper that runs a React 19 ref's cleanup. A `LineChart` grew 1.0 kB for the hidden table's rows added in runs, the marks laid out once per layout, the transition it draws in after hydration and the room a legend keeps for `showValue`. The two apps grew 1.1 and 1.6 kB, spread across what they import: `useToastActions`, a `Chip`'s link support, the sampling of labels that are elements, which a `Select` and a legend share, a tab bar that binds the wheel only while it overflows, a `Select` that can be opened from outside and the ref helper.
 
-All exports grew 13.3 kB. About 3.6 kB of that is the code of the new chunks, which a page that imports everything counts as well, and much of the rest is those chunks being compressed as separate files rather than as one. Class strings written as concatenations rather than as an array and a join took 0.1 to 0.3 kB back off every scenario that imports more than one component. The stylesheet grew 0.6 kB for the server-rendered tab indicator, the reduced-transparency surfaces, the text effects' final text without a script and `AnimateLighting`'s composited ring.
+All exports grew 13.6 kB. About 3.6 kB of that is the code of the new chunks, which a page that imports everything counts as well, and much of the rest is those chunks being compressed as separate files rather than as one. Class strings written as concatenations rather than as an array and a join took 0.1 to 0.3 kB back off every scenario that imports more than one component. The stylesheet grew 0.8 kB for the server-rendered tab indicator, the reduced-transparency surfaces, the text effects' final text without a script, `AnimateLighting`'s composited ring and the rules that hold a waiting entrance in place.
 
 ### Added
 
