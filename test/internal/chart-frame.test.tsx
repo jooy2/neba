@@ -333,24 +333,35 @@ describe('measuring the width', () => {
   // HTML, and drawing every chart on the page inside the hydration's own task
   // kept the page from answering anything the reader did meanwhile.
   //
+  // The page takes longer to hydrate than the 5 ms slice React's scheduler
+  // works in, as any page with a chart worth moving out of the way does. That
+  // matters on React 18, which schedules a transition started in a layout
+  // effect from the commit itself: its scheduler starts the next piece of work
+  // in the same task while that task's slice lasts, so the drawing can follow
+  // a hydration quicker than one slice in the same task — still no long task,
+  // and still rendered in slices. React 19 schedules it from a microtask, and
+  // draws in a later task either way.
+  //
   // Asked twice: with no `locale` the chart also renders once more straight
   // after hydration, to write in the reader's language, and the drawing must
-  // stay out of that render as well. React 19 only: React 18 does not reliably
-  // keep a transition started in a layout effect out of the task that is
-  // hydrating, so there the chart may still draw inside it, as it always did.
-  it.skipIf(React.version.startsWith('18.')).each([
+  // stay out of that render as well.
+  it.each([
     ['with a locale', 'en-US'],
     ['with no locale', undefined]
   ] as const)('draws a hydrated chart after the hydration has committed, %s', async (_, locale) => {
-    const hydrated = (
-      <div style={{ width: 320 }}>
-        <CartesianChart label="Load" locale={locale} series={[{ name: 'A', data: [1, 4, 2] }]}>
-          {() => null}
-        </CartesianChart>
-      </div>
-    );
     const host = document.createElement('div');
     let drawnInCommit: boolean | null = null;
+
+    /** The rest of the page, which spends a slice and more hydrating. */
+    function Page() {
+      const until = performance.now() + 20;
+
+      while (performance.now() < until) {
+        // Busy, the way a page's own components are.
+      }
+
+      return null;
+    }
 
     /** Looks, once the commit that hydrated the chart has returned. */
     function Probe() {
@@ -363,18 +374,24 @@ describe('measuring the width', () => {
       return null;
     }
 
+    // The same tree on both sides, so that `useId` agrees on both.
+    const hydrated = (
+      <>
+        <div style={{ width: 320 }}>
+          <CartesianChart label="Load" locale={locale} series={[{ name: 'A', data: [1, 4, 2] }]}>
+            {() => null}
+          </CartesianChart>
+        </div>
+        <Page />
+        <Probe />
+      </>
+    );
+
     host.innerHTML = renderToString(hydrated);
     document.body.append(host);
 
     const recoverable = vi.fn();
-    const root = hydrateRoot(
-      host,
-      <>
-        {hydrated}
-        <Probe />
-      </>,
-      { onRecoverableError: recoverable }
-    );
+    const root = hydrateRoot(host, hydrated, { onRecoverableError: recoverable });
 
     try {
       await vi.waitFor(() => expect(host.querySelector('svg')).not.toBeNull());
