@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
+import { userEvent } from 'vitest/browser';
 import { Select } from 'neba';
 
 /*
@@ -135,6 +136,34 @@ describe('Select', () => {
       );
 
       await expect.element(screen.getByRole('combobox')).toHaveTextContent('Starter');
+    });
+
+    it('starts open with defaultOpen', async () => {
+      const screen = await render(<Select items={PLANS} label="Plan" defaultOpen />);
+
+      await expect.element(screen.getByRole('option', { name: 'Team' })).toBeVisible();
+      await expect.element(screen.getByRole('combobox')).toHaveAttribute('aria-expanded', 'true');
+    });
+
+    it('honours a controlled open state, and reports the reader closing it', async () => {
+      const onOpenChange = vi.fn();
+      const screen = await render(
+        <Select items={PLANS} label="Plan" open onOpenChange={onOpenChange} />
+      );
+      const trigger = screen.getByRole('combobox');
+
+      await expect.element(screen.getByRole('option', { name: 'Team' })).toBeVisible();
+
+      await userEvent.keyboard('{Escape}');
+
+      expect(onOpenChange).toHaveBeenLastCalledWith(false);
+      await expect.element(trigger).toHaveAttribute('aria-expanded', 'true');
+
+      await screen.rerender(
+        <Select items={PLANS} label="Plan" open={false} onOpenChange={onOpenChange} />
+      );
+
+      await expect.element(trigger).toHaveAttribute('aria-expanded', 'false');
     });
 
     it('does not open when disabled', async () => {

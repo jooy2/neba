@@ -162,6 +162,11 @@ export interface SelectProps
    * chooses that option.
    */
   autoComplete?: string;
+  /** The popup is open. Use with `onOpenChange` for a controlled popup. */
+  open?: boolean;
+  /** Whether the popup starts open. */
+  defaultOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
   id?: string;
   /**
    * Class names for the parts behind the root. `className` is the root — the
@@ -248,6 +253,9 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
       required = false,
       name,
       autoComplete,
+      open,
+      defaultOpen,
+      onOpenChange,
       id,
       className,
       classNames,
@@ -460,6 +468,9 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
           value={value}
           defaultValue={defaultValue}
           onValueChange={(next) => onValueChange?.(next as SelectValue | null)}
+          open={open}
+          defaultOpen={defaultOpen}
+          onOpenChange={(next) => onOpenChange?.(next)}
           disabled={disabled}
           readOnly={readOnly}
           required={required}

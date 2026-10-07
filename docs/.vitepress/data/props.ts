@@ -5566,6 +5566,30 @@ export const propTables: Record<string, PropRow[]> = {
         en: 'Whether a value must be chosen before the form is submitted'
       }
     },
+    {
+      name: 'open',
+      type: 'boolean',
+      description: {
+        ko: '팝업이 열려 있는지. `onOpenChange`와 함께 제어 컴포넌트로 씁니다',
+        en: 'Whether the popup is open. Use with `onOpenChange` for a controlled popup'
+      }
+    },
+    {
+      name: 'defaultOpen',
+      type: 'boolean',
+      description: {
+        ko: '팝업이 열린 채로 시작할지',
+        en: 'Whether the popup starts open'
+      }
+    },
+    {
+      name: 'onOpenChange',
+      type: '(open: boolean) => void',
+      description: {
+        ko: '팝업이 열리거나 닫힐 때',
+        en: 'Called when the popup opens or closes'
+      }
+    },
     ...inertProps,
     slotsProp('label', 'control', 'description', 'error', 'popup', 'item')
   ],

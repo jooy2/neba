@@ -60,6 +60,8 @@ All exports grew 13.3 kB. About 3.6 kB of that is the code of the new chunks, wh
 
 - **`render` on `Chip`, so a chip with an `href` can be your router's `Link`.** A link chip drew a plain `<a>`, which reloads the page; `render={<Link to="/tags/react" />}` now moves without a reload, as it already does on `BreadcrumbItem`, `TextLink` and `Button`. Keep the `href` on the chip: it goes through to the `Link` with `target`, the merged `rel` and `aria-current`, and the `onDelete` button stays beside the link. A Chip imported on its own is 1.7 kB larger gzipped for it; a page that also draws a Button already carries that code.
 
+- **`open`, `defaultOpen` and `onOpenChange` on `Select`**, as `Combobox`, `TreeSelect` and the pickers already have. `defaultOpen` starts the list open, `open` with `onOpenChange` controls it, and `onOpenChange` is called with the new state whenever the reader opens or closes it.
+
 ### Changed
 
 - **A `Combobox` filters its list only when the query, the options or `filter` change.** The functions it handed Base UI were new on every render, so every render of anything above it, a keystroke in another field of the same form included, ran the filter over every option again. A `filter` of your own is no longer called on a render that changes none of those, as long as it is the same function from one render to the next.
