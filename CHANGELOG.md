@@ -2,6 +2,8 @@
 
 ## vNext (2026--)
 
+## 1.19.0 (2026-10-07)
+
 ### Breaking changes
 
 - **A `Transfer`'s lists are narrowed just after a letter reaches the search box, not in the same render.** Each keystroke filtered the list and drew the rows it kept before the letter could appear, and every row of both lists, each a full Checkbox, was drawn again on every keystroke and every tick. The box now shows the letter at once and the list follows a moment later, and a tick redraws only the row it changed. A test that checks a row is gone straight after typing should wait for it to leave, with `await expect.element(row).not.toBeInTheDocument()` rather than `row.query()`.
@@ -16,7 +18,7 @@
 
 ### Where the bytes went
 
-| What you import               | 1.18.1   | vNext    |
+| What you import               | 1.18.1   | 1.19.0   |
 | ----------------------------- | -------- | -------- |
 | `Button`                      | 5.0 kB   | 5.0 kB   |
 | `Chip`                        | 3.4 kB   | 5.5 kB   |
