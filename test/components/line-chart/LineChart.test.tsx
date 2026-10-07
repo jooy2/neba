@@ -359,6 +359,46 @@ describe('LineChart', () => {
       await expect.element(status).toBeInTheDocument();
     });
 
+    // Every dot and every label on every line was drawn again each time the
+    // crosshair moved from one column to the next.
+    it('writes no label again as the crosshair moves from one column to the next', async () => {
+      const screen = await render(
+        <LineChart
+          label="Signups"
+          height={240}
+          markers="all"
+          valueLabels="all"
+          series={[
+            { name: 'Web', data: Array.from({ length: 24 }, (_, index) => index + 1) },
+            { name: 'Mobile', data: Array.from({ length: 24 }, (_, index) => index + 40) }
+          ]}
+        />
+      );
+      const plot = screen.getByRole('img', { name: 'Signups' });
+      const status = screen.getByRole('status');
+
+      await expect.element(plot).toBeInTheDocument();
+
+      const width = plot.element().getBoundingClientRect().width;
+
+      await plot.hover({ position: { x: width * 0.2, y: 120 } });
+      await expect.element(status).not.toBeEmptyDOMElement();
+
+      const before = status.element().textContent;
+      // `format` is a getter that hands back a bound function, so each number
+      // the chart writes is one read of it.
+      const formats = vi.spyOn(Intl.NumberFormat.prototype as { format: unknown }, 'format', 'get');
+
+      try {
+        await plot.hover({ position: { x: width * 0.7, y: 120 } });
+        await expect.poll(() => status.element().textContent).not.toBe(before);
+
+        expect(formats.mock.calls.length).toBeLessThan(10);
+      } finally {
+        formats.mockRestore();
+      }
+    });
+
     it('narrows to the nearest series with mode="item"', async () => {
       const screen = await render(
         <LineChart

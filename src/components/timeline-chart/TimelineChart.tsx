@@ -410,6 +410,26 @@ interface SpansProps {
   rounded: boolean;
 }
 
+/** A span, laid out: the rectangle drawn for it, and what it is filled with. */
+interface PlacedSpan {
+  key: string;
+  series: number;
+  index: number;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  rx: number;
+  fill: string;
+}
+
+/**
+ * How many spans one memoised run draws — BarChart's `barRun`. The pointer
+ * moving from one span to the next changes two of them, and only the runs
+ * holding those are drawn again.
+ */
+const spanRun = 64;
+
 /**
  * The bars, and the only part of a TimelineChart that is not the shared frame.
  *
@@ -418,55 +438,106 @@ interface SpansProps {
  * data end and leaves the baseline end square, because a bar that is soft where
  * it meets the axis has lost the exact moment it starts. A span meets no axis.
  * Both of its ends are data, so both of them round.
+ *
+ * Laid out once per layout, and drawn in runs with only the active span's key
+ * handed down, so the pointer moving from span to span draws the two runs it
+ * left and reached rather than every bar on the chart.
  */
 function Spans({ context, spans, colors, rounded }: SpansProps) {
   const { marks, activeMark, plot } = context;
   const radius = rounded ? barRadius : 0;
 
+  const runs = React.useMemo(() => {
+    const placed: PlacedSpan[] = [];
+
+    for (const mark of marks) {
+      const one = spans[mark.series]?.[mark.index];
+
+      if (!one) {
+        continue;
+      }
+
+      const half = mark.rx ?? mark.r;
+      const height = (mark.ry ?? mark.r) * 2;
+
+      /* Cut to the plot rather than to the data. A caller who pinned `min` to
+         this quarter still has work that began last one, and a bar that stops
+         at the edge says there is more of it off the side; one drawn past the
+         edge says the axis is wrong. A zero-width span keeps a hairline, so a
+         milestone is still something on the row. */
+      const left = Math.max(plot.left, mark.x - half);
+      const right = Math.min(plot.left + plot.width, mark.x + half);
+
+      if (right < plot.left || left > plot.left + plot.width) {
+        continue;
+      }
+
+      const width = Math.max(1, right - left);
+
+      placed.push({
+        key: `${mark.series}-${mark.index}`,
+        series: mark.series,
+        index: mark.index,
+        x: left,
+        y: mark.y - height / 2,
+        width,
+        height,
+        rx: Math.min(radius, width / 2, height / 2),
+        fill: one.color ?? colors[mark.series]
+      });
+    }
+
+    const list: PlacedSpan[][] = [];
+
+    for (let at = 0; at < placed.length; at += spanRun) {
+      list.push(placed.slice(at, at + spanRun));
+    }
+
+    return list;
+  }, [marks, spans, colors, plot, radius]);
+
+  const activeKey = activeMark ? `${activeMark.series}-${activeMark.index}` : null;
+
   return (
     <g>
-      {marks.map((mark) => {
-        const one = spans[mark.series]?.[mark.index];
-
-        if (!one) {
-          return null;
-        }
-
-        const active = activeMark?.series === mark.series && activeMark?.index === mark.index;
-        const half = mark.rx ?? mark.r;
-        const height = (mark.ry ?? mark.r) * 2;
-
-        /* Cut to the plot rather than to the data. A caller who pinned `min` to
-           this quarter still has work that began last one, and a bar that stops
-           at the edge says there is more of it off the side; one drawn past the
-           edge says the axis is wrong. A zero-width span keeps a hairline, so
-           a milestone is still something on the row. */
-        const left = Math.max(plot.left, mark.x - half);
-        const right = Math.min(plot.left + plot.width, mark.x + half);
-
-        if (right < plot.left || left > plot.left + plot.width) {
-          return null;
-        }
-
-        const width = Math.max(1, right - left);
-
-        return (
-          <rect
-            key={`${mark.series}-${mark.index}`}
-            x={left}
-            y={mark.y - height / 2}
-            width={width}
-            height={height}
-            rx={Math.min(radius, width / 2, height / 2)}
-            fill={one.color ?? colors[mark.series]}
-            opacity={active ? 1 : 0.92}
-            className={markTransitionClasses}
-          />
-        );
-      })}
+      {runs.map((run, at) => (
+        <SpanRun
+          key={at}
+          spans={run}
+          active={activeKey !== null && run.some((one) => one.key === activeKey) ? activeKey : null}
+        />
+      ))}
     </g>
   );
 }
+
+/** A run of spans, drawn again only when something in it changes. */
+const SpanRun = React.memo(function SpanRun({
+  spans,
+  active
+}: {
+  spans: readonly PlacedSpan[];
+  /** The key of the span under the pointer, when it is one of these. */
+  active: string | null;
+}) {
+  return (
+    <>
+      {spans.map((one) => (
+        <rect
+          key={one.key}
+          x={one.x}
+          y={one.y}
+          width={one.width}
+          height={one.height}
+          rx={one.rx}
+          fill={one.fill}
+          opacity={one.key === active ? 1 : 0.92}
+          className={markTransitionClasses}
+        />
+      ))}
+    </>
+  );
+});
 
 interface TableProps {
   id: string;

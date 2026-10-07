@@ -529,6 +529,84 @@ describe('BarChart', () => {
     });
   });
 
+  describe('the crosshair', () => {
+    // Every bar was laid out again, and every label on it written again, each
+    // time the crosshair moved from one column to the next.
+    it('writes no bar again as it moves from one column to the next', async () => {
+      const categories = Array.from({ length: 24 }, (_, index) => `C${index}`);
+      const screen = await render(
+        <BarChart
+          label="Deploys"
+          height={240}
+          valueLabels="all"
+          categories={categories}
+          series={[
+            { name: 'Deploys', data: categories.map((_, index) => index + 1) },
+            { name: 'Rollbacks', data: categories.map((_, index) => index + 30) }
+          ]}
+        />
+      );
+      const plot = screen.getByRole('img', { name: 'Deploys' });
+      const status = screen.getByRole('status');
+
+      await expect.element(plot).toBeInTheDocument();
+
+      const width = plot.element().getBoundingClientRect().width;
+
+      await plot.hover({ position: { x: width * 0.2, y: 120 } });
+      await expect.element(status).not.toBeEmptyDOMElement();
+
+      const before = status.element().textContent;
+      // `format` is a getter that hands back a bound function, so each number
+      // the chart writes is one read of it.
+      const formats = vi.spyOn(Intl.NumberFormat.prototype as { format: unknown }, 'format', 'get');
+
+      try {
+        await plot.hover({ position: { x: width * 0.7, y: 120 } });
+        await expect.poll(() => status.element().textContent).not.toBe(before);
+
+        // The two numbers the new column is read out with, and no more: the
+        // forty-eight labels on the bars written again would be forty-eight.
+        expect(formats.mock.calls.length).toBeLessThan(10);
+      } finally {
+        formats.mockRestore();
+      }
+    });
+
+    // `item` mode stored the pointer's offset on every move, so a pointer
+    // travelling up one segment drew the whole chart again for every pixel. It
+    // stores the series it is nearest now, which has to stay the same one.
+    it('names the same series as the pointer travels along one segment in mode="item"', async () => {
+      const screen = await render(
+        <BarChart
+          label="Deploys"
+          stacked
+          height={240}
+          tooltip={{ mode: 'item' }}
+          categories={['Platform']}
+          series={[
+            { name: 'Manual', data: [90] },
+            { name: 'Scheduled', data: [10] }
+          ]}
+        />
+      );
+      const plot = screen.getByRole('img', { name: 'Deploys' });
+      const status = screen.getByRole('status');
+
+      await expect.element(plot).toBeInTheDocument();
+
+      const bars = [...plot.element().querySelectorAll('path[fill]:not([fill="none"])')];
+      const box = bars[0].getBoundingClientRect();
+      const origin = plot.element().getBoundingClientRect();
+      const x = box.left - origin.left + box.width / 2;
+
+      for (const y of [0.2, 0.5, 0.8]) {
+        await plot.hover({ position: { x, y: box.top - origin.top + box.height * y } });
+        await expect.element(status).toMatchTextContent('Manual');
+      }
+    });
+  });
+
   // A negative segment grows down from zero while the positive ones grow up, so
   // it neither eats into the stack above the axis nor moves where it starts.
   describe('stacking values of both signs', () => {

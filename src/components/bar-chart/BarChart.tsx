@@ -138,6 +138,37 @@ interface BarsProps {
   size: NebaSize;
 }
 
+/** One bar, laid out: its outline, its fill, and the number written past its end. */
+interface PlacedBar {
+  category: number;
+  path: string;
+  fill: string;
+  label: {
+    x: number;
+    y: number;
+    anchor: 'start' | 'middle' | 'end';
+    baseline: 'central' | undefined;
+    fill: string;
+    text: React.ReactNode;
+  } | null;
+}
+
+/** One series' bars, in runs a column's change can draw again on their own. */
+interface PlacedSeries {
+  index: number;
+  runs: PlacedBar[][];
+}
+
+/**
+ * How many bars one memoised run draws.
+ *
+ * The crosshair moving from one column to the next changes two bars per
+ * series, and only the runs holding them are drawn again. Without runs every
+ * bar's path was written again on each move — on a year of daily bars in three
+ * series, eleven hundred of them for six that changed.
+ */
+const barRun = 64;
+
 /**
  * The bars themselves, and the only part of a BarChart that is not the shared
  * frame.
@@ -147,6 +178,11 @@ interface BarsProps {
  * whatever came before them. In both, the 2px between two touching marks is the
  * surface showing through and never a stroke — a border drawn around a bar is
  * ink that is not data.
+ *
+ * Laid out once per layout rather than once per render. What the pointer
+ * changes is which column is active and which series the legend is pointing
+ * at, and neither moves a bar: the active column is handed only to the run
+ * that holds it, and the dimming is a group's opacity.
  */
 function Bars({ context, stacked, rounded, barSize, valueLabels, size }: BarsProps) {
   const {
@@ -165,142 +201,171 @@ function Bars({ context, stacked, rounded, barSize, valueLabels, size }: BarsPro
     formatFor
   } = context;
 
-  const drawn = values
-    .map((one, index) => ({ one, index }))
-    .filter((entry) => visible[entry.index]);
-  const lanes = stacked ? 1 : Math.max(1, drawn.length);
-
-  const laneWidth = Math.min(barSize, Math.max(1, (band.band - markGap * (lanes - 1)) / lanes));
-  const groupWidth = laneWidth * lanes + markGap * (lanes - 1);
-
-  /* Where each stacked segment starts, kept per category and per sign: a
-     negative segment grows down from zero while the positives grow up, or a
-     series that dips takes a bite out of the one above it. */
-  const positive: number[] = [];
-  const negative: number[] = [];
-
   // The same type as an axis tick. A value written on a mark is the same kind
   // of thing as one written under it, and two sizes of number on one chart
   // reads as two levels of importance that are not there.
   const labelSize = chartFontSizes[size];
 
+  const placed = React.useMemo(() => {
+    const drawn = values
+      .map((one, index) => ({ one, index }))
+      .filter((entry) => visible[entry.index]);
+    const lanes = stacked ? 1 : Math.max(1, drawn.length);
+
+    const laneWidth = Math.min(barSize, Math.max(1, (band.band - markGap * (lanes - 1)) / lanes));
+    const groupWidth = laneWidth * lanes + markGap * (lanes - 1);
+
+    /* Where each stacked segment starts, kept per category and per sign: a
+       negative segment grows down from zero while the positives grow up, or a
+       series that dips takes a bite out of the one above it. */
+    const positive: number[] = [];
+    const negative: number[] = [];
+
+    return drawn.map(({ one, index }, lane): PlacedSeries => {
+      const color = colors[index];
+      // `last` is the last value there is, as LineChart reads it: a trailing
+      // `null` left the series with no label at all.
+      const extreme =
+        valueLabels === 'extremes' || valueLabels === 'last'
+          ? labelledPoints(one, valueLabels)
+          : null;
+      const bars: PlacedBar[] = [];
+
+      one.forEach((value: ChartValue, category: number) => {
+        if (value.value === null) {
+          return;
+        }
+
+        const centre = categoryPx(category);
+        const offset = stacked ? 0 : lane * (laneWidth + markGap) - groupWidth / 2 + laneWidth / 2;
+
+        const base = stacked
+          ? value.value >= 0
+            ? (positive[category] ?? 0)
+            : (negative[category] ?? 0)
+          : 0;
+
+        // With the index, so a bar on the far edge's scale is measured
+        // against that one. `stacked` and a second axis never both apply,
+        // so `base` is zero wherever `index` changes the answer.
+        const from = base === 0 ? zeroPxOf(index) : valuePx(base, index);
+        const to = valuePx(base + value.value, index);
+
+        if (stacked) {
+          if (value.value >= 0) {
+            positive[category] = base + value.value;
+          } else {
+            negative[category] = base + value.value;
+          }
+        }
+
+        // The gap between two stacked segments is taken off the far end of
+        // each, so the stack still totals the right length and the seam is
+        // the sheet rather than a line drawn on it.
+        const shrink = stacked && base !== 0 ? markGap : 0;
+        const length = Math.abs(to - from) - shrink;
+
+        if (length <= 0) {
+          return;
+        }
+
+        const grows = to < from;
+
+        const path = horizontal
+          ? barPath(
+              Math.min(from, to) + (grows ? 0 : shrink),
+              plot.top + centre + offset - laneWidth / 2,
+              length,
+              laneWidth,
+              rounded && !stacked ? barRadius : rounded ? barRadius / 2 : 0,
+              value.value >= 0 ? 'right' : 'left'
+            )
+          : barPath(
+              plot.left + centre + offset - laneWidth / 2,
+              Math.min(from, to) + (grows ? 0 : shrink),
+              laneWidth,
+              length,
+              rounded && !stacked ? barRadius : rounded ? barRadius / 2 : 0,
+              value.value >= 0 ? 'up' : 'down'
+            );
+
+        bars.push({
+          category,
+          path,
+          fill: value.color ?? color,
+          label:
+            valueLabels === 'none' || (extreme && !extreme(category))
+              ? null
+              : {
+                  // Always just past the data end, on the outside — which for
+                  // a bar that grows downward means *below* it. Kept at the
+                  // end rather than inside the fill so it never has to be
+                  // white on one bar and ink on the next.
+                  x: horizontal ? to + (value.value >= 0 ? 5 : -5) : plot.left + centre + offset,
+                  y: horizontal
+                    ? plot.top + centre + offset
+                    : value.value >= 0
+                      ? to - 5
+                      : to + labelSize + 2,
+                  anchor: horizontal ? (value.value >= 0 ? 'start' : 'end') : 'middle',
+                  baseline: horizontal ? 'central' : undefined,
+                  // Its own bar's colour, one step toward the page's ink —
+                  // see `labelInk`. On a grouped chart the label sits over
+                  // the gap between two bands, and the hue is what says
+                  // which of the two it belongs to.
+                  fill: labelInk(value.color ?? color),
+                  text: value.label ?? formatFor(index)(value.value)
+                }
+        });
+      });
+
+      const runs: PlacedBar[][] = [];
+
+      for (let at = 0; at < bars.length; at += barRun) {
+        runs.push(bars.slice(at, at + barRun));
+      }
+
+      return { index, runs };
+    });
+  }, [
+    values,
+    visible,
+    colors,
+    plot,
+    band,
+    horizontal,
+    valuePx,
+    categoryPx,
+    zeroPxOf,
+    formatFor,
+    stacked,
+    rounded,
+    barSize,
+    valueLabels,
+    labelSize
+  ]);
+
   return (
     <g>
-      {drawn.map(({ one, index }, lane) => {
-        const color = colors[index];
+      {placed.map(({ index, runs }) => {
         const dimmed = hovered !== null && hovered !== index;
-        // `last` is the last value there is, as LineChart reads it: a trailing
-        // `null` left the series with no label at all.
-        const extreme =
-          valueLabels === 'extremes' || valueLabels === 'last'
-            ? labelledPoints(one, valueLabels)
-            : null;
 
         return (
           <g key={index} opacity={dimmed ? 0.28 : 1} className={markTransitionClasses}>
-            {one.map((value: ChartValue, category: number) => {
-              if (value.value === null) {
-                return null;
-              }
-
-              const centre = categoryPx(category);
-              const offset = stacked
-                ? 0
-                : lane * (laneWidth + markGap) - groupWidth / 2 + laneWidth / 2;
-
-              const base = stacked
-                ? value.value >= 0
-                  ? (positive[category] ?? 0)
-                  : (negative[category] ?? 0)
-                : 0;
-
-              // With the index, so a bar on the far edge's scale is measured
-              // against that one. `stacked` and a second axis never both apply,
-              // so `base` is zero wherever `index` changes the answer.
-              const from = base === 0 ? zeroPxOf(index) : valuePx(base, index);
-              const to = valuePx(base + value.value, index);
-
-              if (stacked) {
-                if (value.value >= 0) {
-                  positive[category] = base + value.value;
-                } else {
-                  negative[category] = base + value.value;
+            {runs.map((run, at) => (
+              <BarRun
+                key={at}
+                bars={run}
+                active={
+                  activeIndex !== null &&
+                  activeIndex >= run[0].category &&
+                  activeIndex <= run[run.length - 1].category
+                    ? activeIndex
+                    : null
                 }
-              }
-
-              // The gap between two stacked segments is taken off the far end of
-              // each, so the stack still totals the right length and the seam is
-              // the sheet rather than a line drawn on it.
-              const shrink = stacked && base !== 0 ? markGap : 0;
-              const length = Math.abs(to - from) - shrink;
-
-              if (length <= 0) {
-                return null;
-              }
-
-              const grows = to < from;
-              const active = category === activeIndex;
-
-              const path = horizontal
-                ? barPath(
-                    Math.min(from, to) + (grows ? 0 : shrink),
-                    plot.top + centre + offset - laneWidth / 2,
-                    length,
-                    laneWidth,
-                    rounded && !stacked ? barRadius : rounded ? barRadius / 2 : 0,
-                    value.value >= 0 ? 'right' : 'left'
-                  )
-                : barPath(
-                    plot.left + centre + offset - laneWidth / 2,
-                    Math.min(from, to) + (grows ? 0 : shrink),
-                    laneWidth,
-                    length,
-                    rounded && !stacked ? barRadius : rounded ? barRadius / 2 : 0,
-                    value.value >= 0 ? 'up' : 'down'
-                  );
-
-              return (
-                <g key={category}>
-                  <path
-                    d={path}
-                    fill={value.color ?? color}
-                    opacity={active ? 1 : 0.92}
-                    className={markTransitionClasses}
-                  />
-
-                  {valueLabels === 'none' || (extreme && !extreme(category)) ? null : (
-                    // Always just past the data end, on the outside — which for
-                    // a bar that grows downward means *below* it. Kept at the
-                    // end rather than inside the fill so it never has to be
-                    // white on one bar and ink on the next.
-                    <text
-                      x={
-                        horizontal ? to + (value.value >= 0 ? 5 : -5) : plot.left + centre + offset
-                      }
-                      y={
-                        horizontal
-                          ? plot.top + centre + offset
-                          : value.value >= 0
-                            ? to - 5
-                            : to + labelSize + 2
-                      }
-                      textAnchor={horizontal ? (value.value >= 0 ? 'start' : 'end') : 'middle'}
-                      dominantBaseline={horizontal ? 'central' : undefined}
-                      fontSize={labelSize}
-                      fontWeight={500}
-                      // Its own bar's colour, one step toward the page's ink —
-                      // see `labelInk`. On a grouped chart the label sits over
-                      // the gap between two bands, and the hue is what says
-                      // which of the two it belongs to.
-                      fill={labelInk(value.color ?? color)}
-                      className="tabular-nums"
-                    >
-                      {value.label ?? formatFor(index)(value.value)}
-                    </text>
-                  )}
-                </g>
-              );
-            })}
+                labelSize={labelSize}
+              />
+            ))}
           </g>
         );
       })}
@@ -330,3 +395,43 @@ function Bars({ context, stacked, rounded, barSize, valueLabels, size }: BarsPro
     </g>
   );
 }
+
+interface BarRunProps {
+  bars: readonly PlacedBar[];
+  /** The active column, when one of these bars is in it. */
+  active: number | null;
+  labelSize: number;
+}
+
+/** A run of one series' bars, drawn again only when something in it changes. */
+const BarRun = React.memo(function BarRun({ bars, active, labelSize }: BarRunProps) {
+  return (
+    <>
+      {bars.map((bar) => (
+        <g key={bar.category}>
+          <path
+            d={bar.path}
+            fill={bar.fill}
+            opacity={bar.category === active ? 1 : 0.92}
+            className={markTransitionClasses}
+          />
+
+          {bar.label ? (
+            <text
+              x={bar.label.x}
+              y={bar.label.y}
+              textAnchor={bar.label.anchor}
+              dominantBaseline={bar.label.baseline}
+              fontSize={labelSize}
+              fontWeight={500}
+              fill={bar.label.fill}
+              className="tabular-nums"
+            >
+              {bar.label.text}
+            </text>
+          ) : null}
+        </g>
+      ))}
+    </>
+  );
+});

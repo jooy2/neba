@@ -22,11 +22,13 @@ import {
   linePath,
   lineWidths,
   markerRadii,
-  markGap
+  markGap,
+  type ChartValue,
+  type PlotBox
 } from './chart.js';
 import { markTransitionClasses } from './chart-frame.js';
 import type { CartesianContext } from './chart-frame.js';
-import type { NebaChartCurve, NebaChartValueLabels } from '../types.js';
+import type { NebaChartCurve, NebaChartValueLabels, NebaSize } from '../types.js';
 
 /** Whether a point gets a dot on it. */
 export type ChartMarkers = 'none' | 'auto' | 'all';
@@ -250,14 +252,10 @@ export function LineSeries({
         /* Which points get a dot. All of them, or none but the one under the
            crosshair — and in the second case only that one is visited, since a
            walk over every point to draw one of them is the cost the memo above
-           exists to take off a moving pointer. */
+           exists to take off a moving pointer. All of them are drawn in runs
+           for the same reason: see `markerRun`. */
         const everyMarker =
           markers === 'all' || (markers === 'auto' && one.length <= autoMarkerLimit);
-        const marked = everyMarker
-          ? tops.map((_, category) => category)
-          : activeIndex === null
-            ? []
-            : [activeIndex];
 
         return (
           <g key={index} opacity={dimmed ? 0.28 : 1} className={markTransitionClasses}>
@@ -293,67 +291,199 @@ export function LineSeries({
               />
             )}
 
-            {marked.map((category) => {
-              const vertex = tops[category];
+            {everyMarker
+              ? runsOf(tops.length).map(([from, to]) => (
+                  <MarkerRun
+                    key={from}
+                    tops={tops}
+                    values={one}
+                    from={from}
+                    to={to}
+                    color={color}
+                    radius={radius}
+                    active={
+                      activeIndex !== null && activeIndex >= from && activeIndex < to
+                        ? activeIndex
+                        : null
+                    }
+                  />
+                ))
+              : activeIndex === null
+                ? null
+                : marker(tops, one, activeIndex, color, radius, activeIndex)}
 
-              if (!vertex) {
-                return null;
-              }
-
-              return (
-                <circle
-                  key={category}
-                  cx={vertex.x}
-                  cy={vertex.y}
-                  r={category === activeIndex ? radius + 1 : radius}
-                  fill={one[category].color ?? color}
-                  // The ring is the surface showing through, which is what keeps
-                  // a marker legible where two lines cross — and it is part of
-                  // the hit target, not only spacing.
-                  stroke="var(--neba-chart-gap)"
-                  strokeWidth={markGap}
-                  className={markTransitionClasses}
-                />
-              );
-            })}
-
-            {valueLabels === 'none'
-              ? null
-              : tops.map((vertex, category) => {
-                  const value = one[category].value;
-
-                  if (!vertex || value === null || !labelled(category)) {
-                    return null;
-                  }
-
-                  return (
-                    <text
-                      key={`label-${category}`}
-                      x={vertex.x}
-                      y={vertex.y - radius - 5}
-                      textAnchor={
-                        vertex.x > plot.left + plot.width - 24
-                          ? 'end'
-                          : vertex.x < plot.left + 24
-                            ? 'start'
-                            : 'middle'
-                      }
-                      fontSize={chartFontSizes[size]}
-                      fontWeight={500}
-                      // Its own series' colour, one step toward the page's ink.
-                      // Four lines on one plot is four numbers floating over
-                      // them, and which line each belongs to is exactly what a
-                      // reader cannot work out where two of them cross.
-                      fill={labelInk(one[category].color ?? color)}
-                      className="tabular-nums"
-                    >
-                      {one[category].label ?? formatFor(index)(value)}
-                    </text>
-                  );
-                })}
+            {valueLabels === 'none' ? null : (
+              <ValueLabels
+                tops={tops}
+                values={one}
+                labelled={labelled}
+                color={color}
+                plot={plot}
+                radius={radius}
+                size={size}
+                series={index}
+                formatFor={formatFor}
+              />
+            )}
           </g>
         );
       })}
     </g>
   );
 }
+
+/**
+ * How many points one memoised run of markers draws.
+ *
+ * With a dot on every point, the crosshair moving from one column to the next
+ * grows one dot and shrinks another, and only the runs holding those two are
+ * drawn again. Without runs every dot on every line was — twelve hundred on a
+ * chart of three 400-point series with `markers="all"`, for two that changed.
+ */
+const markerRun = 64;
+
+/** The ranges a series of `count` points is drawn in, `markerRun` points each. */
+function runsOf(count: number): [number, number][] {
+  const runs: [number, number][] = [];
+
+  for (let from = 0; from < count; from += markerRun) {
+    runs.push([from, Math.min(count, from + markerRun)]);
+  }
+
+  return runs;
+}
+
+/** One point's dot, a pixel bigger when it is the active one. */
+function marker(
+  tops: readonly Vertex[],
+  values: readonly ChartValue[],
+  category: number,
+  color: string,
+  radius: number,
+  active: number | null
+) {
+  const vertex = tops[category];
+
+  if (!vertex) {
+    return null;
+  }
+
+  return (
+    <circle
+      key={category}
+      cx={vertex.x}
+      cy={vertex.y}
+      r={category === active ? radius + 1 : radius}
+      fill={values[category].color ?? color}
+      // The ring is the surface showing through, which is what keeps a marker
+      // legible where two lines cross — and it is part of the hit target, not
+      // only spacing.
+      stroke="var(--neba-chart-gap)"
+      strokeWidth={markGap}
+      className={markTransitionClasses}
+    />
+  );
+}
+
+interface MarkerRunProps {
+  tops: readonly Vertex[];
+  values: readonly ChartValue[];
+  /** The first point this run draws, and the one after its last. */
+  from: number;
+  to: number;
+  color: string;
+  radius: number;
+  /** The active column, when it is one of these points. */
+  active: number | null;
+}
+
+/** A run of one series' dots, drawn again only when something in it changes. */
+const MarkerRun = React.memo(function MarkerRun({
+  tops,
+  values,
+  from,
+  to,
+  color,
+  radius,
+  active
+}: MarkerRunProps) {
+  const dots: React.ReactNode[] = [];
+
+  for (let category = from; category < to; category++) {
+    dots.push(marker(tops, values, category, color, radius, active));
+  }
+
+  return <>{dots}</>;
+});
+
+interface ValueLabelsProps {
+  tops: readonly Vertex[];
+  values: readonly ChartValue[];
+  labelled: (index: number) => boolean;
+  color: string;
+  plot: PlotBox;
+  radius: number;
+  size: NebaSize;
+  /** Which series these are, for the format its axis writes numbers in. */
+  series: number;
+  formatFor: (series: number) => (value: number) => string;
+}
+
+/**
+ * The numbers written on one line.
+ *
+ * Memoised because nothing in them depends on the pointer: every prop is a
+ * number or something laid out once per layout, so the crosshair moving from
+ * one column to the next leaves them alone instead of writing every label on
+ * every line again.
+ */
+const ValueLabels = React.memo(function ValueLabels({
+  tops,
+  values,
+  labelled,
+  color,
+  plot,
+  radius,
+  size,
+  series,
+  formatFor
+}: ValueLabelsProps) {
+  const write = formatFor(series);
+
+  return (
+    <>
+      {tops.map((vertex, category) => {
+        const value = values[category].value;
+
+        if (!vertex || value === null || !labelled(category)) {
+          return null;
+        }
+
+        return (
+          <text
+            key={`label-${category}`}
+            x={vertex.x}
+            y={vertex.y - radius - 5}
+            textAnchor={
+              vertex.x > plot.left + plot.width - 24
+                ? 'end'
+                : vertex.x < plot.left + 24
+                  ? 'start'
+                  : 'middle'
+            }
+            fontSize={chartFontSizes[size]}
+            fontWeight={500}
+            // Its own series' colour, one step toward the page's ink. Four
+            // lines on one plot is four numbers floating over them, and which
+            // line each belongs to is exactly what a reader cannot work out
+            // where two of them cross.
+            fill={labelInk(values[category].color ?? color)}
+            className="tabular-nums"
+          >
+            {values[category].label ?? write(value)}
+          </text>
+        );
+      })}
+    </>
+  );
+});
