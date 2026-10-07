@@ -242,9 +242,24 @@ export const Mockup = React.forwardRef<HTMLDivElement, MockupProps>(function Moc
   const shownScale = scale ?? implied;
 
   /*
-   * One measurement, and the reason the device cannot simply be sized in CSS:
-   * the scale is a ratio between a length the stylesheet knows and a length only
-   * this file knows, and there is no CSS operator that divides one by the other.
+   * And the same division in CSS, for the paint before anything has measured
+   * the box: a server-rendered mockup with no size in pixels was hidden until
+   * hydration, so a hero on its screen could not be the page's Largest
+   * Contentful Paint until the JavaScript had run, and with none it never
+   * showed. The root is a size container while this is in use, `100cqw` and
+   * `100cqh` are its two sides, and `tan(atan2(a, b))` is `a / b` as a number,
+   * which is the one way CSS has of dividing a length by a length. The
+   * measurement then only confirms it, and the root stops being a container,
+   * so the units mean outside the device what they meant before. Inside the
+   * screen they never changed: the screen is a container of its own.
+   */
+  const cssScale = `min(tan(atan2(100cqw, ${frame.width}px)), tan(atan2(100cqh, ${frame.height}px)))`;
+
+  /*
+   * One measurement, and the reason the CSS division above is only the first
+   * paint: it needs the root to be a size container, and a container changes
+   * how the root is laid out and what `cq` units mean between it and the
+   * screen, which is not something to leave on a caller's element for good.
    *
    * It reads both axes because `height` on its own is a legitimate way to size a
    * mockup, and because a caller who pins both would otherwise get a device
@@ -262,9 +277,25 @@ export const Mockup = React.forwardRef<HTMLDivElement, MockupProps>(function Moc
     if (!box) return;
 
     const measure = () => {
-      const width = box.offsetWidth;
-      const height = box.offsetHeight;
-      if (width <= 0 || height <= 0) return;
+      // The content box, unrounded, which is what `100cqw` and `100cqh` above
+      // are. `offsetWidth` rounds to a whole pixel, and the fraction it lost
+      // moved the device as the page hydrated.
+      const style = getComputedStyle(box);
+      const inset = (a: string, b: string) => parseFloat(a) + parseFloat(b);
+      const border = style.boxSizing === 'border-box';
+      const width =
+        parseFloat(style.width) -
+        (border
+          ? inset(style.paddingLeft, style.paddingRight) +
+            inset(style.borderLeftWidth, style.borderRightWidth)
+          : 0);
+      const height =
+        parseFloat(style.height) -
+        (border
+          ? inset(style.paddingTop, style.paddingBottom) +
+            inset(style.borderTopWidth, style.borderBottomWidth)
+          : 0);
+      if (!(width > 0 && height > 0)) return;
 
       const next = Math.min(width / frame.width, height / frame.height);
 
@@ -327,9 +358,9 @@ export const Mockup = React.forwardRef<HTMLDivElement, MockupProps>(function Moc
   // `neba-mockup` and `neba-mockup-screen` are hooks rather than styles, the way
   // `neba-link` and `neba-portal` are: the device draws itself, and these are
   // there so a caller can reach the glass without counting elements.
-  // `overflow-hidden`, because until it is measured the device is drawn at its
-  // own resolution and a 1440-pixel desktop hidden with `visibility` still
-  // takes up 1440 pixels of a narrow page's scroll width.
+  // `overflow-hidden`, because the device is laid out at its own resolution
+  // before it is scaled, and a 1440-pixel desktop drawn at any wrong size would
+  // take up 1440 pixels of a narrow page's scroll width.
   const classNames = cx(
     'neba-mockup relative block overflow-hidden',
     animation.className,
@@ -348,6 +379,7 @@ export const Mockup = React.forwardRef<HTMLDivElement, MockupProps>(function Moc
         width: width ?? (height === undefined ? '100%' : 'auto'),
         height: height ?? 'auto',
         aspectRatio: `${frame.width} / ${frame.height}`,
+        ...(shownScale === null ? { containerType: 'size' } : null),
         // Outside the scale on purpose: a device drawn at a third of its size
         // would otherwise get a third of its shadow and stop reading as an
         // object on a page.
@@ -360,11 +392,7 @@ export const Mockup = React.forwardRef<HTMLDivElement, MockupProps>(function Moc
           style={{
             width: frame.width,
             height: frame.height,
-            transform: `translate(-50%, -50%) scale(${shownScale ?? 1})`,
-            // Until the box has been measured there is no honest size to draw
-            // at, unless a size in pixels already said what it would be. One
-            // frame on a client, and until hydration on a server render.
-            visibility: shownScale === null ? 'hidden' : undefined
+            transform: `translate(-50%, -50%) scale(${shownScale ?? cssScale})`
           }}
         >
           <div

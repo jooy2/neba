@@ -50,6 +50,8 @@
 
 - **A server-rendered `Carousel` opens on its `defaultValue` from the first paint in Chrome and Edge 133 and later.** The strip was moved there once the page had hydrated, so it showed the first slide until then and jumped. The opening slide now carries `scroll-initial-target`, which those browsers honour before any script runs. Firefox and Safari do not support it yet and still move the strip at hydration, as before.
 
+- **A server-rendered `Mockup` is drawn from the first paint whatever it was sized with.** Without a `width` or `height` in pixels, the device was hidden until hydration had measured its box, so content on its screen could not count for Largest Contentful Paint until the JavaScript had run, and with JavaScript off it never showed. CSS now works the scale out until the box is measured, and the measurement lands on the same scale, so nothing moves at hydration.
+
 ## 1.18.1 (2026-10-07)
 
 ### Added

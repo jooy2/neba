@@ -40,6 +40,49 @@ describe('Mockup', () => {
       expect(html).not.toContain('visibility:hidden');
     });
 
+    // With no size in pixels there is nothing to divide on a server, and the
+    // device was hidden until hydration measured the box. CSS divides it now.
+    it('draws the device in a server render with no size in pixels', () => {
+      const host = document.createElement('div');
+
+      host.innerHTML = renderToString(
+        <Mockup device="mobile">
+          <span>App</span>
+        </Mockup>
+      );
+
+      const root = host.firstElementChild as HTMLElement;
+      const device = root.firstElementChild as HTMLElement;
+
+      expect(host.innerHTML).not.toContain('visibility:hidden');
+      expect(root.getAttribute('style')).toContain('container-type:size');
+      expect(device.getAttribute('style')).toContain('tan(atan2(100cqw');
+    });
+
+    // The scale CSS works out and the one measured have to agree, or the
+    // device moves as the page hydrates; `offsetWidth` rounded the box.
+    it('measures the box to the fraction of a pixel, and stops being a container', async () => {
+      const scaleOf = (root: Element) =>
+        Number(
+          /scale\(([\d.]+)\)/.exec(
+            root.querySelector<HTMLElement>('[style*="scale("]')?.style.transform ?? ''
+          )?.[1]
+        );
+      const screen = await render(
+        <>
+          <Mockup data-testid="whole" device="mobile" style={{ width: 300 }} />
+          <Mockup data-testid="fraction" device="mobile" style={{ width: 300.5 }} />
+        </>
+      );
+      const whole = screen.getByTestId('whole').element() as HTMLElement;
+      const fraction = screen.getByTestId('fraction').element() as HTMLElement;
+
+      await expect.poll(() => scaleOf(fraction)).toBeGreaterThan(0);
+
+      expect(scaleOf(fraction) / scaleOf(whole)).toBeCloseTo(300.5 / 300, 4);
+      expect(fraction.style.containerType).toBe('');
+    });
+
     // The box was measured as drawn, so a scaled ancestor scaled the device a
     // second time: at half size it came out a quarter of the box.
     it('fills its box inside a scaled ancestor', async () => {
