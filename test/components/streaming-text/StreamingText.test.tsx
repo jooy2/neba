@@ -162,6 +162,37 @@ describe('StreamingText', () => {
       expect(words()).toHaveLength(5);
     });
 
+    // A long session kept an element per word for every answer it had ever
+    // streamed in. Once the stream is over and the last word has faded, the
+    // answer is plain text, as a message loaded from history is.
+    it('draws a streamed answer as plain text once its last words have faded in', async () => {
+      const screen = await render(
+        <StreamingText streaming data-testid="answer">
+          A sheet
+        </StreamingText>
+      );
+
+      await screen.rerender(
+        <StreamingText data-testid="answer">A sheet of cut acrylic</StreamingText>
+      );
+
+      const answer = screen.getByTestId('answer').element();
+
+      await expect.poll(() => words()).toHaveLength(0);
+      expect([...answer.childNodes].map((node) => node.nodeType)).toEqual([Node.TEXT_NODE]);
+      expect(answer.textContent).toBe('A sheet of cut acrylic');
+    });
+
+    it('keeps the words of a stream that starts again before they are let go', async () => {
+      const screen = await render(<StreamingText streaming>A sheet</StreamingText>);
+
+      await screen.rerender(<StreamingText>A sheet of</StreamingText>);
+      await screen.rerender(<StreamingText streaming>A sheet of cut acrylic</StreamingText>);
+      await new Promise((resolve) => setTimeout(resolve, 400));
+
+      expect(words()).toHaveLength(5);
+    });
+
     it('draws a text that replaces a streamed one plain once nothing streams', async () => {
       const screen = await render(<StreamingText streaming>A sheet</StreamingText>);
 

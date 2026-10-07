@@ -3469,8 +3469,12 @@
   }
 }
 
+/* `backwards` rather than `both`: the keyframe ends on the word's own opacity,
+   so holding its last frame draws nothing, and a word whose fade is over is
+   then an element with no animation on it rather than one still holding a
+   finished one, which the browser keeps in its list of effects to restyle. */
 .neba-stream-word {
-  animation: neba-stream-word-in var(--neba-duration) var(--neba-ease) both;
+  animation: neba-stream-word-in var(--neba-duration) var(--neba-ease) backwards;
 }
 
 /* The block at the end of a stream. The same caret an `AnimateTyping` draws,

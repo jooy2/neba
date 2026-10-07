@@ -33,11 +33,13 @@ export interface StreamingTextProps extends Omit<React.ComponentPropsWithoutRef<
    *
    * On. A word that arrives during a stream costs one element, which is the
    * price of the effect: a transition on the block as a whole would fade the
-   * *whole answer* every time a token landed. Text that did not arrive that
-   * way costs nothing — what the block was first drawn with while not
-   * streaming, what the server rendered, what was already there when a stream
-   * started, and what replaces it while nothing streams are drawn as plain
-   * text. Turn it off for a very long answer.
+   * *whole answer* every time a token landed. The elements last as long as the
+   * stream: once `streaming` is off and the last word has faded in, the answer
+   * is drawn as plain text again. Text that did not arrive that way costs
+   * nothing — what the block was first drawn with while not streaming, what the
+   * server rendered, what was already there when a stream started, and what
+   * replaces it while nothing streams are drawn as plain text. Turn it off for
+   * a very long answer.
    * @default true
    */
   fade?: boolean;
@@ -203,6 +205,22 @@ function settle(
   return streaming ? common(plain, text) : null;
 }
 
+/**
+ * How long a word takes to fade in, read off the token the stylesheet times
+ * the fade with, so a product that slows its transitions down is waited for.
+ * The default token where the stylesheet is not there to ask.
+ */
+function fadeTime(element: Element): number {
+  const value = getComputedStyle(element).getPropertyValue('--neba-duration').trim();
+  const amount = parseFloat(value);
+
+  if (Number.isNaN(amount)) {
+    return 160;
+  }
+
+  return value.endsWith('ms') ? amount : amount * 1000;
+}
+
 /** The longest start two strings share, cut back to the end of a whole word. */
 function common(one: string, two: string): string {
   if (two.startsWith(one)) {
@@ -250,7 +268,9 @@ function common(one: string, two: string): string {
  * streams — a message loaded from history, a page rendered on the server — is
  * one run of plain text, because none of it is arriving: fifty such messages
  * drawn a word to an element were fifteen thousand elements, each with an
- * animation to start.
+ * animation to start. A stream that has ended goes back to plain text too, once
+ * its last word has faded in, for the same reason: a long session's answers
+ * each kept an element per word they had streamed in, for good.
  *
  * It is deliberately **not** a live region. An answer that announced itself
  * token by token would be unusable, and one that announced itself whole on
@@ -277,6 +297,7 @@ export const StreamingText = React.forwardRef<HTMLDivElement, StreamingTextProps
     const text = typeof children === 'string' ? children : null;
     const source = text ?? '';
     const hydrated = useHydrated();
+    const own = React.useRef<HTMLDivElement | null>(null);
 
     /*
      * The part of the text drawn plain, or `null` for all of it.
@@ -309,6 +330,43 @@ export const StreamingText = React.forwardRef<HTMLDivElement, StreamingTextProps
     useLayoutEffectOnClient(() => {
       shown.current = source;
     });
+
+    /*
+     * A stream that has ended, drawn plain again once its words have arrived.
+     *
+     * Not at once: the last words of an answer often land in the render that
+     * ends the stream, and they fade like the rest. So it waits the length of a
+     * fade, and then for any fade that is still running, and only then lets the
+     * elements go. A stream that starts again first keeps them.
+     */
+    React.useEffect(() => {
+      const element = own.current;
+
+      if (streaming || plain === null || !element) {
+        return;
+      }
+
+      let cancelled = false;
+      const timer = setTimeout(() => {
+        const fading = (element.getAnimations?.({ subtree: true }) ?? []).filter(
+          (animation) =>
+            animation instanceof CSSAnimation && animation.animationName === 'neba-stream-word-in'
+        );
+
+        void Promise.all(fading.map((animation) => animation.finished.catch(() => null))).then(
+          () => {
+            if (!cancelled) {
+              setPlain(null);
+            }
+          }
+        );
+      }, fadeTime(element));
+
+      return () => {
+        cancelled = true;
+        clearTimeout(timer);
+      };
+    }, [streaming, plain]);
 
     let content: React.ReactNode = children;
 
@@ -349,7 +407,7 @@ export const StreamingText = React.forwardRef<HTMLDivElement, StreamingTextProps
 
     return useRender({
       render: render ?? <div />,
-      ref,
+      ref: [ref, own],
       props: {
         'aria-busy': streaming || undefined,
         'data-streaming': streaming || undefined,

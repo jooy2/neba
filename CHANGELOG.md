@@ -12,6 +12,8 @@
 
 - **A legend with `showValue` keeps room for its numbers while no column is active.** The number beside each series' name appeared only while the pointer was over the plot, so every row grew as it entered and shrank as it left: a legend under the plot pushed the page below it down and back up, a layout shift of 0.0235 each way on a five-series chart, and one beside the plot took its width from the plot. Each row is now as wide as the widest number its series can show from the start, with the number hidden until a column is active, and the legend no longer changes size. The rows are wider at rest than they were, so a legend under the plot may take another line; a layout that relied on the narrower rows should allow for it.
 
+- **A `StreamingText` answer goes back to plain text once its stream has ended.** Every word that streamed in stayed an element of its own for good, so a long chat session kept one per word of every answer: fifteen thousand for fifty answers. Once `streaming` is off and the last word has faded in, the `.neba-stream-word` elements are gone and the answer is one run of text, which looks the same. A test that looked for `.neba-stream-word` after a stream ended should look while `streaming` is on, or read the text. A finished word's fade also no longer stays on it as a held animation.
+
 ### Added
 
 - **`autoComplete` on `Select` and `Combobox`**, so a browser's autofill can fill them in with the rest of a form: `autoComplete="country"` on a country list. It is written on the hidden input that submits the value, and a filled-in value that matches an option's `value` or label chooses that option. A Combobox's own text input keeps `autocomplete="off"`, and a `multiple` Combobox takes no autofill.

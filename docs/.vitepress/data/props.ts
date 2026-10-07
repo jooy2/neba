@@ -16809,8 +16809,8 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       default: 'true',
       description: {
-        ko: '스트림으로 도착하는 단어마다 하나씩 나타나게 합니다. 단어당 요소 하나가 드는 값이며, 아주 긴 답에서는 끄세요. 스트리밍 중이 아닐 때 그린 텍스트와 서버가 렌더링한 텍스트는 평범한 텍스트로 그립니다',
-        en: 'Fades in each word that arrives during a stream. It costs one element per word; turn it off for a very long answer. Text drawn while not streaming, or rendered on the server, is plain text'
+        ko: '스트림으로 도착하는 단어마다 하나씩 나타나게 합니다. 스트림이 이어지는 동안 단어당 요소 하나가 드는 값이며, 아주 긴 답에서는 끄세요. 스트리밍 중이 아닐 때 그린 텍스트, 서버가 렌더링한 텍스트, 끝난 스트림은 평범한 텍스트로 그립니다',
+        en: 'Fades in each word that arrives during a stream. It costs one element per word while the stream runs; turn it off for a very long answer. Text drawn while not streaming, rendered on the server, or left by a stream that has ended is plain text'
       }
     },
     {

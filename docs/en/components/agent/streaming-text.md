@@ -45,7 +45,7 @@ The reservation is a floor and stays a floor once the text is there. A height th
 
 Each word that arrives during a stream fades in on its own, in `opacity` and nothing else.
 
-A word already on screen never fades a second time. Each streamed word is an element of its own, so turn `fade` off for a very long answer.
+A word already on screen never fades a second time. Each streamed word is an element of its own while the stream runs, so turn `fade` off for a very long answer. Once `streaming` is off and the last word has faded in, the answer is drawn as plain text again, with no element per word.
 
 Text that is not arriving is drawn as plain text, with no element per word and no fade: what the block is drawn with while `streaming` is off, such as a message loaded from history, what the server rendered, and what was already on screen when a stream started. Words that land in the same render that turns `streaming` off still fade.
 
