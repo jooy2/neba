@@ -130,6 +130,8 @@
 
 - **`AnimateTyping` no longer grows a line when its last character arrives.** When the text filled its last line exactly, the caret wrapped onto a line of its own at the very end and pushed what came after it down. The box now holds the caret's room from the first frame. A caret given as a node, rather than a string, is not covered.
 
+- **`AnimateTyping`, `AnimateScramble` and `AnimateCounter` show their final text from the first paint to a reader who has asked for less motion, and with scripting off.** The answer was drawn by the script, so until the page hydrated such a reader saw an empty line, a line of noise or the `from` number, and with scripting off they never saw anything else. The stylesheet draws the final text now, and the page does not change when the script arrives.
+
 ## 1.18.1 (2026-10-07)
 
 ### Added

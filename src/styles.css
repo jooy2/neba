@@ -3392,6 +3392,38 @@
   animation: neba-anim-caret 1s step-end infinite;
 }
 
+/*
+ * The text effects without their motion: AnimateTyping, AnimateScramble and
+ * AnimateCounter.
+ *
+ * Each lays out its final text from the first frame, unseen, under the copy
+ * that moves. A reader who has asked for less motion is shown the final text,
+ * but by the script, which is not there in the server's HTML or until the page
+ * hydrates: until then the line was empty, noise, or the `from` number. With
+ * scripting off it stayed that way. So the stylesheet answers both cases, by
+ * drawing the final layer and not the moving one — which is also what the
+ * script draws once it runs, so nothing moves when it does. The moving layer
+ * and a counter's `from` are taken out of the layout as well as out of sight:
+ * the script lets `from` go once the answer is drawn, and a box still as wide
+ * as `1,000` around a `5` closed up the moment it did. A browser that does not
+ * know `scripting` keeps the reduced-motion half.
+ */
+@media (prefers-reduced-motion: reduce), (scripting: none) {
+  [data-neba-animation] .neba-text-final,
+  [data-neba-animation] .neba-text-noise {
+    visibility: visible;
+  }
+
+  [data-neba-animation] .neba-text-moving,
+  [data-neba-animation] .neba-text-final ~ [data-sample] {
+    display: none;
+  }
+
+  [data-neba-animation] .neba-text-noise::after {
+    content: none;
+  }
+}
+
 /* ---------------------------------------------------------------------------
  * Text arriving from somewhere else
  *

@@ -338,7 +338,7 @@ export const AnimateTyping = React.forwardRef<HTMLElement, AnimateTypingProps>(
             <span
               aria-hidden="true"
               data-text={graphemes.slice(0, shown).join('')}
-              className="whitespace-pre-wrap [grid-area:1/1] before:content-[attr(data-text)]"
+              className="neba-text-moving whitespace-pre-wrap [grid-area:1/1] before:content-[attr(data-text)]"
             >
               {caret ? caretMark : null}
             </span>
@@ -346,11 +346,13 @@ export const AnimateTyping = React.forwardRef<HTMLElement, AnimateTypingProps>(
                 takes its size from what the line will be rather than from what
                 has arrived. Generated content off `data-sample`, as the width
                 sizer draws its samples, so it leaves nothing for a find-in-page
-                or a query for the text to match. */}
+                or a query for the text to match. The stylesheet draws it in
+                place of the typed copy for a reader who has asked for less
+                motion and with scripting off, before any script could say so. */}
             <span
               aria-hidden="true"
               data-sample={source}
-              className="invisible whitespace-pre-wrap [grid-area:1/1] before:content-[attr(data-sample)]"
+              className="neba-text-final invisible whitespace-pre-wrap [grid-area:1/1] before:content-[attr(data-sample)]"
             >
               {caret ? caretSample : null}
             </span>

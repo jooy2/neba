@@ -50,9 +50,14 @@ const DEFAULT_POOL = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#%&$@*';
 /** A word that has settled: the final text, drawn where the line puts it. */
 const settledWordClasses = 'visible before:content-[attr(data-sample)]';
 
-/** A word that has not: the final text laid out unseen, and its noise over it. */
+/**
+ * A word that has not: the final text laid out unseen, and its noise over it.
+ * `neba-text-noise` is what the stylesheet reads to draw the word and drop the
+ * noise for a reader who has asked for less motion and with scripting off,
+ * before any script could say so.
+ */
 const scramblingWordClasses =
-  'relative before:content-[attr(data-sample)] after:visible after:absolute after:inset-0 after:flex after:items-center after:overflow-x-clip after:whitespace-pre after:content-[attr(data-text)]';
+  'neba-text-noise relative before:content-[attr(data-sample)] after:visible after:absolute after:inset-0 after:flex after:items-center after:overflow-x-clip after:whitespace-pre after:content-[attr(data-text)]';
 
 /**
  * Which glyph an unsettled position shows on a given tick.

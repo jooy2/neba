@@ -264,13 +264,19 @@ export const AnimateCounter = React.forwardRef<HTMLElement, AnimateCounterProps>
             <span aria-hidden="true" className="inline-grid">
               <span
                 data-text={drawn}
-                className="[grid-area:1/1] before:content-[attr(data-text)]"
+                className="neba-text-moving [grid-area:1/1] before:content-[attr(data-text)]"
               />
+              {/* The first is the answer, which the stylesheet draws in place of
+                  the count for a reader who has asked for less motion and with
+                  scripting off, before any script could say so. */}
               {samples.map((sample, index) => (
                 <span
                   key={index}
                   data-sample={sample}
-                  className="invisible [grid-area:1/1] before:content-[attr(data-sample)]"
+                  className={cx(
+                    index === 0 && 'neba-text-final',
+                    'invisible [grid-area:1/1] before:content-[attr(data-sample)]'
+                  )}
                 />
               ))}
             </span>

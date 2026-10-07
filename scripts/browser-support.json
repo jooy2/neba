@@ -53,7 +53,7 @@
     },
     {
       "feature": "css.at-rules.media.scripting",
-      "reason": "Draws an Animate* that is waiting for its trigger as it ends when scripting is turned off, since nothing will ever start it. A browser without the feature skips the block, and with scripting off there the effect stays on its first frame, which for an entrance is invisible. With scripting on, nothing changes in any browser."
+      "reason": "Draws an Animate* that is waiting for its trigger as it ends when scripting is turned off, since nothing will ever start it, and draws the final text of AnimateTyping, AnimateScramble and AnimateCounter, which only a script would otherwise reach. A browser without the feature skips those rules, and with scripting off there the effect stays on its first frame, which for an entrance is invisible and for a text effect is an empty line, noise or the `from` number. With scripting on, nothing changes in any browser."
     }
   ]
 }
