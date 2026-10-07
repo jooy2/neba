@@ -72,6 +72,8 @@ import { List, ListItem, Sidebar } from 'neba';
 
 기본값은 PageLayout의 값이며, 레이아웃 밖에서는 `none`입니다.
 
+drawer의 코드는 별도 chunk로 나뉘어 있어, 사이드바가 처음 접히거나 pointer나 focus가 SidebarTrigger에 닿을 때 내려받습니다. 사이드바가 계속 열로 남는 페이지는 이 코드를 받지 않습니다.
+
 ### 접힌 사이드바 다시 열기
 
 창이 좁아져 담을 수 없게 된 사이드바는 SidebarTrigger로 다시 불러옵니다. [Header](./header)의 `brand` 자리, 로고 앞에 두세요.

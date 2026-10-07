@@ -30,6 +30,8 @@
 
 - **A component given a `locale` renders once when a server-rendered page hydrates, not twice.** Every component that writes a number or a date rendered a second time once hydration was over, whether or not anything could change; with `locale`, or `defaults.locale` on a `NebaProvider`, that second render is gone. On a page of 400 `Statistic` and `Meter`, the work after hydration fell from about 6.9 ms to 1.6 ms. A component with no `locale` still switches from `en-US` to the reader's language after hydration, as before.
 
+- **A page with a `Sidebar` no longer downloads the drawer it becomes on a narrow screen until it needs it.** The drawer is a Base UI dialog, and it was two thirds of a page shell, carried by every page with a sidebar, desktop included: `PageLayout`, `Header`, `Footer`, `Sidebar`, `SidebarTrigger` and `AppLogo` went from 30.6 kB to 13.8 kB gzipped. The drawer is fetched as soon as the sidebar collapses, which on a phone is right after hydration, or when a pointer or the focus reaches a `SidebarTrigger`; a press that comes before it arrives opens the drawer when it does.
+
 ### Fixed
 
 - **A `multiple` `Combobox` keeps the error a `Form` put on it while the page around it renders again, and a single one keeps what is typed after a value its `items` do not have.** The value handed to Base UI was a new object on every render, which Base UI took for a new choice: it cleared the field's errors, so a server error vanished the moment the reader typed in another field, and in single mode it wrote the chosen label back into the input, so typing after a custom value such as `defaultValue="Foo"` did nothing. The value now stays the same object for as long as it holds the same entries, including when `value` or `items` is written inline.

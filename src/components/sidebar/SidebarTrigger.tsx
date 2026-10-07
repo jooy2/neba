@@ -4,7 +4,11 @@ import * as React from 'react';
 import { IconButton } from '../icon-button/IconButton.js';
 import type { IconButtonProps } from '../icon-button/IconButton.js';
 import { layoutMessages, useMessages } from '../../internal/i18n.js';
-import { collapsedOnlyClasses, PageLayoutContext } from '../../internal/page-layout.js';
+import {
+  collapsedOnlyClasses,
+  drawerChunk,
+  PageLayoutContext
+} from '../../internal/page-layout.js';
 import type { PageLayoutCollapse, SidebarSide } from '../../internal/page-layout.js';
 import { cx } from '../../internal/styles.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
@@ -44,6 +48,11 @@ function MenuIcon() {
   );
 }
 
+/** Starts the drawer's download. A failure is tried again when the drawer renders. */
+function reach() {
+  drawerChunk.load().catch(() => {});
+}
+
 /**
  * The button that brings back a [Sidebar] the window has become too narrow to
  * hold.
@@ -73,6 +82,9 @@ export const SidebarTrigger = React.forwardRef<HTMLButtonElement, SidebarTrigger
       variant = 'text',
       className,
       onClick,
+      onPointerEnter,
+      onFocus,
+      onTouchStart,
       ...props
     } = useStyleDefaults(rawProps, ['variant', 'locale'], { locale: layout.locale });
 
@@ -97,6 +109,21 @@ export const SidebarTrigger = React.forwardRef<HTMLButtonElement, SidebarTrigger
         onClick={(event) => {
           layout.setOpen(side, !open);
           onClick?.(event);
+        }}
+        // The drawer's chunk is fetched as a reader reaches for the button, so
+        // the press does not wait on the network. The request is shared, so
+        // every reach after the first finds it already made.
+        onPointerEnter={(event) => {
+          reach();
+          onPointerEnter?.(event);
+        }}
+        onFocus={(event) => {
+          reach();
+          onFocus?.(event);
+        }}
+        onTouchStart={(event) => {
+          reach();
+          onTouchStart?.(event);
         }}
         {...props}
       />

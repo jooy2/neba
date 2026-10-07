@@ -1,8 +1,10 @@
 import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { page, userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-react';
-import { NebaProvider, PageLayout, Sidebar, SidebarTrigger } from 'neba';
+import { renderToString } from 'react-dom/server';
+import { Header, NebaProvider, PageLayout, Sidebar, SidebarTrigger } from 'neba';
 import { ko, registerMessages } from 'neba/locales';
+import { drawerChunk } from '../../../src/internal/page-layout.js';
 
 registerMessages('ko', ko);
 
@@ -24,6 +26,154 @@ afterAll(async () => {
 });
 
 describe('Sidebar', () => {
+  /*
+   * The drawer is a Base UI dialog, fetched only once a sidebar has collapsed:
+   * a page whose sidebar stays a column never downloads it.
+   *
+   * This block has to stay first in the file. `React.lazy` asks for its chunk
+   * once and keeps the answer, so only the first collapsed sidebar this file
+   * renders can be made to wait for it.
+   */
+  describe('fetching the drawer', () => {
+    it('opens the drawer a press asked for before its chunk arrived', async () => {
+      await widen(NARROW);
+      const original = drawerChunk.load;
+      let release = () => {};
+      const gate = new Promise<void>((resolve) => {
+        release = resolve;
+      });
+      const load = vi
+        .spyOn(drawerChunk, 'load')
+        .mockImplementation(() => gate.then(() => original.call(drawerChunk)));
+
+      try {
+        const screen = await render(
+          <PageLayout
+            collapseBelow="md"
+            header={<SidebarTrigger />}
+            sidebar={
+              <Sidebar>
+                <a href="/docs">Docs</a>
+              </Sidebar>
+            }
+          >
+            Page
+          </PageLayout>
+        );
+
+        await screen.getByRole('button', { name: 'Open sidebar' }).click();
+        await new Promise((resolve) => setTimeout(resolve, 50));
+
+        expect(load).toHaveBeenCalled();
+        expect(screen.getByRole('dialog').query()).toBeNull();
+
+        release();
+
+        await expect.element(screen.getByRole('dialog')).toBeVisible();
+        await expect.element(screen.getByRole('link', { name: 'Docs' })).toBeVisible();
+      } finally {
+        release();
+        load.mockRestore();
+      }
+    });
+
+    it('is asked for as soon as the sidebar collapses', async () => {
+      await widen(NARROW);
+      const load = vi.spyOn(drawerChunk, 'load');
+
+      try {
+        await render(<Sidebar collapseBelow="md">Navigation</Sidebar>);
+
+        await expect.poll(() => load.mock.calls.length).toBeGreaterThan(0);
+      } finally {
+        load.mockRestore();
+      }
+    });
+
+    it('is not asked for by a sidebar that stays a column', async () => {
+      const load = vi.spyOn(drawerChunk, 'load');
+
+      try {
+        const screen = await render(
+          <PageLayout collapseBelow="md" sidebar={<Sidebar>Navigation</Sidebar>}>
+            Page
+          </PageLayout>
+        );
+
+        await expect.element(screen.getByRole('complementary')).toBeInTheDocument();
+        await new Promise(requestAnimationFrame);
+
+        expect(load).not.toHaveBeenCalled();
+      } finally {
+        load.mockRestore();
+      }
+    });
+
+    it('is not asked for by a server render, which sends the column', () => {
+      const load = vi.spyOn(drawerChunk, 'load');
+
+      try {
+        const html = renderToString(
+          <PageLayout
+            collapseBelow="md"
+            header={<Header brand={<SidebarTrigger />} />}
+            sidebar={<Sidebar>Navigation</Sidebar>}
+          >
+            Page
+          </PageLayout>
+        );
+
+        expect(load).not.toHaveBeenCalled();
+        expect(html).toContain('<aside');
+        expect(html).not.toContain('<!--$');
+      } finally {
+        load.mockRestore();
+      }
+    });
+
+    it('is asked for when the focus or a pointer reaches the trigger', async () => {
+      // The pointer away from where the trigger will be drawn first: an earlier
+      // test can leave it there, and Firefox reports a pointer entering an
+      // element laid out under it, which is a request this test did not make.
+      const away = await render(
+        <div
+          data-testid="away"
+          style={{ position: 'fixed', right: 0, bottom: 0, width: 8, height: 8 }}
+        />
+      );
+
+      await away.getByTestId('away').hover();
+      await away.unmount();
+
+      const load = vi.spyOn(drawerChunk, 'load');
+
+      try {
+        // Wide, so the sidebar is a column and has not asked on its own.
+        const screen = await render(
+          <PageLayout collapseBelow="md" header={<SidebarTrigger />} sidebar={<Sidebar />}>
+            Page
+          </PageLayout>
+        );
+        const trigger = screen.getByRole('button', { name: 'Open sidebar' });
+
+        expect(load).not.toHaveBeenCalled();
+
+        (trigger.element() as HTMLElement).focus();
+        expect(load).toHaveBeenCalled();
+
+        load.mockClear();
+        await trigger.hover();
+        expect(load).toHaveBeenCalled();
+      } finally {
+        load.mockRestore();
+      }
+    });
+
+    it('hands every caller the one request', () => {
+      expect(drawerChunk.load()).toBe(drawerChunk.load());
+    });
+  });
+
   describe('rendering', () => {
     it('renders a complementary landmark', async () => {
       const screen = await render(<Sidebar>Navigation</Sidebar>);

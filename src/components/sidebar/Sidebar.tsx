@@ -2,10 +2,10 @@
 
 import * as React from 'react';
 import { boxPaddingXClasses, boxPaddingYClasses } from '../box/Box.js';
-import { Drawer } from '../drawer/Drawer.js';
 import { beginPointerDrag, drawnScale } from '../../internal/drag.js';
 import { layoutMessages, useMessages } from '../../internal/i18n.js';
 import {
+  drawerChunk,
   drawerSide,
   expandedOnlyClasses,
   PageLayoutContext,
@@ -202,6 +202,14 @@ const variantClasses: Record<NebaVariant, string> = {
 const KEYBOARD_STEP = 16;
 
 /**
+ * The drawer, behind the chunk `drawerChunk` fetches. A closed overlay Drawer
+ * draws nothing, so the empty fallback is the same page until the chunk lands;
+ * an open one waits for it, and the open state it is handed is the sidebar's,
+ * so a press that came first is not lost.
+ */
+const SidebarDrawer = React.lazy(() => drawerChunk.load());
+
+/**
  * A column beside the page's content, and a drawer once the window is too
  * narrow to hold one.
  *
@@ -323,6 +331,22 @@ export const Sidebar = React.forwardRef<HTMLElement, SidebarProps>(function Side
 
     wasCollapsed.current = collapsed;
   }, [collapsed]);
+
+  // A sidebar that has collapsed is a drawer somebody is about to open, so the
+  // drawer's chunk is fetched now rather than at the press. A failure here is
+  // tried again when the drawer renders, which is when it is needed.
+  React.useEffect(() => {
+    if (collapsed) drawerChunk.load().catch(() => {});
+  }, [collapsed]);
+
+  // `open` is not read, and it is in the list on purpose: the side is read off
+  // the document's direction, which a provider may set after the first render,
+  // and asking again as the drawer opens is what puts it on the right edge.
+  const edge = React.useMemo(
+    () => (collapsed ? drawerSide(side) : null),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [collapsed, side, open]
+  );
 
   const width = toLength(widthProp) ?? widthValues[size];
 
@@ -461,36 +485,38 @@ export const Sidebar = React.forwardRef<HTMLElement, SidebarProps>(function Side
     </div>
   );
 
-  if (collapsed) {
+  if (edge) {
     return (
-      <Drawer
-        side={drawerSide(side)}
-        mode="overlay"
-        open={open}
-        onOpenChange={changeOpen}
-        keepMounted={keepMounted}
-        title={title}
-        size={size}
-        color={color}
-        density={density}
-        locale={locale}
-        closeLabel={messages.closeSidebar}
-        // An explicit width is the caller's decision and survives the change of
-        // shape; the default one does not, because a column sized against the
-        // article beside it and a panel sized against a phone are two different
-        // numbers, and Drawer's own ladder already knows the second.
-        extent={widthProp === undefined ? undefined : width}
-        aria-label={title ? undefined : (label ?? messages.sidebar)}
-        className={className}
-        style={style}
-        // The same spread the column below gets. Without it an `id`, a `data-*`
-        // or an `aria-*` a caller wrote survived on a wide screen and vanished
-        // on a narrow one — which is the worst shape that bug takes, because the
-        // screen it disappears on is the one nobody develops against.
-        {...props}
-      >
-        {children}
-      </Drawer>
+      <React.Suspense fallback={null}>
+        <SidebarDrawer
+          side={edge}
+          mode="overlay"
+          open={open}
+          onOpenChange={changeOpen}
+          keepMounted={keepMounted}
+          title={title}
+          size={size}
+          color={color}
+          density={density}
+          locale={locale}
+          closeLabel={messages.closeSidebar}
+          // An explicit width is the caller's decision and survives the change of
+          // shape; the default one does not, because a column sized against the
+          // article beside it and a panel sized against a phone are two different
+          // numbers, and Drawer's own ladder already knows the second.
+          extent={widthProp === undefined ? undefined : width}
+          aria-label={title ? undefined : (label ?? messages.sidebar)}
+          className={className}
+          style={style}
+          // The same spread the column below gets. Without it an `id`, a `data-*`
+          // or an `aria-*` a caller wrote survived on a wide screen and vanished
+          // on a narrow one — which is the worst shape that bug takes, because the
+          // screen it disappears on is the one nobody develops against.
+          {...props}
+        >
+          {children}
+        </SidebarDrawer>
+      </React.Suspense>
     );
   }
 

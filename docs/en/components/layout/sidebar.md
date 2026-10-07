@@ -72,6 +72,8 @@ The width below which the column becomes a [Drawer](../surfaces/drawer) over a s
 
 It defaults to the PageLayout's own value, and to `none` outside one.
 
+The drawer's code is a separate chunk, fetched the first time the sidebar collapses or a pointer or the focus reaches a SidebarTrigger. A page whose sidebar stays a column never downloads it.
+
 ### Reopening a collapsed sidebar
 
 A SidebarTrigger brings back a sidebar the window has become too narrow to hold. Put it in a [Header](./header)'s `brand` slot, ahead of the logo.

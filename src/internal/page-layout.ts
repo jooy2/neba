@@ -283,6 +283,40 @@ export function useCollapsed(breakpoint: PageLayoutCollapse): boolean {
 }
 
 /**
+ * The drawer a collapsed Sidebar becomes, fetched only once one has collapsed.
+ *
+ * A Drawer is a Base UI dialog, and that dialog was two thirds of what a page
+ * shell weighed — carried by every page with a sidebar, on a desktop where the
+ * sidebar never stops being a column as much as on a phone. A sidebar is a
+ * drawer only once a `matchMedia` in the browser says so, which never happens
+ * on a server, so nothing is lost by fetching it then: the Sidebar asks as soon
+ * as it collapses, which on a phone is straight after hydration, and a
+ * SidebarTrigger asks when a pointer, the focus or a finger first reaches it.
+ * `React.lazy` is handed the same promise and waits only for what is left of it.
+ * A request that fails is forgotten, so the next one tries again.
+ *
+ * Here rather than in Sidebar's file because SidebarTrigger asks too, and a
+ * trigger importing the sidebar would carry it. An object rather than a
+ * function so a test can spy on it.
+ */
+const requestDrawer = () =>
+  import('../components/drawer/Drawer.js').then((module) => ({ default: module.Drawer }));
+
+let drawerRequest: ReturnType<typeof requestDrawer> | undefined;
+
+export const drawerChunk = {
+  load() {
+    drawerRequest ??= requestDrawer().catch((error: unknown) => {
+      drawerRequest = undefined;
+
+      throw error;
+    });
+
+    return drawerRequest;
+  }
+};
+
+/**
  * `start` and `end` as the two sides a Drawer speaks.
  *
  * A sidebar says which end of the band it takes, because that is a layout
@@ -295,7 +329,9 @@ export function useCollapsed(breakpoint: PageLayoutCollapse): boolean {
  * Read during render rather than in an effect, which is safe here for a
  * narrower reason than it looks: the only caller is a sidebar that has already
  * collapsed, and collapsing is a client-side answer. There is no server render
- * of this to disagree with.
+ * of this to disagree with. It is a style read, so the caller asks once per
+ * collapse and once each time the drawer opens or closes, rather than on every
+ * render.
  */
 export function drawerSide(side: SidebarSide): NebaSide {
   const rtl =
