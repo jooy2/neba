@@ -345,6 +345,45 @@ describe('AnimateFade', () => {
       );
     });
 
+    // The rewind is a forced layout. A first start finds the animation still
+    // paused on its first frame, so it needs none; a replay does.
+    it('rewinds only a replay, not the first start', async () => {
+      const screen = await render(
+        <div>
+          <button type="button">Outside</button>
+          <AnimateFade trigger="hover" data-testid="fade">
+            <button type="button">Inside</button>
+          </AnimateFade>
+        </div>
+      );
+      const root = screen.getByTestId('fade').element() as HTMLElement;
+      const outside = screen.getByRole('button', { name: 'Outside' }).element() as HTMLElement;
+      const inside = screen.getByRole('button', { name: 'Inside' }).element() as HTMLElement;
+      const rewinds = async () => {
+        const records: MutationRecord[] = [];
+        const observer = new MutationObserver((list) => records.push(...list));
+
+        outside.focus();
+        observer.observe(root, {
+          attributes: true,
+          attributeFilter: ['style'],
+          attributeOldValue: true
+        });
+        inside.focus();
+        await expect.element(root).toHaveAttribute('data-state', 'running');
+        // A second start leaves the state as it was, so wait for the commit.
+        await new Promise((resolve) => requestAnimationFrame(resolve));
+
+        records.push(...observer.takeRecords());
+        observer.disconnect();
+
+        return records.filter((record) => record.oldValue?.includes('animation-name: none')).length;
+      };
+
+      expect(await rewinds()).toBe(0);
+      expect(await rewinds()).toBe(1);
+    });
+
     it('runs on mount by default', async () => {
       const screen = await render(<AnimateFade data-testid="fade">Arriving</AnimateFade>);
 

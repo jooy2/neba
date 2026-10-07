@@ -591,7 +591,16 @@ export interface AnimationRun {
  * would restart the animation by unmounting the children, taking their state
  * with it. Clearing `animation-name`, reading a layout property to force the
  * style to settle, and putting it back is the one move that rewinds the element
- * and leaves everything inside it alone.
+ * and leaves everything inside it alone. It is made only for a replay: an
+ * animation that has been paused since it was drawn is still on its first
+ * frame, letting it go is the whole of starting it, and so the first start of
+ * a `visible`, `hover` or `manual` effect forces no layout at all.
+ *
+ * The rewind stays a reflow rather than a seek through `getAnimations()`.
+ * Setting `currentTime` back to `0` on an animation that has finished moves it
+ * from its last phase to its first, which Chromium and WebKit report as an
+ * `animationstart` and an `animationend` at once when there is a `delay` — and
+ * a pattern that unmounts on `animationend` would take that for the end.
  */
 export function useAnimationRun({
   trigger,
@@ -623,12 +632,15 @@ export function useAnimationRun({
   }, []);
 
   const state = started && !paused && !(infinite && offscreen) ? 'running' : 'paused';
+  // Whether it has been let go since it was drawn, as of the last commit.
+  const ran = React.useRef(false);
 
-  // Nothing to rewind on the first pass — the element has only just been drawn.
+  // Nothing to rewind on the first pass — the element has only just been drawn
+  // — nor on a first start, which finds it still on its first frame.
   useLayoutEffectOnClient(() => {
     const element = node.current;
 
-    if (!element || run === 0) {
+    if (!element || run === 0 || !ran.current) {
       return;
     }
 
@@ -652,6 +664,13 @@ export function useAnimationRun({
       target.style.animationName = '';
     }
   }, [run, parts]);
+
+  // After the rewind above, which has to read what was true before this commit.
+  useLayoutEffectOnClient(() => {
+    if (state === 'running') {
+      ran.current = true;
+    }
+  }, [state]);
 
   const offsetX = offset?.x;
   const offsetY = offset?.y;

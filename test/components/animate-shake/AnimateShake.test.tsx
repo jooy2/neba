@@ -34,9 +34,9 @@ describe('AnimateShake', () => {
   // A field that shakes on every failed submit holds an Alert that faded in
   // once, and a replay that rewound every animation inside it faded the Alert
   // in again each time.
-  it('rewinds only itself when it is played, not an effect inside it', async () => {
+  it('rewinds only itself when it is played again, not an effect inside it', async () => {
     const screen = await render(
-      <AnimateShake data-testid="s">
+      <AnimateShake play={1} data-testid="s">
         <Box transition="fade" data-testid="inner">
           Wrong
         </Box>
@@ -52,7 +52,7 @@ describe('AnimateShake', () => {
     observer.observe(inner, options);
 
     await screen.rerender(
-      <AnimateShake play data-testid="s">
+      <AnimateShake play={2} data-testid="s">
         <Box transition="fade" data-testid="inner">
           Wrong
         </Box>

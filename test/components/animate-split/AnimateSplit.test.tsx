@@ -137,8 +137,14 @@ describe('AnimateSplit', () => {
     });
 
     // What it animates is its pieces, so a replay has to reach them.
+    // A first play finds the pieces still on their first frame, so only a
+    // second one has anything to rewind.
     it('rewinds its pieces when it is played again', async () => {
-      const screen = await render(<AnimateSplit trigger="manual">One two</AnimateSplit>);
+      const screen = await render(
+        <AnimateSplit trigger="manual" play={1}>
+          One two
+        </AnimateSplit>
+      );
       const piece = pieces(screen.container)[0];
       const records: MutationRecord[] = [];
       const observer = new MutationObserver((list) => records.push(...list));
@@ -150,7 +156,7 @@ describe('AnimateSplit', () => {
       });
 
       await screen.rerender(
-        <AnimateSplit trigger="manual" play>
+        <AnimateSplit trigger="manual" play={2}>
           One two
         </AnimateSplit>
       );

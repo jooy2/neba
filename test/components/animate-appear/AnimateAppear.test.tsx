@@ -156,10 +156,11 @@ describe('AnimateAppear', () => {
       await expect.element(screen.getByTestId('appear')).toHaveAttribute('data-state', 'running');
     });
 
-    // What it animates is its children, so a replay has to reach them.
+    // What it animates is its children, so a replay has to reach them. A
+    // first play finds them still on their first frame.
     it('rewinds the children it animates when it is played again', async () => {
       const screen = await render(
-        <AnimateAppear trigger="manual" data-testid="appear">
+        <AnimateAppear trigger="manual" play={1} data-testid="appear">
           <p>First</p>
         </AnimateAppear>
       );
@@ -174,7 +175,7 @@ describe('AnimateAppear', () => {
       });
 
       await screen.rerender(
-        <AnimateAppear trigger="manual" play data-testid="appear">
+        <AnimateAppear trigger="manual" play={2} data-testid="appear">
           <p>First</p>
         </AnimateAppear>
       );

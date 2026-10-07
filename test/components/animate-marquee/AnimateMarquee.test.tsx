@@ -205,10 +205,11 @@ describe('AnimateMarquee', () => {
       expect(screen.getByTestId('marquee').element()).not.toHaveAttribute('data-pause-on-hover');
     });
 
-    // A replay has to reach the tracks, which are what move.
+    // A replay has to reach the tracks, which are what move. A first play
+    // finds them still on their first frame and has nothing to rewind.
     it('rewinds its tracks when it is played again', async () => {
       const screen = await render(
-        <AnimateMarquee trigger="manual" data-testid="marquee">
+        <AnimateMarquee trigger="manual" play={1} data-testid="marquee">
           <span>Alpha</span>
         </AnimateMarquee>
       );
@@ -223,7 +224,7 @@ describe('AnimateMarquee', () => {
       });
 
       await screen.rerender(
-        <AnimateMarquee trigger="manual" play data-testid="marquee">
+        <AnimateMarquee trigger="manual" play={2} data-testid="marquee">
           <span>Alpha</span>
         </AnimateMarquee>
       );
