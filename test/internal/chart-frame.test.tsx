@@ -7,8 +7,11 @@
  * and its marks on that layout, so a fresh object on each move is every path on
  * the plot traced again for a picture that has not changed.
  */
+import * as React from 'react';
 import { describe, expect, it, vi } from 'vitest';
+import { flushSync } from 'react-dom';
 import { renderToString } from 'react-dom/server';
+import { createRoot, hydrateRoot } from 'react-dom/client';
 import { render } from 'vitest-browser-react';
 import {
   CartesianChart,
@@ -236,5 +239,94 @@ describe('ChartDataTable', () => {
     expect(
       [...table.element().querySelectorAll('tbody th')].map((cell) => cell.textContent)
     ).toEqual(categories);
+  });
+});
+
+/**
+ * When the measurement the drawing waits for is applied.
+ */
+describe('measuring the width', () => {
+  const chart = (
+    <div style={{ width: 320 }}>
+      <CartesianChart label="Load" series={[{ name: 'A', data: [1, 4, 2] }]}>
+        {() => null}
+      </CartesianChart>
+    </div>
+  );
+
+  // Mounted in the browser, the chart is drawn before anything is painted, so
+  // the empty box never reaches the screen.
+  it('draws a chart mounted in the browser in the commit that mounts it', () => {
+    const host = document.createElement('div');
+    const root = createRoot(host);
+
+    document.body.append(host);
+
+    try {
+      flushSync(() => root.render(chart));
+
+      expect(host.querySelector('svg')).not.toBeNull();
+    } finally {
+      root.unmount();
+      host.remove();
+    }
+  });
+
+  // After a hydration the empty box has already been painted from the server's
+  // HTML, and drawing every chart on the page inside the hydration's own task
+  // kept the page from answering anything the reader did meanwhile.
+  //
+  // Asked twice: with no `locale` the chart also renders once more straight
+  // after hydration, to write in the reader's language, and the drawing must
+  // stay out of that render as well. React 19 only: React 18 does not reliably
+  // keep a transition started in a layout effect out of the task that is
+  // hydrating, so there the chart may still draw inside it, as it always did.
+  it.skipIf(React.version.startsWith('18.')).each([
+    ['with a locale', 'en-US'],
+    ['with no locale', undefined]
+  ] as const)('draws a hydrated chart after the hydration has committed, %s', async (_, locale) => {
+    const hydrated = (
+      <div style={{ width: 320 }}>
+        <CartesianChart label="Load" locale={locale} series={[{ name: 'A', data: [1, 4, 2] }]}>
+          {() => null}
+        </CartesianChart>
+      </div>
+    );
+    const host = document.createElement('div');
+    let drawnInCommit: boolean | null = null;
+
+    /** Looks, once the commit that hydrated the chart has returned. */
+    function Probe() {
+      React.useLayoutEffect(() => {
+        queueMicrotask(() => {
+          drawnInCommit = host.querySelector('svg') !== null;
+        });
+      }, []);
+
+      return null;
+    }
+
+    host.innerHTML = renderToString(hydrated);
+    document.body.append(host);
+
+    const recoverable = vi.fn();
+    const root = hydrateRoot(
+      host,
+      <>
+        {hydrated}
+        <Probe />
+      </>,
+      { onRecoverableError: recoverable }
+    );
+
+    try {
+      await vi.waitFor(() => expect(host.querySelector('svg')).not.toBeNull());
+
+      expect(drawnInCommit).toBe(false);
+      expect(recoverable).not.toHaveBeenCalled();
+    } finally {
+      root.unmount();
+      host.remove();
+    }
   });
 });

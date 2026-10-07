@@ -76,6 +76,62 @@ import type {
 const noMarks: readonly ChartMark[] = [];
 
 /**
+ * One side of the chart's host, in pixels, kept current as the host resizes.
+ *
+ * **Which measurements wait.** A state update in a layout effect is rendered
+ * before the effect's commit returns, in the same task. That is the point of
+ * the first measurement of a chart mounted in the browser — the empty box is
+ * never painted — and it stays that way. It is the wrong trade after a
+ * hydration: the box has already been painted empty from the server's HTML,
+ * so there is nothing to hide, and every chart on the page drew itself in the
+ * hydration's own task — about 80 ms of a 190 ms task on a dashboard of nine
+ * charts under a fourfold CPU slowdown, during which nothing the reader did
+ * could be answered. So the first measurement after a hydration is applied in a
+ * transition, which React renders in slices it can interrupt, and so is every
+ * later one, from a resize: the final drawing is the same, and it may trail a
+ * continuous resize by a frame. A width and a height measured off the same
+ * resize land in the same transition, so a chart is not drawn once with each.
+ */
+function useMeasured(
+  ref: React.RefObject<HTMLElement | null>,
+  read: (host: HTMLElement) => number,
+  enabled: boolean
+): number {
+  // Settled when the chart mounts: `false` in a tree hydrating what a server
+  // sent, `true` in one mounted in the browser, whatever happens afterwards.
+  const hydrated = useHydrated();
+  const [mountedInBrowser] = React.useState(hydrated);
+  const [size, setSize] = React.useState(0);
+
+  useLayoutEffectOnClient(() => {
+    const host = ref.current;
+
+    if (!enabled || !host) {
+      return;
+    }
+
+    const measure = () => {
+      const next = read(host);
+
+      React.startTransition(() => setSize(next));
+    };
+
+    if (mountedInBrowser) {
+      setSize(read(host));
+    } else {
+      measure();
+    }
+
+    return observeResize(host, measure);
+  }, [ref, read, enabled, mountedInBrowser]);
+
+  return size;
+}
+
+const readWidth = (host: HTMLElement) => host.clientWidth;
+const readHeight = (host: HTMLElement) => host.clientHeight;
+
+/**
  * How wide the chart actually is, in pixels.
  *
  * An SVG cannot lay a chart out from a percentage: every tick position, every
@@ -98,23 +154,7 @@ function useMeasuredWidth(
   ref: React.RefObject<HTMLElement | null>,
   { enabled = true }: { enabled?: boolean } = {}
 ): number {
-  const [width, setWidth] = React.useState(0);
-
-  useLayoutEffectOnClient(() => {
-    const host = ref.current;
-
-    if (!enabled || !host) {
-      return;
-    }
-
-    const measure = () => setWidth(host.clientWidth);
-
-    measure();
-
-    return observeResize(host, measure);
-  }, [ref, enabled]);
-
-  return width;
+  return useMeasured(ref, readWidth, enabled);
 }
 
 /**
@@ -125,23 +165,7 @@ function useMeasuredWidth(
  * It measures nothing when the height is already a number.
  */
 function useMeasuredHeight(ref: React.RefObject<HTMLElement | null>, enabled: boolean): number {
-  const [height, setHeight] = React.useState(0);
-
-  useLayoutEffectOnClient(() => {
-    const host = ref.current;
-
-    if (!enabled || !host) {
-      return;
-    }
-
-    const measure = () => setHeight(host.clientHeight);
-
-    measure();
-
-    return observeResize(host, measure);
-  }, [ref, enabled]);
-
-  return height;
+  return useMeasured(ref, readHeight, enabled);
 }
 
 /**
