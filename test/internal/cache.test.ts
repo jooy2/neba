@@ -73,4 +73,22 @@ describe('memoise', () => {
 
     expect(memoise(store, -1, () => 'second')).toBe('second');
   });
+
+  // Highlight's folded characters: a page of Korean uses a few hundred, and a
+  // store that emptied itself every few dozen read nothing back.
+  it('holds as many as a store asks for, and empties there instead', () => {
+    const store = new Map<number, number>();
+
+    for (let index = 0; index < 500; index += 1) {
+      memoise(store, index, () => index, 1000);
+    }
+
+    expect(store.size).toBe(500);
+
+    for (let index = 500; index < 1500; index += 1) {
+      memoise(store, index, () => index, 1000);
+    }
+
+    expect(store.size).toBeLessThanOrEqual(1000);
+  });
 });

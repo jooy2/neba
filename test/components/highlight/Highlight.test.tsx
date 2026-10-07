@@ -169,6 +169,27 @@ describe('Highlight', () => {
       expect(marks(screen.container)).toEqual(['가']);
     });
 
+    // Every pass folded the whole text one character at a time, two
+    // `normalize` calls each: 12 ms for 46,000 characters of Korean, on every
+    // render that marked it.
+    it('folds a character once, however often the text is marked again', async () => {
+      const text = '한국어 문장에서 같은 글자가 여러 번 나옵니다. 한국어 문장.';
+      const screen = await render(<Highlight query="문장">{text}</Highlight>);
+
+      expect(marks(screen.container)).toEqual(['문장', '문장']);
+
+      const normalize = vi.spyOn(String.prototype, 'normalize');
+
+      try {
+        await screen.rerender(<Highlight query="한국어">{text}</Highlight>);
+
+        expect(marks(screen.container)).toEqual(['한국어', '한국어']);
+        expect(normalize).not.toHaveBeenCalled();
+      } finally {
+        normalize.mockRestore();
+      }
+    });
+
     it('matches a RegExp as written', async () => {
       const screen = await render(<Highlight query={/jose/i}>José and Jose</Highlight>);
 

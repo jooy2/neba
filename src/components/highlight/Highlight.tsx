@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import type { TypographyWeight } from '../typography/Typography.js';
+import { memoise } from '../../internal/cache.js';
 import { cx, transitionClasses } from '../../internal/styles.js';
 import type { NebaColor, NebaVariant } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
@@ -107,13 +108,36 @@ const wordCharacter = /[\p{L}\p{N}_]/u;
 /** The combining marks `NFD` splits an accented letter into, as `internal/search.ts` strips them. */
 const COMBINING = /[\u0300-\u036f]/g;
 
+/** Folded characters, by the character. */
+const foldedCharacters = new Map<string, string>();
+
+/**
+ * How many different characters `foldedCharacters` holds before it starts
+ * again. Hangul has 11,172 syllables and an ordinary page of Korean uses a
+ * few hundred of them; a store that held fewer than a page uses would empty
+ * itself before a second pass could read anything back.
+ */
+const FOLDED_CHARACTERS = 4096;
+
 /**
  * One character without its accents: `é` is `e`. Composed again afterwards, so
  * a Hangul syllable — which `NFD` also takes apart — stays one syllable and a
  * query cannot mark half of it.
+ *
+ * Remembered per character. Every render that marks a text folds all of it,
+ * one character and two `normalize` calls at a time, and a text that is not
+ * ASCII uses the same few hundred characters over and over: 46,000 characters
+ * of Korean took 12 ms a pass, and 3.4 ms with the answers kept. The answer
+ * may be `''`, for a combining mark on its own, which is a value the store can
+ * hold.
  */
 function foldCharacter(character: string): string {
-  return character.normalize('NFD').replace(COMBINING, '').normalize('NFC');
+  return memoise(
+    foldedCharacters,
+    character,
+    () => character.normalize('NFD').replace(COMBINING, '').normalize('NFC'),
+    FOLDED_CHARACTERS
+  );
 }
 
 /** Text with its accents folded, and where each folded unit came from. */

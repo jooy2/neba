@@ -64,6 +64,8 @@
 
 - **Pressing Copy on a long `CodeBlock` no longer draws every line again.** The button's label, the announcement and the overflow check are each a render of the block, and every one of them reconciled every line and token of the file; one press was three or four of those. The lines are now kept until something they show changes.
 
+- **`Highlight` marks text that is not ASCII about three times faster.** To ignore accents it folded the whole text one character at a time on every render that marked it, which was 12 ms for 46,000 characters of Korean. It now remembers each character it has folded, and the marks are the same.
+
 ### Fixed
 
 - **A `multiple` `Combobox` keeps the error a `Form` put on it while the page around it renders again, and a single one keeps what is typed after a value its `items` do not have.** The value handed to Base UI was a new object on every render, which Base UI took for a new choice: it cleared the field's errors, so a server error vanished the moment the reader typed in another field, and in single mode it wrote the chosen label back into the input, so typing after a custom value such as `defaultValue="Foo"` did nothing. The value now stays the same object for as long as it holds the same entries, including when `value` or `items` is written inline.

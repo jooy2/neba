@@ -19,20 +19,26 @@
  * One rule comes with the shape: a store must not hold `undefined` as a value,
  * or every read of that key misses and builds again. All five hold an object, a
  * number or `null`.
+ *
+ * A store keyed on something far more numerous names a ceiling of its own.
+ * Highlight's folded characters are the one: a text in Hangul or Han has
+ * hundreds of different characters in ordinary use, and at the default a store
+ * of them emptied itself every few dozen characters and cost more than it
+ * saved.
  */
 
 /** Well past any legitimate use, and still a bound. */
 const LIMIT = 64;
 
 /** Reads `key` out of `store`, filling it in with `build` on a miss. */
-export function memoise<K, V>(store: Map<K, V>, key: K, build: () => V): V {
+export function memoise<K, V>(store: Map<K, V>, key: K, build: () => V, limit = LIMIT): V {
   const hit = store.get(key);
 
   if (hit !== undefined) {
     return hit;
   }
 
-  if (store.size >= LIMIT) {
+  if (store.size >= limit) {
     store.clear();
   }
 
