@@ -1,4 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
+import { renderToString } from 'react-dom/server';
+import { hydrateRoot } from 'react-dom/client';
 import { render } from 'vitest-browser-react';
 import { userEvent } from 'vitest/browser';
 import { PieChart } from 'neba';
@@ -74,6 +76,62 @@ describe('PieChart', () => {
 
       await expect.element(screen.getByText('Nothing to show')).toBeInTheDocument();
       expect(screen.getByRole('table').query()).toBeNull();
+    });
+
+    // A server render has no width, and the pie said "Nothing here" there and
+    // left its table, its description and its tab stop out of the HTML.
+    it('writes its table, its description and its tab stop into a server render', () => {
+      const html = renderToString(
+        <PieChart
+          label="Accounts by plan"
+          shape="donut"
+          center="100 accounts"
+          categories={PLANS}
+          data={[50, 30, 20]}
+        />
+      );
+      const page = new DOMParser().parseFromString(html, 'text/html');
+      const plot = page.querySelector('[role="img"]');
+      const described = page.getElementById(plot?.getAttribute('aria-describedby') ?? '');
+
+      expect(html).not.toContain('Nothing here');
+      expect(page.querySelector('table caption')?.textContent).toBe('Accounts by plan');
+      expect(page.querySelectorAll('tbody tr')).toHaveLength(3);
+      expect(plot?.getAttribute('tabindex')).toBe('0');
+      expect(described?.textContent).toContain('20');
+      expect(plot?.textContent).toBe('100 accounts');
+    });
+
+    it('draws its slices once the server render has hydrated', async () => {
+      const element = (
+        <div style={{ width: 320 }}>
+          <PieChart
+            label="Accounts"
+            shape="donut"
+            center="100"
+            categories={PLANS}
+            data={[50, 30, 20]}
+          />
+        </div>
+      );
+      const host = document.createElement('div');
+
+      host.innerHTML = renderToString(element);
+      document.body.append(host);
+
+      const recoverable = vi.fn();
+      const root = hydrateRoot(host, element, { onRecoverableError: recoverable });
+
+      try {
+        await vi.waitFor(() => expect(host.querySelectorAll('svg path')).toHaveLength(3));
+        expect(recoverable).not.toHaveBeenCalled();
+        // Contained rather than equal: a pointer an earlier file left over the
+        // chart opens a reading, whose words are inside the picture too.
+        expect(host.querySelector('[role="img"]')?.textContent).toContain('100');
+      } finally {
+        root.unmount();
+        host.remove();
+      }
     });
 
     it('reflects changed data on re-render', async () => {

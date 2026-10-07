@@ -247,9 +247,16 @@ export function PieChart(rawProps: PieChartProps) {
   const centreX = width / 2;
   const outer = Math.max(0, Math.min(width / 2, semi ? plotHeight : plotHeight / 2) - 2);
   const centreY = semi ? Math.min(plotHeight, plotHeight / 2 + outer / 2) : plotHeight / 2;
-  const inner = outer * Math.min(widestHole, Math.max(0, hole ?? holes[shape]));
+  const holeFraction = Math.min(widestHole, Math.max(0, hole ?? holes[shape]));
+  const inner = outer * holeFraction;
 
-  const nothing = total <= 0 || outer <= 0;
+  // A box that has not been measured yet is not an empty pie: a server render
+  // has no width at all, and saying "Nothing here" there put the wrong words
+  // in the HTML a crawler reads and left the table, the summary and the tab
+  // stop out of it. Until there is a width the box stays empty and everything
+  // around it is written, as on a GaugeChart.
+  const measured = width > 0;
+  const nothing = total <= 0 || (measured && outer <= 0);
 
   // The gap between two slices, as the angle that subtends it at the rim. Wider
   // for a small pie than for a large one, which is the point: the gap is a
@@ -418,7 +425,7 @@ export function PieChart(rawProps: PieChartProps) {
           >
             {empty ?? messages.title}
           </div>
-        ) : width > 0 ? (
+        ) : measured ? (
           <svg
             width={width}
             height={plotHeight}
@@ -489,15 +496,24 @@ export function PieChart(rawProps: PieChartProps) {
           </svg>
         ) : null}
 
-        {center && inner > 0 ? (
+        {/* Before the box is measured the hole has no size, but a full ring's
+            centre is the middle of the box whatever its width, so the readout
+            is written there and stays where it is when the ring arrives. One
+            element either way, so a `center` that holds state keeps it. A
+            semicircle's centre depends on the width, and it waits. */}
+        {center && (measured ? inner > 0 : !nothing && !semi && holeFraction > 0) ? (
           <div
             className="pointer-events-none absolute flex flex-col items-center justify-center text-center"
-            style={{
-              left: centreX - inner,
-              top: centreY - (semi ? inner : inner),
-              width: inner * 2,
-              height: semi ? inner : inner * 2
-            }}
+            style={
+              measured
+                ? {
+                    left: centreX - inner,
+                    top: centreY - inner,
+                    width: inner * 2,
+                    height: semi ? inner : inner * 2
+                  }
+                : { inset: 0 }
+            }
           >
             {center}
           </div>

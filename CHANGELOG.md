@@ -60,6 +60,8 @@
 
 - **A server-rendered `Tabs` bar shows which tab is chosen from the first paint.** The pill under the chosen tab of a `solid` bar, and the line under it on the other two, appeared only once the page had hydrated, because the indicator is placed by a measurement. Until then the chosen tab now draws the same thing itself and hands it to the indicator in the same frame, so nothing moves or fades. Firefox 113 to 120 lack the `:has()` this relies on and show the tab by its colour alone until hydration, as before.
 
+- **A server-rendered `PieChart` no longer says it is empty.** A pie has no size until it has measured itself, so its server HTML said "Nothing here" and carried no hidden table, no description and no tab stop, which is what a crawler and a reader without JavaScript got. Until it is measured the box is now empty and the table, the description and the tab stop are written around it, as a `GaugeChart` already did. A donut's `center` is written in the middle of the box from the first render; a `semi` one's still waits for the width.
+
 ## 1.18.1 (2026-10-07)
 
 ### Added
