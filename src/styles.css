@@ -2807,20 +2807,28 @@
  *
  * `currentColor` rather than a token, because a bubble's ink is white on
  * `solid` and the page's own on the other two.
+ *
+ * The colour changes through `opacity` on a solid dot rather than through the
+ * dot's `background-color`. A dot has nothing inside it, so the two draw the
+ * same pixels at every frame — `currentColor` at 28% is `currentColor` at an
+ * alpha of 0.28 — but a background is repainted on the main thread every frame
+ * for as long as somebody is typing, and an opacity is handed to the
+ * compositor.
  */
 @keyframes neba-typing {
   0%,
   60%,
   100% {
-    background-color: color-mix(in oklab, currentColor 28%, transparent);
+    opacity: 0.28;
   }
   30% {
-    background-color: currentColor;
+    opacity: 1;
   }
 }
 
 .neba-typing-dot {
-  background-color: color-mix(in oklab, currentColor 28%, transparent);
+  background-color: currentColor;
+  opacity: 0.28;
   animation: neba-typing 1.25s var(--neba-ease) infinite;
   animation-delay: calc(var(--n-i, 0) * 160ms);
 }
@@ -2898,14 +2906,16 @@
 
 /* The reduced-motion stand-in: the highlight stops travelling and the whole
    placeholder breathes instead. Colour, which is the axis every other state in
-   the library already uses. */
+   the library already uses — drawn as the opacity of a layer that is already
+   that colour, which is the same pixels as a background fading in from
+   transparent, without a repaint on every frame of a loading page. */
 @keyframes neba-skeleton-pulse {
   0%,
   100% {
-    background-color: transparent;
+    opacity: 0;
   }
   50% {
-    background-color: var(--n-panel-press);
+    opacity: 1;
   }
 }
 
@@ -3513,6 +3523,7 @@
     inset-inline-start: 0;
     inline-size: 100%;
     background-image: none;
+    background-color: var(--n-panel-press);
     animation: neba-skeleton-pulse 2.4s var(--neba-ease) infinite;
   }
 

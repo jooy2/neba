@@ -98,3 +98,19 @@ describe('the looping sweeps', () => {
     expect(direction('island')).toBe('1');
   });
 });
+
+/*
+ * Two loops that run for as long as something is pending — three dots under a
+ * message somebody is typing, and a placeholder's pulse under reduced motion —
+ * and that once changed a background on every frame, which is a repaint on the
+ * main thread for the whole time. Each layer is one colour with nothing inside
+ * it, so an opacity draws the same pixels and is left to the compositor.
+ */
+describe('the loops that only fade', () => {
+  it.each(['neba-typing', 'neba-skeleton-pulse'])('%s changes opacity alone', (name) => {
+    const properties = keyframeProperties(name);
+
+    expect(properties.length).toBeGreaterThan(0);
+    expect(new Set(properties)).toEqual(new Set(['opacity']));
+  });
+});
