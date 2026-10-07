@@ -85,10 +85,17 @@ export const breakpointWidths: Record<NebaBreakpoint, string> = {
 /**
  * The widths actually in force, read off the document once.
  *
- * Once, and lazily: `getComputedStyle` is a layout read, and the answer cannot
+ * Once, and lazily: `getComputedStyle` is a style read, and the answer cannot
  * change without a new stylesheet. The first call happens when something first
- * asks a width question, which is after React has rendered and therefore after
- * the stylesheet is in the document.
+ * asks a width question, which is during a render.
+ *
+ * A read that finds none of the four is not kept. It means the stylesheet has
+ * not arrived yet — a script that runs before a `<link>` finishes loading asks
+ * before there is anything to read — and keeping it would pin the fallback for
+ * the life of the page, so a consumer who moved `--breakpoint-md` would get the
+ * default for good. Until a read finds them, each call reads again; on a page
+ * that never loads the stylesheet that is a read per call, which is a page
+ * whose components are unstyled anyway.
  *
  * Every failure falls back to the table above rather than throwing — no window,
  * no stylesheet yet, a token a consumer's build did not emit. A wrong-by-a-
@@ -106,13 +113,20 @@ function readBreakpoints(): Record<NebaBreakpoint, string> {
 
   const style = getComputedStyle(document.documentElement);
   const widths = { ...breakpointWidths };
+  let found = false;
 
   for (const name of ['sm', 'md', 'lg', 'xl'] as const) {
     const value = style.getPropertyValue(`--neba-breakpoint-${name}`).trim();
-    if (value) widths[name] = value;
+
+    if (value) {
+      widths[name] = value;
+      found = true;
+    }
   }
 
-  resolved = widths;
+  if (found) {
+    resolved = widths;
+  }
 
   return widths;
 }
