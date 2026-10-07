@@ -138,6 +138,29 @@ describe('PromptInput', () => {
 
       await expect.poll(() => heightOf(control)).toBeGreaterThan(wide);
     });
+
+    // Measuring sets the field to `auto` for a moment, and at the bottom of a
+    // page that is a shorter page than the one it is scrolled to the end of:
+    // the browser pulled the page up under a reader typing into it.
+    it('leaves the page where it is scrolled while it measures', async () => {
+      const screen = await render(
+        <div>
+          <div style={{ height: '200vh' }} />
+          <PromptInput label="Message" defaultValue={'one\ntwo\nthree'} />
+        </div>
+      );
+      const control = screen.getByRole('textbox').element() as HTMLTextAreaElement;
+
+      await expect.poll(() => heightOf(control)).toBeGreaterThan(0);
+      window.scrollTo(0, document.documentElement.scrollHeight);
+
+      const scrolled = window.scrollY;
+
+      await screen.getByRole('textbox').fill('one\ntwo\nthree\nfour');
+
+      expect(window.scrollY).toBe(scrolled);
+      window.scrollTo(0, 0);
+    });
   });
 
   describe('sending', () => {

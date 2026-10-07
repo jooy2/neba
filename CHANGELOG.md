@@ -146,6 +146,8 @@
 
 - **`AnimateMarquee` no longer jumps when it measures itself.** A server-rendered strip ran at a guessed twelve seconds until the page hydrated, and the measured duration that replaced it, and every one after a resize, moved the strip to a different place in one frame. It now carries on from where it was, at the new speed.
 
+- **A `PromptInput` holding a server-rendered draft is the right height from the first paint, and typing in it no longer forces a layout per keystroke.** The field measured its own height on every character, and a draft rendered on the server was one row tall until the page hydrated. A field that starts at one row now uses `field-sizing: content` in Chrome and Edge 123, Firefox 152 and Safari 26.2 and later; elsewhere, and with `minRows` above one, it measures as before. A measuring field also no longer pulls the page up in Firefox when it is typed into at the bottom of the page.
+
 ## 1.18.1 (2026-10-07)
 
 ### Added

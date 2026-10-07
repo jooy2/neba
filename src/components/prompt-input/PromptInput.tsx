@@ -248,12 +248,34 @@ export const PromptInput = React.forwardRef<HTMLTextAreaElement, PromptInputProp
     );
 
     /*
-     * The field's own height, measured rather than declared.
+     * Whether the browser sizes the field to its text by itself.
      *
-     * `field-sizing: content` is the one-line version of this and is years past
-     * the browsers this library still supports, so the height is set from the
-     * content's own `scrollHeight` — reset to `auto` first, because a box that
-     * is already tall reports its current height rather than the text's.
+     * `field-sizing: content` is the one-line version of everything below, and
+     * the field asks for it behind an `@supports`. Where it holds, the height is
+     * right in the first paint — a server-rendered draft of five lines included,
+     * which the measurement below only reaches after hydration — and typing
+     * costs no layout at all. Read off the field's own computed style once,
+     * rather than off `CSS.supports`, because what matters is whether the rule
+     * reached this element: without the stylesheet it did not.
+     *
+     * Only for a field that starts at one row. `field-sizing` ignores `rows`,
+     * so the shortest a taller field could be is its `min-height` of so many
+     * lines, which counts the textarea's own padding inside them: three rows
+     * came out four pixels short of the three rows `rows` draws. One row is
+     * the text's own height either way.
+     */
+    const sizesItself = React.useRef<boolean | null>(null);
+
+    /*
+     * The field's own height, measured rather than declared, where the browser
+     * does not size it.
+     *
+     * The height is set from the content's own `scrollHeight` — reset to
+     * `auto` first, because a box that is already tall reports its current
+     * height rather than the text's. That is a synchronous layout on every
+     * keystroke, and the moment the box is `auto` the page can be shorter than
+     * where it is scrolled to, so the browser pulls the page up under a reader
+     * typing at the bottom of it. The scroll position is put back.
      *
      * A layout effect and not an effect: this runs between React writing the
      * text and the browser painting it, so the box is never drawn at the wrong
@@ -266,8 +288,22 @@ export const PromptInput = React.forwardRef<HTMLTextAreaElement, PromptInputProp
         return;
       }
 
+      sizesItself.current ??=
+        getComputedStyle(node).getPropertyValue('field-sizing').trim() === 'content';
+
+      if (sizesItself.current) {
+        return;
+      }
+
+      const view = node.ownerDocument.defaultView;
+      const scrolled = view?.scrollY ?? 0;
+
       node.style.height = 'auto';
       node.style.height = `${node.scrollHeight}px`;
+
+      if (view && view.scrollY !== scrolled) {
+        view.scrollTo(view.scrollX, scrolled);
+      }
     }, []);
 
     useLayoutEffectOnClient(fit, [fit, value, minRows, maxRows]);
@@ -284,7 +320,8 @@ export const PromptInput = React.forwardRef<HTMLTextAreaElement, PromptInputProp
     React.useEffect(() => {
       const node = controlRef.current;
 
-      if (!node) {
+      // Read by the layout effect above, which has run by now.
+      if (!node || sizesItself.current) {
         return undefined;
       }
 
@@ -402,6 +439,7 @@ export const PromptInput = React.forwardRef<HTMLTextAreaElement, PromptInputProp
               // the outline off this element and leaves the ring alone.
               '[outline:none]',
               'min-h-(--n-min-rows) max-h-(--n-max-rows) overflow-y-auto',
+              minRows <= 1 && 'supports-[field-sizing:content]:[field-sizing:content]',
               'placeholder:text-(--neba-muted-fg)',
               'caret-(--n-accent) selection:bg-(--n-soft-press)',
               'disabled:cursor-not-allowed',
