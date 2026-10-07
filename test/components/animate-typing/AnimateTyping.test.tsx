@@ -141,15 +141,21 @@ describe('AnimateTyping', () => {
       ).toBe('▌');
     });
 
-    // A caret that is a node has nothing to put in an attribute.
-    it('renders a caret that is a node as it was given', async () => {
+    // A caret that is a node has nothing to put in an attribute. It is in the
+    // typed line and in the final one underneath, which the stylesheet draws
+    // instead for a reader who asked for less motion: one copy is never laid
+    // out while the other is drawn.
+    it('renders a caret that is a node as it was given, in both lines', async () => {
       const screen = await render(
         <AnimateTyping caretChar={<svg data-testid="caret" />} data-testid="typing">
           Hello
         </AnimateTyping>
       );
+      const typing = screen.getByTestId('typing').element();
 
-      await expect.element(screen.getByTestId('caret')).toBeInTheDocument();
+      await expect.element(screen.getByTestId('caret').first()).toBeInTheDocument();
+      expect(typing.querySelector('.neba-text-moving [data-testid="caret"]')).not.toBeNull();
+      expect(typing.querySelector('.neba-text-final [data-testid="caret"]')).not.toBeNull();
     });
 
     /*

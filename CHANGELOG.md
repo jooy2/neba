@@ -184,6 +184,8 @@ All exports grew 13.3 kB. About 3.6 kB of that is the code of the new chunks, wh
 
 - **Two dark-theme fills clear 4.5:1 against their label again.** A `primary` fill under the pointer measured 4.45:1 against its white label and a pressed `warning` fill 4.11:1 against its dark one, both under WCAG AA for text. The `primary` hover is one step darker, `oklch(61% 0.181 262)` rather than 62%, and the pressed `warning` lighter, `oklch(69.5% 0.126 80)` rather than 66%; each still reads as a step from the fill at rest. A test now checks every family, state and theme.
 
+- **`AnimateTyping` draws a `caretChar` given as a node for a reader who asked for less motion, and before the script runs.** There the stylesheet draws the final line instead of the typed one, and only a caret given as a string was part of it, so an icon caret disappeared. The node is now rendered in both lines; only one of them is ever laid out at a time.
+
 ### Documentation
 
 - **Getting started says more about server rendering.** A `locale` also keeps a date picker's field from widening at hydration and spares each component a render; a chart can draw in the server's HTML with `initialWidth`; content in the first screen should keep `trigger="mount"`; a `Shortcut` takes its platform from the request; and `colorSchemeScript()` should be called with the options the provider has.
