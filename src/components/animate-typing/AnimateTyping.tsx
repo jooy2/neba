@@ -310,6 +310,17 @@ export const AnimateTyping = React.forwardRef<HTMLElement, AnimateTypingProps>(
       ) : (
         <span className="neba-typing-caret">{caretChar}</span>
       );
+    // The same caret at the end of the final string underneath, at the same
+    // width and drawn by nobody. Without it, a last line that the text fills
+    // exactly had no room for the caret once the last character arrived: the
+    // caret wrapped, and the box grew a line at the very end. Not blinking,
+    // since nobody sees it. Only a caret given as a string: one that is a node
+    // is the caller's own, and drawing it a second time would put whatever it
+    // holds in the page twice.
+    const caretSample =
+      typeof caretChar === 'string' || typeof caretChar === 'number' ? (
+        <span data-text={caretChar} className="inline-block before:content-[attr(data-text)]" />
+      ) : null;
 
     return useRender({
       render: render ?? <span />,
@@ -340,7 +351,9 @@ export const AnimateTyping = React.forwardRef<HTMLElement, AnimateTypingProps>(
               aria-hidden="true"
               data-sample={source}
               className="invisible whitespace-pre-wrap [grid-area:1/1] before:content-[attr(data-sample)]"
-            />
+            >
+              {caret ? caretSample : null}
+            </span>
           </>
         )
       }

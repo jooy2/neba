@@ -128,6 +128,8 @@
 
 - **An `Animate*` waiting for its trigger is drawn as it ends when scripting is off.** An effect with `trigger="visible"`, `"hover"` or `"manual"` is paused on its first frame in the server's HTML, and only the script ever starts it, so with scripting off an entrance stayed invisible. It now shows its content, in Chrome and Edge 120 and Safari 17 and later. Content in the first screen of a page should keep `trigger="mount"` or take `timeline="view"`, which run from the stylesheet alone; a `visible` one is drawn only once the page's script has run.
 
+- **`AnimateTyping` no longer grows a line when its last character arrives.** When the text filled its last line exactly, the caret wrapped onto a line of its own at the very end and pushed what came after it down. The box now holds the caret's room from the first frame. A caret given as a node, rather than a string, is not covered.
+
 ## 1.18.1 (2026-10-07)
 
 ### Added

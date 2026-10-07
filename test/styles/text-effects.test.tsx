@@ -36,4 +36,33 @@ describe('the text effects under the stylesheet', () => {
     expect(height('typing')).toBeGreaterThan(40);
     expect(height('scramble')).toBeGreaterThan(40);
   });
+
+  // A line the text fills exactly has no room left for the caret, which then
+  // wrapped onto a line of its own as the last character arrived.
+  it('holds the room the caret takes at the end of a line the text fills', async () => {
+    const words = 'Exactly as wide';
+    const probe = await render(<span style={{ whiteSpace: 'pre' }}>{words}</span>);
+    const width = Math.ceil(probe.container.querySelector('span')!.getBoundingClientRect().width);
+
+    probe.unmount();
+
+    const screen = await render(
+      <div style={{ width }}>
+        <AnimateTyping text={words} trigger="manual" duration={60} data-testid="typing" />
+      </div>
+    );
+    const typing = screen.getByTestId('typing');
+    const before = typing.element().getBoundingClientRect().height;
+
+    await screen.rerender(
+      <div style={{ width }}>
+        <AnimateTyping text={words} trigger="manual" play duration={60} data-testid="typing" />
+      </div>
+    );
+
+    await expect
+      .poll(() => typing.element().querySelector('[data-text]')?.getAttribute('data-text'))
+      .toBe(words);
+    expect(typing.element().getBoundingClientRect().height).toBe(before);
+  });
 });
