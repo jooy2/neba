@@ -40,6 +40,8 @@ if (await confirm({ title: 'Delete the project?', color: 'danger' })) {
 
 `confirm()` resolves `true` when the reader confirms, and `false` when they cancel, press `Escape` or click the backdrop. It never rejects.
 
+When the `ConfirmProvider` unmounts, every question still on the sheet or waiting behind it resolves `false`, and so does a `confirm()` called after that.
+
 ### color and destructive questions
 
 Most confirms are about destroying something. `color: 'danger'` turns the confirming button and the sheet's accents over together.
@@ -75,7 +77,7 @@ await confirm({ title: 'Your export is ready.', alert: true });
 
 ### Queued questions
 
-Raising a second question while the first is up puts it behind the first. Nothing is answered on the reader's behalf, so each promise resolves only when the reader answers its own question.
+Raising a second question while the first is up puts it behind the first. Nothing is answered on the reader's behalf, so while the provider is mounted each promise resolves only when the reader answers its own question.
 
 ## Accessibility
 

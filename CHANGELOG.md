@@ -106,6 +106,8 @@
 
 - **A `Tour` no longer adds to the page's layout shift while the page scrolls under it.** The hole in its mask followed the target on `top` and `left`, which the browser reports as a layout shift on every frame of a scroll: a second and a half of scrolling under an open tour added 0.73 to the page's CLS. The mask moves on `translate` now and reports none. It looks and follows the target as before.
 
+- **An `await confirm(…)` no longer hangs when its `ConfirmProvider` unmounts.** A question on the sheet, or waiting behind one, was never answered if the provider went away first, so the code after the `await` never ran and kept whatever it held. Those awaits now resolve `false`, as a cancel does, and a `confirm()` called after the provider is gone resolves `false` at once. While the provider is mounted, only the reader answers.
+
 ## 1.18.1 (2026-10-07)
 
 ### Added

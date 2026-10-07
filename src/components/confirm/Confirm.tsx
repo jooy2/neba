@@ -77,8 +77,9 @@ interface Pending {
  * **Questions queue.** Two raised at once are two questions somebody meant to
  * ask, and resolving the older one `false` to make room would be reporting an
  * answer the reader never gave — which reads, at the call site, as "they said
- * no". So the second waits for the first, and no promise is settled by anything
- * but a person.
+ * no". So the second waits for the first, and while the provider is mounted no
+ * promise is settled by anything but a person. Unmounting it answers whatever
+ * is still waiting `false`, since nobody is left to ask.
  */
 export function ConfirmProvider({ children, defaults }: ConfirmProviderProps) {
   const [queue, setQueue] = React.useState<Pending[]>([]);
@@ -106,6 +107,51 @@ export function ConfirmProvider({ children, defaults }: ConfirmProviderProps) {
   const [shownId, setShownId] = React.useState(0);
   const nextId = React.useRef(0);
 
+  /*
+   * Every question still waiting, and whether the provider is gone.
+   *
+   * The queue is state, and state goes with the provider: a route that
+   * unmounted it with a question on the sheet, or in line behind one, left
+   * every `await confirm(…)` under it waiting for ever, holding whatever its
+   * closure held. They are answered `false` when the provider unmounts, which
+   * is the one answer nobody gave that is still safe to act on, and a
+   * `confirm` called after that answers `false` at once.
+   *
+   * After a microtask rather than in the cleanup itself, because StrictMode
+   * runs the cleanup and the setup again in one go while developing, and a
+   * question a child asked as it mounted would otherwise be answered `false`
+   * by a provider that never went anywhere.
+   */
+  const waiting = React.useRef(new Set<(answer: boolean) => void>());
+  const mounted = React.useRef(false);
+  const gone = React.useRef(false);
+
+  React.useEffect(() => {
+    const settlers = waiting.current;
+
+    mounted.current = true;
+    gone.current = false;
+
+    return () => {
+      mounted.current = false;
+
+      queueMicrotask(() => {
+        if (mounted.current) {
+          return;
+        }
+        gone.current = true;
+        for (const settle of settlers) {
+          settle(false);
+        }
+        settlers.clear();
+        // A provider that is gone has no queue left to empty. One that an
+        // `<Activity>` only hid keeps its state, and must not come back asking
+        // questions that have been answered.
+        setQueue([]);
+      });
+    };
+  }, []);
+
   const current = queue[0];
 
   // Adjusted during render rather than in an effect: an effect would show the
@@ -120,6 +166,13 @@ export function ConfirmProvider({ children, defaults }: ConfirmProviderProps) {
   const confirm = React.useCallback<ConfirmFunction>(
     (options) =>
       new Promise<boolean>((resolve) => {
+        if (gone.current) {
+          resolve(false);
+          return;
+        }
+
+        waiting.current.add(resolve);
+
         if (!opener.current) {
           opener.current =
             document.activeElement instanceof HTMLElement ? document.activeElement : null;
@@ -128,8 +181,8 @@ export function ConfirmProvider({ children, defaults }: ConfirmProviderProps) {
         nextId.current += 1;
         const id = nextId.current;
 
-        setQueue((waiting) => [
-          ...waiting,
+        setQueue((queued) => [
+          ...queued,
           {
             id,
             options: typeof options === 'string' ? { title: options } : options,
@@ -144,8 +197,9 @@ export function ConfirmProvider({ children, defaults }: ConfirmProviderProps) {
     if (!current) {
       return;
     }
+    waiting.current.delete(current.settle);
     current.settle(value);
-    setQueue((waiting) => waiting.slice(1));
+    setQueue((queued) => queued.slice(1));
   };
 
   const merged: ConfirmOptions = { ...defaults, ...shown };
@@ -238,9 +292,10 @@ export function ConfirmProvider({ children, defaults }: ConfirmProviderProps) {
  * the code that acts: a callback splits one decision across two functions and
  * leaves the caller to carry whatever it was about to do into the second.
  *
- * Cancelling, Escape and a click on the backdrop all resolve `false`. It never
- * rejects — a question that was answered "no" is an answer, not a failure, and
- * a promise that throws for it turns every call site into a `try`.
+ * Cancelling, Escape and a click on the backdrop all resolve `false`, and so
+ * does the `ConfirmProvider` unmounting before the question is answered. It
+ * never rejects — a question that was answered "no" is an answer, not a
+ * failure, and a promise that throws for it turns every call site into a `try`.
  */
 export function useConfirm(): ConfirmFunction {
   const confirm = React.useContext(ConfirmContext);

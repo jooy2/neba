@@ -1,9 +1,10 @@
 /**
  * A confirm is a question that returns an answer, so almost everything worth
  * testing is about the promise: that it settles, that it settles with what the
- * reader pressed, and that nothing but a person ever settles it.
+ * reader pressed, and that nothing but a person settles it while the provider
+ * is there to ask.
  */
-import { Component, type ReactNode } from 'react';
+import { Component, StrictMode, useEffect, useRef, type ReactNode } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { userEvent } from 'vitest/browser';
@@ -196,6 +197,81 @@ describe('ConfirmProvider', () => {
     press(screen.getByRole('button', { name: 'Cancel' }).element() as HTMLElement);
 
     await vi.waitFor(() => expect(answers).toEqual(['first:true', 'second:false']));
+  });
+
+  // The queue went with the provider, and every `await confirm(…)` still in it
+  // waited for ever.
+  it('answers every waiting question false when the provider unmounts', async () => {
+    const answers: string[] = [];
+    let kept: ReturnType<typeof useConfirm> | undefined;
+
+    function Two() {
+      const confirm = useConfirm();
+
+      return (
+        <Button
+          onClick={() => {
+            kept = confirm;
+            void confirm('First?').then((a) => answers.push(`first:${a}`));
+            void confirm('Second?').then((a) => answers.push(`second:${a}`));
+          }}
+        >
+          Ask
+        </Button>
+      );
+    }
+
+    const screen = await render(
+      <ConfirmProvider>
+        <Two />
+      </ConfirmProvider>
+    );
+
+    await screen.getByRole('button', { name: 'Ask' }).click();
+    await expect.element(screen.getByText('First?')).toBeInTheDocument();
+
+    await screen.unmount();
+
+    await vi.waitFor(() => expect(answers).toEqual(['first:false', 'second:false']));
+
+    // And a question asked of a provider that is gone is answered at once.
+    await expect(kept?.('Third?')).resolves.toBe(false);
+  });
+
+  it('keeps a question asked as the page mounts waiting under StrictMode', async () => {
+    const answers: boolean[] = [];
+
+    function AskOnMount() {
+      const confirm = useConfirm();
+      const asked = useRef(false);
+
+      useEffect(() => {
+        if (asked.current) {
+          return;
+        }
+        asked.current = true;
+        void confirm('Keep the draft?').then((a) => answers.push(a));
+      }, [confirm]);
+
+      return null;
+    }
+
+    const screen = await render(
+      <StrictMode>
+        <ConfirmProvider>
+          <AskOnMount />
+        </ConfirmProvider>
+      </StrictMode>
+    );
+
+    await expect.element(screen.getByText('Keep the draft?')).toBeInTheDocument();
+    await new Promise((resolve) => setTimeout(resolve, 50));
+
+    expect(answers).toEqual([]);
+
+    press(screen.getByRole('button', { name: 'Confirm' }).element() as HTMLElement);
+
+    await vi.waitFor(() => expect(answers).toEqual([true]));
   });
 
   // The second question took over the open sheet, so it never opened: the

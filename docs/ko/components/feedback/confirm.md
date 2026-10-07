@@ -40,6 +40,8 @@ if (await confirm({ title: '프로젝트를 삭제할까요?', color: 'danger' }
 
 `confirm()`은 사용자가 확인하면 `true`로, 취소하거나 `Escape`를 누르거나 backdrop을 클릭하면 `false`로 resolve합니다. reject하지 않습니다.
 
+`ConfirmProvider`가 unmount되면 시트에 떠 있거나 그 뒤에서 기다리던 질문은 모두 `false`로 resolve하고, 그 뒤에 부른 `confirm()`도 `false`로 resolve합니다.
+
 ### color와 파괴적인 질문
 
 confirm의 대부분은 무언가를 없애는 일에 관한 것입니다. `color: 'danger'`가 확인 버튼과 시트의 강조색을 함께 넘깁니다.
@@ -75,7 +77,7 @@ await confirm({ title: '내보내기가 준비되었습니다.', alert: true });
 
 ### 질문 대기열
 
-첫 번째 질문이 떠 있는 동안 두 번째를 올리면 그 뒤에 줄을 섭니다. 사용자를 대신해 답하는 일은 없으므로, 각 promise는 사용자가 그 질문에 답해야 resolve합니다.
+첫 번째 질문이 떠 있는 동안 두 번째를 올리면 그 뒤에 줄을 섭니다. 사용자를 대신해 답하는 일은 없으므로, provider가 mount되어 있는 동안 각 promise는 사용자가 그 질문에 답해야 resolve합니다.
 
 ## 접근성
 
