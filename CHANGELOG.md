@@ -198,6 +198,8 @@ All exports grew 13.3 kB. About 3.6 kB of that is the code of the new chunks, wh
 
 - **A press on a paging `DataTable`'s page-size control before its Select has arrived opens the list once it does.** The table draws the closed control until the Select's chunk is here, and a press on it was lost: the reader got the focus and had to press again. A click, Enter, Space or an arrow key on it now opens the Select as it arrives, unless the reader has moved the focus elsewhere in the meantime.
 
+- **A server-rendered `Calendar` that moves to the reader's month after hydrating puts its tab stop on today.** When the server's month and the reader's differed, the stop ended on the 1st of the reader's month, so `Tab` into the grid landed on the 1st while a calendar mounted in the browser lands on today. It lands on today in both now.
+
 ### Documentation
 
 - **Getting started says more about server rendering.** A `locale` also keeps a date picker's field from widening at hydration and spares each component a render; a chart can draw in the server's HTML with `initialWidth`; content in the first screen should keep `trigger="mount"`; a `Shortcut` takes its platform from the request; and `colorSchemeScript()` should be called with the options the provider has.

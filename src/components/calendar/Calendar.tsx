@@ -213,13 +213,16 @@ export const Calendar = React.forwardRef<HTMLDivElement, CalendarProps>(
 
     // Whether the month came from the clock during hydration, and whether the
     // reader has moved it since. A value, `defaultMonth` or `month` is a month
-    // the caller chose, and it is the same on both sides.
-    const waitingForClock = React.useRef(
-      !hydrated &&
+    // the caller chose, and it is the same on both sides. The grid is told as
+    // well, so that its tab stop waits for the month this moves to.
+    const [monthFromClock] = React.useState(
+      () =>
+        !hydrated &&
         firstChosen === undefined &&
         defaultMonth === undefined &&
         monthProp === undefined
     );
+    const waitingForClock = React.useRef(monthFromClock);
     const moved = React.useRef(false);
 
     React.useEffect(() => {
@@ -331,6 +334,7 @@ export const Calendar = React.forwardRef<HTMLDivElement, CalendarProps>(
           showOutsideDays={showOutsideDays}
           renderDay={renderDay}
           multiselectable={mode !== 'single'}
+          monthFromClock={monthFromClock}
           labels={pickerLabels}
         />
       </div>

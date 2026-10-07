@@ -160,9 +160,10 @@ const settle = () => new Promise((resolve) => setTimeout(resolve, 60));
  * what React had to say about the two renders disagreeing.
  *
  * `serverNow` stands the server's clock at another instant for the server
- * render alone, as a page built once and served for weeks has it.
+ * render alone, as a page built once and served for weeks has it, and
+ * `browserNow` the browser's for the rest, until `cleanup`.
  */
-async function serverThenHydrate(element: React.ReactElement, serverNow?: Date) {
+async function serverThenHydrate(element: React.ReactElement, serverNow?: Date, browserNow?: Date) {
   phase = 'server';
 
   if (serverNow) {
@@ -176,6 +177,10 @@ async function serverThenHydrate(element: React.ReactElement, serverNow?: Date) 
   } finally {
     phase = 'browser';
     vi.useRealTimers();
+
+    if (browserNow) {
+      vi.useFakeTimers({ toFake: ['Date'], now: browserNow });
+    }
   }
 
   const host = document.createElement('div');
@@ -197,6 +202,7 @@ async function serverThenHydrate(element: React.ReactElement, serverNow?: Date) 
     cleanup() {
       root.unmount();
       host.remove();
+      vi.useRealTimers();
     }
   };
 }
@@ -571,6 +577,28 @@ describe('a Calendar with nothing to say which month it opens on', () => {
       expect(page.host.textContent).not.toContain(
         written(BROWSER_DEFAULT, lastMonth, { year: 'numeric', month: 'long' })
       );
+      expect(page.recoverable).toEqual([]);
+    } finally {
+      page.cleanup();
+    }
+  });
+
+  // The month moved one render after the grid placed its tab stop, so the
+  // stop followed the month to its 1st rather than to today.
+  it('puts the tab stop on today, as a calendar mounted in this browser does', async () => {
+    const page = await serverThenHydrate(
+      <Calendar />,
+      new Date(2026, 7, 20),
+      new Date(2026, 8, 17, 10)
+    );
+
+    try {
+      await expect
+        .poll(() => page.host.querySelector('[role="gridcell"][tabindex="0"]')?.textContent)
+        .toBe('17');
+      expect(
+        page.host.querySelector('[role="gridcell"][tabindex="0"]')?.getAttribute('aria-current')
+      ).toBe('date');
       expect(page.recoverable).toEqual([]);
     } finally {
       page.cleanup();

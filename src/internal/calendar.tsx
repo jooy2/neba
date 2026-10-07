@@ -595,6 +595,13 @@ export interface CalendarProps {
   /** Takes the focus on mount — the popup has just opened. */
   autoFocus?: boolean;
   /**
+   * `month` is the month a server drew, and moves on to the reader's own in
+   * the render after hydration ends. An inline Calendar with no month of its
+   * own does that; the tab stop waits for the month it moves to rather than
+   * settling on the 1st of the one about to leave the screen.
+   */
+  monthFromClock?: boolean;
+  /**
    * More than one cell can be selected at once — a `multiple` calendar or a
    * range — which a screen reader is told on the grid a pick is made in.
    */
@@ -645,6 +652,7 @@ export function Calendar({
   shouldDisableDate,
   showOutsideDays = true,
   autoFocus = false,
+  monthFromClock = false,
   multiselectable = false,
   showPreviousButton = true,
   showNextButton = true,
@@ -669,6 +677,12 @@ export function Calendar({
   // the one the browser hydrated, and React reported the two disagreeing. The
   // hydrating render starts on the 1st, as the server did, and the effect
   // below moves the stop to today once the clock can be read.
+  //
+  // A calendar on the month a server drew moves to the reader's month in the
+  // render after hydration ends, so for a month apart the stop is placed once
+  // that month arrives: the effect that follows the month would otherwise put
+  // it on the 1st of the new one, where a calendar mounted in this browser
+  // starts on today.
   const hydrated = useHydrated();
   const [focusedDate, setFocusedDate] = React.useState<Date>(() => {
     const preferred = chosen.find((date) => isSameMonth(date, month));
@@ -678,12 +692,16 @@ export function Calendar({
     return hydrated && isSameMonth(today(), month) ? today() : startOfMonth(month);
   });
   const waitingForToday = React.useRef(!hydrated);
+  /** Set when hydration ended on a server's month the clock is about to move on. */
+  const waitingForMonth = React.useRef(false);
 
   React.useEffect(() => {
     if (!hydrated || !waitingForToday.current) {
       return;
     }
     waitingForToday.current = false;
+    // Today is not on screen, and the month is about to move to where it is.
+    waitingForMonth.current = monthFromClock && !isSameMonth(today(), month);
 
     // Left alone if the reader has already moved it, or something is chosen.
     setFocusedDate((current) =>
@@ -708,10 +726,20 @@ export function Calendar({
   // at: stepping a month and then pressing an arrow lands somewhere sensible
   // instead of scrolling the panel back where it came from.
   React.useEffect(() => {
+    // The month the clock moved a server's calendar on to: the stop starts
+    // where it would in a calendar mounted here, on today if today is in it.
+    const fromClock = waitingForMonth.current;
+
+    waitingForMonth.current = false;
     // The tab stop follows a prop, and the updater is a no-op unless the month
     // actually changed — so this settles in one pass rather than cascading.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setFocusedDate((current) => (isSameMonth(current, month) ? current : startOfMonth(month)));
+    setFocusedDate((current) =>
+      isSameMonth(current, month)
+        ? current
+        : fromClock && isSameMonth(today(), month)
+          ? today()
+          : startOfMonth(month)
+    );
   }, [month]);
 
   useLayoutEffectOnClient(() => {
