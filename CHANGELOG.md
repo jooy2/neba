@@ -58,6 +58,8 @@
 
 - **Typing into a `DataTable`'s search field no longer stalls on a long table.** The first key prepared every row for matching before it could filter one, about a hundred milliseconds on a hundred thousand rows, and every key filtered every row before the field showed it. A table with `searchable` now prepares its rows while the page is idle after it mounts, and the rows follow the query a render behind the field when the table is busy, settling on the same result. A test that typed into the field and read the rows straight away should wait for them, for example with `expect.poll`.
 
+- **Scrolling a virtual `DataTable` draws only its rows again.** Every scroll across a row boundary drew the whole table again, its search field, every heading and the footer with its page-size control, nearly every frame of a fast scroll. The scroll position now belongs to the body, so the rest of the table is left alone while it scrolls, and what is drawn is the same.
+
 ### Fixed
 
 - **A `multiple` `Combobox` keeps the error a `Form` put on it while the page around it renders again, and a single one keeps what is typed after a value its `items` do not have.** The value handed to Base UI was a new object on every render, which Base UI took for a new choice: it cleared the field's errors, so a server error vanished the moment the reader typed in another field, and in single mode it wrote the chosen label back into the input, so typing after a custom value such as `defaultValue="Foo"` did nothing. The value now stays the same object for as long as it holds the same entries, including when `value` or `items` is written inline.

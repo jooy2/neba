@@ -1069,6 +1069,183 @@ function DataTableRow<Row>({
 const MemoDataTableRow = React.memo(DataTableRow) as typeof DataTableRow;
 
 /* ---------------------------------------------------------------------------
+ * The body
+ * ------------------------------------------------------------------------- */
+
+interface DataTableBodyProps<Row> {
+  /** Every displayed row, drawn or not. */
+  paged: readonly RowEntry<Row>[];
+  /** Where each displayed row sits in `paged`, by key. */
+  pageIndex: ReadonlyMap<string, number>;
+  /**
+   * What the body holds instead of the flat rows — a grouped body, or the row
+   * that says there are none — or `null` for the flat rows, which are the only
+   * ones a window is cut from.
+   */
+  instead: React.ReactNode | null;
+  virtualized: boolean;
+  rowHeight: number;
+  overscan: number;
+  /** How tall the box that scrolls is, as the table last measured it. */
+  viewportHeight: number;
+  /**
+   * Where the table hands each scroll of its box. The body puts its own
+   * receiver here, since the scroll position is the body's state.
+   */
+  scrollSinkRef: { current: ((top: number) => void) | null };
+  /** The table, whose `aria-activedescendant` the body keeps. */
+  tableRef: React.RefObject<HTMLTableElement | null>;
+  columnCount: number;
+  /** The row whose cell editor is open, which is drawn wherever it has scrolled to. */
+  editingKey: string | null;
+  /** The active row, in a table the keyboard can act on, or `null`. */
+  activeKey: string | null;
+  reactId: string;
+  /** Draws one row, with everything the table knows as of its last render. */
+  row: (entry: RowEntry<Row>, index: number) => React.ReactNode;
+}
+
+/**
+ * The rows, cut to the window a virtual table draws, and the scroll position
+ * that decides the window.
+ *
+ * A component of its own so that the scroll position is its state rather than
+ * the table's. Kept on the table, every scroll across a row boundary drew the
+ * whole table again — the search field, every heading, the footer and its
+ * page-size control — nearly every frame of a fast scroll, for a change only
+ * the rows had. Here a scroll draws the body and nothing else, and the rows
+ * that stayed in the window are skipped as before.
+ *
+ * The table still listens for the scroll, on the box it renders, and hands
+ * the offset over through `scrollSinkRef`. The body cannot listen for itself: a
+ * layout effect runs before the refs of the elements around it are attached,
+ * so on mount the box is not there yet for it to find.
+ *
+ * It also keeps the table's `aria-activedescendant`, which names the active
+ * row only while that row is drawn: the window is what decides that, and the
+ * table no longer hears about the window. The attribute is written on the
+ * element rather than rendered for the same reason. A grouped table is never
+ * virtual, and one with no rows draws none, so both hand their own body in as
+ * `instead` and the window is everything.
+ */
+function DataTableBody<Row>({
+  paged,
+  pageIndex,
+  instead,
+  virtualized,
+  rowHeight,
+  overscan,
+  viewportHeight,
+  scrollSinkRef,
+  tableRef,
+  columnCount,
+  editingKey,
+  activeKey,
+  reactId,
+  row
+}: DataTableBodyProps<Row>) {
+  const [scrollTop, setScrollTop] = React.useState(0);
+
+  /*
+   * The offset is quantized to whole rows before it becomes state. The window
+   * only changes when the offset crosses a row boundary, so storing the raw
+   * pixel would re-render sixty times a second to produce the same thirty rows;
+   * setting the same value back is a bail-out React already knows how to make.
+   */
+  useLayoutEffectOnClient(() => {
+    const follow = (top: number) => {
+      const next = Math.floor(top / rowHeight) * rowHeight;
+
+      setScrollTop((previous) => (previous === next ? previous : next));
+    };
+
+    scrollSinkRef.current = follow;
+
+    return () => {
+      if (scrollSinkRef.current === follow) {
+        scrollSinkRef.current = null;
+      }
+    };
+  }, [rowHeight, scrollSinkRef]);
+
+  const window_ = virtualized
+    ? virtualWindow(scrollTop, viewportHeight, rowHeight, paged.length, overscan)
+    : { start: 0, end: paged.length, before: 0, after: 0 };
+
+  // Only while the row it names is actually drawn. A wheel can carry the
+  // active row out of the virtual window, and pointing the attribute at an id
+  // that is no longer in the document is worse than pointing it nowhere.
+  const at = activeKey === null ? -1 : (pageIndex.get(activeKey) ?? -1);
+  const named =
+    at !== -1 && (instead !== null || (at >= window_.start && at < window_.end))
+      ? `${reactId}-${activeKey}`
+      : null;
+
+  // After every render rather than when `named` changes: on the first one the
+  // table's own ref is not attached yet, and nothing is named on it then.
+  useLayoutEffectOnClient(() => {
+    const table = tableRef.current;
+
+    if (!table || table.getAttribute('aria-activedescendant') === named) {
+      return;
+    }
+
+    if (named === null) {
+      table.removeAttribute('aria-activedescendant');
+    } else {
+      table.setAttribute('aria-activedescendant', named);
+    }
+  });
+
+  if (instead !== null) {
+    return instead;
+  }
+
+  const spacer = (key: string, size: number) =>
+    size > 0 ? (
+      <tr key={key} aria-hidden="true" style={{ height: `${size}px` }}>
+        <td colSpan={columnCount} style={{ padding: 0, border: 0 }} />
+      </tr>
+    ) : null;
+
+  /*
+   * The rows, the spacers with them, and the row being edited wherever it has
+   * scrolled to.
+   *
+   * That row stays in the document when it leaves the window. Unmounted, its
+   * editor went with what had been typed in it — the browser sends no `blur`
+   * for an element that is taken out, so nothing was committed — and the
+   * editor opened again, empty of the edit, when the row came back. It is
+   * drawn in its own place inside the spacer, split around it, so every row
+   * still sits where it would. One array, so that when the window reaches it
+   * again it moves into the run rather than being mounted a second time.
+   */
+  const held = editingKey === null ? -1 : (pageIndex.get(editingKey) ?? -1);
+  const above = held !== -1 && held < window_.start;
+  const below = held !== -1 && held >= window_.end;
+
+  return [
+    ...(above
+      ? [
+          spacer('before', held * rowHeight),
+          row(paged[held], held),
+          spacer('before-rest', window_.before - (held + 1) * rowHeight)
+        ]
+      : [spacer('before', window_.before)]),
+    ...paged
+      .slice(window_.start, window_.end)
+      .map((entry, offset) => row(entry, window_.start + offset)),
+    ...(below
+      ? [
+          spacer('after-rest', (held - window_.end) * rowHeight),
+          row(paged[held], held),
+          spacer('after', window_.after - (held - window_.end + 1) * rowHeight)
+        ]
+      : [spacer('after', window_.after)])
+  ];
+}
+
+/* ---------------------------------------------------------------------------
  * The component
  * ------------------------------------------------------------------------- */
 
@@ -1694,9 +1871,6 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
   /** The row a finger went down on, which its `click` chooses. */
   const touchedKey = React.useRef<string | null>(null);
 
-  const [viewportHeight, setViewportHeight] = React.useState(0);
-  const [scrollTop, setScrollTop] = React.useState(0);
-
   const bounded = height !== undefined || maxHeight !== undefined;
   const grouped = groupBy !== undefined;
   // Never while grouping: the window arithmetic counts every child of `<tbody>`
@@ -1733,6 +1907,8 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
     );
   }, [unwindowed, grouped]);
 
+  const [viewportHeight, setViewportHeight] = React.useState(0);
+
   useLayoutEffectOnClient(() => {
     const node = viewportRef.current;
 
@@ -1745,32 +1921,21 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
     return observeResize(node, (entry) => setViewportHeight(entry.contentRect.height));
   }, [virtualized]);
 
-  /*
-   * The offset is quantized to whole rows before it becomes state. The window
-   * only changes when the offset crosses a row boundary, so storing the raw
-   * pixel would re-render sixty times a second to produce the same thirty rows;
-   * setting the same value back is a bail-out React already knows how to make.
+  /**
+   * Where a scroll goes: to the body, which keeps the scroll position and cuts
+   * the window from it, so a scroll draws the rows and not the table around
+   * them. See `DataTableBody`.
    */
+  const scrollSinkRef = React.useRef<((top: number) => void) | null>(null);
+
   const handleScroll = React.useCallback(
     (event: React.UIEvent<HTMLDivElement>) => {
-      if (!virtualized) {
-        return;
+      if (virtualized) {
+        scrollSinkRef.current?.(event.currentTarget.scrollTop);
       }
-
-      const next = Math.floor(event.currentTarget.scrollTop / rowHeight) * rowHeight;
-
-      setScrollTop((previous) => (previous === next ? previous : next));
     },
-    [virtualized, rowHeight]
+    [virtualized]
   );
-
-  const window_ = virtualized
-    ? virtualWindow(scrollTop, viewportHeight, rowHeight, paged.length, overscan)
-    : { start: 0, end: paged.length, before: 0, after: 0 };
-
-  const rendered = paged.slice(window_.start, window_.end);
-  const activeRendered =
-    navigable && activeKey !== null && rendered.some((entry) => entry.key === activeKey);
 
   /* -- Column widths ------------------------------------------------------- */
 
@@ -3237,49 +3402,6 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
     />
   ) : null;
 
-  const spacer = (key: string, size_: number) =>
-    size_ > 0 ? (
-      <tr key={key} aria-hidden="true" style={{ height: `${size_}px` }}>
-        <td colSpan={columnCount} style={{ padding: 0, border: 0 }} />
-      </tr>
-    ) : null;
-
-  /*
-   * The rows of a body that is not grouped, the spacers with them, and the row
-   * being edited wherever it has scrolled to.
-   *
-   * That row stays in the document when it leaves the window. Unmounted, its
-   * editor went with what had been typed in it — the browser sends no `blur`
-   * for an element that is taken out, so nothing was committed — and the
-   * editor opened again, empty of the edit, when the row came back. It is
-   * drawn in its own place inside the spacer, split around it, so every row
-   * still sits where it would. One array, so that when the window reaches it
-   * again it moves into the run rather than being mounted a second time.
-   */
-  const flatRows = (): React.ReactNode[] => {
-    const held = editing ? paged.findIndex((entry) => entry.key === editing.key) : -1;
-    const above = held !== -1 && held < window_.start;
-    const below = held !== -1 && held >= window_.end;
-
-    return [
-      ...(above
-        ? [
-            spacer('before', held * rowHeight),
-            bodyRow(paged[held], held),
-            spacer('before-rest', window_.before - (held + 1) * rowHeight)
-          ]
-        : [spacer('before', window_.before)]),
-      ...rendered.map((entry, offset) => bodyRow(entry, window_.start + offset)),
-      ...(below
-        ? [
-            spacer('after-rest', (held - window_.end) * rowHeight),
-            bodyRow(paged[held], held),
-            spacer('after', window_.after - (held - window_.end + 1) * rowHeight)
-          ]
-        : [spacer('after', window_.after)])
-    ];
-  };
-
   return (
     <Box
       variant={variant}
@@ -3373,11 +3495,7 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
           aria-label={label}
           aria-multiselectable={multiple || undefined}
           aria-rowcount={virtualized ? paged.length + headRows : undefined}
-          // Only while the row it names is actually rendered. A wheel can carry
-          // the active row out of the virtual window, and pointing the
-          // attribute at an id that is no longer in the document is worse than
-          // pointing it nowhere.
-          aria-activedescendant={activeRendered ? `${reactId}-${activeKey}` : undefined}
+          // `aria-activedescendant` is the body's to write: see `DataTableBody`.
           tabIndex={navigable ? 0 : undefined}
           className={cx(
             'w-full text-start [outline:none]',
@@ -3499,44 +3617,57 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
           </thead>
 
           <tbody ref={bodyRef}>
-            {paged.length === 0 ? (
-              <tr>
-                <td
-                  colSpan={columnCount}
-                  style={{
-                    padding: `2rem ${padX}`,
-                    textAlign: 'center',
-                    color: 'var(--n-cell-ink, var(--neba-muted-fg))'
-                  }}
-                >
-                  {empty ?? emptyText.title}
-                </td>
-              </tr>
-            ) : (
-              <>
-                {groups
-                  ? groups.order.map((label) => {
-                      const all = groups.byLabel.get(label) ?? [];
-                      const onPage = all.filter((entry) => pageIndex.has(entry.key));
+            <DataTableBody
+              paged={paged}
+              pageIndex={pageIndex}
+              instead={
+                paged.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan={columnCount}
+                      style={{
+                        padding: `2rem ${padX}`,
+                        textAlign: 'center',
+                        color: 'var(--n-cell-ink, var(--neba-muted-fg))'
+                      }}
+                    >
+                      {empty ?? emptyText.title}
+                    </td>
+                  </tr>
+                ) : groups ? (
+                  groups.order.map((label) => {
+                    const all = groups.byLabel.get(label) ?? [];
+                    const onPage = all.filter((entry) => pageIndex.has(entry.key));
 
-                      // An open group whose rows are all on other pages has
-                      // nothing to head here. A folded one has no rows on any
-                      // page, so it stays on every page — or it could not be
-                      // opened again.
-                      if (onPage.length === 0 && !collapsedGroups.has(label)) {
-                        return null;
-                      }
+                    // An open group whose rows are all on other pages has
+                    // nothing to head here. A folded one has no rows on any
+                    // page, so it stays on every page — or it could not be
+                    // opened again.
+                    if (onPage.length === 0 && !collapsedGroups.has(label)) {
+                      return null;
+                    }
 
-                      return (
-                        <React.Fragment key={label || '\u0000'}>
-                          {groupHeading(label, all)}
-                          {onPage.map((entry) => bodyRow(entry, pageIndex.get(entry.key) ?? 0))}
-                        </React.Fragment>
-                      );
-                    })
-                  : flatRows()}
-              </>
-            )}
+                    return (
+                      <React.Fragment key={label || '\u0000'}>
+                        {groupHeading(label, all)}
+                        {onPage.map((entry) => bodyRow(entry, pageIndex.get(entry.key) ?? 0))}
+                      </React.Fragment>
+                    );
+                  })
+                ) : null
+              }
+              virtualized={virtualized}
+              rowHeight={rowHeight}
+              overscan={overscan}
+              viewportHeight={viewportHeight}
+              scrollSinkRef={scrollSinkRef}
+              tableRef={tableRef}
+              columnCount={columnCount}
+              editingKey={editing?.key ?? null}
+              activeKey={navigable ? activeKey : null}
+              reactId={reactId}
+              row={bodyRow}
+            />
           </tbody>
         </table>
       </div>

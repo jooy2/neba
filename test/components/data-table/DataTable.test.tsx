@@ -814,6 +814,52 @@ describe('DataTable', () => {
       ).toEqual(['1', '2']);
     });
 
+    // Every scroll across a row boundary drew the whole table again — the
+    // search field, every heading and the footer — nearly every frame of a
+    // fast scroll, for a change only the rows had.
+    it('draws only the rows again as it scrolls', async () => {
+      let headingDraws = 0;
+      const headers: DataTableColumn<Person>[] = [
+        {
+          key: 'name',
+          // Read once each time the heading is drawn.
+          get label() {
+            headingDraws += 1;
+
+            return 'Name';
+          }
+        },
+        HEADERS[1]
+      ];
+      const screen = await render(
+        <DataTable
+          headers={headers}
+          items={manyItems(2000)}
+          getRowKey={key}
+          height={200}
+          rowHeight={24}
+          searchable
+          footer
+        />
+      );
+      const viewport = screen.container.querySelector('table')!.parentElement!;
+      const firstDrawn = () => Number(bodyRows(screen.container)[0]?.dataset.nebaRow ?? -1);
+
+      // What `overflow-auto` would say, had the test a stylesheet.
+      viewport.style.overflow = 'auto';
+      await expect.poll(() => bodyRows(screen.container).length).toBeGreaterThan(0);
+
+      const drawn = headingDraws;
+
+      for (const rows of [100, 400, 900]) {
+        viewport.scrollTop = rows * 24;
+        await expect.poll(firstDrawn).toBeGreaterThan(rows - 20);
+      }
+
+      expect(headingDraws).toBe(drawn);
+      await expect.element(screen.getByRole('columnheader', { name: 'Name' })).toBeInTheDocument();
+    });
+
     it('stands the missing rows up as spacers, so the scrollbar is honest', async () => {
       const screen = await render(
         <DataTable
