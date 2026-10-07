@@ -402,13 +402,43 @@ describe('Select', () => {
       expect(sizer.textContent).toBe('Seoul');
     });
 
-    // How wide a node draws is not something a length can say, so a short one
-    // is laid out beside a long string rather than ranked against it.
-    it('keeps a node label however short it looks', async () => {
+    // A node label was laid out whatever it said, so a country list whose
+    // labels each carried a flag fetched every flag before it was opened.
+    it('lays out only the node labels whose text could be the widest', async () => {
+      const flag = (code: string) => <img alt="" data-flag={code} />;
       const screen = await render(
         <Select
           items={[
-            { value: 'kr', label: <em>Seoul</em> },
+            {
+              value: 'kr',
+              label: <span>{flag('kr')} Korea</span>
+            },
+            {
+              value: 'gb',
+              label: <span>{flag('gb')} United Kingdom of Great Britain and Northern Ireland</span>
+            },
+            {
+              value: 'td',
+              label: <span>{flag('td')} Chad</span>
+            }
+          ]}
+          label="Country"
+        />
+      );
+      const sizer = sizerOf(screen.getByRole('combobox').element() as HTMLElement);
+
+      expect(
+        [...sizer.querySelectorAll('img')].map((image) => image.getAttribute('data-flag'))
+      ).toEqual(['gb']);
+    });
+
+    // Nothing to read, so nothing to rank it by: a picture, or a component
+    // that draws its own words.
+    it('keeps a node label with no text in it', async () => {
+      const screen = await render(
+        <Select
+          items={[
+            { value: 'kr', label: <img alt="" data-flag="kr" /> },
             { value: 'gb', label: 'United Kingdom of Great Britain and Northern Ireland' }
           ]}
           label="Region"
@@ -416,7 +446,7 @@ describe('Select', () => {
       );
       const sizer = sizerOf(screen.getByRole('combobox').element() as HTMLElement);
 
-      expect(sizer.querySelector('em')).toHaveTextContent('Seoul');
+      expect(sizer.querySelector('img')).toHaveAttribute('data-flag', 'kr');
     });
 
     it('leaves the column shrinkable, so a narrow container still wins', async () => {

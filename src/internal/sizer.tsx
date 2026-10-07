@@ -1,4 +1,4 @@
-import type * as React from 'react';
+import * as React from 'react';
 
 /**
  * Characters drawn about twice as wide as a Latin letter: Hangul, the CJK
@@ -29,25 +29,74 @@ function roughLength(text: string): number {
 const CONTENDER = 0.4;
 
 /**
+ * The text a sample would draw, as far as its elements say: a string or a
+ * number as itself, and an element as the strings and numbers among its
+ * children, however deep.
+ *
+ * Only `props.children` is read. What a component draws of its own is not
+ * known until it renders, so a flag, an icon or an avatar beside the text
+ * counts for nothing here. That is right when every option carries one of the
+ * same size, which is how a list of them is normally written: it moves every
+ * option's width by the same amount, and the ranking does not change.
+ */
+function sampleText(sample: React.ReactNode): string {
+  if (typeof sample === 'string') {
+    return sample;
+  }
+
+  if (typeof sample === 'number' || typeof sample === 'bigint') {
+    return String(sample);
+  }
+
+  if (Array.isArray(sample)) {
+    let text = '';
+
+    for (const child of sample) {
+      text += sampleText(child);
+    }
+
+    return text;
+  }
+
+  if (React.isValidElement<{ children?: React.ReactNode }>(sample)) {
+    return sampleText(sample.props.children);
+  }
+
+  return '';
+}
+
+/** Ranks a sample whose width the text cannot say: it is always kept. */
+const UNKNOWN = -1;
+
+/**
  * The samples a `WidthSizer` needs, out of all of them.
  *
  * Only the widest sample decides the width, so a Select with two hundred and
  * fifty countries was two hundred and fifty boxes laid out for the sake of one.
- * A string is kept when it is long enough to be the widest and dropped
- * otherwise. Anything that is not a string is kept whatever it is, since
- * nothing short of laying it out says how wide a node is.
+ * A sample is kept when the text it draws is long enough to be the widest and
+ * dropped otherwise, and that holds for a node as much as for a string: a
+ * country list whose labels each carry a flag `<img>` laid out, and fetched,
+ * every flag on the page before the list was ever opened.
+ *
+ * A node whose children hold no text at all is kept whatever its neighbours
+ * say. It may be a picture, or a component that draws words of its own, and
+ * nothing short of laying it out says how wide either is.
  */
 export function widestSamples(samples: readonly React.ReactNode[]): React.ReactNode[] {
+  const lengths = samples.map((sample) => {
+    const text = sampleText(sample);
+
+    return typeof sample !== 'string' && text.trim() === '' ? UNKNOWN : roughLength(text);
+  });
+
   let longest = 0;
 
-  for (const sample of samples) {
-    if (typeof sample === 'string') {
-      longest = Math.max(longest, roughLength(sample));
-    }
+  for (const length of lengths) {
+    longest = Math.max(longest, length);
   }
 
   return samples.filter(
-    (sample) => typeof sample !== 'string' || roughLength(sample) >= longest * CONTENDER
+    (_sample, index) => lengths[index] === UNKNOWN || lengths[index] >= longest * CONTENDER
   );
 }
 
