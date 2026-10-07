@@ -3,6 +3,25 @@ import { render } from 'vitest-browser-react';
 import { Button, Collapsible, Switch } from 'neba';
 
 describe('Collapsible', () => {
+  /*
+   * First in the file on purpose: Base UI prints each of its warnings once, so
+   * only the first Collapsible rendered here can show that it says nothing.
+   */
+  it('renders with its defaults without a warning from Base UI', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+    try {
+      const screen = await render(<Collapsible title="Advanced">Everything else.</Collapsible>);
+
+      await expect.element(screen.getByRole('button', { name: 'Advanced' })).toBeInTheDocument();
+      await new Promise(requestAnimationFrame);
+
+      expect(warn).not.toHaveBeenCalledWith(expect.stringContaining('keepMounted'));
+    } finally {
+      warn.mockRestore();
+    }
+  });
+
   describe('rendering', () => {
     it('renders a trigger carrying the title', async () => {
       const screen = await render(<Collapsible title="Advanced">Everything else.</Collapsible>);

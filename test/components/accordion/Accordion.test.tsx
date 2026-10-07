@@ -3,6 +3,29 @@ import { render } from 'vitest-browser-react';
 import { Accordion, AccordionItem, Button } from 'neba';
 
 describe('Accordion', () => {
+  /*
+   * First in the file on purpose: Base UI prints each of its warnings once, so
+   * only the first Accordion rendered here can show that it says nothing.
+   */
+  it('renders with its defaults without a warning from Base UI', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+    try {
+      const screen = await render(
+        <Accordion>
+          <AccordionItem title="Billing">How we charge.</AccordionItem>
+        </Accordion>
+      );
+
+      await expect.element(screen.getByRole('button', { name: 'Billing' })).toBeInTheDocument();
+      await new Promise(requestAnimationFrame);
+
+      expect(warn).not.toHaveBeenCalledWith(expect.stringContaining('keepMounted'));
+    } finally {
+      warn.mockRestore();
+    }
+  });
+
   describe('rendering', () => {
     it('renders a button per section', async () => {
       const screen = await render(

@@ -42,6 +42,8 @@
 
 - **A `Tabs` bar that fits no longer slows the page's scrolling under the pointer.** Every tab bar, and every `ScrollZone` with `wheel` on, carried a wheel listener that can cancel the scroll, which makes the browser wait for the page's script before it scrolls anything under the pointer, so on a busy page the scroll stalled as the pointer crossed a bar with nowhere to go. The listener is attached only while the bar or the strip overflows, and the wheel behaves as before wherever it does.
 
+- **A `Collapsible` or an `Accordion` with its default props no longer prints a Base UI warning in a development build.** Both handed Base UI `keepMounted={false}` beside `hiddenUntilFound`, a pair it warns about because a panel hidden until found stays in the DOM anyway. `keepMounted` now reaches it only when `hiddenUntilFound` is off; nothing renders differently.
+
 ## 1.18.1 (2026-10-07)
 
 ### Added

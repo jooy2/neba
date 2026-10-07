@@ -257,7 +257,8 @@ export const Accordion = React.forwardRef<HTMLDivElement, AccordionProps>(
           onValueChange={(next) => onValueChange?.(next as (string | number)[])}
           disabled={disabled}
           hiddenUntilFound={hiddenUntilFound}
-          keepMounted={keepMounted}
+          // Only without `hiddenUntilFound`, for the reason Collapsible gives.
+          keepMounted={hiddenUntilFound ? undefined : keepMounted}
           className={classNames}
           style={{ ...surfaceSlots(color, elevation), ...style }}
           {...props}

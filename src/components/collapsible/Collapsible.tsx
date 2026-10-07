@@ -284,7 +284,10 @@ export const Collapsible = React.forwardRef<HTMLDivElement, CollapsibleProps>(
       */}
         <BaseUICollapsible.Panel
           hiddenUntilFound={hiddenUntilFound}
-          keepMounted={keepMounted}
+          // Only without `hiddenUntilFound`, which keeps the panel mounted on its
+          // own: Base UI warns about a `keepMounted={false}` beside it, and that
+          // pair is the default, so every Collapsible on a page said so.
+          keepMounted={hiddenUntilFound ? undefined : keepMounted}
           className={collapsiblePanelClasses}
         >
           <div
