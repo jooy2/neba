@@ -95,13 +95,18 @@ const noMarks: readonly ChartMark[] = [];
 function useMeasured(
   ref: React.RefObject<HTMLElement | null>,
   read: (host: HTMLElement) => number,
-  enabled: boolean
+  enabled: boolean,
+  initial?: number
 ): number {
   // Settled when the chart mounts: `false` in a tree hydrating what a server
   // sent, `true` in one mounted in the browser, whatever happens afterwards.
   const hydrated = useHydrated();
   const [mountedInBrowser] = React.useState(hydrated);
-  const [size, setSize] = React.useState(0);
+  // `initial` stands in for the measurement on the server and in the render
+  // that hydrates it, the two renders that cannot measure anything, and is
+  // held until the first measurement replaces it. A tree mounted in the
+  // browser measures before it paints and never reads it.
+  const [size, setSize] = React.useState(() => (hydrated ? 0 : (initial ?? 0)));
 
   useLayoutEffectOnClient(() => {
     const host = ref.current;
@@ -149,12 +154,35 @@ const readHeight = (host: HTMLElement) => host.clientHeight;
  * handed its width as a number: a Sparkline given `width={120}` was observed
  * all the same, and drew itself again each time its box was resized for a
  * width it never read.
+ *
+ * `initial` is a chart's `initialWidth`: the width it is drawn at on the
+ * server and while it hydrates, so the server's HTML holds the drawing rather
+ * than an empty box. It is a guess the caller makes, and the measurement
+ * replaces it.
  */
 function useMeasuredWidth(
   ref: React.RefObject<HTMLElement | null>,
-  { enabled = true }: { enabled?: boolean } = {}
+  { enabled = true, initial }: { enabled?: boolean; initial?: number } = {}
 ): number {
-  return useMeasured(ref, readWidth, enabled);
+  return useMeasured(ref, readWidth, enabled, initial);
+}
+
+/**
+ * The `initialWidth` a chart can draw at before it is measured: a positive
+ * number, and only for a chart whose height is known without measuring too.
+ * A height given as a CSS length is read off the box as well, so on the server
+ * there is no height to draw into and the guess would be a drawing with none.
+ */
+function initialWidthFor(
+  initialWidth: number | undefined,
+  height: number | string | undefined
+): number | undefined {
+  return typeof height === 'string' ||
+    initialWidth === undefined ||
+    !Number.isFinite(initialWidth) ||
+    initialWidth <= 0
+    ? undefined
+    : initialWidth;
 }
 
 /**
@@ -241,6 +269,21 @@ export interface ChartBaseProps extends Omit<BoxProps, 'children' | 'title'> {
    * the chart is a card the chart fits in.
    */
   height?: number | string;
+  /**
+   * The width, in pixels, to draw at before the chart has measured its box:
+   * on the server and while the page hydrates.
+   *
+   * A chart is laid out in pixels and a server has no box to measure, so a
+   * server-rendered chart is an empty box of the right height until the page
+   * runs — and the drawing is not in the HTML a crawler reads or the first
+   * paint shows. Given this, the server draws it at that width, and the
+   * measured width replaces it once the page has hydrated. Pass the width the
+   * chart is most often shown at; the closer it is, the less the drawing
+   * moves when it is replaced.
+   *
+   * Ignored when `height` is a CSS length, which has to be measured too.
+   */
+  initialWidth?: number;
   /**
    * How the numbers are written, everywhere they appear — the axis, the
    * tooltip, the labels on the marks. `Intl.NumberFormat` options, the same
@@ -1654,6 +1697,7 @@ export function CartesianChart(rawProps: CartesianProps) {
     scale: givenScale,
     markTooltip,
     height,
+    initialWidth,
     format,
     locale,
     label,
@@ -1671,7 +1715,7 @@ export function CartesianChart(rawProps: CartesianProps) {
     ...box
   } = useStyleDefaults(rawProps, ['size', 'variant', 'locale']);
   const hostRef = React.useRef<HTMLDivElement>(null);
-  const width = useMeasuredWidth(hostRef);
+  const width = useMeasuredWidth(hostRef, { initial: initialWidthFor(initialWidth, height) });
   const messages = useMessages(emptyMessages, locale);
   const chartWords = useMessages(chartMessages, locale);
   const intlLocale = useIntlLocale(locale);
@@ -3436,6 +3480,7 @@ export {
   ChartTooltipPanel,
   summarise,
   chartHeight,
+  initialWidthFor,
   tableRuns,
   useDeferredRows,
   useMeasuredHeight,

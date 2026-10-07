@@ -14,7 +14,7 @@ import {
   sparklineHeights,
   toValue
 } from '../../internal/chart.js';
-import { useMeasuredWidth } from '../../internal/chart-frame.js';
+import { initialWidthFor, useMeasuredWidth } from '../../internal/chart-frame.js';
 import { cx, srOnlyClasses } from '../../internal/styles.js';
 import type {
   NebaChartCurve,
@@ -89,6 +89,13 @@ export interface SparklineProps extends Omit<
   max?: number;
   /** How wide. Fills its container by default. */
   width?: number | string;
+  /**
+   * The width, in pixels, to draw at before the strip has measured its box: on
+   * the server and while the page hydrates. Without it a server-rendered strip
+   * is an empty box until the page runs; the measured width replaces it. Not
+   * read when `width` is a number, which is drawn from the first render.
+   */
+  initialWidth?: number;
   /** A name for the strip, read out in place of it. */
   label?: string;
 }
@@ -121,6 +128,7 @@ export const Sparkline = React.forwardRef<HTMLDivElement, SparklineProps>(
       min,
       max,
       width: widthProp,
+      initialWidth,
       label,
       className,
       style,
@@ -129,7 +137,10 @@ export const Sparkline = React.forwardRef<HTMLDivElement, SparklineProps>(
 
     const hostRef = React.useRef<HTMLDivElement>(null);
     // A number is the width; only a length or the default has to be measured.
-    const measured = useMeasuredWidth(hostRef, { enabled: typeof widthProp !== 'number' });
+    const measured = useMeasuredWidth(hostRef, {
+      enabled: typeof widthProp !== 'number',
+      initial: initialWidthFor(initialWidth, undefined)
+    });
     const id = React.useId().replace(/:/g, '');
 
     /* `zero` is done here rather than to the points below, so everything that

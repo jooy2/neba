@@ -268,6 +268,18 @@ const day = new Intl.DateTimeFormat('ko-KR', { month: 'short', day: 'numeric', t
 <LineChart locale="ko-KR" categories={dates.map((date) => day.format(date))} … />
 ```
 
+### initialWidth
+
+차트는 픽셀 단위로 배치되는데 서버에는 잴 상자가 없습니다. 그래서 서버에서 렌더링한 차트는 페이지가 하이드레이션될 때까지 높이만 맞는 빈 상자이고, 첫 화면에도 크롤러가 읽는 HTML에도 그림이 없습니다. `initialWidth`는 서버에서, 그리고 하이드레이션되는 동안 그림을 그릴 너비(px)입니다. 차트가 자기 상자를 잰 뒤에는 실제 너비로 다시 그립니다.
+
+차트가 주로 보이는 너비를 넘기세요. 실제 너비에 가까울수록 잰 너비로 바뀔 때 그림이 덜 달라집니다. [Sparkline](./sparkline)을 포함해 모든 차트가 받습니다. `height`가 CSS 길이이면 높이도 재야 하므로 무시합니다. 브라우저에서 마운트한 차트는 첫 paint 전에 자기를 재므로 이 너비로 그리지 않습니다.
+
+그림이 들어가는 만큼 서버 HTML이 커지고, 마크가 많을수록 더 커집니다. category가 열두 개인 BarChart는 10 kB쯤, 점이 천 개인 [ScatterChart](./scatter-chart)는 400 kB 가까이 늘어납니다. 읽는 사람이 처음 보는 차트에 쓰세요.
+
+```tsx
+<LineChart initialWidth={720} label="월별 주간 활성 사용자" … />
+```
+
 ## 접근성
 
 - 모든 차트는 데이터를 **표**로도 렌더링합니다. 화면에는 보이지 않지만 보조 기술에는 노출되며, `label`이 그 표의 caption이자 차트의 접근 가능한 이름이 됩니다. tooltip에만 있고 표에는 없는 값은 없습니다. 데이터 점이 500개를 넘으면 caption과 머리글 행은 바로 쓰고, 행은 차트가 처음 그려진 직후에 조금씩 나눠 추가합니다. 그래서 서버에서 렌더링한 HTML에는 행이 들어가지 않습니다. plot의 설명은 표가 아니라 값의 개수와 범위를 담은 한 문장이라, focus할 때 모든 숫자를 읽지 않습니다. `secondaryAxis`가 있으면 그 축의 series는 그 축의 형식으로 쓴 두 번째 문장으로 설명합니다.

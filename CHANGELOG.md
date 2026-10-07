@@ -20,6 +20,8 @@
 
 - **`NebaProvider` warns in a development build when the scheme on `<html>` at mount is not the one it resolves.** The provider writes `data-theme` only once it has mounted, so a page without `colorSchemeScript()`, or with one called with another `storageKey` or `defaultColorScheme`, is drawn in one scheme and changes to the other as it mounts. Call `colorSchemeScript()` in `<head>` with the provider's options. A page with no scheme of its own and a provider on `system` count as a match.
 
+- **`initialWidth` on every chart, a `GaugeChart` and a `Sparkline` included.** A chart is laid out in pixels and a server has nothing to measure, so a server-rendered chart is an empty box of the right height until the page has hydrated. Given a width in pixels, the chart is drawn at it on the server and while the page hydrates, so the drawing is in the first paint and in the HTML a crawler reads, and the measured width replaces it afterwards. It makes the server's HTML larger by the drawing: about 10 kB for a BarChart of a dozen categories, close to 400 kB for a 1,000-point ScatterChart. It is ignored when `height` is a CSS length, and left out nothing changes.
+
 ### Changed
 
 - **A `Combobox` filters its list only when the query, the options or `filter` change.** The functions it handed Base UI were new on every render, so every render of anything above it, a keystroke in another field of the same form included, ran the filter over every option again. A `filter` of your own is no longer called on a render that changes none of those, as long as it is the same function from one render to the next.

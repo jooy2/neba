@@ -841,6 +841,14 @@ function chartBaseProps(options: { height: string; size?: string; legend?: false
       }
     },
     {
+      name: 'initialWidth',
+      type: 'number',
+      description: {
+        ko: '자기 상자를 재기 전, 곧 서버에서와 하이드레이션 중에 그림을 그릴 너비(px). 없으면 서버 HTML에는 높이만 맞는 빈 상자가 들어갑니다. 잰 너비가 나오면 그 너비로 다시 그립니다. height가 CSS 길이이면 무시합니다',
+        en: 'The width in pixels to draw at before the chart has measured its box: on the server and while the page hydrates. Without it the server HTML holds an empty box of the right height. The measured width replaces it. Ignored when height is a CSS length'
+      }
+    },
+    {
       name: 'label',
       type: 'string',
       default: "locale's word",
@@ -1941,6 +1949,14 @@ export const propTables: Record<string, PropRow[]> = {
       description: {
         ko: '너비. 기본은 컨테이너를 채웁니다',
         en: 'How wide. Fills its container by default'
+      }
+    },
+    {
+      name: 'initialWidth',
+      type: 'number',
+      description: {
+        ko: '자기 상자를 재기 전, 곧 서버에서와 하이드레이션 중에 띠를 그릴 너비(px). 없으면 서버 HTML에는 빈 상자가 들어갑니다. width가 숫자이면 읽지 않습니다',
+        en: 'The width in pixels to draw the strip at before it has measured its box: on the server and while the page hydrates. Without it the server HTML holds an empty box. Not read when width is a number'
       }
     },
     {
@@ -5099,6 +5115,14 @@ export const propTables: Record<string, PropRow[]> = {
       description: {
         ko: '그림의 높이. 지정하지 않으면 size 사다리를 따릅니다',
         en: 'How tall the drawing is. Defaults to the size ladder'
+      }
+    },
+    {
+      name: 'initialWidth',
+      type: 'number',
+      description: {
+        ko: '자기 상자를 재기 전, 곧 서버에서와 하이드레이션 중에 그림을 그릴 너비(px). 없으면 서버 HTML에는 높이만 맞는 빈 상자가 들어갑니다. 잰 너비가 나오면 그 너비로 다시 그립니다. height가 CSS 길이이면 무시합니다',
+        en: 'The width in pixels to draw at before the chart has measured its box: on the server and while the page hydrates. Without it the server HTML holds an empty box of the right height. The measured width replaces it. Ignored when height is a CSS length'
       }
     },
     {

@@ -268,6 +268,18 @@ const day = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', t
 <LineChart locale="en-US" categories={dates.map((date) => day.format(date))} … />
 ```
 
+### initialWidth
+
+A chart is laid out in pixels, and a server has no box to measure, so a server-rendered chart is an empty box of the right height until the page has hydrated: the drawing is not in the first paint or in the HTML a crawler reads. `initialWidth` is a width in pixels to draw at on the server and while the page hydrates. Once the chart has measured its box it is drawn at the real width.
+
+Pass the width the chart is usually shown at: the closer it is, the less the drawing changes when the measured width replaces it. Every chart takes it, a [Sparkline](./sparkline) included. It is ignored when `height` is a CSS length, which has to be measured as well, and a chart mounted in the browser never draws at it, since it measures itself before its first paint.
+
+The drawing makes the server's HTML larger, and by how many marks there are: a BarChart of a dozen categories adds about 10 kB, a [ScatterChart](./scatter-chart) of a thousand points close to 400 kB. Reach for it on the charts a reader sees first.
+
+```tsx
+<LineChart initialWidth={720} label="Weekly active users by month" … />
+```
+
 ## Accessibility
 
 - Every chart renders a **table of its data**, visually hidden and available to assistive technology. `label` becomes its caption and the chart's accessible name. A tooltip never carries a value that is not also in that table. Past 500 data points, the caption and the header row are written at once and the rows are added in small batches just after the chart first draws, so a server-rendered page does not carry them in its HTML. The plot is described by one sentence with the number of values and their range rather than by the table, so a focus does not read every number out. With a `secondaryAxis`, the series on it get a second sentence in that axis' format.

@@ -17,6 +17,7 @@ import {
   useReleaseOutside,
   useVisibility,
   chartHeight,
+  initialWidthFor,
   useMeasuredHeight
 } from '../../internal/chart-frame.js';
 import {
@@ -154,6 +155,7 @@ export function PieChart(rawProps: PieChartProps) {
     center,
     valueLabels = 'none',
     height,
+    initialWidth,
     format,
     locale,
     label,
@@ -171,7 +173,7 @@ export function PieChart(rawProps: PieChartProps) {
   } = useStyleDefaults(rawProps, ['size', 'variant', 'locale']);
 
   const hostRef = React.useRef<HTMLDivElement>(null);
-  const width = useMeasuredWidth(hostRef);
+  const width = useMeasuredWidth(hostRef, { initial: initialWidthFor(initialWidth, height) });
   const messages = useMessages(emptyMessages, locale);
   const chartWords = useMessages(chartMessages, locale);
   const intlLocale = useIntlLocale(locale);

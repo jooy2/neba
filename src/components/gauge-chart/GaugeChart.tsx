@@ -6,6 +6,7 @@ import {
   useMeasuredWidth,
   type ChartBaseProps,
   chartHeight,
+  initialWidthFor,
   useMeasuredHeight
 } from '../../internal/chart-frame.js';
 import {
@@ -136,6 +137,7 @@ export function GaugeChart(rawProps: GaugeChartProps) {
     center,
     caption,
     height,
+    initialWidth,
     format,
     locale,
     label,
@@ -149,7 +151,7 @@ export function GaugeChart(rawProps: GaugeChartProps) {
   } = useStyleDefaults(rawProps, ['size', 'variant', 'locale']);
 
   const hostRef = React.useRef<HTMLDivElement>(null);
-  const width = useMeasuredWidth(hostRef);
+  const width = useMeasuredWidth(hostRef, { initial: initialWidthFor(initialWidth, height) });
   const messages = useMessages(emptyMessages, locale);
   const intlLocale = useIntlLocale(locale);
 

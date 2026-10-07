@@ -17,6 +17,7 @@ import {
   useMeasuredWidth,
   useReleaseOutside,
   chartHeight,
+  initialWidthFor,
   useMeasuredHeight
 } from '../../internal/chart-frame.js';
 import {
@@ -151,6 +152,7 @@ export function HeatmapChart(rawProps: HeatmapChartProps) {
     xAxis,
     yAxis,
     height,
+    initialWidth,
     format,
     locale,
     label,
@@ -168,7 +170,7 @@ export function HeatmapChart(rawProps: HeatmapChartProps) {
   } = useStyleDefaults(rawProps, ['size', 'variant', 'locale']);
 
   const hostRef = React.useRef<HTMLDivElement>(null);
-  const width = useMeasuredWidth(hostRef);
+  const width = useMeasuredWidth(hostRef, { initial: initialWidthFor(initialWidth, height) });
   const messages = useMessages(emptyMessages, locale);
   const chartWords = useMessages(chartMessages, locale);
   const intlLocale = useIntlLocale(locale);

@@ -14,6 +14,17 @@ import { renderToString } from 'react-dom/server';
 import { createRoot, hydrateRoot } from 'react-dom/client';
 import { render } from 'vitest-browser-react';
 import {
+  AreaChart,
+  BarChart,
+  GaugeChart,
+  HeatmapChart,
+  LineChart,
+  PieChart,
+  ScatterChart,
+  Sparkline,
+  TimelineChart
+} from 'neba';
+import {
   CartesianChart,
   ChartDataTable,
   type CartesianContext,
@@ -324,6 +335,155 @@ describe('measuring the width', () => {
 
       expect(drawnInCommit).toBe(false);
       expect(recoverable).not.toHaveBeenCalled();
+    } finally {
+      root.unmount();
+      host.remove();
+    }
+  });
+});
+
+/**
+ * `initialWidth`, which every chart that measures itself takes: the width it is
+ * drawn at before it has a box to measure.
+ */
+describe('initialWidth', () => {
+  const charts: [string, (initialWidth?: number) => React.ReactElement][] = [
+    [
+      'LineChart',
+      (initialWidth) => (
+        <LineChart label="Chart" initialWidth={initialWidth} series={[{ data: [1, 4, 2] }]} />
+      )
+    ],
+    [
+      'AreaChart',
+      (initialWidth) => (
+        <AreaChart label="Chart" initialWidth={initialWidth} series={[{ data: [1, 4, 2] }]} />
+      )
+    ],
+    [
+      'BarChart',
+      (initialWidth) => (
+        <BarChart label="Chart" initialWidth={initialWidth} series={[{ data: [1, 4, 2] }]} />
+      )
+    ],
+    [
+      'ScatterChart',
+      (initialWidth) => (
+        <ScatterChart
+          label="Chart"
+          initialWidth={initialWidth}
+          series={[
+            {
+              data: [
+                { x: 1, y: 2 },
+                { x: 3, y: 5 }
+              ]
+            }
+          ]}
+        />
+      )
+    ],
+    [
+      'TimelineChart',
+      (initialWidth) => (
+        <TimelineChart
+          label="Chart"
+          initialWidth={initialWidth}
+          series={[
+            {
+              name: 'Build',
+              data: [{ start: new Date(2026, 0, 5), end: new Date(2026, 0, 9) }]
+            }
+          ]}
+        />
+      )
+    ],
+    [
+      'HeatmapChart',
+      (initialWidth) => (
+        <HeatmapChart label="Chart" initialWidth={initialWidth} series={[{ data: [1, 4, 2] }]} />
+      )
+    ],
+    [
+      'PieChart',
+      (initialWidth) => <PieChart label="Chart" initialWidth={initialWidth} data={[3, 5, 2]} />
+    ],
+    [
+      'GaugeChart',
+      (initialWidth) => <GaugeChart label="Chart" initialWidth={initialWidth} value={42} />
+    ],
+    [
+      'Sparkline',
+      (initialWidth) => <Sparkline label="Chart" initialWidth={initialWidth} data={[1, 4, 2]} />
+    ]
+  ];
+
+  /** The drawing: the `<svg>` inside the element named after the chart. */
+  const drawing = (root: ParentNode) => root.querySelector('[aria-label="Chart"] svg');
+
+  it.each(charts)('%s draws at it in a server render', (_, chart) => {
+    const page = new DOMParser().parseFromString(renderToString(chart(480)), 'text/html');
+
+    expect(drawing(page)?.getAttribute('width')).toBe('480');
+  });
+
+  it.each(charts)('%s leaves its server render undrawn without it', (_, chart) => {
+    const page = new DOMParser().parseFromString(renderToString(chart()), 'text/html');
+
+    expect(page.querySelector('[aria-label="Chart"]')).not.toBeNull();
+    expect(drawing(page)).toBeNull();
+  });
+
+  it.each(charts)(
+    '%s hydrates what it drew and then draws at the width it measures',
+    async (_, chart) => {
+      const element = <div style={{ width: 320 }}>{chart(480)}</div>;
+      const host = document.createElement('div');
+
+      host.innerHTML = renderToString(element);
+      document.body.append(host);
+
+      const recoverable = vi.fn();
+      const root = hydrateRoot(host, element, { onRecoverableError: recoverable });
+
+      try {
+        await vi.waitFor(() => expect(drawing(host)?.getAttribute('width')).toBe('320'));
+        expect(recoverable).not.toHaveBeenCalled();
+      } finally {
+        root.unmount();
+        host.remove();
+      }
+    }
+  );
+
+  // A height written as a CSS length is read off the box too, so on the server
+  // there is no height to draw into.
+  it('is not read when the height is a CSS length', () => {
+    const html = renderToString(
+      <LineChart label="Chart" height="16rem" initialWidth={480} series={[{ data: [1, 4, 2] }]} />
+    );
+
+    expect(drawing(new DOMParser().parseFromString(html, 'text/html'))).toBeNull();
+  });
+
+  // Mounted in the browser, the chart measures itself before it paints, so a
+  // drawing at the guess would only be thrown away.
+  it('is not drawn at by a chart mounted in the browser', () => {
+    const host = document.createElement('div');
+    const root = createRoot(host);
+
+    document.body.append(host);
+
+    try {
+      flushSync(() =>
+        root.render(
+          <div style={{ width: 320 }}>
+            <LineChart label="Chart" initialWidth={480} series={[{ data: [1, 4, 2] }]} />
+          </div>
+        )
+      );
+
+      expect(drawing(host)?.getAttribute('width')).toBe('320');
     } finally {
       root.unmount();
       host.remove();
