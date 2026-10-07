@@ -321,6 +321,27 @@ const adornmentClasses = [
   'disabled:cursor-not-allowed disabled:text-(--neba-disabled-fg)'
 ].join(' ');
 
+/*
+ * What Base UI is told about an entry: the text the input and the filter read,
+ * the string a form submits, and when two entries are the same choice.
+ *
+ * Module-level rather than written inline on the root. Base UI memoises its
+ * filtered list on the label function, so a new one on every render filtered
+ * the whole list again on every render of anything above the combobox, a
+ * keystroke in a neighbouring field included.
+ */
+function entryLabel(entry: Entry): string {
+  return entry.label;
+}
+
+function entryValue(entry: Entry): string {
+  return String(entry.value);
+}
+
+function sameEntry(a: Entry, b: Entry): boolean {
+  return a.value === b.value;
+}
+
 /** Always an array inside, however the caller spells it. */
 function toArray(value: unknown): ComboboxValue[] {
   if (value === null || value === undefined) {
@@ -545,6 +566,20 @@ export function Combobox<Multiple extends boolean | undefined = false>(
     // exactly when what it says does, which is the question.
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [isMultiple, chosenKey]
+  );
+
+  /* `null` is Base UI's "keep everything", and the custom row is exempt from a
+     caller's own answer because it is the query written out. Memoised, like
+     the three functions at the top of the file, because Base UI filters again
+     whenever its filter changes identity. */
+  const baseFilter = React.useMemo(
+    () =>
+      cutsItself || filter === false
+        ? null
+        : filter
+          ? (entry: Entry, query: string) => entry.custom === true || filter(entry, query)
+          : undefined,
+    [cutsItself, filter]
   );
 
   function commit(next: ComboboxValue[]) {
@@ -779,19 +814,11 @@ export function Combobox<Multiple extends boolean | undefined = false>(
         // the keyboard at all: a value the list does not have is the only match
         // there is, so it is the one Enter lands on.
         autoHighlight
-        itemToStringLabel={(entry) => entry.label}
-        itemToStringValue={(entry) => String(entry.value)}
-        isItemEqualToValue={(a, b) => a.value === b.value}
+        itemToStringLabel={entryLabel}
+        itemToStringValue={entryValue}
+        isItemEqualToValue={sameEntry}
         limit={cutsItself ? -1 : limit}
-        // `null` is Base UI's "keep everything", and the custom row is exempt
-        // from a caller's own answer because it is the query written out.
-        filter={
-          cutsItself || filter === false
-            ? null
-            : filter
-              ? (entry: Entry, query: string) => entry.custom === true || filter(entry, query)
-              : undefined
-        }
+        filter={baseFilter}
         disabled={disabled}
         readOnly={readOnly}
         required={required}

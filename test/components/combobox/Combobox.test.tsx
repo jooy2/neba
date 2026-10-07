@@ -145,6 +145,29 @@ describe('Combobox', () => {
       expect(screen.getByRole('option', { name: 'Vue' }).query()).toBeNull();
     });
 
+    // The functions Base UI was handed were new on every render, so it filtered
+    // the whole list again whenever anything above the combobox rendered.
+    it('does not filter again when it renders with the same query', async () => {
+      const filter = vi.fn((option: { label?: string }, query: string) =>
+        (option.label ?? '').toLowerCase().includes(query.toLowerCase())
+      );
+      const screen = await render(
+        <Combobox items={FRAMEWORKS} label="Framework" filter={filter} description="One" />
+      );
+
+      await screen.getByRole('combobox').fill('v');
+      await expect.element(screen.getByRole('option', { name: 'Vue' })).toBeInTheDocument();
+
+      const calls = filter.mock.calls.length;
+
+      await screen.rerender(
+        <Combobox items={FRAMEWORKS} label="Framework" filter={filter} description="Two" />
+      );
+      await expect.element(screen.getByText('Two')).toBeInTheDocument();
+
+      expect(filter.mock.calls.length).toBe(calls);
+    });
+
     it('honours a controlled value', async () => {
       const screen = await render(
         <Combobox items={FRAMEWORKS} label="Framework" value="react" onValueChange={() => {}} />
