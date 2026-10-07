@@ -90,6 +90,8 @@
 
 - **A server-rendered `DataTable` with no `locale` no longer sorts and draws every row again just after it hydrates.** The table is written in en-US until hydration is over and in the reader's language after it, and that step rebuilt the collator, re-ran a `defaultSort` over every row and drew every row on screen again, even in a browser that already spoke en-US. The table now compares the locales each formatter settles on, so nothing is redone when they are the same; a browser in another language still gets its own order and its own dates.
 
+- **An `Image`'s blurred letterbox and its picture `placeholder` are requested the way the picture is.** The blurred copy comes before the picture and had no fetch priority, so a `priority` picture with `letterbox="blur"` was met first at low priority, and React 19's automatic preload was built from the copy without `fetchpriority="high"`. A picture placeholder ignored `loading`, so a lazy `Gallery` of forty tiles with URL placeholders asked for forty thumbnails before anybody scrolled. The copy now asks for the file exactly as the picture does, and the stand-in waits under `loading="lazy"` as the picture does; a `priority` tile's stand-in is still fetched at once.
+
 ## 1.18.1 (2026-10-07)
 
 ### Added

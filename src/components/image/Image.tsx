@@ -1203,7 +1203,15 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
     />
   );
 
-  // The request comes last here too, for the reason given above `request`.
+  /*
+   * The request comes last here too, for the reason given above `request`, and
+   * it is the picture's own request, urgency included. The copy is earlier in
+   * the document than the picture, so it is the `<img>` a browser meets first
+   * and the one React 19 preloads from on a server: without the picture's
+   * `fetchpriority` a `priority` picture was preloaded and fetched at the low
+   * priority of a blurred backdrop, and without its `loading` an eager one
+   * waited behind a lazy copy.
+   */
   const backdrop = blurred ? (
     <img
       alt=""
@@ -1221,11 +1229,7 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
       }}
       crossOrigin={props.crossOrigin}
       referrerPolicy={props.referrerPolicy}
-      loading={loading}
-      decoding={decoding}
-      sizes={sizes}
-      srcSet={srcSet}
-      src={src}
+      {...request}
     />
   ) : null;
 
@@ -1242,7 +1246,6 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
   const standIn =
     stand === null || phase === 'failed' || standSrc === undefined ? null : (
       <img
-        src={standSrc}
         alt=""
         aria-hidden="true"
         draggable={false}
@@ -1259,6 +1262,13 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
           objectPosition: placed,
           filter: standBlur === 0 ? undefined : `blur(${standBlur}px)`
         }}
+        // Lazy when the picture is. A stand-in fetched with the page was one
+        // request per tile of a long lazy Gallery, for tiles nobody had
+        // scrolled to; it is still small enough to arrive before the picture
+        // once the tile is near. `src` last, for the reason given above
+        // `request`.
+        loading={request.loading}
+        src={standSrc}
       />
     );
 

@@ -83,7 +83,7 @@ It is read on the picture as it is shown, so it holds through `rotate` and `flip
 
 What fills the part of the box a picture leaves empty under `contain`, `none` or `scale-down`. `blur` draws the same picture behind it, covering the box and blurred, the way a video player fills the sides of a portrait clip. Any other string is a CSS `background`: a colour, a token or a gradient. `none`, the default, leaves the box transparent.
 
-The blurred copy is the same file, so it is not a second download. It follows `position`, `rotate`, `flip` and `filter`, and it is only drawn under a `fit` that can leave space.
+The blurred copy is the same file, so it is not a second download, and it is requested with the picture's own `loading` and fetch priority. It follows `position`, `rotate`, `flip` and `filter`, and it is only drawn under a `fit` that can leave space.
 
 <Demo src="image/letterbox">
 
@@ -107,7 +107,7 @@ A picture on its side is laid out on its side. `width` and `height` still descri
 
 While the file is arriving, a [Skeleton](../feedback/skeleton) of the same shape stands in. Pass a node of your own, or `false` for nothing.
 
-Pass `{ src }` to stand a picture in instead: a URL, a data URI or a `Blob`, which is shown through an object URL and released when it is no longer needed. It is drawn the way the picture will be, with the same `fit`, `position`, `rotate` and `flip`, so it is meant for a small copy of the same file. `blur` softens a copy stretched up from a few pixels, by 20 pixels for `true` or by a number you give. The picture fades in over it, and it goes once that fade has run. Like the Skeleton, it fills the box, so it needs a `ratio`, or `width` and `height`.
+Pass `{ src }` to stand a picture in instead: a URL, a data URI or a `Blob`, which is shown through an object URL and released when it is no longer needed. It is drawn the way the picture will be, with the same `fit`, `position`, `rotate` and `flip`, so it is meant for a small copy of the same file. `blur` softens a copy stretched up from a few pixels, by 20 pixels for `true` or by a number you give. The picture fades in over it, and it goes once that fade has run. Like the Skeleton, it fills the box, so it needs a `ratio`, or `width` and `height`. It takes the picture's `loading`, so under `loading="lazy"` it is not fetched until the reader scrolls near either.
 
 <Demo src="image/placeholder">
 

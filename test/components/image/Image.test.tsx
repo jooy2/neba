@@ -269,6 +269,20 @@ describe('Image', () => {
       expect((standInOf(screen.container) as HTMLImageElement).style.filter).toBe('blur(6px)');
     });
 
+    // A lazy Gallery of forty tiles fetched forty stand-ins with the page, for
+    // tiles nobody had scrolled to yet.
+    it('fetches it no sooner than the picture', async () => {
+      const screen = await render(
+        <Image src={OK} alt="A ridge" ratio={1} loading="lazy" placeholder={{ src: OK }} />
+      );
+
+      expect(standInOf(screen.container)).toHaveAttribute('loading', 'lazy');
+
+      await screen.rerender(<Image src={OK} alt="A ridge" ratio={1} placeholder={{ src: OK }} />);
+
+      expect(standInOf(screen.container)).not.toHaveAttribute('loading');
+    });
+
     it('turns and places it the way the picture will be', async () => {
       const screen = await render(
         <Image
@@ -869,6 +883,38 @@ describe('Image', () => {
       expect(picture).toHaveClass('relative');
     });
 
+    // The copy comes before the picture, so it is the `<img>` a browser meets
+    // first and the one React 19 preloads from: a `priority` picture was
+    // preloaded and fetched at the low priority of its blurred backdrop.
+    it('asks for the copy as urgently as the picture', async () => {
+      const screen = await render(
+        <Image src={OK} alt="A ridge" fit="contain" letterbox="blur" priority />
+      );
+      const [copy] = picturesIn(screen.container);
+
+      expect(copy).toHaveAttribute('aria-hidden', 'true');
+      expect(copy).toHaveAttribute('loading', 'eager');
+      expect(copy.getAttribute('fetchpriority')).toBe('high');
+    });
+
+    it('preloads a priority picture at high priority on a server', () => {
+      const html = renderToString(
+        <Image src="/ridge.jpg" alt="A ridge" fit="contain" letterbox="blur" priority />
+      );
+      const preloads = new DOMParser()
+        .parseFromString(html, 'text/html')
+        .querySelectorAll('link[rel="preload"][as="image"]');
+
+      // React 18 preloads nothing on its own, and has nothing to get wrong.
+      for (const preload of preloads) {
+        expect(preload.getAttribute('fetchpriority')).toBe('high');
+      }
+
+      if (Number.parseInt(React.version, 10) >= 19) {
+        expect(preloads).toHaveLength(1);
+      }
+    });
+
     it('draws no copy where the fit leaves no space for one', async () => {
       const screen = await render(<Image src={OK} alt="A ridge" letterbox="blur" />);
 
@@ -1457,10 +1503,22 @@ describe('Image', () => {
       expectSourcesLast(attributesIn(html, 'img[alt=""]'), [
         'loading',
         'decoding',
+        'fetchpriority',
         'sizes',
         'crossorigin',
         'referrerpolicy'
       ]);
+    });
+
+    it('writes src last on a picture placeholder', () => {
+      const html = renderToString(
+        <Image src="/ridge.jpg" alt="A ridge" loading="lazy" placeholder={{ src: '/tiny.jpg' }} />
+      );
+      const names = attributesIn(html, 'img[alt=""]');
+
+      expect(names.at(-1)).toBe('src');
+      expect(names.indexOf('loading')).toBeGreaterThan(-1);
+      expect(names.indexOf('loading')).toBeLessThan(names.indexOf('src'));
     });
   });
 

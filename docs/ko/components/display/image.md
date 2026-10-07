@@ -83,7 +83,7 @@ import { Image } from 'neba';
 
 `contain`, `none`, `scale-down`에서 그림이 채우지 못한 상자 영역을 무엇으로 채울지 정합니다. `blur`는 같은 그림을 상자에 꽉 차게 흐리게 깔아, 동영상 플레이어가 세로 영상의 양옆을 채우는 방식과 같게 만듭니다. 그 밖의 문자열은 색, 토큰, 그러데이션 같은 CSS `background`입니다. 기본값 `none`은 상자를 투명하게 둡니다.
 
-흐린 사본은 같은 파일이라 다시 내려받지 않습니다. `position`, `rotate`, `flip`, `filter`를 그대로 따르며, 빈 영역이 생길 수 있는 `fit`에서만 그립니다.
+흐린 사본은 같은 파일이라 다시 내려받지 않으며, 그림과 같은 `loading`과 fetch priority로 요청합니다. `position`, `rotate`, `flip`, `filter`를 그대로 따르며, 빈 영역이 생길 수 있는 `fit`에서만 그립니다.
 
 <Demo src="image/letterbox">
 
@@ -107,7 +107,7 @@ import { Image } from 'neba';
 
 파일이 도착하는 동안 같은 모양의 [Skeleton](../feedback/skeleton)이 자리를 지킵니다. 직접 만든 노드를 넘기거나 `false`로 끌 수 있습니다.
 
-`{ src }`를 넘기면 대신 그림이 자리를 지킵니다. URL, data URI, `Blob`을 받으며, Blob은 object URL로 보여 주고 필요 없어지면 해제합니다. 최종 그림과 같은 `fit`, `position`, `rotate`, `flip`으로 그리므로 같은 파일의 작은 사본을 넣는 용도입니다. 몇 픽셀짜리를 늘린 사본은 `blur`로 부드럽게 만들 수 있고, `true`면 20픽셀, 숫자를 주면 그만큼 흐립니다. 그림은 이 사본 위로 서서히 나타나고, 사본은 그 전환이 끝난 뒤 사라집니다. Skeleton처럼 상자를 채우므로 `ratio`나 `width`와 `height`가 있어야 보입니다.
+`{ src }`를 넘기면 대신 그림이 자리를 지킵니다. URL, data URI, `Blob`을 받으며, Blob은 object URL로 보여 주고 필요 없어지면 해제합니다. 최종 그림과 같은 `fit`, `position`, `rotate`, `flip`으로 그리므로 같은 파일의 작은 사본을 넣는 용도입니다. 몇 픽셀짜리를 늘린 사본은 `blur`로 부드럽게 만들 수 있고, `true`면 20픽셀, 숫자를 주면 그만큼 흐립니다. 그림은 이 사본 위로 서서히 나타나고, 사본은 그 전환이 끝난 뒤 사라집니다. Skeleton처럼 상자를 채우므로 `ratio`나 `width`와 `height`가 있어야 보입니다. 그림의 `loading`을 따르므로 `loading="lazy"`면 이 사본도 독자가 가까이 스크롤할 때까지 불러오지 않습니다.
 
 <Demo src="image/placeholder">
 

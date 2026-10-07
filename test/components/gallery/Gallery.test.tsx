@@ -290,6 +290,26 @@ describe('Gallery', () => {
       }
     });
 
+    // A tile's stand-in picture was fetched with the page, so a lazy wall of
+    // forty tiles asked for forty thumbnails before anybody scrolled.
+    it('fetches a tile’s stand-in no sooner than the tile', async () => {
+      const screen = await render(
+        <Gallery
+          items={items.map((item) => ({ ...item, placeholder: { src: OK } }))}
+          priority={1}
+        />
+      );
+      const standIns = tiles(screen.container).map((tile) =>
+        tile.querySelector('img[aria-hidden="true"]')
+      );
+
+      expect(standIns[0]).toHaveAttribute('loading', 'eager');
+
+      for (const standIn of standIns.slice(1)) {
+        expect(standIn).toHaveAttribute('loading', 'lazy');
+      }
+    });
+
     it('covers each tile by default', async () => {
       const screen = await render(<Gallery items={items} />);
 
