@@ -523,11 +523,29 @@ export function Combobox<Multiple extends boolean | undefined = false>(
     return [...matching.slice(0, limit), custom];
   }, [options, customValue, cutsItself, filter, matcher, limit]);
 
-  const baseValue = isMultiple
-    ? selection.map(entryFor)
-    : selection.length > 0
-      ? entryFor(selection[0])
-      : null;
+  /* What Base UI holds as the value, kept the same object for as long as it
+     says the same thing.
+
+     Base UI reads a new value object as a new selection: it clears the field's
+     errors, validates again and, in single mode, writes the chosen label back
+     into the input. Rebuilt on every render, a `multiple` combobox inside a
+     `Form` with `errors` lost its server error whenever anything above it
+     rendered again — a keystroke in another field was enough — and a single
+     combobox holding a value the list does not have threw away every letter
+     typed after it. So it is keyed on what the entries say, the value with its
+     type, the label and the flags, rather than on the arrays and objects that
+     arrive: those are new on every render whenever `value` or `items` is
+     written inline, and a value the list does not have is a new object each
+     time it is looked up. */
+  const chosen = selection.map(entryFor);
+  const chosenKey = JSON.stringify(chosen);
+  const baseValue = React.useMemo(
+    () => (isMultiple ? chosen : (chosen[0] ?? null)),
+    // `chosen` is read inside and deliberately not listed: the key changes
+    // exactly when what it says does, which is the question.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [isMultiple, chosenKey]
+  );
 
   function commit(next: ComboboxValue[]) {
     if (value === undefined) {

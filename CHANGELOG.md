@@ -2,6 +2,10 @@
 
 ## vNext (2026--)
 
+### Fixed
+
+- **A `multiple` `Combobox` keeps the error a `Form` put on it while the page around it renders again, and a single one keeps what is typed after a value its `items` do not have.** The value handed to Base UI was a new object on every render, which Base UI took for a new choice: it cleared the field's errors, so a server error vanished the moment the reader typed in another field, and in single mode it wrote the chosen label back into the input, so typing after a custom value such as `defaultValue="Foo"` did nothing. The value now stays the same object for as long as it holds the same entries, including when `value` or `items` is written inline.
+
 ## 1.18.1 (2026-10-07)
 
 ### Added

@@ -1,7 +1,8 @@
+import * as React from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { userEvent } from 'vitest/browser';
-import { Combobox } from 'neba';
+import { Combobox, Form, TextField } from 'neba';
 import { ko, registerMessages } from 'neba/locales';
 import { readOS } from '../../../src/internal/keys.js';
 
@@ -294,6 +295,22 @@ describe('Combobox', () => {
       await expect.element(screen.getByRole('button', { name: '열기' })).toBeInTheDocument();
     });
 
+    // The value the list does not have was a new object on every render, which
+    // Base UI read as a new choice and wrote its label back over the input.
+    it('keeps what is typed after a value the list does not have', async () => {
+      const screen = await render(
+        <Combobox items={FRAMEWORKS} label="Framework" defaultValue="qwik" />
+      );
+      const input = screen.getByRole('combobox');
+
+      await expect.element(input).toHaveValue('qwik');
+
+      await input.click();
+      await userEvent.keyboard('{End}x');
+
+      await expect.element(input).toHaveValue('qwikx');
+    });
+
     it('offers nothing at all when allowCustom is off', async () => {
       const screen = await render(
         <Combobox items={FRAMEWORKS} label="Framework" allowCustom={false} emptyMessage="Nope." />
@@ -416,6 +433,41 @@ describe('Combobox', () => {
       );
 
       await expect.element(screen.getByText('Choose one.')).toBeInTheDocument();
+    });
+
+    // A new value object on every render read to Base UI as a new choice, and a
+    // new choice clears the errors a Form put on the field.
+    it("keeps a Form's error on a multiple combobox while the form renders again", async () => {
+      // Held, as a server's answer would be: a Form takes a new `errors`
+      // object as a new set of errors and puts them back.
+      const errors = { tags: 'Not those.' };
+
+      function Page() {
+        const [other, setOther] = React.useState('');
+
+        return (
+          <Form aria-label="Stack" errors={errors}>
+            <Combobox items={FRAMEWORKS} label="Tags" name="tags" multiple />
+            <TextField
+              label="Other"
+              name="other"
+              value={other}
+              onChange={(event) => setOther(event.target.value)}
+            />
+          </Form>
+        );
+      }
+
+      const screen = await render(<Page />);
+      const tags = screen.getByRole('combobox', { name: 'Tags' });
+
+      await expect.element(tags).toHaveAttribute('aria-invalid', 'true');
+
+      await screen.getByRole('textbox', { name: 'Other' }).fill('hello');
+      await expect.element(screen.getByRole('textbox', { name: 'Other' })).toHaveValue('hello');
+
+      await expect.element(tags).toHaveAttribute('aria-invalid', 'true');
+      await expect.element(screen.getByText('Not those.')).toBeInTheDocument();
     });
 
     it('re-points the colour family at danger when invalid', async () => {
