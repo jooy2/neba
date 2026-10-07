@@ -101,6 +101,28 @@ describe('Image', () => {
     await vi.waitFor(() => expect(onLoadingStatusChange).toHaveBeenCalledWith('loaded'));
   });
 
+  it('draws nothing again when the file reports it has loaded twice', async () => {
+    // Firefox can fire `load` after the picture was already read as loaded.
+    let commits = 0;
+    const screen = await render(
+      <React.Profiler id="image" onRender={() => commits++}>
+        <Image src={OK} alt="A ridge" />
+      </React.Profiler>
+    );
+    const img = screen.getByRole('img', { name: 'A ridge' });
+
+    await expect.element(img).toBeInTheDocument();
+    await vi.waitFor(() => expect((img.element() as HTMLImageElement).complete).toBe(true));
+    // Let the first `load` land and settle.
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    const settled = commits;
+
+    img.element().dispatchEvent(new Event('load'));
+    await new Promise((resolve) => setTimeout(resolve, 50));
+
+    expect(commits).toBe(settled);
+  });
+
   it('reports and draws a fallback when it does not', async () => {
     const onLoadingStatusChange = vi.fn();
     const screen = await render(

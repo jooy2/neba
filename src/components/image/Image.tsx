@@ -1051,7 +1051,15 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
     setPhase(next);
 
     if (next === 'loaded') {
-      setNatural({ width: node.naturalWidth, height: node.naturalHeight });
+      const width = node.naturalWidth;
+      const height = node.naturalHeight;
+
+      // Kept when it says the same thing. Firefox can fire `load` after the
+      // effect above has already read a cached file as loaded, and a new object
+      // for the same size would draw the picture once more for nothing.
+      setNatural((current) =>
+        current?.width === width && current.height === height ? current : { width, height }
+      );
     }
 
     onLoadingStatusChange?.(next);
