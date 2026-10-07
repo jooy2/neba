@@ -365,8 +365,14 @@ interface HeaderProps {
   showNextButton: boolean;
   /** The id of the caption the grid below is named by. */
   captionId: string;
-  onStep: (direction: -1 | 1) => void;
-  onViewChange: (view: CalendarView) => void;
+  /** Read when a button is pressed rather than when the header is drawn. */
+  actions: { readonly current: HeaderActions };
+}
+
+/** What the header's buttons do. */
+interface HeaderActions {
+  step: (direction: -1 | 1) => void;
+  changeView: (view: CalendarView) => void;
 }
 
 /**
@@ -381,8 +387,12 @@ interface HeaderProps {
  * in English, `2026년 7월` in Korean. `Intl` is asked which part comes first
  * rather than being guessed at, because a header in the wrong order reads as
  * broken to exactly the readers it is wrong for.
+ *
+ * Memoised, and handed its handlers through `actions`, for the reason `DayCell`
+ * is: a DateRangePicker draws both of its calendars again for every cell the
+ * band reaches, and nothing the header draws changes as it does.
  */
-function Header({
+const Header = React.memo(function Header({
   size,
   color,
   view,
@@ -392,8 +402,7 @@ function Header({
   showPreviousButton,
   showNextButton,
   captionId,
-  onStep,
-  onViewChange
+  actions
 }: HeaderProps) {
   const monthName = monthLabels(locale, 'long')[month.getMonth()];
   const yearName = String(month.getFullYear());
@@ -416,7 +425,7 @@ function Header({
         color={color}
         density="compact"
         aria-label={stepLabels[direction === -1 ? 0 : 1]}
-        onClick={() => onStep(direction)}
+        onClick={() => actions.current.step(direction)}
         startIcon={
           <span
             className={cx(
@@ -457,7 +466,7 @@ function Header({
       // call it, and described by what pressing it does.
       aria-describedby={`${captionId}-month`}
       aria-expanded={view === 'month'}
-      onClick={() => onViewChange(view === 'month' ? 'day' : 'month')}
+      onClick={() => actions.current.changeView(view === 'month' ? 'day' : 'month')}
       endIcon={disclosure(view === 'month')}
     >
       {monthName}
@@ -474,7 +483,7 @@ function Header({
       className="tabular-nums"
       aria-describedby={`${captionId}-year`}
       aria-expanded={view === 'year'}
-      onClick={() => onViewChange(view === 'year' ? 'day' : 'year')}
+      onClick={() => actions.current.changeView(view === 'year' ? 'day' : 'year')}
       endIcon={disclosure(view === 'year')}
     >
       {yearName}
@@ -534,7 +543,7 @@ function Header({
       {stepper(1, showNextButton)}
     </div>
   );
-}
+});
 
 /* ---------------------------------------------------------------------------
  * The calendar
@@ -792,6 +801,14 @@ export function Calendar({
     onMonthChange(next);
   };
 
+  // The newest handlers, for the header to read when a button is pressed, kept
+  // the way the day grid keeps its cells'.
+  const headerActions = React.useRef<HeaderActions>({ step, changeView });
+
+  useLayoutEffectOnClient(() => {
+    headerActions.current = { step, changeView };
+  });
+
   return (
     <div
       ref={rootRef}
@@ -809,8 +826,7 @@ export function Calendar({
         showPreviousButton={showPreviousButton}
         showNextButton={showNextButton}
         captionId={captionId}
-        onStep={step}
-        onViewChange={changeView}
+        actions={headerActions}
       />
 
       {/* Seven rows of cells, whichever view is drawn into it. */}

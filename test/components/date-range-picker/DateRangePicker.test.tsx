@@ -1,7 +1,29 @@
+import * as React from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { userEvent } from 'vitest/browser';
 import { DateRangePicker } from 'neba';
+
+/*
+ * Base UI's button, counting its renders and otherwise untouched. Every Button
+ * in the calendars' headers is one, and whether they are drawn again as the
+ * pointer moves is what one test below is about; nothing in the document
+ * changes when they are.
+ */
+const buttonRenders = vi.hoisted(() => ({ count: 0 }));
+
+vi.mock('@base-ui/react/button', async (importOriginal) => {
+  const original = await importOriginal<typeof import('@base-ui/react/button')>();
+  const Button = React.forwardRef<HTMLElement, React.ComponentProps<typeof original.Button>>(
+    function Button(props, ref) {
+      buttonRenders.count += 1;
+
+      return <original.Button ref={ref} {...props} />;
+    }
+  );
+
+  return { ...original, Button };
+});
 
 const LOCALE = 'en-US';
 
@@ -270,6 +292,33 @@ describe('DateRangePicker', () => {
 
       await expect.poll(() => inBand(day('Friday, July 31, 2026').element())).toBe(true);
       expect(shouldDisableDate).not.toHaveBeenCalled();
+    });
+
+    // Both headers were drawn again, every Button in them, for every cell the
+    // band reached, though nothing they show depends on it.
+    it('does not draw the headers again as the pointer moves', async () => {
+      const screen = await render(
+        <DateRangePicker locale={LOCALE} label="Stay" defaultMonth={JULY} />
+      );
+      const day = (name: string) => screen.getByRole('gridcell', { name });
+
+      await screen.getByRole('button', { name: 'Stay', exact: false }).click();
+      await day('Friday, July 3, 2026').click();
+      await expect.element(screen.getByRole('button', { name: 'Next month' })).toBeVisible();
+      buttonRenders.count = 0;
+
+      await userEvent.hover(day('Thursday, July 9, 2026'));
+      await userEvent.hover(day('Monday, August 3, 2026'));
+
+      await expect.poll(() => inBand(day('Friday, July 31, 2026').element())).toBe(true);
+      expect(buttonRenders.count).toBe(0);
+
+      // And the steppers still step: the pair moves on a month.
+      await screen.getByRole('button', { name: 'Next month' }).click();
+
+      await expect
+        .element(screen.getByRole('gridcell', { name: 'Monday, September 14, 2026' }))
+        .toBeVisible();
     });
   });
 
