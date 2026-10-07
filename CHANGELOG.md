@@ -68,6 +68,8 @@
 
 - **A grid, quilted or justified `Gallery` no longer draws every tile again when the window crosses a breakpoint.** Only a masonry needs to know its column count while rendering, but every layout asked, so each crossing redrew every tile and every picture in it. Now only a masonry's columns are drawn again, and the other three layouts are left alone.
 
+- **An inline `Calendar` no longer carries the pickers' trigger and popup classes.** Two class strings the pickers share were built with a call a bundler could not drop, so a page that drew only a `Calendar` carried both. A `Calendar` alone is 0.1 kB smaller gzipped; nothing it draws changes.
+
 ### Fixed
 
 - **A `multiple` `Combobox` keeps the error a `Form` put on it while the page around it renders again, and a single one keeps what is typed after a value its `items` do not have.** The value handed to Base UI was a new object on every render, which Base UI took for a new choice: it cleared the field's errors, so a server error vanished the moment the reader typed in another field, and in single mode it wrote the chosen label back into the input, so typing after a custom value such as `defaultValue="Foo"` did nothing. The value now stays the same object for as long as it holds the same entries, including when `value` or `items` is written inline.

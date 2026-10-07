@@ -91,27 +91,20 @@ export function popupSlots(color: NebaColor, elevation: NebaElevation): React.CS
  * ------------------------------------------------------------------------- */
 
 /** The trigger's box. A TextField's shell, unchanged. */
-const triggerShellClasses = [
-  'group relative flex w-full items-center select-none',
-  '[-webkit-tap-highlight-color:transparent] [touch-action:manipulation]',
-  transitionClasses,
-  fieldFocusTransitionClasses,
-  iconClasses
-].join(' ');
+const triggerShellClasses =
+  'group relative flex w-full items-center select-none ' +
+  '[-webkit-tap-highlight-color:transparent] [touch-action:manipulation] ' +
+  `${transitionClasses} ${fieldFocusTransitionClasses} ${iconClasses}`;
 
 /**
  * The popup. Like every floating surface in the library it carries a shadow by
  * default, at level 3 — as far as the scale goes without hovering — because it
  * is genuinely off the page rather than merely on top of it.
  */
-export const pickerPopupClasses = [
-  surfaceClasses,
-  'border bg-(--n-panel-press)',
-  '[border-color:var(--n-line)]',
-  '[box-shadow:var(--neba-shadow-3),var(--neba-plate-glass)]',
-  '[outline:none]',
-  popupFadeClasses
-].join(' ');
+export const pickerPopupClasses =
+  `${surfaceClasses} border bg-(--n-panel-press) [border-color:var(--n-line)] ` +
+  '[box-shadow:var(--neba-shadow-3),var(--neba-plate-glass)] [outline:none] ' +
+  popupFadeClasses;
 
 /** The popup's own padding, one track tighter than a control's. */
 export const popupPaddingClasses: Record<NebaSize, string> = {

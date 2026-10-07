@@ -165,15 +165,13 @@ const cellRadiusEndClasses: Record<NebaSize, string> = {
  * the cell rather than sitting 2px outside it, because a ring drawn outside a
  * cell in a gapless grid is a ring drawn on the neighbours.
  */
-const cellBaseClasses = [
+const cellBaseClasses =
   // The hook the forced-colours block paints a chosen cell through.
-  'neba-calendar-cell relative flex select-none items-center justify-center tabular-nums',
-  '[-webkit-tap-highlight-color:transparent] [touch-action:manipulation]',
-  transitionClasses,
-  pressTransitionClasses,
-  'focus-visible:z-10 focus-visible:[outline:2px_solid_var(--n-ring)]',
-  'focus-visible:[outline-offset:-2px]'
-].join(' ');
+  'neba-calendar-cell relative flex select-none items-center justify-center tabular-nums ' +
+  '[-webkit-tap-highlight-color:transparent] [touch-action:manipulation] ' +
+  `${transitionClasses} ${pressTransitionClasses} ` +
+  'focus-visible:z-10 focus-visible:[outline:2px_solid_var(--n-ring)] ' +
+  'focus-visible:[outline-offset:-2px]';
 
 /* ---------------------------------------------------------------------------
  * The cell
