@@ -55,6 +55,7 @@ import {
 import { numberFormatter } from './format.js';
 import { useHydrated, useIntlLocale } from './media.js';
 import { observeResize } from './observe.js';
+import { WidthSizer, widestSamples } from './sizer.js';
 import { chartMessages, emptyMessages, fillMessage, useMessages } from './i18n.js';
 import { cx, hasContent, metaTextClasses, srOnlyClasses, transitionClasses } from './styles.js';
 import type {
@@ -516,6 +517,11 @@ interface LegendProps {
   visibility: Visibility;
   size: NebaSize;
   values?: readonly (string | undefined)[];
+  /**
+   * Per series, the widest numbers `values` can hold. Given, every row keeps
+   * room for its number whether or not one is showing — see `legendReserve`.
+   */
+  reserve?: readonly (readonly string[])[];
   swatch?: (index: number, color: string) => React.ReactNode;
 }
 
@@ -586,6 +592,7 @@ function ChartLegendBar({
   visibility,
   size,
   values,
+  reserve,
   swatch
 }: LegendProps) {
   const interactive = options.interactive !== false;
@@ -624,7 +631,18 @@ function ChartLegendBar({
               />
             )}
             <span className="min-w-0 truncate">{name}</span>
-            {values?.[index] ? (
+            {reserve ? (
+              // Always there, and as wide as the widest number it can show,
+              // so a row is the same size with a column active and without.
+              // Its number is hidden rather than left out while nothing is
+              // active, and the sizer under it is what holds the width.
+              <span className="flex shrink-0 flex-col tabular-nums text-(--neba-muted-fg)">
+                <span className={values?.[index] ? undefined : 'invisible'}>
+                  {values?.[index] ?? ''}
+                </span>
+                <WidthSizer samples={reserve[index] ?? []} />
+              </span>
+            ) : values?.[index] ? (
               <span className="shrink-0 tabular-nums text-(--neba-muted-fg)">{values[index]}</span>
             ) : null}
           </>
@@ -678,6 +696,33 @@ function ChartLegendBar({
       })}
     </ul>
   );
+}
+
+/**
+ * The widest of the numbers a series can be written as, for a legend row to
+ * keep room for.
+ *
+ * Every value is written, which is the only way to know what each one looks
+ * like; it happens once per change to the data, never per pointer move. What
+ * is kept is each number's shape, its digits all turned to `0`: the numbers
+ * are set in tabular figures, where every digit is equally wide, so two
+ * numbers of one shape take the same room. A series of a thousand values has
+ * a handful of shapes, and of those `widestSamples` keeps the ones that could
+ * be the widest.
+ */
+function numberShapes(
+  row: readonly ChartValue[],
+  write: (value: number) => string
+): readonly string[] {
+  const shapes = new Set<string>();
+
+  for (const one of row) {
+    if (one.value !== null && !Number.isNaN(one.value)) {
+      shapes.add(write(one.value).replace(/[0-9]/g, '0'));
+    }
+  }
+
+  return widestSamples([...shapes]) as string[];
 }
 
 interface ScaleLegendProps {
@@ -2315,6 +2360,19 @@ export function CartesianChart(rawProps: CartesianProps) {
     [onSecond, secondaryTickFormat, formatValue]
   );
 
+  /* The room each legend row keeps for its number under `showValue`.
+
+     The number used to appear only while a column was active, so every row
+     grew when the pointer entered the plot and shrank when it left: a legend
+     under the plot pushed the page below it down and back up by a line, and
+     one beside it took width from the plot and laid every mark out again. A
+     row is now as wide as the widest number it can show, at rest as well. */
+  const showValue = typeof legend === 'object' && Boolean(legend.showValue);
+  const legendReserve = React.useMemo(
+    () => (showValue ? values.map((row, index) => numberShapes(row, formatFor(index))) : undefined),
+    [showValue, values, formatFor]
+  );
+
   /* One object for as long as nothing in it changes, which is what lets the
      mark list below — and anything a chart memoises on the context — hold
      while the pointer moves. */
@@ -2804,6 +2862,7 @@ export function CartesianChart(rawProps: CartesianProps) {
             visibility={visibility}
             size={size}
             swatch={swatch}
+            reserve={legendReserve}
             values={
               legendOptions.showValue && activeIndex !== null
                 ? series.map((_, index) => {

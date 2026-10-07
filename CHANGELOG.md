@@ -10,6 +10,8 @@
 
 - **A `Sparkline`'s name is on its box rather than on its `<svg>`.** `role="img"` and the `label` were on the strip's `<svg>`, which is only drawn once the strip has measured itself, so a server render named nothing and a crawler or a reader without JavaScript got a list of numbers with nothing saying what they were. The box that holds the drawing is in the HTML from the start and carries both now. A test that found the strip by its role and read it as the `<svg>` should take the `<svg>` inside it. A Sparkline given `width` as a number also no longer measures its box, and draws once instead of twice when it mounts.
 
+- **A legend with `showValue` keeps room for its numbers while no column is active.** The number beside each series' name appeared only while the pointer was over the plot, so every row grew as it entered and shrank as it left: a legend under the plot pushed the page below it down and back up, a layout shift of 0.0235 each way on a five-series chart, and one beside the plot took its width from the plot. Each row is now as wide as the widest number its series can show from the start, with the number hidden until a column is active, and the legend no longer changes size. The rows are wider at rest than they were, so a legend under the plot may take another line; a layout that relied on the narrower rows should allow for it.
+
 ### Added
 
 - **`autoComplete` on `Select` and `Combobox`**, so a browser's autofill can fill them in with the rest of a form: `autoComplete="country"` on a country list. It is written on the hidden input that submits the value, and a filled-in value that matches an option's `value` or label chooses that option. A Combobox's own text input keeps `autocomplete="off"`, and a `multiple` Combobox takes no autofill.

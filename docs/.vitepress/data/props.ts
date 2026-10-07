@@ -1322,8 +1322,8 @@ export const propTables: Record<string, PropRow[]> = {
       type: 'boolean',
       default: 'false',
       description: {
-        ko: '이름 옆에 현재 category의 값을 함께 씁니다',
-        en: "Draws each series' value at the active category beside its name"
+        ko: '이름 옆에 현재 category의 값을 함께 씁니다. 활성 category가 없을 때도 각 행은 가장 넓은 값만큼 자리를 비워 두므로 범례의 크기가 바뀌지 않습니다',
+        en: "Draws each series' value at the active category beside its name. Each row keeps room for its widest value while none is active too, so the legend does not change size"
       }
     }
   ],
