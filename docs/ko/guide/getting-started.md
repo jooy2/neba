@@ -138,7 +138,7 @@ export function NebaLocale({ children }: { children: React.ReactNode }) {
 
 페이지를 서버에서 렌더링하면 React는 브라우저에서 그 결과를 hydrate하면서, 두 쪽이 같은 것을 그렸다고 기대합니다. 몇 가지만 지키면 이 기대가 어긋나지 않습니다.
 
-**`locale`을 넘기세요.** 날짜나 숫자를 쓰는 컴포넌트에 `locale`이 없으면, 서버와 hydration 중에는 `en-US`로 쓰고 그 직후 읽는 사람의 언어로 바꿉니다. 페이지를 버리고 다시 그리는 일은 없지만, 글자가 나타난 직후 한 번 바뀝니다. `NebaProvider`로 처음부터 모든 컴포넌트에 같은 언어를 주세요.
+**`locale`을 넘기세요.** 날짜나 숫자를 쓰는 컴포넌트에 `locale`이 없으면, 서버와 hydration 중에는 `en-US`로 쓰고 그 직후 읽는 사람의 언어로 바꿉니다. 페이지를 버리고 다시 그리는 일은 없지만, 글자가 나타난 직후 한 번 바뀝니다. 독자의 언어가 날짜를 더 길게 쓰면 그 순간 date picker 필드가 넓어지고 옆에 놓인 컨트롤도 밀립니다. `NebaProvider`로 처음부터 모든 컴포넌트에 같은 언어를 주세요. 그러면 각 컴포넌트가 hydration 직후 한 번 더 렌더링하는 일도 없어집니다.
 
 ```tsx
 <NebaProvider defaults={{ locale: 'ko-KR' }}>{children}</NebaProvider>
@@ -147,6 +147,12 @@ export function NebaLocale({ children }: { children: React.ReactNode }) {
 **시간대를 확인하세요.** `locale`은 언어를 정할 뿐 시계를 정하지 않습니다. `Date`는 그것을 렌더링하는 환경의 시간대로 쓰이므로, UTC 서버와 로스앤젤레스의 독자는 `2026-03-03T00:00Z`가 며칠인지 다르게 봅니다. 두 쪽의 시간대가 다를 수 있다면 차트의 categories를 직접 포맷한 문자열로 넘기거나, 그 날짜는 브라우저에서만 렌더링하세요.
 
 **한 주의 시작 요일을 정하세요.** Calendar와 date picker는 한 주가 무슨 요일에 시작하는지 브라우저에 묻는데, 오래된 브라우저는 답하지 못합니다. 서버에서 렌더링하는 페이지에는 `weekStartsOn`을 넘기세요.
+
+**차트에는 `initialWidth`를 주세요.** 차트는 픽셀 단위로 배치되는데 서버에는 잴 상자가 없어서, 서버에서 렌더링한 차트는 페이지가 hydrate될 때까지 높이만 맞는 빈 상자입니다. 차트가 주로 보이는 너비를 넘기면 서버 HTML과 첫 화면에 그림이 들어가고, 페이지가 실행되면 잰 너비로 다시 그립니다. 그림만큼 HTML이 커지므로 독자가 처음 보는 차트에만 쓰세요.
+
+**첫 화면에는 `trigger="mount"`를 쓰세요.** `trigger`가 `"visible"`, `"hover"`, `"manual"`인 `Animate*` 컴포넌트는 페이지가 실행되고 trigger가 일어날 때까지 첫 프레임에서 기다리는데, 그 프레임은 대개 보이지 않습니다. 그동안 감싼 내용은 페이지에서 가장 큰 그림이 될 수 없습니다. 기본값인 `"mount"`는 스크립트 없이 첫 화면부터 재생됩니다.
+
+**`Shortcut`에 플랫폼을 알려 주세요.** `os="auto"`이면 서버는 Windows 키를 그리고, Mac에서는 hydration 때 Mac 키로 바뀌면서 뒤의 글자가 밀립니다. 요청의 `User-Agent`에서 플랫폼을 읽어 `os`로 넘기세요.
 
 **색 스킴은 React보다 먼저 쓰세요.** `colorSchemeScript()`는 일반 함수라서, root layout이 Server Component여도 호출할 수 있습니다. 이 스크립트는 React가 hydrate하기 전에 `<html>`에 속성과 style을 쓰므로, React에 그 사실을 알려 두세요.
 
@@ -165,6 +171,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   );
 }
 ```
+
+`NebaProvider`에 준 `storageKey`, `defaultColorScheme`과 같은 값으로 호출하세요. 개발 빌드에서는 `<html>`에 이미 있는 스킴이 provider가 정한 스킴과 다르면 provider가 경고합니다.
 
 **`dir`은 HTML에 넣으세요.** `NebaProvider`의 `direction`은 앱이 실행된 뒤에 `<html>`에 `dir`을 씁니다. 오른쪽에서 왼쪽으로 쓰는 페이지라면 서버가 보내는 HTML에 이미 `dir="rtl"`이 있어야 하고, 그렇지 않으면 첫 화면이 왼쪽에서 오른쪽으로 배치됩니다.
 
