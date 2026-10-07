@@ -1710,6 +1710,22 @@ export function markPath(shape: MarkShape, cx: number, cy: number, r: number): s
 }
 
 /**
+ * Where `markPath`'s `cx`/`cy` falls inside the shape's own bounding box, as a
+ * `transform-origin` against `transform-box: fill-box`.
+ *
+ * A fraction of the box is the same for every mark of one shape, whatever its
+ * size and wherever it sits, so a whole plot of them can be grown about their
+ * own points by one rule rather than by an origin written on each mark. Four of
+ * the shapes are symmetric about their point and are the middle of their box,
+ * which is what `undefined` stands for. The triangle is the exception, since it
+ * sits on its circumcircle: its apex is `size` above the point and its base
+ * `size / 2` below it, so the point is two thirds of the way down.
+ */
+export function markOrigin(shape: MarkShape): string | undefined {
+  return shape === 'triangle' ? '50% 66.6667%' : undefined;
+}
+
+/**
  * The centre line of that slice, as an *open* path.
  *
  * `arcPath` below draws the slice itself, which is a closed shape — and a shape

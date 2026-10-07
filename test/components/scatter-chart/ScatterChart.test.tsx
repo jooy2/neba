@@ -21,14 +21,15 @@ const BUBBLES = [
   { x: 30, y: 20, z: 64 }
 ];
 
-/** How many marks the plot drew. Every mark is a path with the surface ring on it. */
-const markCount = (plot: Element) =>
-  plot.querySelectorAll('path[stroke="var(--neba-chart-gap)"]').length;
+/** Every mark the plot drew: each is a path inside the group that rings them. */
+const marksOf = (plot: Element) => [
+  ...plot.querySelectorAll<SVGPathElement>('g[stroke="var(--neba-chart-gap)"] path')
+];
 
-const markPaths = (plot: Element) =>
-  [...plot.querySelectorAll('path[stroke="var(--neba-chart-gap)"]')].map((path) =>
-    path.getAttribute('d')
-  );
+/** How many marks the plot drew. */
+const markCount = (plot: Element) => marksOf(plot).length;
+
+const markPaths = (plot: Element) => marksOf(plot).map((path) => path.getAttribute('d'));
 
 /** The radius of each circular mark, read back out of its path. */
 const markRadii = (plot: Element) =>
@@ -114,6 +115,65 @@ describe('ScatterChart', () => {
 
       await expect.element(plot).toBeInTheDocument();
       expect(markCount(plot.element())).toBe(7);
+    });
+
+    // Each mark carried a class, a `style` with three properties, its fill and
+    // its ring, which made a thousand points 390 kB of server HTML. What every
+    // mark of a series shares is said once around them.
+    it('writes on a mark only what is its own', async () => {
+      const screen = await render(
+        <ScatterChart
+          label="Spend"
+          shape="varied"
+          series={[
+            { name: 'A', data: [CLOUD[0], { ...CLOUD[1], color: 'var(--neba-danger-fill)' }] },
+            { name: 'B', data: [CLOUD[2]] },
+            { name: 'C', data: [CLOUD[3]] }
+          ]}
+        />
+      );
+
+      const plot = screen.getByRole('img', { name: 'Spend' });
+
+      await expect.element(plot).toBeInTheDocument();
+      await expect.poll(() => markCount(plot.element())).toBe(4);
+
+      const marks = marksOf(plot.element());
+      const own = marks.find((mark) => mark.hasAttribute('fill'));
+
+      expect(marks.map((mark) => mark.getAttributeNames().sort().join(' ')).sort()).toEqual([
+        'd',
+        'd',
+        'd',
+        'd fill'
+      ]);
+      expect(own?.getAttribute('fill')).toBe('var(--neba-danger-fill)');
+
+      // A series' group holds its fill, and a triangle's where its point is.
+      const groups = marks.map((mark) => mark.parentElement!);
+
+      expect(groups[0].getAttribute('fill')).toBe('var(--neba-chart-1)');
+      expect(groups[3].getAttribute('fill')).toBe('var(--neba-chart-3)');
+      expect(groups[3].style.getPropertyValue('--n-origin')).toBe('50% 66.6667%');
+      expect(groups[0].style.getPropertyValue('--n-origin')).toBe('');
+    });
+
+    // Painted largest first across the series, bubbles cannot be grouped by
+    // series, so each one says its own fill and, as a triangle, its origin.
+    it('writes a bubble its fill, and its origin when it is a triangle', async () => {
+      const screen = await render(
+        <ScatterChart label="Spend" shape="triangle" series={[{ name: 'A', data: BUBBLES }]} />
+      );
+
+      const plot = screen.getByRole('img', { name: 'Spend' });
+
+      await expect.element(plot).toBeInTheDocument();
+      await expect.poll(() => markCount(plot.element())).toBe(3);
+
+      for (const mark of marksOf(plot.element())) {
+        expect(mark.getAttributeNames().sort()).toEqual(['d', 'fill', 'style']);
+        expect(mark.style.getPropertyValue('--n-origin')).toBe('50% 66.6667%');
+      }
     });
 
     it('draws no mark for a gap', async () => {
@@ -537,20 +597,27 @@ describe('ScatterChart', () => {
       const plot = screen.getByRole('img', { name: 'Spend' });
 
       await expect.element(plot).toBeInTheDocument();
+      await expect.poll(() => markCount(plot.element())).toBe(1);
 
-      const mark = plot.element().querySelector('path[stroke]') as SVGPathElement;
+      const [mark] = marksOf(plot.element());
+      const ring = mark.closest('g[stroke]')!;
 
-      // One `transition` shorthand naming all three, never two beside each
-      // other: two shorthands on one element are decided by stylesheet order
-      // rather than by intent, and a mark that both fades and grows would keep
-      // only whichever Tailwind happened to emit last.
-      const declarations = (mark.getAttribute('class') ?? '').match(/transition:/g) ?? [];
+      // One `transition` shorthand naming all three for every mark, never two
+      // beside each other: two shorthands on one element are decided by
+      // stylesheet order rather than by intent, and a mark that both fades and
+      // grows would keep only whichever Tailwind happened to emit last.
+      const declarations = (ring.getAttribute('class') ?? '').match(/transition:/g) ?? [];
 
       expect(declarations).toHaveLength(1);
-      expect(mark.getAttribute('class')).toContain(',scale_');
-      expect(mark.style.transformBox).toBe('view-box');
-      expect(mark.style.transformOrigin).not.toBe('');
-      expect(mark.style.scale).toBe('1');
+      expect(ring.getAttribute('class')).toContain(',scale_');
+      expect(ring.getAttribute('class')).toContain('[transform-box:fill-box]');
+      expect(mark.style.scale).toBe('');
+
+      const { x, y } = markCentres(plot.element())[0];
+
+      await plot.hover({ position: { x, y } });
+      // A 4px dot grows by a pixel.
+      await expect.poll(() => mark.style.scale).toBe('1.25');
     });
 
     // The marks are drawn in blocks so that a move redraws only the two that
@@ -576,18 +643,16 @@ describe('ScatterChart', () => {
 
       await expect.element(plot).toBeInTheDocument();
 
-      const paths = () => [
-        ...plot.element().querySelectorAll<SVGPathElement>('path[stroke="var(--neba-chart-gap)"]')
-      ];
+      const paths = () => marksOf(plot.element());
       const centres = markCentres(plot.element());
 
       await plot.hover({ position: centres[0] });
-      await expect.poll(() => paths()[0].style.scale).not.toBe('1');
+      await expect.poll(() => paths()[0].style.scale).not.toBe('');
 
       await plot.hover({ position: centres[199] });
-      await expect.poll(() => paths()[199].style.scale).not.toBe('1');
+      await expect.poll(() => paths()[199].style.scale).not.toBe('');
 
-      expect(paths().filter((path) => path.style.scale !== '1')).toHaveLength(1);
+      expect(paths().filter((path) => path.style.scale !== '')).toHaveLength(1);
     });
   });
 
@@ -972,7 +1037,7 @@ describe('ScatterChart', () => {
       await expect.element(plot).toBeInTheDocument();
       await screen.getByRole('button', { name: 'Q2' }).hover();
 
-      const marks = [...plot.element().querySelectorAll('path[stroke="var(--neba-chart-gap)"]')];
+      const marks = marksOf(plot.element());
       const groups = [...new Set(marks.map((mark) => mark.parentElement))];
 
       await expect
@@ -999,7 +1064,7 @@ describe('ScatterChart', () => {
       await expect.element(plot).toBeInTheDocument();
       await screen.getByRole('button', { name: 'Q2' }).hover();
 
-      const marks = [...plot.element().querySelectorAll('path[stroke="var(--neba-chart-gap)"]')];
+      const marks = marksOf(plot.element());
 
       await expect
         .poll(() => marks.filter((mark) => mark.getAttribute('opacity') === '0.28').length)

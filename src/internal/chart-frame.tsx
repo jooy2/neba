@@ -262,6 +262,25 @@ function chartHeight(
 export const markTransitionClasses =
   '[transition:opacity_var(--neba-duration)_var(--neba-ease),r_var(--neba-duration)_var(--neba-ease),scale_var(--neba-duration)_var(--neba-ease)]';
 
+/**
+ * The same transition, and the box a mark grows about, given to every `<path>`
+ * inside the element that carries it — for a chart with thousands of marks,
+ * where saying it on each one was most of the markup.
+ *
+ * Every scatter mark carried `markTransitionClasses`, a `style` with three
+ * properties and its stroke: about 390 bytes a mark, 390 kB of server HTML for
+ * a thousand points, and a style resolved per element in the browser. Said once
+ * on the group, a mark is its `d` and whatever is its own.
+ *
+ * The origin is `--n-origin` against the mark's own bounding box, which is the
+ * same fraction for every mark of one shape — see `markOrigin` — so it is set
+ * per series rather than per mark; the middle of the box when unset.
+ */
+// Each class whole inside one literal, for the reason above.
+export const markGroupClasses =
+  '[&_path]:[transition:opacity_var(--neba-duration)_var(--neba-ease),r_var(--neba-duration)_var(--neba-ease),scale_var(--neba-duration)_var(--neba-ease)] ' +
+  '[&_path]:[transform-box:fill-box] [&_path]:[transform-origin:var(--n-origin,50%_50%)]';
+
 export interface ChartBaseProps extends Omit<BoxProps, 'children' | 'title'> {
   /**
    * How tall the drawing is. A number is pixels; a string is any CSS length.

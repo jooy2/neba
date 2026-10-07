@@ -134,6 +134,8 @@ All exports grew 13.3 kB. About 3.6 kB of that is the code of the new chunks, wh
 
 - **A `DateRangePicker` no longer draws its calendars' headers again as the band follows the pointer.** Each cell the pointer entered while a range was half chosen drew the steppers and the month and year buttons of both months again, though none of them changes as the band moves. They are left alone now, which took twenty hovers from about 44 ms to about 30 ms of rendering in Chromium. Nothing on screen changes.
 
+- **A `ScatterChart` mark is about a sixth of the markup it was.** Every mark carried a class, an inline `style` with three properties, its fill and its ring, about 390 bytes each, so a 1,000-point scatter drawn at an `initialWidth` was 387 kB of server HTML; it is 68 kB now, and the chart mounts about a quarter faster. Nothing on screen changes. The ring and the transition are on the group around the marks and each series' group carries its fill, so a test that found the marks by `path[stroke]` should look for the paths inside that group instead; a mark carries a `style` only while it is grown.
+
 ### Fixed
 
 - **A `multiple` `Combobox` keeps the error a `Form` put on it while the page around it renders again, and a single one keeps what is typed after a value its `items` do not have.** The value handed to Base UI was a new object on every render, which Base UI took for a new choice: it cleared the field's errors, so a server error vanished the moment the reader typed in another field, and in single mode it wrote the chosen label back into the input, so typing after a custom value such as `defaultValue="Foo"` did nothing. The value now stays the same object for as long as it holds the same entries, including when `value` or `items` is written inline.

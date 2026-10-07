@@ -4,6 +4,7 @@ import * as React from 'react';
 import {
   CartesianChart,
   chartTableClasses,
+  markGroupClasses,
   markTransitionClasses,
   tableRuns,
   useDeferredRows,
@@ -17,6 +18,7 @@ import {
   formatCategory,
   markerRadii,
   markGap,
+  markOrigin,
   markPath,
   markShapes,
   plotHeights,
@@ -351,21 +353,36 @@ function ScatterMarks({ context, shapeOf }: MarksProps) {
       />
     ));
 
+  /* What every mark shares is said here once: the ring, which is the surface
+     showing through rather than a stroke drawn around the mark — what keeps two
+     overlapping dots two dots, and part of the hit target rather than only
+     spacing — and the transition and the box a mark grows about. A series'
+     group adds its fill and, for a triangle, where in its box a mark's point
+     is; with bubbles each mark says those itself. */
   return (
-    <g>
+    <g stroke="var(--neba-chart-gap)" strokeWidth={markGap} className={markGroupClasses}>
       {bubbles
         ? drawBlocks(layers[0]?.blocks ?? [], true)
         : layers.map((layer) => (
             <g
               key={layer.series}
+              fill={colors[layer.series]}
               opacity={hovered !== null && hovered !== layer.series ? 0.28 : 1}
               className={markTransitionClasses}
+              style={originSlot(shapeOf(layer.series))}
             >
               {drawBlocks(layer.blocks, false)}
             </g>
           ))}
     </g>
   );
+}
+
+/** `markOrigin` as the slot `markGroupClasses` reads, for a shape that needs one. */
+function originSlot(shape: MarkShape): React.CSSProperties | undefined {
+  const origin = markOrigin(shape);
+
+  return origin === undefined ? undefined : ({ '--n-origin': origin } as React.CSSProperties);
 }
 
 interface MarkBlockProps {
@@ -377,12 +394,20 @@ interface MarkBlockProps {
   active: ChartMark | null;
   /**
    * The series the legend is pointing at, for marks that fade one by one.
-   * Left out where each series fades as a group around them.
+   * Left out where each series fades as a group around them, and that group
+   * also carries the series' fill and origin.
    */
   hovered?: number | null;
 }
 
-/** A block of marks, drawn again only when something in it changes. */
+/**
+ * A block of marks, drawn again only when something in it changes.
+ *
+ * Each mark writes only what is its own: its `d`, a fill when the point has a
+ * `color` of its own or the marks are not grouped by series, and with bubbles
+ * the fade, only while it is faded. Everything else is said once around them —
+ * see `ScatterMarks`.
+ */
 const MarkBlock = React.memo(function MarkBlock({
   marks,
   values,
@@ -391,42 +416,39 @@ const MarkBlock = React.memo(function MarkBlock({
   active,
   hovered
 }: MarkBlockProps) {
+  // Grouped by series, the group says the fill and the origin.
+  const grouped = hovered === undefined;
+
   return (
     <>
       {marks.map((mark) => {
         const value = values[mark.series]?.[mark.index];
         const grown = active?.series === mark.series && active?.index === mark.index;
+        const shape = shapeOf(mark.series);
+        const origin = grouped ? undefined : markOrigin(shape);
+        const scale = grown && mark.r > 0 ? String((mark.r + 1) / mark.r) : undefined;
 
         return (
           <path
             key={`${mark.series}-${mark.index}`}
-            d={markPath(shapeOf(mark.series), mark.x, mark.y, mark.r)}
-            fill={value?.color ?? colors[mark.series]}
-            // The surface showing through, not a stroke drawn around the mark —
-            // which is what keeps two overlapping dots two dots, and is part of
-            // the hit target rather than only spacing.
-            stroke="var(--neba-chart-gap)"
-            strokeWidth={markGap}
-            opacity={
-              hovered === undefined
-                ? undefined
-                : hovered !== null && hovered !== mark.series
-                  ? 0.28
-                  : 1
-            }
-            className={markTransitionClasses}
+            d={markPath(shape, mark.x, mark.y, mark.r)}
+            fill={value?.color ?? (grouped ? undefined : colors[mark.series])}
+            // Left out at full strength, which is what an absent `opacity` is,
+            // so a bubble that is not faded carries nothing for it.
+            opacity={!grouped && hovered !== null && hovered !== mark.series ? 0.28 : undefined}
             // A pixel bigger under the crosshair, and the pixel is a `scale`
             // because the size of an arbitrary shape lives inside `d`, which
-            // nothing can travel along. The origin is the point the mark is
-            // pinned to rather than the middle of its own bounding box, so a
-            // triangle grows where it stands instead of drifting as it grows.
-            // A string, because React 18 does not know `scale` is unitless and
-            // writes a number as `1.2px`, which the browser throws away.
-            style={{
-              transformBox: 'view-box',
-              transformOrigin: `${mark.x}px ${mark.y}px`,
-              scale: String(grown && mark.r > 0 ? (mark.r + 1) / mark.r : 1)
-            }}
+            // nothing can travel along. It grows about the point it is pinned
+            // to rather than the middle of its own box, so a triangle grows
+            // where it stands instead of drifting as it grows — and leaving it
+            // out is `none`, which a transition reads as 1. A string, because
+            // React 18 does not know `scale` is unitless and writes a number as
+            // `1.2px`, which the browser throws away.
+            style={
+              scale === undefined && origin === undefined
+                ? undefined
+                : ({ scale, '--n-origin': origin } as React.CSSProperties)
+            }
           />
         );
       })}
