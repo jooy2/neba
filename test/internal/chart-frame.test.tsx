@@ -180,6 +180,71 @@ describe('CartesianChart', () => {
     expect(build).not.toHaveBeenCalled();
   });
 
+  // A chart hydrated with no `locale` renders once more straight after the
+  // hydration, to write its numbers in the reader's language. That changes
+  // how a number is written and nothing a mark is placed by, and with an
+  // `initialWidth` every mark was laid out and drawn again for it.
+  it('keeps the marks across the render that changes only the formatter', async () => {
+    const seen: CartesianContext[] = [];
+    const build = vi.fn((layout: CartesianLayout): ChartMark[] =>
+      layout.values[0].map((value, index) => ({
+        series: 0,
+        index,
+        x: layout.categoryValuePx(index),
+        y: layout.valuePx(value.value ?? 0),
+        r: 4
+      }))
+    );
+    const tree = (
+      <div style={{ width: 320 }}>
+        <CartesianChart
+          label="Spend"
+          height={200}
+          initialWidth={320}
+          xScale="value"
+          series={[
+            {
+              name: 'A',
+              data: [
+                { x: 0, y: 0 },
+                { x: 1, y: 10 }
+              ]
+            }
+          ]}
+          marks={build}
+        >
+          {(context) => {
+            seen.push(context);
+
+            return null;
+          }}
+        </CartesianChart>
+      </div>
+    );
+    const host = document.createElement('div');
+
+    host.innerHTML = renderToString(tree);
+    document.body.append(host);
+    seen.length = 0;
+    build.mockClear();
+
+    const root = hydrateRoot(host, tree);
+
+    try {
+      await expect.poll(() => seen.length).toBeGreaterThan(0);
+
+      const first = seen[0];
+
+      await expect.poll(() => seen.some((context) => context.format !== first.format)).toBe(true);
+
+      expect(build).toHaveBeenCalledTimes(1);
+      expect(seen[seen.length - 1].marks).toBe(first.marks);
+    } finally {
+      root.unmount();
+      host.remove();
+    }
+  });
+
   // `item` mode stored the pointer's own offset, a fresh pixel on every move,
   // and the whole chart rendered again for each pixel it moved inside a bar.
   it('does not render again while the pointer stays on one reading in item mode', async () => {

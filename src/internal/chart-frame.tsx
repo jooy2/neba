@@ -1568,6 +1568,19 @@ export interface CartesianLayout {
   /** And a given series' own, which differs once there are two scales. */
   zeroPxOf: (series?: number) => number;
   categories: readonly NebaChartCategory[];
+  size: NebaSize;
+}
+
+/**
+ * The layout, plus how a number is written and everything the pointer decides.
+ *
+ * The two formatters are not part of the layout, because the marks are built
+ * from the layout and nothing a mark is placed by depends on them. A chart
+ * hydrated with no `locale` changes its formatter straight after the
+ * hydration, to write in the reader's language, and with the formatters in
+ * the layout that one render laid out and drew every mark on the plot again.
+ */
+export interface CartesianContext extends CartesianLayout {
   format: (value: number) => string;
   /**
    * How a given series' numbers are written: through `secondaryAxis.tickFormat`
@@ -1576,11 +1589,6 @@ export interface CartesianLayout {
    * printed in the first axis' currency.
    */
   formatFor: (series: number) => (value: number) => string;
-  size: NebaSize;
-}
-
-/** The layout, plus everything the pointer decides. */
-export interface CartesianContext extends CartesianLayout {
   /** The series the legend is being hovered over, if any. */
   hovered: number | null;
   /** The category under the pointer, if any. */
@@ -2377,8 +2385,6 @@ export function CartesianChart(rawProps: CartesianProps) {
       zeroPx,
       zeroPxOf,
       categories: labels,
-      format: formatValue,
-      formatFor,
       size
     }),
     [
@@ -2399,8 +2405,6 @@ export function CartesianChart(rawProps: CartesianProps) {
       zeroPx,
       zeroPxOf,
       labels,
-      formatValue,
-      formatFor,
       size
     ]
   );
@@ -2804,6 +2808,8 @@ export function CartesianChart(rawProps: CartesianProps) {
 
   const context: CartesianContext = {
     ...layout,
+    format: formatValue,
+    formatFor,
     hovered: visibility.hovered,
     activeIndex,
     marks: markList,
