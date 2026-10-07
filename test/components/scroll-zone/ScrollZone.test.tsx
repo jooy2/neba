@@ -621,6 +621,39 @@ describe('ScrollZone', () => {
       expect(scrollBy).not.toHaveBeenCalled();
     });
 
+    // A wheel listener that may cancel the wheel makes the browser ask the page
+    // before scrolling it under the pointer, so a strip that fits takes none,
+    // and takes one once what it holds grows past it.
+    it('takes a wheel listener only while the strip overflows', async () => {
+      const add = vi.spyOn(HTMLElement.prototype, 'addEventListener');
+      const blocking = (el: HTMLElement) =>
+        add.mock.calls.filter(
+          ([type, , options], index) =>
+            add.mock.contexts[index] === el &&
+            type === 'wheel' &&
+            (options as AddEventListenerOptions | undefined)?.passive === false
+        ).length;
+
+      try {
+        const screen = await render(
+          <ScrollZone wheel data-testid="zone">
+            <div style={{ width: 20 }}>One</div>
+          </ScrollZone>
+        );
+        const box = scroller(screen);
+
+        await new Promise(requestAnimationFrame);
+        expect(blocking(box)).toBe(0);
+
+        (track(screen).firstElementChild as HTMLElement).style.width = '4000px';
+
+        await expect.poll(() => blocking(box)).toBe(1);
+        expect(roll(box, { deltaY: 120 }).defaultPrevented).toBe(true);
+      } finally {
+        add.mockRestore();
+      }
+    });
+
     // A strip inside a strip, or a NumberField being scrubbed on one. The event
     // bubbles out to the outer handler either way.
     it('leaves a notch something nearer the pointer has already answered', async () => {

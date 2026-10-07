@@ -40,6 +40,8 @@
 
 - **A `Header` or a `Footer` given a `ref` written inline no longer makes its `PageLayout` measure it again on every render.** A new ref on each render detached and attached the bar again, and the layout restarted its observers and rewrote the bar's height on its root as `0px` and back, which made the browser recalculate the style of the whole page. The bar now registers once, and your ref is still handed the element whenever it changes.
 
+- **A `Tabs` bar that fits no longer slows the page's scrolling under the pointer.** Every tab bar, and every `ScrollZone` with `wheel` on, carried a wheel listener that can cancel the scroll, which makes the browser wait for the page's script before it scrolls anything under the pointer, so on a busy page the scroll stalled as the pointer crossed a bar with nowhere to go. The listener is attached only while the bar or the strip overflows, and the wheel behaves as before wherever it does.
+
 ## 1.18.1 (2026-10-07)
 
 ### Added

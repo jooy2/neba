@@ -18,7 +18,11 @@
  * Held only where there is a strip to hold it. A bar that fits in its box takes
  * nothing at all, which is what makes it safe to leave on: three tabs in a row
  * are not a scroll container as far as the reader is concerned, and must not
- * behave like one.
+ * behave like one. And it takes no listener either, which is what
+ * `bindAxisWheelWhileOverflowing` is for: a wheel listener that can cancel the
+ * scroll makes the browser ask the page's main thread before it scrolls
+ * anything under it, so every tab bar on a page held up the page's own scroll
+ * while the pointer crossed it, whether the bar could scroll or not.
  *
  * Two gestures are deliberately left alone. A wheel held with Ctrl is a zoom. A
  * trackpad swiping sideways is already travel along the strip, and the browser
@@ -87,4 +91,50 @@ export function bindAxisWheel(el: HTMLElement): () => void {
   el.addEventListener('wheel', onWheel, { passive: false });
 
   return () => el.removeEventListener('wheel', onWheel);
+}
+
+/** What `bindAxisWheelWhileOverflowing` hands back. */
+export interface AxisWheelBinding {
+  /** Measures the strip again, and takes or drops the wheel to match. */
+  check: () => void;
+  /** The teardown. */
+  stop: () => void;
+}
+
+/**
+ * `bindAxisWheel`, attached only while the strip overflows along its width —
+ * the one case its handler acts on, measured the same way.
+ *
+ * `check` is for the caller to run whenever it measures the strip anyway: on a
+ * scroll, a resize, a change in what it holds. The strip also checks when a
+ * pointer arrives over it, because a label can grow without resizing anything
+ * an observer is watching, and a wheel can only reach the strip through a
+ * pointer that is over it. The reads come first and nothing is written, so a
+ * caller can run it ahead of its own writes without forcing a layout.
+ */
+export function bindAxisWheelWhileOverflowing(el: HTMLElement): AxisWheelBinding {
+  let unbind: (() => void) | null = null;
+
+  const check = () => {
+    const overflows = el.scrollWidth - el.clientWidth > SLACK;
+
+    if (overflows && !unbind) {
+      unbind = bindAxisWheel(el);
+    } else if (!overflows && unbind) {
+      unbind();
+      unbind = null;
+    }
+  };
+
+  el.addEventListener('pointerenter', check);
+  check();
+
+  return {
+    check,
+    stop() {
+      el.removeEventListener('pointerenter', check);
+      unbind?.();
+      unbind = null;
+    }
+  };
 }

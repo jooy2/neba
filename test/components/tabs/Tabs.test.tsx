@@ -491,14 +491,31 @@ describe('Tabs', () => {
      * lines and the bar is exactly as wide as its box. What the handler reads
      * is the geometry, so the geometry is what the test has to supply.
      */
-    function crowd(screen: Awaited<ReturnType<typeof render>>) {
+    async function crowd(screen: Awaited<ReturnType<typeof render>>) {
       const list = screen.getByRole('tablist').element() as HTMLElement;
 
       list.style.width = '120px';
       list.style.overflowX = 'auto';
       list.style.whiteSpace = 'nowrap';
 
+      // The bar takes the wheel when it measures itself overflowing, which its
+      // resize observer does a frame later, as it would for a reader.
+      await expect.poll(() => list.closest('[data-overflow-x-end]')).not.toBeNull();
+
       return list;
+    }
+
+    /** The wheel listeners an element has been given that may cancel the wheel. */
+    function wheelListeners(
+      add: { mock: { calls: unknown[][]; contexts: unknown[] } },
+      el: HTMLElement
+    ) {
+      return add.mock.calls.filter(
+        ([type, , options], index) =>
+          add.mock.contexts[index] === el &&
+          type === 'wheel' &&
+          (options as AddEventListenerOptions | undefined)?.passive === false
+      ).length;
     }
 
     function roll(box: HTMLElement, init: WheelEventInit) {
@@ -510,7 +527,7 @@ describe('Tabs', () => {
 
     it('turns a wheel rolled down the page into travel along the bar', async () => {
       const screen = await render(<Crowded />);
-      const list = crowd(screen);
+      const list = await crowd(screen);
       const scrollBy = vi.spyOn(list, 'scrollBy');
 
       expect(roll(list, { deltaY: 120 }).defaultPrevented).toBe(true);
@@ -521,7 +538,7 @@ describe('Tabs', () => {
     // still does not get the wheel, because the pointer is over the bar.
     it('holds the wheel at the end of the bar', async () => {
       const screen = await render(<Crowded />);
-      const list = crowd(screen);
+      const list = await crowd(screen);
 
       expect(roll(list, { deltaY: -120 }).defaultPrevented).toBe(true);
     });
@@ -537,9 +554,52 @@ describe('Tabs', () => {
       expect(scrollBy).not.toHaveBeenCalled();
     });
 
+    // A wheel listener that may cancel the wheel makes the browser ask the page
+    // before scrolling it under the pointer, so a bar that fits takes none.
+    it('takes no wheel listener on a bar that fits', async () => {
+      const add = vi.spyOn(HTMLElement.prototype, 'addEventListener');
+
+      try {
+        const screen = await render(<Basic defaultValue="overview" />);
+        const list = screen.getByRole('tablist').element() as HTMLElement;
+
+        await new Promise(requestAnimationFrame);
+
+        expect(wheelListeners(add, list)).toBe(0);
+      } finally {
+        add.mockRestore();
+      }
+    });
+
+    it('takes the wheel while the bar overflows, and gives it back when it fits', async () => {
+      const add = vi.spyOn(HTMLElement.prototype, 'addEventListener');
+      const remove = vi.spyOn(HTMLElement.prototype, 'removeEventListener');
+
+      try {
+        const screen = await render(<Crowded />);
+        const list = await crowd(screen);
+
+        expect(wheelListeners(add, list)).toBe(1);
+
+        list.style.width = '4000px';
+
+        await expect
+          .poll(() =>
+            remove.mock.calls.some(
+              ([type], index) => type === 'wheel' && remove.mock.contexts[index] === list
+            )
+          )
+          .toBe(true);
+        expect(roll(list, { deltaY: 120 }).defaultPrevented).toBe(false);
+      } finally {
+        add.mockRestore();
+        remove.mockRestore();
+      }
+    });
+
     it('leaves a sideways wheel to the browser, which already scrolls the bar', async () => {
       const screen = await render(<Crowded />);
-      const list = crowd(screen);
+      const list = await crowd(screen);
       const scrollBy = vi.spyOn(list, 'scrollBy');
 
       expect(roll(list, { deltaX: 120, deltaY: 4 }).defaultPrevented).toBe(false);
@@ -548,7 +608,7 @@ describe('Tabs', () => {
 
     it('leaves the wheel alone when it is turned off', async () => {
       const screen = await render(<Crowded wheel={false} />);
-      const list = crowd(screen);
+      const list = await crowd(screen);
       const scrollBy = vi.spyOn(list, 'scrollBy');
 
       expect(roll(list, { deltaY: 120 }).defaultPrevented).toBe(false);

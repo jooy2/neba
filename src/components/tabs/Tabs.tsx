@@ -18,7 +18,8 @@ import {
   transitionClasses
 } from '../../internal/styles.js';
 import { observeResize } from '../../internal/observe.js';
-import { bindAxisWheel } from '../../internal/wheel.js';
+import { bindAxisWheelWhileOverflowing } from '../../internal/wheel.js';
+import type { AxisWheelBinding } from '../../internal/wheel.js';
 import type {
   NebaAlign,
   NebaDensity,
@@ -454,6 +455,8 @@ export const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(function Tabs(ra
   const wraps = overflow === 'wrap';
   const rootRef = React.useRef<HTMLDivElement | null>(null);
   const listRef = React.useRef<HTMLDivElement | null>(null);
+  /** The wheel, while it is on; the measurement below tells it what changed. */
+  const wheelRef = React.useRef<AxisWheelBinding | null>(null);
   const context = React.useMemo(
     () => ({ variant, size, density, orientation, fullWidth, align, keepMounted }),
     [variant, size, density, orientation, fullWidth, align, keepMounted]
@@ -504,6 +507,10 @@ export const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(function Tabs(ra
     }
 
     const measure = () => {
+      // First, because it only reads: after the attributes below it would be
+      // reading a layout they had just invalidated.
+      wheelRef.current?.check();
+
       // `abs`, because a right-to-left container counts its scroll backwards
       // from zero — how far along we are is a distance either way, which is
       // exactly what a *logical* start and end want.
@@ -534,10 +541,12 @@ export const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(function Tabs(ra
 
   /*
    * And the wheel, on the axis a mouse has not got. `internal/wheel.ts` is the
-   * handler, shared with ScrollZone; it takes nothing on a bar that fits, so it
-   * is bound whatever shape the bar is in rather than only where a scroll is
-   * expected — a wrapping bar capped by `lines` scrolls the way the wheel
-   * already points, and the handler leaves that to the browser.
+   * handler, shared with ScrollZone. It is attached only while the bar
+   * overflows along its width, which the measurement above tells it about, and
+   * not on a bar that fits — a listener that may cancel the wheel makes the
+   * browser wait on the page before scrolling it under the pointer. A wrapping
+   * bar capped by `lines` scrolls the way the wheel already points, and the
+   * handler leaves that to the browser.
    */
   React.useEffect(() => {
     const node = listRef.current;
@@ -545,7 +554,14 @@ export const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(function Tabs(ra
       return;
     }
 
-    return bindAxisWheel(node);
+    const binding = bindAxisWheelWhileOverflowing(node);
+
+    wheelRef.current = binding;
+
+    return () => {
+      binding.stop();
+      wheelRef.current = null;
+    };
   }, [wheel]);
 
   return (

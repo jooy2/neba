@@ -10,7 +10,8 @@ import { useLayoutEffectOnClient } from '../../internal/layout-effect.js';
 import { queryMatches, reducedMotionQuery } from '../../internal/media.js';
 import { observeResize } from '../../internal/observe.js';
 import { cx } from '../../internal/styles.js';
-import { bindAxisWheel } from '../../internal/wheel.js';
+import { bindAxisWheelWhileOverflowing } from '../../internal/wheel.js';
+import type { AxisWheelBinding } from '../../internal/wheel.js';
 import type { NebaOrientation, NebaSize, NebaStyleProps } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
 
@@ -297,9 +298,14 @@ export const ScrollZone = React.forwardRef<HTMLDivElement, ScrollZoneProps>(
     // out is kept for: taking it away would take the focus with it.
     const [held, setHeld] = React.useState<'back' | 'forward' | null>(null);
 
+    /** The wheel, while it is on; the measurement below tells it what changed. */
+    const wheelRef = React.useRef<AxisWheelBinding | null>(null);
+
     const measure = React.useCallback(() => {
       const el = scrollerRef.current;
       if (!el) return;
+
+      wheelRef.current?.check();
 
       const extent = horizontal ? el.clientWidth : el.clientHeight;
       const total = horizontal ? el.scrollWidth : el.scrollHeight;
@@ -582,13 +588,23 @@ export const ScrollZone = React.forwardRef<HTMLDivElement, ScrollZoneProps>(
     /*
      * The wheel, on the axis the strip is not pointing along. `internal/wheel.ts`
      * is the handler, shared with the Tabs bar, which has the same problem and
-     * fewer ways out of it.
+     * fewer ways out of it. Attached only while the strip overflows, which the
+     * measurement above tells it about: a strip that fits has nowhere to send
+     * the wheel, and a listener that may cancel it makes the browser wait on
+     * the page before scrolling it under the pointer.
      */
     React.useEffect(() => {
       const el = scrollerRef.current;
       if (!el || !wheel || !horizontal) return;
 
-      return bindAxisWheel(el);
+      const binding = bindAxisWheelWhileOverflowing(el);
+
+      wheelRef.current = binding;
+
+      return () => {
+        binding.stop();
+        wheelRef.current = null;
+      };
     }, [horizontal, wheel]);
 
     function pressHandlers(forward: boolean) {
