@@ -60,6 +60,17 @@ Puts a filter above each list. It hides rows; it never moves them, and a hidden 
 
 </Demo>
 
+### name
+
+With a `name`, each value on the right is submitted with the form under that name, in the order of `value`. `FormData.getAll(name)` reads them all, and a [Form](./form)'s `onSubmit` is handed them as an array. Nothing is submitted while nothing is chosen, or while the Transfer is `disabled`.
+
+```tsx
+<Form onSubmit={save}>
+  <Transfer items={columns} name="columns" defaultValue={['status', 'commit']} />
+  <Button type="submit">Save</Button>
+</Form>
+```
+
 ### locale · sourceLabel · targetLabel
 
 The headings, the buttons and the filter come from `locale`. `sourceLabel` and `targetLabel` write the two headings out instead, which is usually what you want: "Available" and "Selected" are rarely what the two lists actually are.

@@ -60,6 +60,17 @@ import { Transfer } from 'neba';
 
 </Demo>
 
+### name
+
+`name`을 주면 오른쪽에 있는 값이 `value`의 순서대로 그 이름으로 폼과 함께 제출됩니다. `FormData.getAll(name)`으로 모두 읽을 수 있고, [Form](./form)의 `onSubmit`에는 배열로 전달됩니다. 고른 것이 없거나 Transfer가 `disabled`이면 아무것도 제출되지 않습니다.
+
+```tsx
+<Form onSubmit={save}>
+  <Transfer items={columns} name="columns" defaultValue={['status', 'commit']} />
+  <Button type="submit">Save</Button>
+</Form>
+```
+
 ### locale · sourceLabel · targetLabel
 
 제목과 버튼과 필터의 문구는 `locale`에서 옵니다. `sourceLabel`과 `targetLabel`은 두 제목을 직접 씁니다. 대개는 이쪽을 쓰게 됩니다. "선택 가능"과 "선택함"이 그 두 목록의 실제 이름인 경우는 드뭅니다.

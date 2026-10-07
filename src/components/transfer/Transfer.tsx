@@ -54,6 +54,13 @@ export interface TransferProps
   /** Nothing can be ticked or moved. */
   disabled?: boolean;
   /**
+   * Identifies the chosen values when a form is submitted. Each value on the
+   * right is a hidden input under this name, so `FormData.getAll(name)` reads
+   * them in order and a `Form`'s `onSubmit` is handed them as an array. With
+   * nothing chosen, nothing is submitted, as with a checkbox left unticked.
+   */
+  name?: string;
+  /**
    * Which language the headings, the buttons and the filter are written in — a
    * BCP 47 tag such as `ko`, `pt-BR` or `zh-Hant`. Unsupported tags fall back
    * to English.
@@ -344,6 +351,7 @@ export const Transfer = React.forwardRef<HTMLDivElement, TransferProps>(
       searchable = false,
       height = 220,
       disabled = false,
+      name,
       locale,
       variant = 'outline',
       size = 'md',
@@ -564,6 +572,23 @@ export const Transfer = React.forwardRef<HTMLDivElement, TransferProps>(
         <span role="status" className={srOnlyClasses}>
           {spoken}
         </span>
+
+        {/* One input per chosen value, as a multiple TreeSelect submits them,
+            and marked the way it marks its own so that a `Form` reads the name
+            back as a list. Disabled with the Transfer, which keeps a disabled
+            one out of the form. */}
+        {name === undefined
+          ? null
+          : selected.map((item) => (
+              <input
+                key={item}
+                type="hidden"
+                name={name}
+                value={item}
+                disabled={disabled}
+                data-neba-repeats=""
+              />
+            ))}
       </div>
     );
   }

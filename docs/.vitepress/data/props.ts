@@ -4554,6 +4554,14 @@ export const propTables: Record<string, PropRow[]> = {
       }
     },
     {
+      name: 'name',
+      type: 'string',
+      description: {
+        ko: '폼 제출 시의 필드 이름. 오른쪽에 있는 값마다 이 이름의 hidden input이 하나씩 생기고, Form의 onSubmit에는 배열로 전달됩니다',
+        en: "Identifies the chosen values when a form is submitted. Each value on the right is a hidden input under this name, and a Form's onSubmit is handed them as an array"
+      }
+    },
+    {
       name: 'locale',
       type: 'string',
       description: {

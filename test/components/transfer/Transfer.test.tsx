@@ -2,7 +2,7 @@ import * as React from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { userEvent } from 'vitest/browser';
-import { Transfer } from 'neba';
+import { Button, Form, Transfer } from 'neba';
 
 /*
  * The Checkbox every row draws, counting the renders of the ones with a label
@@ -253,6 +253,62 @@ describe('Transfer', () => {
       await screen.getByRole('button', { name: 'Move to selected' }).click();
 
       await expect.element(screen.getByText('0/5')).toBeInTheDocument();
+    });
+  });
+
+  describe('in a form', () => {
+    it('submits each chosen value under its name', async () => {
+      const screen = await render(
+        <form aria-label="Report">
+          <Transfer items={ITEMS} name="columns" defaultValue={['status', 'commit']} />
+        </form>
+      );
+      const data = new FormData(screen.getByRole('form').element() as HTMLFormElement);
+
+      expect(data.getAll('columns')).toEqual(['status', 'commit']);
+    });
+
+    it('submits what a move left on the right', async () => {
+      const screen = await render(
+        <form aria-label="Report">
+          <Transfer items={ITEMS} name="columns" defaultValue={['status']} />
+        </form>
+      );
+      const form = screen.getByRole('form').element() as HTMLFormElement;
+
+      await screen.getByText('Author').click();
+      await screen.getByRole('button', { name: 'Move to selected' }).click();
+      await expect.element(screen.getByText('0/2')).toBeInTheDocument();
+
+      expect(new FormData(form).getAll('columns')).toEqual(['status', 'author']);
+    });
+
+    it("hands a Form's onSubmit the chosen values as a list", async () => {
+      const onSubmit = vi.fn();
+      const screen = await render(
+        <Form aria-label="Report" onSubmit={onSubmit}>
+          <Transfer items={ITEMS} name="columns" defaultValue={['status', 'commit']} />
+          <Button type="submit">Save</Button>
+        </Form>
+      );
+
+      await screen.getByRole('button', { name: 'Save' }).click();
+
+      expect(onSubmit).toHaveBeenCalledTimes(1);
+      expect(onSubmit.mock.calls[0][0]).toMatchObject({ columns: ['status', 'commit'] });
+    });
+
+    it('submits nothing while disabled, or without a name', async () => {
+      const screen = await render(
+        <form aria-label="Report">
+          <Transfer items={ITEMS} name="columns" defaultValue={['status']} disabled />
+          <Transfer items={ITEMS} defaultValue={['status']} />
+        </form>
+      );
+      const form = screen.getByRole('form').element() as HTMLFormElement;
+
+      expect(new FormData(form).getAll('columns')).toEqual([]);
+      expect(form.querySelectorAll('input[type="hidden"]')).toHaveLength(1);
     });
   });
 

@@ -78,8 +78,9 @@ export interface FormProps extends Omit<React.ComponentPropsWithoutRef<'form'>, 
  *
  * Base UI keys `values` by the fields registered with it, one value each, and a
  * DateRangePicker's two ends or a multiple TreeSelect's choices are one name
- * with several inputs under it. The picker marks the input it registers, and
- * the name it carries is read back from the form as `FormData.getAll` reads it,
+ * with several inputs under it. The picker marks the input it registers, a
+ * Transfer, which registers nothing, marks the hidden inputs it draws, and the
+ * name either carries is read back from the form as `FormData.getAll` reads it,
  * so what `onSubmit` is handed agrees with what a native submit sends.
  */
 function withRepeated(
