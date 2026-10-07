@@ -2,14 +2,18 @@
 
 import * as React from 'react';
 import { Button } from '../button/Button.js';
-import { Calendar, usePickerLabels, type PickerLabels } from '../../internal/calendar.js';
+import {
+  Calendar,
+  usePickerLabels,
+  usePickerSamples,
+  type PickerLabels
+} from '../../internal/calendar.js';
 import { ArrowRightIcon, CalendarIcon } from '../../internal/icons.js';
 import { PickerFooter, PickerShell, type PickerShellProps } from '../../internal/picker.js';
 import { WidthSizer } from '../../internal/sizer.js';
 import {
   addMonths,
   compareDay,
-  displaySamples,
   formatDate,
   isValidDate,
   localeWeekStart,
@@ -254,7 +258,7 @@ export const DateRangePicker = React.forwardRef<HTMLButtonElement, DateRangePick
 
     // Every date either half could show, so neither end of the trigger changes
     // width as the range is filled in.
-    const dateSamples = displaySamples(intlLocale, format);
+    const dateSamples = usePickerSamples(locale, format);
 
     // Which end the next click will fill. The trigger says the same thing with
     // its two halves, but the trigger is behind the popup while the popup is up,

@@ -20,6 +20,7 @@ import {
   addYears,
   calendarWeeks,
   compareDay,
+  displaySamples,
   isDayOutside,
   isMonthBeforeYear,
   isSameDay,
@@ -41,7 +42,7 @@ import {
 } from './date.js';
 import { dateFormatter } from './format.js';
 import { pickerMessages, useMessages, type PickerMessages } from './i18n.js';
-import { useHydrated, useIntlLocale } from './media.js';
+import { HYDRATION_LOCALE, useHydrated, useIntlLocale } from './media.js';
 import type {
   NebaColor,
   NebaDateGranularity,
@@ -98,6 +99,40 @@ export function usePickerLabels(
   return React.useMemo(
     () => (overrides ? { ...messages, ...overrides } : messages),
     [messages, overrides]
+  );
+}
+
+/**
+ * Every string a picker's trigger could show, for the `WidthSizer` that holds
+ * it at the widest of them.
+ *
+ * With no `locale`, the server and the hydrating render write `en-US` and every
+ * render after that writes the runtime's language — see `useIntlLocale`. Sized
+ * by the second set alone, a trigger that is not `fullWidth` took the width of
+ * the first in the server's HTML and gave it up the moment the page hydrated,
+ * and everything after it in a row of controls moved sideways. So a picker that
+ * came through hydration keeps the `en-US` samples beside the runtime's. It can
+ * still grow then, where the reader's language writes a longer date, but it
+ * never shrinks. A picker first mounted in the browser never had an `en-US`
+ * width to keep, and a named locale is the same on both sides.
+ */
+export function usePickerSamples(
+  locale: string | undefined,
+  options: Intl.DateTimeFormatOptions
+): string[] {
+  const intlLocale = useIntlLocale(locale);
+  const hydrated = useHydrated();
+  // Decided by the first render and kept, as `Image` decides `served`.
+  const [served] = React.useState(() => !hydrated);
+  // Both arrays come out of a cache keyed on the formatter, so they keep their
+  // identity from one render to the next and the merge below runs once.
+  const samples = displaySamples(intlLocale, options);
+  const kept =
+    served && hydrated && locale === undefined ? displaySamples(HYDRATION_LOCALE, options) : null;
+
+  return React.useMemo(
+    () => (kept === null ? samples : [...new Set([...kept, ...samples])]),
+    [kept, samples]
   );
 }
 

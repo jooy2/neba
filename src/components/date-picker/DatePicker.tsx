@@ -2,11 +2,15 @@
 
 import * as React from 'react';
 import { Button } from '../button/Button.js';
-import { Calendar, usePickerLabels, type PickerLabels } from '../../internal/calendar.js';
+import {
+  Calendar,
+  usePickerLabels,
+  usePickerSamples,
+  type PickerLabels
+} from '../../internal/calendar.js';
 import { CalendarIcon } from '../../internal/icons.js';
 import { PickerFooter, PickerShell, type PickerShellProps } from '../../internal/picker.js';
 import {
-  displaySamples,
   formatDate,
   isUnitOutside,
   isValidDate,
@@ -268,9 +272,10 @@ export const DatePicker = React.forwardRef<HTMLButtonElement, DatePickerProps>(
 
     // Holds the trigger open at the width of the longest date it could show, so
     // choosing the 1st after the 28th does not shrink the field.
+    const dateSamples = usePickerSamples(locale, displayFormat);
     const samples = React.useMemo(
-      () => withPlaceholder(displaySamples(intlLocale, displayFormat), placeholder),
-      [intlLocale, displayFormat, placeholder]
+      () => withPlaceholder(dateSamples, placeholder),
+      [dateSamples, placeholder]
     );
 
     return (

@@ -2,7 +2,13 @@
 
 import * as React from 'react';
 import { Button } from '../button/Button.js';
-import { Calendar, TimeGrid, usePickerLabels, type PickerLabels } from '../../internal/calendar.js';
+import {
+  Calendar,
+  TimeGrid,
+  usePickerLabels,
+  usePickerSamples,
+  type PickerLabels
+} from '../../internal/calendar.js';
 import { CalendarIcon } from '../../internal/icons.js';
 import {
   PickerDivider,
@@ -12,7 +18,6 @@ import {
 } from '../../internal/picker.js';
 import {
   clampDate,
-  displaySamples,
   formatDate,
   isDayOutside,
   isHour12,
@@ -226,7 +231,7 @@ export const DateTimePicker = React.forwardRef<HTMLButtonElement, DateTimePicker
 
     // Holds the trigger open at the width of the longest moment it could
     // show, so choosing an earlier one does not shrink the field.
-    const samples = withPlaceholder(displaySamples(intlLocale, format), placeholder);
+    const samples = withPlaceholder(usePickerSamples(locale, format), placeholder);
 
     return (
       <PickerShell

@@ -480,6 +480,69 @@ describe('server-rendered and hydrated in another language', () => {
   });
 });
 
+/** The strings a picker's trigger is held open by, in the order they are drawn. */
+function samplesIn(root: ParentNode): string[] {
+  return [...root.querySelectorAll('[data-sample]')].map(
+    (node) => node.getAttribute('data-sample') ?? ''
+  );
+}
+
+const pickers: [string, React.ReactElement<{ locale?: string }>][] = [
+  ['DatePicker', <DatePicker label="Ships on" defaultValue={JULY_27} />],
+  ['TimePicker', <TimePicker label="Starts at" defaultValue={MORNING} />],
+  ['DateTimePicker', <DateTimePicker label="Publish at" defaultValue={MORNING} />],
+  [
+    'DateRangePicker',
+    <DateRangePicker label="Stay" defaultValue={{ start: JULY_27, end: new Date(2026, 7, 3) }} />
+  ]
+];
+
+describe("a picker's width across hydration", () => {
+  // The server sized the trigger by its en-US dates and the browser re-sized it
+  // by its own as soon as hydration was over, so a picker that is not
+  // `fullWidth` narrowed under a German reader and the row beside it moved.
+  it.each(pickers)('%s keeps every width the server sized it by', async (_, element) => {
+    const page = await serverThenHydrate(element);
+
+    try {
+      const served = samplesIn(new DOMParser().parseFromString(page.html, 'text/html'));
+
+      // Some of the browser's own by now, so hydration is over.
+      await expect
+        .poll(() => samplesIn(page.host).some((sample) => !served.includes(sample)))
+        .toBe(true);
+
+      expect(samplesIn(page.host)).toEqual(expect.arrayContaining(served));
+      expect(page.recoverable).toEqual([]);
+    } finally {
+      page.cleanup();
+    }
+  });
+
+  it.each(pickers)('%s mounted in the browser is sized by its own language alone', (_, element) => {
+    const host = document.createElement('div');
+    const named = document.createElement('div');
+    const root = createRoot(host);
+    const namedRoot = createRoot(named);
+
+    document.body.append(host, named);
+
+    try {
+      flushSync(() => {
+        root.render(element);
+        namedRoot.render(React.cloneElement(element, { locale: BROWSER_DEFAULT }));
+      });
+
+      expect(samplesIn(host)).toEqual(samplesIn(named));
+    } finally {
+      root.unmount();
+      namedRoot.unmount();
+      host.remove();
+      named.remove();
+    }
+  });
+});
+
 describe('a Calendar with nothing to say which month it opens on', () => {
   // A month the server's clock was in and the browser's is not: a page built
   // once and served the month after, which is every visitor to it.

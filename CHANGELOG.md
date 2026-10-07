@@ -100,6 +100,8 @@
 
 - **A server-rendered `Calendar` with no value, `defaultMonth` or `month` hydrates cleanly when the reader's month is not the server's.** It took its month from the clock, so a page built in one month and served in the next drew last month on the server and this month in the browser, and React threw the server's HTML away for every visitor. The browser now hydrates the month the server drew and moves to the reader's month right after, unless the reader has already moved it. Pass `defaultMonth` to draw the final month from the first paint.
 
+- **A server-rendered `DatePicker`, `TimePicker`, `DateTimePicker` or `DateRangePicker` with no `locale` no longer narrows when the page hydrates.** Its trigger was held at the width of its widest date in `en-US` on the server and in the reader's language right after, so where that language writes shorter dates the field narrowed and the controls after it in a row moved sideways. It now keeps the server's width as well, so it can grow at hydration but not shrink. Pass `locale`, or `defaults.locale` on a `NebaProvider`, to keep the width the same from the first paint.
+
 ## 1.18.1 (2026-10-07)
 
 ### Added

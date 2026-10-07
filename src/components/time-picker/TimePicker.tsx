@@ -5,13 +5,13 @@ import { Button } from '../button/Button.js';
 import {
   TimeGrid,
   usePickerLabels,
+  usePickerSamples,
   type PickerLabels,
   type TimeUnit
 } from '../../internal/calendar.js';
 import { ClockIcon } from '../../internal/icons.js';
 import { PickerFooter, PickerShell, type PickerShellProps } from '../../internal/picker.js';
 import {
-  displaySamples,
   formatDate,
   clampDate,
   isHour12,
@@ -225,9 +225,10 @@ export const TimePicker = React.forwardRef<HTMLButtonElement, TimePickerProps>(
     const hasFooter = showNowButton || clearable || !closeOnSelect;
 
     // Holds the trigger open at the width of the longest time it could show.
+    const timeSamples = usePickerSamples(locale, displayFormat);
     const samples = React.useMemo(
-      () => withPlaceholder(displaySamples(intlLocale, displayFormat), placeholder),
-      [intlLocale, displayFormat, placeholder]
+      () => withPlaceholder(timeSamples, placeholder),
+      [timeSamples, placeholder]
     );
 
     return (
