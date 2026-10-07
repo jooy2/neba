@@ -1,7 +1,29 @@
+import * as React from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { userEvent } from 'vitest/browser';
 import { Transfer } from 'neba';
+
+/*
+ * The Checkbox every row draws, counting the renders of the ones with a label
+ * and otherwise untouched. Whether a row renders again is the whole of what
+ * one test below is about, and nothing in the document changes when it does.
+ */
+const rowRenders = vi.hoisted(() => ({ count: 0 }));
+
+vi.mock('../../../src/components/checkbox/Checkbox.js', async (importOriginal) => {
+  const original =
+    await importOriginal<typeof import('../../../src/components/checkbox/Checkbox.js')>();
+  const Checkbox = React.forwardRef<HTMLElement, React.ComponentProps<typeof original.Checkbox>>(
+    function Checkbox(props, ref) {
+      if (props.label !== undefined) rowRenders.count += 1;
+
+      return <original.Checkbox ref={ref} {...props} />;
+    }
+  );
+
+  return { ...original, Checkbox };
+});
 
 const ITEMS = [
   { value: 'status', label: 'Status' },
@@ -234,6 +256,39 @@ describe('Transfer', () => {
     });
   });
 
+  describe('rendering less', () => {
+    // Every row of both lists, each a Base UI Field, rendered again on every
+    // tick and on every character typed at either search box.
+    it('renders only the row a tick changed', async () => {
+      const screen = await render(<Transfer items={ITEMS} searchable />);
+
+      await expect.element(screen.getByRole('checkbox', { name: 'Status' })).toBeInTheDocument();
+
+      const before = rowRenders.count;
+
+      await screen.getByText('Status').click();
+      await expect.element(screen.getByRole('checkbox', { name: 'Status' })).toBeChecked();
+
+      expect(rowRenders.count - before).toBe(1);
+    });
+
+    it('renders none of the rows a keystroke leaves where they were', async () => {
+      const screen = await render(<Transfer items={ITEMS} searchable />);
+
+      await expect.element(screen.getByRole('checkbox', { name: 'Status' })).toBeInTheDocument();
+
+      const before = rowRenders.count;
+
+      // A `t` takes Region out and leaves the other four as they were.
+      await screen.getByRole('textbox', { name: 'Search' }).first().fill('t');
+      await expect
+        .element(screen.getByRole('textbox', { name: 'Search' }).first())
+        .toHaveValue('t');
+
+      expect(rowRenders.count).toBe(before);
+    });
+  });
+
   describe('select all', () => {
     it('ticks every movable row on that side', async () => {
       const onValueChange = vi.fn();
@@ -257,7 +312,11 @@ describe('Transfer', () => {
       await screen.getByRole('textbox', { name: 'Search' }).first().fill('com');
 
       await expect.element(screen.getByRole('checkbox', { name: 'Commit' })).toBeInTheDocument();
-      expect(screen.getByRole('checkbox', { name: 'Status' }).query()).toBeNull();
+      // The list follows the box a moment later, so a row is leaving rather
+      // than never there.
+      await expect
+        .element(screen.getByRole('checkbox', { name: 'Status' }))
+        .not.toBeInTheDocument();
     });
 
     // The same fold a DataTable's search box uses. A reader who has learned
@@ -273,7 +332,9 @@ describe('Transfer', () => {
       await screen.getByRole('textbox', { name: 'Search' }).first().fill('REGION');
 
       await expect.element(screen.getByRole('checkbox', { name: 'Région' })).toBeInTheDocument();
-      expect(screen.getByRole('checkbox', { name: 'Commit' }).query()).toBeNull();
+      await expect
+        .element(screen.getByRole('checkbox', { name: 'Commit' }))
+        .not.toBeInTheDocument();
     });
 
     it('keeps a row whose label is not a string', async () => {
@@ -285,8 +346,10 @@ describe('Transfer', () => {
 
       await screen.getByRole('textbox', { name: 'Search' }).first().fill('zzzz');
 
+      await expect
+        .element(screen.getByRole('checkbox', { name: 'Status' }))
+        .not.toBeInTheDocument();
       await expect.element(screen.getByText('Chipped')).toBeInTheDocument();
-      expect(screen.getByRole('checkbox', { name: 'Status' }).query()).toBeNull();
     });
   });
 

@@ -19,7 +19,7 @@ import {
   surfaceSlots,
   toLength
 } from '../../internal/styles.js';
-import type { NebaSize, NebaStyleProps } from '../../types.js';
+import type { NebaColor, NebaSize, NebaStyleProps } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
 
 /** One thing that can be on either side. */
@@ -99,6 +99,49 @@ const rowPadY: Record<NebaSize, string> = {
  * the row did not exist on this side until now.
  */
 const arrivedClasses = '[animation:neba-anim-fade_var(--neba-duration-fill)_var(--neba-ease)_both]';
+
+interface RowProps {
+  value: string;
+  label: React.ReactNode;
+  checked: boolean;
+  disabled: boolean;
+  arrived: boolean;
+  size: NebaSize;
+  color: NebaColor;
+  onTick: (value: string, ticked: boolean) => void;
+}
+
+/**
+ * One row: a Checkbox, which is a Base UI Field of its own.
+ *
+ * Memoised on props that are all primitives, the label aside, which is the
+ * caller's own node from `items`. Inline in the panel, every row of both lists
+ * rendered again on every tick and on every character typed at either search
+ * box, and a row is the most expensive thing in the component. Now a tick
+ * renders the one row it changed, and the rest are skipped.
+ */
+const TransferRow = React.memo(function TransferRow({
+  value,
+  label,
+  checked,
+  disabled,
+  arrived,
+  size,
+  color,
+  onTick
+}: RowProps) {
+  return (
+    <Checkbox
+      size={size}
+      color={color}
+      className={cx(rowPadY[size], arrived ? arrivedClasses : '')}
+      label={label}
+      checked={checked}
+      disabled={disabled}
+      onCheckedChange={(next) => onTick(value, next === true)}
+    />
+  );
+});
 
 /** What a caller sees of one side, so the two panels are literally one function. */
 interface PanelProps {
@@ -205,15 +248,16 @@ function Panel({
             </span>
           ) : (
             rows.map((row) => (
-              <Checkbox
+              <TransferRow
                 key={row.value}
-                size={size}
-                color={color}
-                className={cx(rowPadY[size], arrived.has(row.value) ? arrivedClasses : '')}
+                value={row.value}
                 label={row.label}
                 checked={ticked.has(row.value)}
-                disabled={disabled || row.disabled}
-                onCheckedChange={(next) => onTick(row.value, next === true)}
+                disabled={disabled || row.disabled === true}
+                arrived={arrived.has(row.value)}
+                size={size}
+                color={color}
+                onTick={onTick}
               />
             ))
           )}
@@ -345,7 +389,9 @@ export const Transfer = React.forwardRef<HTMLDivElement, TransferProps>(
       onValueChange?.(next);
     };
 
-    const tick = (item: string, on: boolean) => {
+    // The same function on every render, which is what lets a row that did not
+    // change skip the render: it is the one prop every row shares.
+    const tick = React.useCallback((item: string, on: boolean) => {
       setTicked((current) => {
         const next = new Set(current);
 
@@ -354,7 +400,7 @@ export const Transfer = React.forwardRef<HTMLDivElement, TransferProps>(
 
         return next;
       });
-    };
+    }, []);
 
     const tickAll = (rows: readonly TransferItem[], on: boolean) => {
       setTicked((current) => {
@@ -416,13 +462,23 @@ export const Transfer = React.forwardRef<HTMLDivElement, TransferProps>(
     };
 
     const haystacks = React.useMemo(() => haystacksOf(items), [items]);
+    /*
+     * The lists are narrowed by a deferred copy of each query, so the letter
+     * reaches the search box at once and the list follows when React has the
+     * time. Typing at a long list used to filter it and mount the rows it gave
+     * back before the keystroke could be drawn. The arrows move what the lists
+     * show, which is the deferred answer, so a press never moves a row the
+     * reader could not see.
+     */
+    const sourceQuery = React.useDeferredValue(sourceSearch);
+    const targetQuery = React.useDeferredValue(targetSearch);
     const sourceRows = React.useMemo(
-      () => narrow(source, sourceSearch, haystacks),
-      [source, sourceSearch, haystacks]
+      () => narrow(source, sourceQuery, haystacks),
+      [source, sourceQuery, haystacks]
     );
     const targetRows = React.useMemo(
-      () => narrow(target, targetSearch, haystacks),
-      [target, targetSearch, haystacks]
+      () => narrow(target, targetQuery, haystacks),
+      [target, targetQuery, haystacks]
     );
     const canSend = sourceRows.some((item) => !item.disabled && ticked.has(item.value));
     const canReturn = targetRows.some((item) => !item.disabled && ticked.has(item.value));

@@ -2,6 +2,10 @@
 
 ## vNext (2026--)
 
+### Breaking changes
+
+- **A `Transfer`'s lists are narrowed just after a letter reaches the search box, not in the same render.** Each keystroke filtered the list and drew the rows it kept before the letter could appear, and every row of both lists, each a full Checkbox, was drawn again on every keystroke and every tick. The box now shows the letter at once and the list follows a moment later, and a tick redraws only the row it changed. A test that checks a row is gone straight after typing should wait for it to leave, with `await expect.element(row).not.toBeInTheDocument()` rather than `row.query()`.
+
 ### Added
 
 - **`autoComplete` on `Select` and `Combobox`**, so a browser's autofill can fill them in with the rest of a form: `autoComplete="country"` on a country list. It is written on the hidden input that submits the value, and a filled-in value that matches an option's `value` or label chooses that option. A Combobox's own text input keeps `autocomplete="off"`, and a `multiple` Combobox takes no autofill.
