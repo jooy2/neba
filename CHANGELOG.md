@@ -186,6 +186,8 @@ All exports grew 13.3 kB. About 3.6 kB of that is the code of the new chunks, wh
 
 - **`AnimateTyping` draws a `caretChar` given as a node for a reader who asked for less motion, and before the script runs.** There the stylesheet draws the final line instead of the typed one, and only a caret given as a string was part of it, so an icon caret disappeared. The node is now rendered in both lines; only one of them is ever laid out at a time.
 
+- **An `AnimateSlide` with `fade={false}` and `trigger="visible"` starts inside a box with `overflow: hidden`.** It waited on its first frame, moved out of the box, where the box clipped it away from the observer that starts it, so it never started. It now waits in place and hidden, as a fading slide does, and is drawn at its first frame the moment it starts; before that it is no longer visible at its offset. With less motion asked for, with scripting off, and in a browser without the `scripting` media feature, it waits as it did.
+
 ### Documentation
 
 - **Getting started says more about server rendering.** A `locale` also keeps a date picker's field from widening at hydration and spares each component a render; a chart can draw in the server's HTML with `initialWidth`; content in the first screen should keep `trigger="mount"`; a `Shortcut` takes its platform from the request; and `colorSchemeScript()` should be called with the options the provider has.

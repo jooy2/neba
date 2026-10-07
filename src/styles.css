@@ -3086,22 +3086,45 @@
  * shrunk to the middle of a box taller than the screen — and the observer that
  * decides when it starts measures the box as drawn. A full-width slide moved a
  * full width sideways, or one moved out of a box with `overflow: hidden`, was
- * never on the screen at all and never started. `data-waiting` is only written
- * while that first frame has an opacity of `0`, so taking the move away until
- * it starts changes nothing anyone can see, and the observer measures the box
- * the reader is scrolling towards. `!important` because an animation's held
- * frame outranks every ordinary declaration.
+ * never on the screen at all and never started. So the move is taken away until
+ * it starts, and the observer measures the box the reader is scrolling
+ * towards. A first frame that fades is unseen there anyway. One that does not
+ * fade, marked `shown`, is hidden in place as well, or it would jump to its
+ * first frame as it started — but only where the page is going to wait for a
+ * script, so with less motion asked for, with scripting off, and in a browser
+ * that cannot say, it is drawn as it was. An opacity rather than `visibility`,
+ * so what is inside can still take the focus, and focusing it scrolls it into
+ * view. `!important` because an animation's held frame outranks every ordinary
+ * declaration.
  */
-.neba-anim-slide[data-waiting] {
+.neba-anim-slide[data-waiting=''] {
   translate: none !important;
 }
 
-.neba-anim-scale[data-waiting] {
+.neba-anim-scale[data-waiting=''] {
   scale: none !important;
 }
 
-.neba-anim-rotate[data-waiting] {
+.neba-anim-rotate[data-waiting=''] {
   rotate: none !important;
+}
+
+@media (prefers-reduced-motion: no-preference) and (scripting: enabled) {
+  .neba-anim[data-waiting='shown'] {
+    opacity: 0 !important;
+  }
+
+  .neba-anim-slide[data-waiting='shown'] {
+    translate: none !important;
+  }
+
+  .neba-anim-scale[data-waiting='shown'] {
+    scale: none !important;
+  }
+
+  .neba-anim-rotate[data-waiting='shown'] {
+    rotate: none !important;
+  }
 }
 
 /*

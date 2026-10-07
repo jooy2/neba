@@ -445,49 +445,11 @@ export interface AnimationRunOptions {
    * trigger threw them away, and spread in the other they took the trigger off.
    */
   caller?: TriggerHandlers;
-  /**
-   * Where the first frame draws the element, as the `--n-anim-x` and
-   * `--n-anim-y` it was handed, when a `visible` trigger is waiting on an
-   * element that can be seen there — a slide that does not fade. See
-   * `visibilityWatch`.
-   */
-  offset?: { x: string; y: string };
-}
-
-/** The pixels a slot length stands for, or `0` for one this cannot read. */
-function slotPixels(value: string, size: number, element: HTMLElement): number {
-  const negated = /^calc\(-1 \* (.+)\)$/.exec(value);
-
-  if (negated) {
-    return -slotPixels(negated[1], size, element);
-  }
-
-  const match = /^(-?\d*\.?\d+)(px|%|rem|em|vw|vh)$/.exec(value.trim());
-
-  if (!match) {
-    return 0;
-  }
-
-  const amount = Number(match[1]);
-
-  switch (match[2]) {
-    case '%':
-      return (amount / 100) * size;
-    case 'rem':
-      return amount * parseFloat(getComputedStyle(document.documentElement).fontSize);
-    case 'em':
-      return amount * parseFloat(getComputedStyle(element).fontSize);
-    case 'vw':
-      return (amount / 100) * window.innerWidth;
-    case 'vh':
-      return (amount / 100) * window.innerHeight;
-    default:
-      return amount;
-  }
 }
 
 /**
- * What a `visible` trigger watches for, settled once when the watch starts.
+ * The threshold a `visible` trigger watches with, settled once when the watch
+ * starts.
  *
  * An `IntersectionObserver` measures the element as it is drawn, and two things
  * about an entrance that is waiting made the answer one that could never come.
@@ -502,42 +464,19 @@ function slotPixels(value: string, size: number, element: HTMLElement): number {
  *
  * **A first frame somewhere else.** A slide waits on its first frame, a full
  * width away for the default distance, and a full-width element moved a full
- * width sideways is never on the screen at all. One whose first frame cannot be
- * seen is drawn where it belongs while it waits — see `data-waiting` in
- * `useAnimateElement` — and needs nothing here. One that can be seen there, a
- * slide that does not fade, has to keep its place, so the screen it is measured
- * against moves with it instead: a `rootMargin` that shifts the root by the
- * same distance, in whole percentages of the screen for the reason above. What
- * no margin on the root can reach is a clip between the two: a box with
- * `overflow: hidden` around the slide, or the edge of a frame it is drawn in,
- * still hides a first frame drawn outside it from the observer.
+ * width sideways is never on the screen at all, nor is one moved out of a box
+ * with `overflow: hidden`. So an entrance that moves is drawn where it belongs,
+ * unseen, while it waits — see `data-waiting` in `useAnimateElement` — and
+ * needs nothing here.
  */
-export function visibilityWatch(
-  element: HTMLElement,
-  threshold: number,
-  offset: { x: string; y: string } | undefined
-): { threshold: number; rootMargin: string } {
+export function visibilityWatch(element: HTMLElement, threshold: number): number {
   const screenWidth = document.documentElement.clientWidth || window.innerWidth;
   const screenHeight = document.documentElement.clientHeight || window.innerHeight;
-  const width = element.offsetWidth;
-  const height = element.offsetHeight;
   const room =
-    Math.min(1, screenWidth / Math.max(1, width)) * Math.min(1, screenHeight / Math.max(1, height));
-  const watched = room < 1 ? Math.floor(threshold * room * 100) / 100 : threshold;
+    Math.min(1, screenWidth / Math.max(1, element.offsetWidth)) *
+    Math.min(1, screenHeight / Math.max(1, element.offsetHeight));
 
-  if (!offset) {
-    return { threshold: watched, rootMargin: '0px' };
-  }
-
-  const across = Math.round((slotPixels(offset.x, width, element) / screenWidth) * 100);
-  const down = Math.round((slotPixels(offset.y, height, element) / screenHeight) * 100);
-
-  return {
-    threshold: watched,
-    // Top, right, bottom, left: the root moved by the same distance as the
-    // element, grown on the side it moved towards and shrunk on the other.
-    rootMargin: across || down ? `${-down}% ${across}% ${down}% ${-across}%` : '0px'
-  };
+  return room < 1 ? Math.floor(threshold * room * 100) / 100 : threshold;
 }
 
 /** The events a `hover` trigger listens to. */
@@ -610,8 +549,7 @@ export function useAnimationRun({
   paused,
   infinite,
   caller,
-  parts,
-  offset
+  parts
 }: AnimationRunOptions): AnimationRun {
   const node = React.useRef<HTMLElement | null>(null);
   const [started, setStarted] = React.useState(trigger === 'mount');
@@ -672,9 +610,6 @@ export function useAnimationRun({
     }
   }, [state]);
 
-  const offsetX = offset?.x;
-  const offsetY = offset?.y;
-
   React.useEffect(() => {
     if (trigger !== 'visible') {
       return;
@@ -686,33 +621,24 @@ export function useAnimationRun({
       return;
     }
 
-    const watch = visibilityWatch(
-      element,
-      threshold,
-      offsetX === undefined || offsetY === undefined ? undefined : { x: offsetX, y: offsetY }
-    );
+    const watched = visibilityWatch(element, threshold);
 
     // Assigned before the callback can run, and read from inside it: a `once`
     // effect stops watching from within its own first delivery.
     let stop: (() => void) | null = null;
 
-    stop = observeVisibility(
-      element,
-      watch.threshold,
-      (visible) => {
-        if (visible) {
-          start();
+    stop = observeVisibility(element, watched, (visible) => {
+      if (visible) {
+        start();
 
-          if (once) {
-            stop?.();
-            stop = null;
-          }
-        } else if (!once) {
-          setStarted(false);
+        if (once) {
+          stop?.();
+          stop = null;
         }
-      },
-      watch.rootMargin
-    );
+      } else if (!once) {
+        setStarted(false);
+      }
+    });
 
     if (!stop) {
       // No observer means no way to know: show it rather than hide it forever.
@@ -722,7 +648,7 @@ export function useAnimationRun({
     }
 
     return () => stop?.();
-  }, [trigger, once, threshold, start, offsetX, offsetY]);
+  }, [trigger, once, threshold, start]);
 
   React.useEffect(() => {
     const element = node.current;
@@ -872,20 +798,25 @@ export function useAnimateElement(params: AnimateElementParams): AnimateElement 
   const effectClass = keyframe ? `${animBaseClass} ${keyframe}` : '';
   const spread = effectClass !== '' && staggers({ stagger, durationStep, reverse });
   /*
-   * A `visible` entrance whose first frame moves the root, and whether that
-   * frame can be seen. Only the root's own: a staggered effect is on the
-   * children, and the root that is watched stays where the layout put it.
+   * A `visible` entrance whose first frame moves the root. Only the root's own:
+   * a staggered effect is on the children, and the root that is watched stays
+   * where the layout put it. `mode="out"` starts from the element as it is, so
+   * only an entrance waits anywhere else.
    *
-   * Every effect that moves starts from an opacity of `0` unless told
-   * otherwise, and `mode="out"` starts from the element as it is, so only an
-   * entrance can be both moved and unseen.
+   * Every such entrance waits where the layout put it. One whose first frame
+   * fades is unseen there anyway. One that does not fade — `fade={false}` —
+   * sat at its first frame in plain sight, which a box with `overflow: hidden`
+   * around it clipped away from the observer for good, so it is marked
+   * `shown` and the stylesheet hides it in place too; it is drawn at its first
+   * frame the moment it starts, so what the reader sees of the entrance is
+   * the same.
    */
-  const moves =
+  const waits =
     trigger === 'visible' &&
     !spread &&
     slots.timeline !== 'view' &&
+    (slots.mode ?? 'in') === 'in' &&
     (effect === 'slide' || effect === 'grow' || effect === 'zoom' || effect === 'rotate');
-  const unseen = moves && (slots.mode ?? 'in') === 'in' && (slots.opacity ?? 0) === 0;
   const run = useAnimationRun({
     trigger,
     play,
@@ -894,11 +825,7 @@ export function useAnimateElement(params: AnimateElementParams): AnimateElement 
     paused,
     infinite,
     caller,
-    parts: spread ? childAnimations : undefined,
-    offset:
-      moves && !unseen && effect === 'slide'
-        ? { x: slots.x ?? '0px', y: slots.y ?? '0px' }
-        : undefined
+    parts: spread ? childAnimations : undefined
   });
   // A scroll-driven animation has no clock to be paused against, so the trigger
   // machinery has nothing to hold back and holding it back would show nothing at
@@ -917,12 +844,16 @@ export function useAnimateElement(params: AnimateElementParams): AnimateElement 
       ...run.handlers,
       'data-neba-animation': name ?? effect ?? undefined,
       'data-state': state,
-      // Held where the layout put it until it first starts, so the observer
-      // measures the box the reader is scrolling towards rather than one a
-      // width away. It cannot be seen there or anywhere else until then. Only
-      // the first time: one that has run and been scrolled away again with
+      // Held where the layout put it, unseen, until it first starts, so the
+      // observer measures the box the reader is scrolling towards rather than
+      // one a width away. Only the first time: one that has run and been scrolled away again with
       // `once` off waits on its last frame, which is already where it belongs.
-      'data-waiting': unseen && !run.started && run.run === 0 ? '' : undefined
+      'data-waiting':
+        waits && !run.started && run.run === 0
+          ? (slots.opacity ?? 0) === 0
+            ? ''
+            : 'shown'
+          : undefined
     },
     children: spread
       ? staggerChildren(children, effectClass, slots, { stagger, durationStep, reverse })

@@ -114,29 +114,52 @@ describe('a visible trigger under the stylesheet', () => {
     await expect.element(screen.getByTestId('below')).toHaveAttribute('data-state', 'running');
   });
 
-  // Only while the first frame cannot be seen, and only until it starts.
-  it('holds the box in place only while an unseen first frame waits', async () => {
+  // In place until it starts, and only until it starts. One whose first frame
+  // does not fade is hidden there as well, or it would jump to that frame.
+  it('holds a waiting entrance in place, unseen, until it starts', async () => {
     const screen = await render(
       <>
         <div style={{ height: '150vh' }} />
-        <AnimateSlide from="left" trigger="visible" data-testid="unseen">
+        <AnimateSlide from="left" trigger="visible" data-testid="fading">
           {content}
         </AnimateSlide>
-        <AnimateSlide from="left" fade={false} trigger="visible" data-testid="seen">
+        <AnimateSlide from="left" fade={false} trigger="visible" data-testid="solid">
           {content}
         </AnimateSlide>
       </>
     );
-    const unseen = screen.getByTestId('unseen').element() as HTMLElement;
-    const seen = screen.getByTestId('seen').element() as HTMLElement;
+    const fading = screen.getByTestId('fading').element() as HTMLElement;
+    const solid = screen.getByTestId('solid').element() as HTMLElement;
 
-    expect(unseen).toHaveAttribute('data-waiting');
-    expect(getComputedStyle(unseen).translate).toMatch(/^(none|0px)$/);
-    expect(seen).not.toHaveAttribute('data-waiting');
+    for (const element of [fading, solid]) {
+      expect(element).toHaveAttribute('data-waiting');
+      expect(getComputedStyle(element).translate).toMatch(/^(none|0px)$/);
+      expect(getComputedStyle(element).opacity).toBe('0');
+    }
 
-    unseen.scrollIntoView();
+    solid.scrollIntoView();
 
-    await expect.element(unseen).toHaveAttribute('data-state', 'running');
-    expect(unseen).not.toHaveAttribute('data-waiting');
+    await expect.element(solid).toHaveAttribute('data-state', 'running');
+    expect(solid).not.toHaveAttribute('data-waiting');
+  });
+
+  // A box with `overflow: hidden` clipped a slide's first frame away from the
+  // observer whatever the root was, so one that does not fade never started.
+  it('starts a slide that does not fade inside a box that clips it', async () => {
+    const screen = await render(
+      <>
+        <div style={{ height: '150vh' }} />
+        <div style={{ overflow: 'hidden' }}>
+          <AnimateSlide from="left" fade={false} trigger="visible" data-testid="clipped">
+            {content}
+          </AnimateSlide>
+        </div>
+      </>
+    );
+    const clipped = screen.getByTestId('clipped').element() as HTMLElement;
+
+    clipped.scrollIntoView();
+
+    await expect.element(clipped).toHaveAttribute('data-state', 'running');
   });
 });
