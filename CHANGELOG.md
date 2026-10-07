@@ -98,6 +98,8 @@
 
 - **A `TreeView` has its tab stop from the first render, server HTML included, and no longer draws every row twice as it mounts.** The tree gave the stop to its first row in an effect, which drew every row again after each mount and each hydration, and a server-rendered tree could not be reached with Tab until the page had hydrated. With no row chosen, the first top-level row now takes the stop as it is drawn. A tree with a chosen row still moves the stop there once it has mounted.
 
+- **A server-rendered `Calendar` with no value, `defaultMonth` or `month` hydrates cleanly when the reader's month is not the server's.** It took its month from the clock, so a page built in one month and served in the next drew last month on the server and this month in the browser, and React threw the server's HTML away for every visitor. The browser now hydrates the month the server drew and moves to the reader's month right after, unless the reader has already moved it. Pass `defaultMonth` to draw the final month from the first paint.
+
 ## 1.18.1 (2026-10-07)
 
 ### Added

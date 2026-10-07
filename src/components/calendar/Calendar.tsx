@@ -11,8 +11,11 @@ import {
   isSameDay,
   isValidDate,
   localeWeekStart,
+  makeDate,
   startOfMonth,
   startOfUnit,
+  toISOMonth,
+  toMonthOf,
   today
 } from '../../internal/date.js';
 import { popupPaddingClasses } from '../../internal/picker.js';
@@ -25,7 +28,7 @@ import type {
   NebaWeekday
 } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
-import { useIntlLocale } from '../../internal/media.js';
+import { useHydrated, useIntlLocale } from '../../internal/media.js';
 
 /** Both ends of a span. Either may be missing while one is being chosen. */
 export interface CalendarRange {
@@ -105,6 +108,24 @@ function chosenDays(mode: CalendarMode, value: unknown): Array<Date | null | und
 }
 
 /**
+ * The month a server drew into the calendar `id` names, read back out of the
+ * page while that HTML is being hydrated. `null` where there is no page or no
+ * such calendar in it.
+ */
+function drawnMonth(id: string): Date | null {
+  if (typeof document === 'undefined') {
+    return null;
+  }
+
+  const written = document
+    .querySelector(`[data-neba-calendar="${CSS.escape(id)}"]`)
+    ?.getAttribute('data-month');
+  const parts = written ? /^(\d{4,})-(\d{2})$/.exec(written) : null;
+
+  return parts ? makeDate(Number(parts[1]), Number(parts[2]) - 1, 1) : null;
+}
+
+/**
  * A month, inline, with the days it is holding lit up.
  *
  * The same grid the four pickers open, without a popup around it. It has been
@@ -164,12 +185,58 @@ export const Calendar = React.forwardRef<HTMLDivElement, CalendarProps>(
 
     const firstChosen = chosenDays(mode, value).find(isValidDate);
 
+    /*
+     * The month a calendar opens on when nothing says which: this one, by the
+     * clock of whatever is rendering it.
+     *
+     * A server's clock and a reader's are not in the same month for long: a
+     * page built at the end of one month and served into the next drew last
+     * month's grid, the browser hydrated this month's, and React threw the
+     * server's HTML away for every visitor. So the root carries the month it
+     * drew, under an id `useId` gives the server and the hydrating render
+     * alike, and the hydrating render reads it back out of the page instead of
+     * asking its own clock. Once hydration is over, the effect below moves a
+     * calendar nobody has touched on to the reader's month, which is what the
+     * today marks in the grid wait for too. A calendar mounted in the browser
+     * reads the clock straight away, as it always did.
+     */
+    const hydrated = useHydrated();
+    const calendarId = React.useId();
+
     const [uncontrolledMonth, setUncontrolledMonth] = React.useState(() =>
-      startOfMonth(firstChosen ?? defaultMonth ?? today())
+      startOfMonth(
+        firstChosen ?? defaultMonth ?? (hydrated ? null : drawnMonth(calendarId)) ?? today()
+      )
     );
     const month = monthProp ?? uncontrolledMonth;
 
+    // Whether the month came from the clock during hydration, and whether the
+    // reader has moved it since. A value, `defaultMonth` or `month` is a month
+    // the caller chose, and it is the same on both sides.
+    const waitingForClock = React.useRef(
+      !hydrated &&
+        firstChosen === undefined &&
+        defaultMonth === undefined &&
+        monthProp === undefined
+    );
+    const moved = React.useRef(false);
+
+    React.useEffect(() => {
+      if (!hydrated || !waitingForClock.current) {
+        return;
+      }
+      waitingForClock.current = false;
+
+      if (!moved.current) {
+        // Not reported through `onMonthChange`. The reader moved nothing, and
+        // this is the month the calendar opens on in their browser.
+        setUncontrolledMonth(toMonthOf(today()));
+      }
+      // Once, on the render hydration ends.
+    }, [hydrated]);
+
     const setMonth = (next: Date) => {
+      moved.current = true;
       if (monthProp === undefined) {
         setUncontrolledMonth(next);
       }
@@ -241,6 +308,8 @@ export const Calendar = React.forwardRef<HTMLDivElement, CalendarProps>(
           className
         )}
         style={{ ...surfaceSlots(color, elevation), ...style }}
+        data-neba-calendar={calendarId}
+        data-month={toISOMonth(month)}
         {...props}
       >
         <CalendarGrid

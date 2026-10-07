@@ -27,7 +27,7 @@
  * assertion below says which of the three it saw.
  */
 import * as React from 'react';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { renderToString } from 'react-dom/server';
 import { createRoot, hydrateRoot } from 'react-dom/client';
 import { flushSync } from 'react-dom';
@@ -158,9 +158,16 @@ const settle = () => new Promise((resolve) => setTimeout(resolve, 60));
 /**
  * Renders on the "server", puts the HTML in the page, hydrates it, and reports
  * what React had to say about the two renders disagreeing.
+ *
+ * `serverNow` stands the server's clock at another instant for the server
+ * render alone, as a page built once and served for weeks has it.
  */
-async function serverThenHydrate(element: React.ReactElement) {
+async function serverThenHydrate(element: React.ReactElement, serverNow?: Date) {
   phase = 'server';
+
+  if (serverNow) {
+    vi.useFakeTimers({ toFake: ['Date'], now: serverNow });
+  }
 
   let html: string;
 
@@ -168,6 +175,7 @@ async function serverThenHydrate(element: React.ReactElement) {
     html = renderToString(element);
   } finally {
     phase = 'browser';
+    vi.useRealTimers();
   }
 
   const host = document.createElement('div');
@@ -466,6 +474,56 @@ describe('server-rendered and hydrated in another language', () => {
       expect(page.html).toContain('2.4s');
       expect(page.host.textContent).toContain('2.4s');
       expect(page.host.textContent).not.toContain('Sek');
+    } finally {
+      page.cleanup();
+    }
+  });
+});
+
+describe('a Calendar with nothing to say which month it opens on', () => {
+  // A month the server's clock was in and the browser's is not: a page built
+  // once and served the month after, which is every visitor to it.
+  const now = new Date();
+  const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 15);
+
+  it("hydrates the month the server drew, whatever the browser's clock says", async () => {
+    const page = await serverThenHydrate(<Calendar />, lastMonth);
+
+    try {
+      expect(page.html).toContain(written('en-US', lastMonth, { year: 'numeric', month: 'long' }));
+      expect(page.recoverable).toEqual([]);
+    } finally {
+      page.cleanup();
+    }
+  });
+
+  it("moves to the reader's month once hydration is over", async () => {
+    const page = await serverThenHydrate(<Calendar />, lastMonth);
+
+    try {
+      // The caption the grid is named by, in the browser's language by now.
+      await expect
+        .poll(() => page.host.textContent)
+        .toContain(written(BROWSER_DEFAULT, now, { year: 'numeric', month: 'long' }));
+      expect(page.host.textContent).not.toContain(
+        written(BROWSER_DEFAULT, lastMonth, { year: 'numeric', month: 'long' })
+      );
+      expect(page.recoverable).toEqual([]);
+    } finally {
+      page.cleanup();
+    }
+  });
+
+  it('stays on a month it was given', async () => {
+    const page = await serverThenHydrate(<Calendar defaultMonth={lastMonth} />, lastMonth);
+
+    try {
+      await settle();
+
+      expect(page.recoverable).toEqual([]);
+      expect(page.host.textContent).toContain(
+        written(BROWSER_DEFAULT, lastMonth, { year: 'numeric', month: 'long' })
+      );
     } finally {
       page.cleanup();
     }
