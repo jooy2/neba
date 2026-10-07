@@ -234,7 +234,17 @@ export const TreeSelect = React.forwardRef<HTMLButtonElement, TreeSelectProps>(
 
     const byValue = React.useMemo(() => flatten(items), [items]);
     const haystacks = React.useMemo(() => haystacksOf(items), [items]);
-    const needle = searchText(query);
+    /*
+     * The tree is narrowed by a deferred copy of the query, so the letter
+     * reaches the box at once and the tree follows when React has the time. A
+     * short query against a large tree keeps most of it and opens every branch
+     * it kept, and that used to be mounted in the same task as the keystroke,
+     * before the letter could be drawn. The rows below are memoised for the same
+     * reason: built inline, the keystroke's own render rendered every row again
+     * only to show the tree it already showed.
+     */
+    const deferredQuery = React.useDeferredValue(query);
+    const needle = searchText(deferredQuery);
     const shown = React.useMemo(
       () => filterTree(items, needle, haystacks),
       [items, needle, haystacks]
@@ -273,8 +283,11 @@ export const TreeSelect = React.forwardRef<HTMLButtonElement, TreeSelectProps>(
       onValueChange?.(next);
     };
 
-    const isSelectable = (item: TreeSelectItem) =>
-      item.selectable ?? (item.children && item.children.length > 0 ? selectableBranches : true);
+    const isSelectable = React.useCallback(
+      (item: TreeSelectItem) =>
+        item.selectable ?? (item.children && item.children.length > 0 ? selectableBranches : true),
+      [selectableBranches]
+    );
 
     const onSelectedChange = (next: TreeViewValue[]) => {
       // A branch that cannot be chosen still expands and collapses, so what
@@ -307,20 +320,25 @@ export const TreeSelect = React.forwardRef<HTMLButtonElement, TreeSelectProps>(
                 []
               );
 
-    const renderItems = (list: TreeSelectItem[]): React.ReactNode =>
-      list.map((item) => (
-        <TreeItem
-          key={item.value}
-          value={item.value}
-          label={item.label}
-          startIcon={item.startIcon}
-          disabled={item.disabled}
-          selectable={isSelectable(item)}
-          className={classNames?.item}
-        >
-          {item.children ? renderItems(item.children) : null}
-        </TreeItem>
-      ));
+    const itemClassName = classNames?.item;
+    const rows = React.useMemo(() => {
+      const renderItems = (list: TreeSelectItem[]): React.ReactNode =>
+        list.map((item) => (
+          <TreeItem
+            key={item.value}
+            value={item.value}
+            label={item.label}
+            startIcon={item.startIcon}
+            disabled={item.disabled}
+            selectable={isSelectable(item)}
+            className={itemClassName}
+          >
+            {item.children ? renderItems(item.children) : null}
+          </TreeItem>
+        ));
+
+      return renderItems(shown);
+    }, [shown, isSelectable, itemClassName]);
 
     return (
       <PickerShell
@@ -379,7 +397,7 @@ export const TreeSelect = React.forwardRef<HTMLButtonElement, TreeSelectProps>(
                 }
                 className={classNames?.tree}
               >
-                {renderItems(shown)}
+                {rows}
               </TreeView>
             )}
           </div>

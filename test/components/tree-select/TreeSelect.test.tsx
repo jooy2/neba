@@ -176,7 +176,7 @@ describe('TreeSelect', () => {
 
       await expect.element(screen.getByText('Europe')).toBeInTheDocument();
       await expect.element(screen.getByText('France')).toBeInTheDocument();
-      expect(screen.getByText('Asia').query()).toBeNull();
+      await expect.element(screen.getByText('Asia')).not.toBeInTheDocument();
     });
 
     it('opens what it kept, so a match is not folded away', async () => {
@@ -211,7 +211,30 @@ describe('TreeSelect', () => {
       await screen.getByRole('textbox').fill('ILE-DE');
 
       await expect.element(screen.getByText('Île-de-France')).toBeInTheDocument();
-      expect(screen.getByText('Asia').query()).toBeNull();
+      await expect.element(screen.getByText('Asia')).not.toBeInTheDocument();
+    });
+
+    // A short query against a large tree keeps most of it and opens every
+    // branch it kept, and that was mounted in the keystroke's own task.
+    it('takes the letter at once and narrows the tree after it', async () => {
+      const screen = await render(<TreeSelect label="Region" items={REGIONS} searchable />);
+
+      await screen.getByRole('button', { name: 'Region', exact: false }).click();
+      await expect.element(screen.getByText('Asia')).toBeInTheDocument();
+
+      const box = screen.getByRole('textbox').element() as HTMLInputElement;
+
+      Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')?.set?.call(box, 'fran');
+      box.dispatchEvent(new Event('input', { bubbles: true }));
+      await Promise.resolve();
+
+      // The keystroke's own render has run, or React would have put the
+      // controlled box back to empty, and the tree is still the one it was.
+      expect(box.value).toBe('fran');
+      expect(screen.getByText('Asia').query()).not.toBeNull();
+
+      await expect.element(screen.getByText('Asia')).not.toBeInTheDocument();
+      await expect.element(screen.getByText('France')).toBeInTheDocument();
     });
 
     it('says so when nothing matched', async () => {
