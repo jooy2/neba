@@ -37,7 +37,18 @@ import { Shortcut } from 'neba';
 
 `Mod`는 "그 플랫폼의 기본 수식 키"를 뜻하는 토큰입니다. macOS에서는 Command(`⌘`), 그 외에서는 Control로 해석됩니다. 표기만 바뀌는 다른 토큰과 달리 `Mod`는 가리키는 키 자체가 달라지는 유일한 토큰입니다.
 
-`os`의 기본값 `auto`는 브라우저에 현재 플랫폼을 물어봅니다. SSR에서는 첫 프레임이 기본 표기로 렌더링되고 hydration 뒤에 실제 플랫폼 표기로 바뀌므로, macOS에서는 `Ctrl`이 잠깐 보였다가 `⌘`로 바뀝니다. 특정 플랫폼을 설명하는 문서나 이 전환을 피해야 하는 화면에서는 `mac` · `windows` · `linux`를 명시하세요.
+`os`의 기본값 `auto`는 브라우저에 현재 플랫폼을 물어봅니다. 서버에는 물어볼 브라우저가 없으므로, 서버에서 렌더링한 페이지는 Windows 키로 그렸다가 hydration 때 독자의 플랫폼 표기로 바꿉니다. Mac에서는 `Ctrl+K`가 `⌘K`로 바뀌고, 둘의 폭이 달라서 Shortcut 뒤에 오는 글자가 움직입니다. 이를 피하려면 서버에서 요청의 `User-Agent` 헤더로 플랫폼을 판단해 `os`로 넘기세요. 판단 규칙은 `auto`와 같습니다. Mac, iPhone, iPad는 `mac`, Windows는 `windows`, 그 밖에는 `linux`입니다. 특정 플랫폼을 설명하는 문서에서도 `mac` · `windows` · `linux`를 명시하세요.
+
+```tsx
+// On the server, from the request's User-Agent header.
+const os = /mac|iphone|ipad|ipod/i.test(userAgent)
+  ? 'mac'
+  : /win/i.test(userAgent)
+    ? 'windows'
+    : 'linux';
+
+<Shortcut keys="Mod+K" os={os} />;
+```
 
 같은 문자열을 라이브러리가 **바인딩**에도 씁니다. [CommandPalette](../inputs/command-palette)의 `shortcut`, [TextField](../inputs/text-field) · [NumberField](../inputs/number-field) · [Combobox](../inputs/combobox)의 `shortcuts`가 모두 이 어휘를 읽습니다. 별칭도 마찬가지입니다. `Cmd` · `Command` · `Meta` · `Win`은 한 키이고, `Esc` · `Return` · `Opt` · `Up`은 각각 `Escape` · `Enter` · `Alt` · `ArrowUp`의 다른 표기입니다. 화면에 그린 키캡과 실제로 발동하는 키가 같은 문자열이며, 예외가 하나 있습니다. Shift를 눌러 입력하는 문장부호는 Shift를 검사하지 않으므로 입력되는 문자 그대로 적습니다. `?`는 발동하고 `Shift+/`는 발동하지 않습니다.
 

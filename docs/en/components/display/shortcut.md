@@ -37,7 +37,18 @@ A string is split on `+`. The array form is only needed when a key is itself a p
 
 `Mod` is the token for "the platform's primary modifier": Command (`⌘`) on macOS, Control everywhere else. Unlike the other tokens, which only change spelling, `Mod` changes which key it names.
 
-`os` defaults to `auto`, which asks the browser for the current platform. Under server rendering the first frame uses the default spelling and switches to the platform's after hydration, so a Mac reader sees `Ctrl` briefly and then `⌘`. Name `mac`, `windows` or `linux` for documentation that describes a specific platform, or wherever that switch matters.
+`os` defaults to `auto`, which asks the browser for the current platform. A server cannot ask, so a page rendered on a server draws the Windows keys and switches to the reader's at hydration: on a Mac, `Ctrl+K` becomes `⌘K`, and because the two are not the same width, the text after the shortcut moves. To avoid that, read the platform from the request's `User-Agent` header on the server and pass it as `os`, by the rule `auto` uses: `mac` for a Mac, an iPhone or an iPad, `windows` for Windows, and `linux` for everything else. Name `mac`, `windows` or `linux` as well in documentation that describes a specific platform.
+
+```tsx
+// On the server, from the request's User-Agent header.
+const os = /mac|iphone|ipad|ipod/i.test(userAgent)
+  ? 'mac'
+  : /win/i.test(userAgent)
+    ? 'windows'
+    : 'linux';
+
+<Shortcut keys="Mod+K" os={os} />;
+```
 
 The same strings are what the library **binds**: `shortcut` on [CommandPalette](../inputs/command-palette) and `shortcuts` on [TextField](../inputs/text-field), [NumberField](../inputs/number-field) and [Combobox](../inputs/combobox) all read this vocabulary. So do the aliases: `Cmd`, `Command`, `Meta` and `Win` are one key, and `Esc`, `Return`, `Opt` and `Up` are spellings of `Escape`, `Enter`, `Alt` and `ArrowUp`. A key cap and the key that fires it are the same string, with one exception. Punctuation typed with Shift is written as the character it types, because Shift is not checked for it: `?` fires and `Shift+/` never does.
 
