@@ -514,6 +514,25 @@ describe('Carousel', () => {
       await vi.waitFor(() => expect(onValueChange).toHaveBeenCalled());
     });
 
+    // The observer answers a frame after the strip mounts, and a timer shorter
+    // than that turned a strip below the fold once before it was told.
+    it('waits for the first answer before it turns at all', async () => {
+      const onValueChange = vi.fn();
+
+      await render(
+        <div style={{ height: 200, overflow: 'auto' }}>
+          <div style={{ height: 4000 }} />
+          <Carousel autoPlay interval={1} onValueChange={onValueChange}>
+            {slides}
+          </Carousel>
+        </div>
+      );
+
+      await new Promise((resolve) => setTimeout(resolve, 200));
+
+      expect(onValueChange).not.toHaveBeenCalled();
+    });
+
     // A keyboard reader inside the strip is reading it, and a mouse passing over
     // the page on its way somewhere else is not a reason to start it again.
     it('stays held by the focus when the pointer passes over and leaves', async () => {

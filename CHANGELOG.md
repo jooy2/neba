@@ -2,6 +2,10 @@
 
 ## vNext (2026--)
 
+### Fixed
+
+- **A `Carousel` with `autoPlay` below the fold no longer turns once before it learns it is out of view.** Its timer started straight away and the observer that pauses it answers a frame later, so a short `interval` could turn the strip once while nobody could see it. The timer now waits for that first answer.
+
 ## 1.19.0 (2026-10-07)
 
 ### Breaking changes

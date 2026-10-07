@@ -341,10 +341,13 @@ export const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
      * one nobody is watching, so the timer is not merely skipped but stopped:
      * a reader who scrolls back gets a full `interval` on the slide they left,
      * rather than a strip that has gone round twice or turns the moment it
-     * arrives. Watched only while it would rotate, and `false` until told
-     * otherwise — which is also the answer where there is no observer to ask.
+     * arrives. Watched only while it would rotate, and unknown until the
+     * observer first answers: the timer waits for that answer rather than
+     * assuming the strip is in view, or a strip below the fold with a short
+     * `interval` could turn once before it was told it is out of sight. Where
+     * there is no observer to ask, it is taken to be in view.
      */
-    const [offscreen, setOffscreen] = React.useState(false);
+    const [offscreen, setOffscreen] = React.useState<boolean | null>(null);
     const watches = autoPlay && !stopped && !reduced && count > 1;
 
     React.useEffect(() => {
@@ -356,12 +359,18 @@ export const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
 
       // A fresh subscription is told at once where the strip is, so an answer
       // left over from the last one is corrected before it can hold anything.
-      return observeVisibility(track, 0, (visible) => setOffscreen(!visible)) ?? undefined;
+      const stop = observeVisibility(track, 0, (visible) => setOffscreen(!visible));
+
+      if (!stop) {
+        setOffscreen(false);
+      }
+
+      return stop ?? undefined;
     }, [watches]);
 
     React.useEffect(() => {
       // A reader who has asked for less motion has asked for this in particular.
-      if (!autoPlay || stopped || paused || reduced || offscreen || count < 2) {
+      if (!autoPlay || stopped || paused || reduced || offscreen !== false || count < 2) {
         return;
       }
 
