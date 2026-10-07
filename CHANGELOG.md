@@ -26,6 +26,8 @@
 
 - **`NavigationMenuItem` warns in a development build when it has both an `href` and children.** An item with children opens a panel and is drawn as a button, so the `href` went nowhere and nothing on the screen said so. Put that destination in the panel as a `NavigationMenuLink`, or drop the children to make the item a link. A production build says nothing.
 
+- **`useToastActions()`: `add`, `close`, `update` and `promise` without the list of toasts.** `useToast` also returns `toasts`, which is a subscription, so every component that raised toasts through it rendered again whenever any toast was added, updated or closed. A component that only raises toasts can call `useToastActions` instead and is never drawn again for that. `useToast` is unchanged, and the `ToastActions` type is exported.
+
 ### Changed
 
 - **A `Combobox` filters its list only when the query, the options or `filter` change.** The functions it handed Base UI were new on every render, so every render of anything above it, a keystroke in another field of the same form included, ran the filter over every option again. A `filter` of your own is no longer called on a render that changes none of those, as long as it is the same function from one render to the next.

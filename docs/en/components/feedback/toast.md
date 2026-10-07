@@ -34,6 +34,14 @@ Toasts are raised from a hook rather than rendered as a component. The appearanc
 
 Besides `add`, the hook returns `close(id?)`, `update(id, options)`, `promise(promise, { loading, success, error })` and `toasts`. The four methods keep the same identity for the life of the component, while the object around them changes whenever `toasts` does, so list the method rather than the object in an effect's dependencies: `[add]`, not `[toast]`.
 
+### useToastActions()
+
+The same four methods as `useToast`, without `toasts`. `toasts` is a subscription, so a component that calls `useToast` renders again whenever a toast is added, updated or closed anywhere on the page. Give a component that only raises toasts `useToastActions` instead, which never renders it again for that.
+
+```tsx
+const { add } = useToastActions();
+```
+
 ## Examples
 
 ### position

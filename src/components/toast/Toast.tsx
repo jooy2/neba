@@ -238,6 +238,59 @@ function toUpdateOptions(options: ToastOptions, previous: { data?: ToastData }) 
   };
 }
 
+/** The four things Base UI's manager does, without the list of toasts. */
+type ToastManager = Pick<
+  ReturnType<typeof BaseUIToast.useToastManager<ToastData>>,
+  'add' | 'close' | 'update' | 'promise'
+>;
+
+/** What a toast that follows a promise says while it runs, and once it settles. */
+interface ToastPromiseMessages<Value> {
+  loading: ToastOptions;
+  success: ToastOptions | ((value: Value) => ToastOptions);
+  error: ToastOptions | ((error: unknown) => ToastOptions);
+}
+
+/** The same, in the shape Base UI's manager takes. */
+function toPromiseOptions<Value>(options: ToastPromiseMessages<Value>) {
+  return {
+    loading: toManagerOptions(options.loading),
+    success: (value: Value) =>
+      toManagerOptions(
+        typeof options.success === 'function' ? options.success(value) : options.success
+      ),
+    error: (error: unknown) =>
+      toManagerOptions(typeof options.error === 'function' ? options.error(error) : options.error)
+  };
+}
+
+/** The four methods `useToast` returns beside `toasts`, and all `useToastActions` does. */
+export interface ToastActions {
+  /** Raises a toast and returns its id. */
+  add: (options: ToastOptions) => string;
+  /** Closes one toast, or every toast when called with nothing. */
+  close: (id?: string) => void;
+  /** Changes a toast already on screen. */
+  update: (id: string, options: ToastOptions) => void;
+  /**
+   * One toast that follows a promise: the loading message while it runs,
+   * then the success or the error. `timeout: 0` is applied to the loading
+   * state by Base UI, so a slow request cannot dismiss its own toast.
+   */
+  promise: <Value>(promise: Promise<Value>, options: ToastPromiseMessages<Value>) => Promise<Value>;
+}
+
+/**
+ * Where a `ToastProvider` keeps Base UI's manager for `useToastActions`.
+ *
+ * The ref rather than the methods: built here, the methods and the option
+ * mapping behind them were a cost on every page with a provider, whether or
+ * not anything on it called the hook — 0.4 kB of a provider that was 14.7.
+ * Built in the hook, they are in the bundle of a page that uses it, and the
+ * provider carries the context and the bridge below.
+ */
+const ToastManagerContext = React.createContext<React.RefObject<ToastManager | null> | null>(null);
+
 /**
  * Raises toasts from anywhere under a `ToastProvider`.
  *
@@ -245,6 +298,10 @@ function toUpdateOptions(options: ToastOptions, previous: { data?: ToastData }) 
  * a toast is warranted is a click handler, not a place in the tree — and a
  * `<Toast open={…}/>` they would have to keep mounted, with a piece of state per
  * message, is the shape this component exists to avoid.
+ *
+ * It also returns `toasts`, which is a subscription: a component that calls it
+ * renders again every time a toast is added, updated or closed anywhere on the
+ * page. `useToastActions` is the same four methods without it.
  */
 export function useToast() {
   const manager = BaseUIToast.useToastManager<ToastData>();
@@ -261,39 +318,13 @@ export function useToast() {
     managerRef.current = manager;
   });
 
-  const methods = React.useMemo(
+  const methods = React.useMemo<ToastActions>(
     () => ({
-      /** Raises a toast and returns its id. */
-      add: (options: ToastOptions) => managerRef.current.add(toManagerOptions(options)),
-      /** Closes one toast, or every toast when called with nothing. */
-      close: (id?: string) => managerRef.current.close(id),
-      /** Changes a toast already on screen. */
-      update: (id: string, options: ToastOptions) =>
+      add: (options) => managerRef.current.add(toManagerOptions(options)),
+      close: (id) => managerRef.current.close(id),
+      update: (id, options) =>
         managerRef.current.update(id, (previous) => toUpdateOptions(options, previous)),
-      /**
-       * One toast that follows a promise: the loading message while it runs,
-       * then the success or the error. `timeout: 0` is applied to the loading
-       * state by Base UI, so a slow request cannot dismiss its own toast.
-       */
-      promise: <Value,>(
-        promise: Promise<Value>,
-        options: {
-          loading: ToastOptions;
-          success: ToastOptions | ((value: Value) => ToastOptions);
-          error: ToastOptions | ((error: unknown) => ToastOptions);
-        }
-      ) =>
-        managerRef.current.promise(promise, {
-          loading: toManagerOptions(options.loading),
-          success: (value: Value) =>
-            toManagerOptions(
-              typeof options.success === 'function' ? options.success(value) : options.success
-            ),
-          error: (error: unknown) =>
-            toManagerOptions(
-              typeof options.error === 'function' ? options.error(error) : options.error
-            )
-        })
+      promise: (promise, options) => managerRef.current.promise(promise, toPromiseOptions(options))
     }),
     []
   );
@@ -306,6 +337,67 @@ export function useToast() {
     }),
     [methods, manager.toasts]
   );
+}
+
+/**
+ * The four methods `useToast` returns, without the list of toasts.
+ *
+ * A component that only raises toasts — a form that reports its submit, a hook
+ * that reports a failed request — has no use for the list, and reading it
+ * through `useToast` drew that component again for every toast anywhere on
+ * the page. This reads a ref the `ToastProvider` never replaces, so a
+ * component that calls it renders only for reasons of its own, and the four
+ * methods keep one identity for the life of the component.
+ */
+export function useToastActions(): ToastActions {
+  const managerRef = React.useContext(ToastManagerContext);
+
+  if (!managerRef) {
+    throw new Error('neba: useToastActions() needs a <ToastProvider> above it.');
+  }
+
+  return React.useMemo<ToastActions>(() => {
+    const manager = () => {
+      if (!managerRef.current) {
+        throw new Error('neba: a toast was raised before its <ToastProvider> had mounted.');
+      }
+
+      return managerRef.current;
+    };
+
+    return {
+      add: (options) => manager().add(toManagerOptions(options)),
+      close: (id) => manager().close(id),
+      update: (id, options) =>
+        manager().update(id, (previous) => toUpdateOptions(options, previous)),
+      promise: (promise, options) => manager().promise(promise, toPromiseOptions(options))
+    };
+  }, [managerRef]);
+}
+
+/**
+ * Hands the provider Base UI's manager, from inside the Base UI provider that
+ * owns it.
+ *
+ * `useToastActions` needs a manager, and the one public way to reach it is
+ * `useToastManager`, which subscribes to the list. A component of
+ * nothing but that, rendered before the provider's children, takes the
+ * subscription on a leaf that draws nothing. Base UI's `createToastManager`
+ * was the other way and was measured out: a manager made that way is
+ * subscribed to in an effect of the provider's, which runs after its
+ * children's, so a toast raised from a child's mount effect was dropped.
+ *
+ * Written in a layout effect, which runs before any child's effect: this is
+ * the first child, and a layout effect runs before every passive one.
+ */
+function ToastManagerBridge({ managerRef }: { managerRef: React.RefObject<ToastManager | null> }) {
+  const manager = BaseUIToast.useToastManager<ToastData>();
+
+  useLayoutEffectOnClient(() => {
+    managerRef.current = manager;
+  });
+
+  return null;
 }
 
 interface ToastItemProps extends Pick<ToastProviderProps, 'variant' | 'size' | 'density'> {
@@ -507,9 +599,13 @@ export function ToastProvider(rawProps: ToastProviderProps) {
   const messages = useMessages(actionMessages, locale);
   const toastWords = useMessages(toastMessages, locale);
 
+  // The manager `useToastActions` reads, filled by the bridge below.
+  const managerRef = React.useRef<ToastManager | null>(null);
+
   return (
     <BaseUIToast.Provider timeout={timeout} limit={limit}>
-      {children}
+      <ToastManagerBridge managerRef={managerRef} />
+      <ToastManagerContext.Provider value={managerRef}>{children}</ToastManagerContext.Provider>
       <ToastViewport
         position={position}
         variant={variant}

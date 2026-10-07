@@ -2,7 +2,14 @@ import { useState } from 'react';
 import * as React from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
-import { Button, ToastProvider, useToast, type ToastOptions, type ToastProviderProps } from 'neba';
+import {
+  Button,
+  ToastProvider,
+  useToast,
+  useToastActions,
+  type ToastOptions,
+  type ToastProviderProps
+} from 'neba';
 import { ko, registerMessages } from 'neba/locales';
 
 /* The library ships English; a `locale` prop answers for a language the
@@ -198,6 +205,159 @@ describe('Toast', () => {
       for (const name of ['add', 'close', 'update', 'promise']) {
         expect(new Set(seen.map((methods) => methods[name])).size, name).toBe(1);
       }
+    });
+  });
+
+  // `useToast` hands back the list as well, so everything that raised a toast
+  // through it drew itself again for every toast anywhere on the page.
+  describe('useToastActions', () => {
+    it('raises a toast without drawing the component that raised it again', async () => {
+      let renders = 0;
+
+      function Raiser() {
+        const { add } = useToastActions();
+
+        // Counted after each render that commits, which is what drawing it again is.
+        React.useEffect(() => {
+          renders += 1;
+        });
+
+        return <Button onClick={() => add({ title: 'Saved', timeout: 0 })}>Raise</Button>;
+      }
+
+      const screen = await render(
+        <ToastProvider>
+          <Raiser />
+        </ToastProvider>
+      );
+
+      await expect.element(screen.getByRole('button', { name: 'Raise' })).toBeInTheDocument();
+      const before = renders;
+
+      await screen.getByRole('button', { name: 'Raise' }).click();
+      await expect.element(screen.getByText('Saved')).toBeInTheDocument();
+      await screen.getByRole('button', { name: 'Raise' }).click();
+      await expect.poll(() => screen.getByText('Saved').elements().length).toBe(2);
+
+      expect(renders).toBe(before);
+    });
+
+    it('updates, follows a promise and closes, as useToast does', async () => {
+      let settle!: (value: string) => void;
+      const promise = new Promise<string>((resolve) => {
+        settle = resolve;
+      });
+
+      function Actions() {
+        const toast = useToastActions();
+
+        return (
+          <>
+            <Button onClick={() => toast.add({ id: 'job', title: 'Queued', timeout: 0 })}>
+              Add
+            </Button>
+            <Button onClick={() => toast.update('job', { title: 'Running' })}>Update</Button>
+            <Button
+              onClick={() =>
+                toast.promise(promise, {
+                  loading: { title: 'Saving' },
+                  success: (value) => ({ title: value, timeout: 0 }),
+                  error: { title: 'Failed', timeout: 0 }
+                })
+              }
+            >
+              Save
+            </Button>
+            <Button onClick={() => toast.close()}>Close all</Button>
+          </>
+        );
+      }
+
+      const screen = await render(
+        <ToastProvider>
+          <Actions />
+        </ToastProvider>
+      );
+
+      await screen.getByRole('button', { name: 'Add' }).click();
+      await expect.element(screen.getByText('Queued')).toBeInTheDocument();
+
+      await screen.getByRole('button', { name: 'Update' }).click();
+      await expect.element(screen.getByText('Running')).toBeInTheDocument();
+
+      await screen.getByRole('button', { name: 'Save' }).click();
+      await expect.element(screen.getByText('Saving')).toBeInTheDocument();
+      settle('Saved');
+      await expect.element(screen.getByText('Saved')).toBeInTheDocument();
+
+      await screen.getByRole('button', { name: 'Close all' }).click();
+      await expect.element(screen.getByText('Running')).not.toBeInTheDocument();
+      await expect.element(screen.getByText('Saved')).not.toBeInTheDocument();
+    });
+
+    // A manager subscribed to in the provider's own effect, which runs after
+    // its children's, dropped a toast raised from a child's mount effect.
+    it('raises a toast from an effect that runs as the page mounts', async () => {
+      function Watcher() {
+        const { add } = useToastActions();
+
+        React.useEffect(() => {
+          add({ title: 'Connection lost', timeout: 0 });
+        }, [add]);
+
+        return null;
+      }
+
+      const screen = await render(
+        <ToastProvider>
+          <Watcher />
+        </ToastProvider>
+      );
+
+      await expect.element(screen.getByText('Connection lost')).toBeInTheDocument();
+    });
+
+    it('tells a caller that forgot the provider', async () => {
+      const seen: string[] = [];
+
+      class Boundary extends React.Component<{ children: React.ReactNode }, { failed: boolean }> {
+        state = { failed: false };
+
+        static getDerivedStateFromError() {
+          return { failed: true };
+        }
+
+        componentDidCatch(error: Error) {
+          seen.push(error.message);
+        }
+
+        render() {
+          return this.state.failed ? <p>caught</p> : this.props.children;
+        }
+      }
+
+      function Raiser() {
+        useToastActions();
+
+        return null;
+      }
+
+      const original = console.error;
+      console.error = () => {};
+
+      try {
+        const screen = await render(
+          <Boundary>
+            <Raiser />
+          </Boundary>
+        );
+
+        await expect.element(screen.getByText('caught')).toBeInTheDocument();
+      } finally {
+        console.error = original;
+      }
+
+      expect(seen.join()).toContain('<ToastProvider>');
     });
   });
 

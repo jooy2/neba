@@ -34,6 +34,14 @@ Toast는 컴포넌트가 아니라 hook으로 띄웁니다. 겉모습은 `ToastP
 
 hook은 `add` 외에 `close(id?)`, `update(id, options)`, `promise(promise, { loading, success, error })`, `toasts`를 함께 돌려줍니다. 네 메서드는 컴포넌트가 살아 있는 동안 identity가 바뀌지 않지만, 이들을 담은 객체는 `toasts`가 바뀔 때마다 새로 만들어집니다. 그래서 effect의 deps에는 객체가 아니라 메서드를 넣습니다. `[toast]`가 아니라 `[add]`입니다.
 
+### useToastActions()
+
+`useToast`와 같은 네 메서드를 `toasts` 없이 돌려줍니다. `toasts`는 구독이라서, `useToast`를 부르는 컴포넌트는 페이지 어디서든 토스트가 추가되거나 바뀌거나 닫힐 때마다 다시 렌더링됩니다. 토스트를 띄우기만 하는 컴포넌트에는 `useToastActions`를 쓰세요. 이 hook은 그 때문에 컴포넌트를 다시 렌더링하지 않습니다.
+
+```tsx
+const { add } = useToastActions();
+```
+
 ## 예시
 
 ### position
