@@ -2,6 +2,8 @@
 
 ## vNext (2026--)
 
+## 1.18.1 (2026-10-07)
+
 ### Added
 
 - **`CheckboxGroup`: a set of checkboxes that answer one question, any number at once.** The set has one value, an array of the ticked checkboxes' `value`s, through `value`, `defaultValue` and `onValueChange`. It is named by its `label`, and its `error` is shown under the set and turns every option to `danger`. Options stand RadioGroup's distance apart, which `spacing` and `orientation` change. `allValues` with a `Checkbox` that has `parent` adds a select-all box that draws itself indeterminate while only some options are ticked. `size`, `color`, `readOnly` and `name` reach every Checkbox that does not set its own, and `disabled` reaches all of them. A native submit sends one entry per ticked box under `name`, and a `Form`'s `onSubmit` gets them as an array.
