@@ -44,6 +44,7 @@ import {
 } from '../../internal/styles.js';
 import type { NebaAlign, NebaColor, NebaElevation, NebaSize, NebaStyleProps } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
+import { whenIdle } from '../../internal/idle.js';
 import { useIntlLocale } from '../../internal/media.js';
 
 /* ---------------------------------------------------------------------------
@@ -601,24 +602,6 @@ const MOVE_SHORTCUTS = 'Alt+ArrowLeft Alt+ArrowRight';
  */
 const FOLD_ROWS = 200;
 const FOLD_BUDGET = 8;
-
-/**
- * Runs `task` when the browser next has nothing else to do, and returns what
- * cancels it. A timer where there is no idle callback, which is Safari. The
- * timeout makes the slice run within a second whatever else the page is doing,
- * so a page that is never idle still has its rows folded before long.
- */
-function whenIdle(task: (deadline?: IdleDeadline) => void): () => void {
-  if (typeof requestIdleCallback === 'function' && typeof cancelIdleCallback === 'function') {
-    const handle = requestIdleCallback(task, { timeout: 1000 });
-
-    return () => cancelIdleCallback(handle);
-  }
-
-  const handle = setTimeout(task, 16);
-
-  return () => clearTimeout(handle);
-}
 
 /**
  * Puts a plain cell's whole text in its `title` when the cell cuts it short.
@@ -1531,11 +1514,11 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
       }
 
       if (more) {
-        cancel = whenIdle(slice);
+        cancel = whenIdle(slice, 1000);
       }
     };
 
-    cancel = whenIdle(slice);
+    cancel = whenIdle(slice, 1000);
 
     return () => cancel();
   }, [searchable, filterStaged, searchedColumns.length, haystacks]);

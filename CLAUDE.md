@@ -158,6 +158,7 @@ The same rule applies to the values behind those names, which is what `src/inter
 | `observe.ts` | One `ResizeObserver`, and one `IntersectionObserver` per threshold |
 | `tile.ts` | What tells a SegmentedButton's or a FloatingBottomNavigation's tile that its items changed |
 | `cache.ts` | `memoise`, bounded |
+| `idle.ts` | `whenIdle`, work put off until the browser has nothing else to do |
 | `search.ts` | Folding a haystack and a needle for matching |
 | `media.ts`, `link.ts`, `new-tab.tsx` | One `MediaQueryList` per query, the locale a server-rendered page hydrates with, safe `rel` and `href`, and the words a link that opens a new tab ends with |
 | `inert.ts` | `inert` on React 18 and 19 |

@@ -57,6 +57,7 @@ import { useHydrated, useIntlLocale } from './media.js';
 import { observeResize } from './observe.js';
 import { WidthSizer, widestSamples } from './sizer.js';
 import { chartMessages, emptyMessages, fillMessage, useMessages } from './i18n.js';
+import { whenIdle } from './idle.js';
 import { cx, hasContent, metaTextClasses, srOnlyClasses, transitionClasses } from './styles.js';
 import type {
   NebaChartAxis,
@@ -1013,25 +1014,6 @@ const deferredTableCells = 1000;
 export const chartTableClasses = `${srOnlyClasses} table-fixed [contain:content]`;
 
 /**
- * Runs `task` when the browser next has nothing else to do, and returns what
- * cancels it. A timer where there is no idle callback, which is Safari.
- *
- * The timeout makes the slice run within half a second whatever else the page
- * is doing, so a page that is never idle still gets its table.
- */
-function whenIdle(task: () => void): () => void {
-  if (typeof requestIdleCallback === 'function' && typeof cancelIdleCallback === 'function') {
-    const handle = requestIdleCallback(task, { timeout: 500 });
-
-    return () => cancelIdleCallback(handle);
-  }
-
-  const handle = setTimeout(task, 16);
-
-  return () => clearTimeout(handle);
-}
-
-/**
  * How many of a hidden table's rows to render now.
  *
  * Every one of them on a chart at or under `deferredTablePoints`, on the server
@@ -1080,7 +1062,7 @@ function useDeferredRows({
       return;
     }
 
-    return whenIdle(() => setShown(Math.min(rows, shown + slice)));
+    return whenIdle(() => setShown(Math.min(rows, shown + slice)), 500);
   }, [shown, rows, slice]);
 
   return { shown: settled, run: slice };

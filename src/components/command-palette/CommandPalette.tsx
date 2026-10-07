@@ -5,6 +5,7 @@ import { useShortcut } from '../../hooks/useShortcut.js';
 import { useHydrated } from '../../internal/media.js';
 import type { NebaSlots, NebaStyleProps } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
+import { whenIdle } from '../../internal/idle.js';
 import type { CommandPaletteSheetProps } from './CommandPaletteSheet.js';
 
 /**
@@ -148,22 +149,6 @@ export const sheetChunk = {
 const LazySheet = React.lazy(() => sheetChunk.load());
 
 /**
- * Runs `task` when the browser next has nothing else to do, and returns what
- * cancels it. A timer where there is no idle callback, which is Safari.
- */
-function whenIdle(task: () => void): () => void {
-  if (typeof requestIdleCallback === 'function' && typeof cancelIdleCallback === 'function') {
-    const handle = requestIdleCallback(task, { timeout: 2000 });
-
-    return () => cancelIdleCallback(handle);
-  }
-
-  const handle = setTimeout(task, 200);
-
-  return () => clearTimeout(handle);
-}
-
-/**
  * Everything an application can do, behind one field.
  *
  * The shape a keyboard-first product takes once it has more actions than a menu
@@ -236,11 +221,15 @@ export function CommandPalette(rawProps: CommandPaletteProps) {
 
   React.useEffect(
     () =>
-      whenIdle(() => {
-        // A download that fails here is tried again by the open, which is the
-        // one with a reader waiting on it.
-        sheetChunk.load().catch(() => {});
-      }),
+      whenIdle(
+        () => {
+          // A download that fails here is tried again by the open, which is the
+          // one with a reader waiting on it.
+          sheetChunk.load().catch(() => {});
+        },
+        2000,
+        200
+      ),
     []
   );
 
