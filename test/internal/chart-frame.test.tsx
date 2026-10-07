@@ -12,6 +12,7 @@ import { renderToString } from 'react-dom/server';
 import { render } from 'vitest-browser-react';
 import {
   CartesianChart,
+  ChartDataTable,
   type CartesianContext,
   type CartesianLayout,
   type ChartMark
@@ -195,5 +196,45 @@ describe('CartesianChart', () => {
     layoutOf(seen[seen.length - 1]).forEach((part, index) =>
       expect(part).toBe(layoutOf(before)[index])
     );
+  });
+});
+
+/**
+ * The table every chart carries, past the point where its rows are added after
+ * the first paint.
+ */
+describe('ChartDataTable', () => {
+  // Each idle slice re-rendered the table to add its rows, and every row
+  // already written was drawn again with it: the fill was quadratic in the
+  // number of rows, and each slice took longer than the one before.
+  it('draws each row once while its rows are added in slices', async () => {
+    const count = 1500;
+    const categories = Array.from({ length: count }, (_, index) => `D${index}`);
+    const series = [{ name: 'A', data: categories.map((_, index) => index) }];
+    const values = [series[0].data.map((value) => ({ value }))];
+    const format = vi.fn((value: number) => String(value));
+
+    const screen = await render(
+      <ChartDataTable
+        id="load"
+        caption="Load"
+        categories={categories}
+        series={series}
+        values={values}
+        format={format}
+      />
+    );
+
+    const table = screen.getByRole('table', { name: 'Load' });
+
+    await expect
+      .poll(() => table.element().querySelectorAll('tbody tr').length, { timeout: 5000 })
+      .toBe(count);
+    await expect.element(table).not.toHaveAttribute('aria-busy');
+
+    expect(format).toHaveBeenCalledTimes(count);
+    expect(
+      [...table.element().querySelectorAll('tbody th')].map((cell) => cell.textContent)
+    ).toEqual(categories);
   });
 });

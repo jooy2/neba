@@ -926,6 +926,10 @@ function whenIdle(task: () => void): () => void {
  * take a screen reader's place in it away — and only rows that are new to it
  * are deferred. A change in the row count, or the table unmounting, cancels the
  * slice that was waiting.
+ *
+ * `run` is how many rows one slice adds, which is also how many rows a table
+ * draws in each of its `tableRuns`: a slice then adds one run, and the runs
+ * already written are left alone.
  */
 function useDeferredRows({
   rows,
@@ -938,7 +942,7 @@ function useDeferredRows({
   points: number;
   /** How many cells each row has, which sizes a slice. */
   columns: number;
-}): number {
+}): { shown: number; run: number } {
   const defer = points > deferredTablePoints;
   const [shown, setShown] = React.useState(() => (defer ? 0 : rows));
   const settled = defer ? Math.min(shown, rows) : rows;
@@ -959,7 +963,56 @@ function useDeferredRows({
     return whenIdle(() => setShown(Math.min(rows, shown + slice)));
   }, [shown, rows, slice]);
 
-  return settled;
+  return { shown: settled, run: slice };
+}
+
+interface TableRunProps {
+  /** The first row this run draws, and the one after its last. */
+  from: number;
+  to: number;
+  /**
+   * Draws the rows from `from` up to `to`, each with a key of its own. Stable
+   * for as long as the data behind the table is, which is what lets a run
+   * that already has its rows skip drawing them again.
+   */
+  draw: (from: number, to: number) => React.ReactNode;
+}
+
+/**
+ * A run of a hidden table's rows, drawn again only when the rows it covers or
+ * the data behind them change.
+ *
+ * A deferred table grows by one slice each time the browser is idle, and the
+ * table re-renders to add it. Drawn as one list, every row already written was
+ * drawn again with it, so each slice cost more than the last and the whole
+ * fill was quadratic in the number of rows: on a line chart of three thousand
+ * categories, under a fourfold CPU slowdown, the first slice took 12 ms and the
+ * last 31 ms. In runs, a slice draws the one run it adds, about 6 ms each time,
+ * and the others are handed the same three props and stay as they are.
+ */
+const TableRun = React.memo(function TableRun({ from, to, draw }: TableRunProps) {
+  return <>{draw(from, to)}</>;
+});
+
+/**
+ * A table's body rows, as runs of `run` rows each.
+ *
+ * The runs start at fixed multiples of `run` rather than wherever the last
+ * slice stopped, so a run keeps its key and its rows from one slice to the
+ * next. The DOM is exactly the flat list of rows it replaces.
+ */
+function tableRuns(
+  shown: number,
+  run: number,
+  draw: (from: number, to: number) => React.ReactNode
+): React.ReactNode[] {
+  const runs: React.ReactNode[] = [];
+
+  for (let from = 0; from < shown; from += run) {
+    runs.push(<TableRun key={from} from={from} to={Math.min(shown, from + run)} draw={draw} />);
+  }
+
+  return runs;
 }
 
 interface DataTableProps {
@@ -1009,31 +1062,18 @@ const ChartDataTable = React.memo(function ChartDataTable({
   formatFor,
   locale
 }: DataTableProps) {
-  const shown = useDeferredRows({
+  const { shown, run } = useDeferredRows({
     rows: categories.length,
     points: values.reduce((total, row) => total + row.length, 0),
     columns: series.length + 1
   });
 
-  return (
-    <table
-      id={id}
-      className={chartTableClasses}
-      aria-busy={shown < categories.length ? true : undefined}
-    >
-      {caption ? <caption>{caption}</caption> : null}
-      <thead>
-        <tr>
-          <th scope="col">{corner ?? ''}</th>
-          {series.map((one, index) => (
-            <th key={one.name ?? index} scope="col">
-              {one.name ?? index + 1}
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {categories.slice(0, shown).map((category, index) => (
+  const draw = React.useCallback(
+    (from: number, to: number) =>
+      categories.slice(from, to).map((category, offset) => {
+        const index = from + offset;
+
+        return (
           <tr key={index}>
             <th scope="row">{formatCategory(category, locale)}</th>
             {series.map((one, seriesIndex) => {
@@ -1055,8 +1095,29 @@ const ChartDataTable = React.memo(function ChartDataTable({
               );
             })}
           </tr>
-        ))}
-      </tbody>
+        );
+      }),
+    [categories, series, values, format, formatFor, locale]
+  );
+
+  return (
+    <table
+      id={id}
+      className={chartTableClasses}
+      aria-busy={shown < categories.length ? true : undefined}
+    >
+      {caption ? <caption>{caption}</caption> : null}
+      <thead>
+        <tr>
+          <th scope="col">{corner ?? ''}</th>
+          {series.map((one, index) => (
+            <th key={one.name ?? index} scope="col">
+              {one.name ?? index + 1}
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>{tableRuns(shown, run, draw)}</tbody>
     </table>
   );
 });
@@ -3343,6 +3404,7 @@ export {
   ChartTooltipPanel,
   summarise,
   chartHeight,
+  tableRuns,
   useDeferredRows,
   useMeasuredHeight,
   useMeasuredWidth,

@@ -11,6 +11,7 @@ import {
   ChartTooltipPanel,
   markTransitionClasses,
   summarise,
+  tableRuns,
   type ChartTooltipItem,
   useDeferredRows,
   useMeasuredWidth,
@@ -840,23 +841,18 @@ const HeatmapTable = React.memo(function HeatmapTable({
   points,
   format
 }: TableProps) {
-  const shown = useDeferredRows({ rows: rows.length, points, columns: heads.length + 1 });
+  const { shown, run } = useDeferredRows({
+    rows: rows.length,
+    points,
+    columns: heads.length + 1
+  });
 
-  return (
-    <table id={id} className={chartTableClasses} aria-busy={shown < rows.length ? true : undefined}>
-      {caption ? <caption>{caption}</caption> : null}
-      <thead>
-        <tr>
-          <th scope="col" />
-          {heads.map((head, index) => (
-            <th key={index} scope="col">
-              {head}
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {rows.slice(0, shown).map((row, at) => (
+  const draw = React.useCallback(
+    (from: number, to: number) =>
+      rows.slice(from, to).map((row, offset) => {
+        const at = from + offset;
+
+        return (
           <tr key={at}>
             <th scope="row">{names[at]}</th>
             {heads.map((_, index) => {
@@ -873,8 +869,25 @@ const HeatmapTable = React.memo(function HeatmapTable({
               );
             })}
           </tr>
-        ))}
-      </tbody>
+        );
+      }),
+    [rows, heads, names, format]
+  );
+
+  return (
+    <table id={id} className={chartTableClasses} aria-busy={shown < rows.length ? true : undefined}>
+      {caption ? <caption>{caption}</caption> : null}
+      <thead>
+        <tr>
+          <th scope="col" />
+          {heads.map((head, index) => (
+            <th key={index} scope="col">
+              {head}
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>{tableRuns(shown, run, draw)}</tbody>
     </table>
   );
 });

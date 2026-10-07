@@ -38,6 +38,8 @@
 
 - **A `ScatterChart` and a `TimelineChart` no longer lay out their marks on the server.** Every mark was placed against a plot with no width in the server render and again in the render that hydrates it, and then thrown away when the chart measured itself. Those two renders now skip it, which on a 5,000-point scatter is that many marks less work before the page responds.
 
+- **A chart past 500 points fills its hidden table in at a steady cost per batch.** Each idle batch drew every row already in the table again along with its own, so the batches grew longer as the table filled: on a line chart of 3,000 categories under a fourfold CPU slowdown they went from 12 ms to 31 ms, 250 ms in all. A batch now draws only the rows it adds, about 6 ms each and 80 ms in all, and a 5,000-point scatter's table went from 393 ms to 98 ms. The table ends up exactly as before.
+
 ### Fixed
 
 - **A `multiple` `Combobox` keeps the error a `Form` put on it while the page around it renders again, and a single one keeps what is typed after a value its `items` do not have.** The value handed to Base UI was a new object on every render, which Base UI took for a new choice: it cleared the field's errors, so a server error vanished the moment the reader typed in another field, and in single mode it wrote the chosen label back into the input, so typing after a custom value such as `defaultValue="Foo"` did nothing. The value now stays the same object for as long as it holds the same entries, including when `value` or `items` is written inline.

@@ -5,6 +5,7 @@ import {
   CartesianChart,
   chartTableClasses,
   markTransitionClasses,
+  tableRuns,
   useDeferredRows,
   type CartesianChartProps,
   type CartesianContext,
@@ -555,16 +556,40 @@ const TimelineTable = React.memo(function TimelineTable({
   const words = useMessages(chartMessages, locale);
   const intlLocale = useIntlLocale(locale);
   const titled = series.some((row) => row.data.some((span) => span.label !== undefined));
-  /* Where each row's spans start, and how many there are in all. A table row
-     per span, so past `deferredTablePoints` the body fills in after the first
-     paint — see `useDeferredRows`. */
-  const starts: number[] = [];
-  const count = spans.reduce((total, row) => {
-    starts.push(total);
+  /* How many spans there are in all. A table row per span, so past
+     `deferredTablePoints` the body fills in after the first paint — see
+     `useDeferredRows`. */
+  const count = spans.reduce((total, row) => total + row.length, 0);
+  const { shown, run } = useDeferredRows({ rows: count, points: count, columns: titled ? 4 : 3 });
 
-    return total + row.length;
-  }, 0);
-  const shown = useDeferredRows({ rows: count, points: count, columns: titled ? 4 : 3 });
+  /* The table rows from `from` up to `to`, counted across every row of the
+     chart: the part of each one's spans that falls inside that stretch. */
+  const draw = React.useCallback(
+    (from: number, to: number) => {
+      let start = 0;
+
+      return spans.flatMap((row, index) => {
+        const first = Math.max(0, from - start);
+        const last = Math.min(row.length, to - start);
+
+        start += row.length;
+
+        return row.slice(first, Math.max(first, last)).map((one, offset) => {
+          const at = first + offset;
+
+          return (
+            <tr key={`${index}-${at}`}>
+              <th scope="row">{names[index]}</th>
+              {titled ? <td>{series[index].data[at]?.label ?? ''}</td> : null}
+              <td>{one ? formatTimeValue(one.from, unit, intlLocale, clock) : ''}</td>
+              <td>{one ? formatTimeValue(one.to, unit, intlLocale, clock) : ''}</td>
+            </tr>
+          );
+        });
+      });
+    },
+    [spans, names, series, titled, unit, intlLocale, clock]
+  );
 
   return (
     <table id={id} className={chartTableClasses} aria-busy={shown < count ? true : undefined}>
@@ -577,18 +602,7 @@ const TimelineTable = React.memo(function TimelineTable({
           <th scope="col">{words.end}</th>
         </tr>
       </thead>
-      <tbody>
-        {spans.flatMap((row, index) =>
-          row.slice(0, Math.max(0, shown - starts[index])).map((one, at) => (
-            <tr key={`${index}-${at}`}>
-              <th scope="row">{names[index]}</th>
-              {titled ? <td>{series[index].data[at]?.label ?? ''}</td> : null}
-              <td>{one ? formatTimeValue(one.from, unit, intlLocale, clock) : ''}</td>
-              <td>{one ? formatTimeValue(one.to, unit, intlLocale, clock) : ''}</td>
-            </tr>
-          ))
-        )}
-      </tbody>
+      <tbody>{tableRuns(shown, run, draw)}</tbody>
     </table>
   );
 });
