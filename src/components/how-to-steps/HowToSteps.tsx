@@ -162,6 +162,9 @@ export interface HowToStepsProps extends Omit<
    * and the list rows hold still, and what animates is the content they
    * changed.
    *
+   * The step the guide is first drawn with arrives with the page and has no
+   * entrance: only a step the reader moves to does.
+   *
    * A reduced-motion preference cuts it to its last frame, as it does every
    * other effect in the library.
    * @default 'fade'
@@ -349,6 +352,21 @@ export const HowToSteps = React.forwardRef<HTMLDivElement, HowToStepsProps>(
       Math.max(total - 1, 0)
     );
     const completed = completion && (controlledCompleted ? completedProp : ownCompleted);
+
+    /*
+     * Whether the reader has moved off the panel the guide was first drawn
+     * with. That panel arrives with the page, and fading it in held back the
+     * first paint of a guide at the top of one — the largest thing on the
+     * screen, drawn at an opacity of 0 for the length of the fade. Every panel
+     * arrived at after that fades, the first one included.
+     */
+    const [moved, setMoved] = React.useState(false);
+    const [opening] = React.useState({ active, completed });
+
+    if (!moved && (active !== opening.active || completed !== opening.completed)) {
+      setMoved(true);
+    }
+
     const bounded = maxHeight !== undefined;
     const vertical = orientation === 'vertical';
 
@@ -438,7 +456,7 @@ export const HowToSteps = React.forwardRef<HTMLDivElement, HowToStepsProps>(
      * hold a form, and a guide that wiped what the reader typed every time they
      * looked back at step one would be worse than one that did not animate.
      */
-    const motion = transition === 'none' ? null : transitionProps(transition);
+    const motion = transition === 'none' || !moved ? null : transitionProps(transition);
 
     const mark = (index: number) => {
       const done = completed || index < active;

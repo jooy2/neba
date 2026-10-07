@@ -15664,8 +15664,8 @@ export const propTables: Record<string, PropRow[]> = {
       default: "'fade'",
       shared: true,
       description: {
-        ko: '독자가 옮겨간 단계가 등장하는 방식. 어디서나 쓰는 그 어휘 그대로이며, none이면 꺼집니다. 눌리는 것이 아니라 패널에서 실행되고, reduced-motion 설정에서는 전부 꺼집니다',
-        en: 'How a step arrives when the reader moves to it, from the same vocabulary transition uses everywhere. none turns it off. It runs on the panel rather than on anything that is pressed, and a reduced-motion preference switches it off entirely'
+        ko: '독자가 옮겨간 단계가 등장하는 방식. 어디서나 쓰는 그 어휘 그대로이며, none이면 꺼집니다. 눌리는 것이 아니라 패널에서 실행되고, 처음 그려지는 단계에는 쓰지 않으며, reduced-motion 설정에서는 전부 꺼집니다',
+        en: 'How a step arrives when the reader moves to it, from the same vocabulary transition uses everywhere. none turns it off. It runs on the panel rather than on anything that is pressed, not on the step the guide is first drawn with, and a reduced-motion preference switches it off entirely'
       }
     },
     {

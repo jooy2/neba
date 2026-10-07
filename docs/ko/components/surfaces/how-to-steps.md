@@ -85,7 +85,7 @@ import { HowToSteps } from 'neba';
 
 독자가 어떤 단계로 옮겨갔을 때 그 단계가 등장하는 방식이며, 어디서나 [`transition`](../../design/prop-conventions)이 쓰는 것과 같은 어휘를 씁니다. effect 이름 하나를 주거나, duration과 easing, 방향까지 정하는 객체를 넘길 수 있습니다. `'none'`이면 꺼지고, reduced-motion 설정에서도 꺼집니다.
 
-효과는 패널에서만 실행되고, 버튼과 목록 행은 움직이지 않습니다.
+효과는 패널에서만 실행되고, 버튼과 목록 행은 움직이지 않습니다. 가이드가 처음 그려질 때의 단계에는 등장 효과가 없으므로, 페이지 맨 위의 가이드도 첫 화면에 바로 그려집니다.
 
 <Demo src="how-to-steps/transition" minHeight="340">
 

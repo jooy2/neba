@@ -470,12 +470,32 @@ describe('HowToSteps', () => {
         (node) => !node.className.includes('invisible')
       );
 
-    it('fades a step in by default', async () => {
+    // The first panel arrives with the page, and a fade held back the first
+    // paint of a guide at the top of one.
+    it('draws the step it starts on without an entrance', async () => {
       const screen = await render(<HowToSteps steps={STEPS} data-testid="guide" />);
-      const running = animated(screen.getByTestId('guide').element());
 
-      expect(running).toHaveLength(1);
-      expect(running[0]).toHaveClass('neba-anim-fade');
+      expect(animated(screen.getByTestId('guide').element())).toHaveLength(0);
+    });
+
+    it('fades a step in by default once the reader moves to it', async () => {
+      const screen = await render(<HowToSteps steps={STEPS} data-testid="guide" />);
+
+      await screen.getByRole('button', { name: 'Next' }).click();
+
+      await expect.poll(() => animated(screen.getByTestId('guide').element())).toHaveLength(1);
+      expect(animated(screen.getByTestId('guide').element())[0]).toHaveClass('neba-anim-fade');
+    });
+
+    it('fades the first step in too when the reader comes back to it', async () => {
+      const screen = await render(<HowToSteps steps={STEPS} data-testid="guide" />);
+
+      await screen.getByRole('button', { name: 'Next' }).click();
+      await screen.getByRole('button', { name: 'Previous' }).click();
+
+      await expect
+        .poll(() => animated(screen.getByTestId('guide').element())[0]?.textContent)
+        .toContain(STEPS[0].title as string);
     });
 
     it('moves the effect to the step being arrived at', async () => {
@@ -496,6 +516,10 @@ describe('HowToSteps', () => {
           data-testid="guide"
         />
       );
+
+      await screen.getByRole('button', { name: 'Next' }).click();
+      await expect.poll(() => animated(screen.getByTestId('guide').element())).toHaveLength(1);
+
       const running = animated(screen.getByTestId('guide').element())[0] as HTMLElement;
 
       expect(running).toHaveClass('neba-anim-slide');

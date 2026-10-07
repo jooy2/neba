@@ -94,6 +94,8 @@
 
 - **An `InlineCitation` fetches its preview card the first time a reader reaches for one.** The card is a `HoverCard`, and importing it statically put Base UI's preview card and its positioning in the bundle of every answer with a footnote: 31.7 kB gzipped for one citation. A citation is now 6.7 kB until a pointer, the focus or a finger reaches it, and the card's 26.6 kB arrive then, while the card's own open delay runs. Hover and keyboard focus open it as before, and a server renders the bare mark.
 
+- **`HowToSteps` draws the step it starts on without fading it in.** The default `transition="fade"` also ran on the first panel, so a guide at the top of a page painted its largest content invisible and faded it in after the page had loaded, which delayed its first paint. A step the reader moves to still fades in, and so does the first one when they come back to it.
+
 ### Fixed
 
 - **A `multiple` `Combobox` keeps the error a `Form` put on it while the page around it renders again, and a single one keeps what is typed after a value its `items` do not have.** The value handed to Base UI was a new object on every render, which Base UI took for a new choice: it cleared the field's errors, so a server error vanished the moment the reader typed in another field, and in single mode it wrote the chosen label back into the input, so typing after a custom value such as `defaultValue="Foo"` did nothing. The value now stays the same object for as long as it holds the same entries, including when `value` or `items` is written inline.

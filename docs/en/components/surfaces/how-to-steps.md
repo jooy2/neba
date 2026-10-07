@@ -85,7 +85,7 @@ A hairline between the list and the body, drawn down the inner edge while they a
 
 How a step arrives when the reader moves to it, from the same vocabulary [`transition`](../../design/prop-conventions) uses everywhere: an effect name, or the object form for the duration, the easing, the direction. `'none'` turns it off, and a reduced-motion preference does too.
 
-It runs on the panel only, and the buttons and the list rows hold still.
+It runs on the panel only, and the buttons and the list rows hold still. The step the guide is first drawn with has no entrance, so a guide at the top of a page is there in the first paint.
 
 <Demo src="how-to-steps/transition" minHeight="340">
 
