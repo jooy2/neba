@@ -99,15 +99,21 @@ export interface RowsPerPageProps {
  * the Select and a label that jumped from above the field onto its edge would
  * be the shift this exists to avoid.
  *
- * It is a button that does nothing yet. The chunk is asked for when the table
- * mounts, so a reader rarely meets it; the focus, if it lands here, is handed
- * to the Select when it arrives.
+ * It is a button that cannot open anything yet. The chunk is asked for when
+ * the table mounts, so a reader rarely meets it; the focus, if it lands here,
+ * is handed to the Select when it arrives, and a press it takes is reported
+ * through `onPress` so that the Select arrives open rather than asking for the
+ * press again.
  */
 const RowsPerPageStandIn = React.forwardRef<
   HTMLButtonElement,
-  RowsPerPageProps & { labelPlacement: NebaLabelPlacement; disabled: boolean }
+  RowsPerPageProps & {
+    labelPlacement: NebaLabelPlacement;
+    disabled: boolean;
+    onPress: (node: HTMLButtonElement) => void;
+  }
 >(function RowsPerPageStandIn(
-  { size, color, density, label, options, value, labelPlacement, disabled },
+  { size, color, density, label, options, value, labelPlacement, disabled, onPress },
   ref
 ) {
   const id = React.useId();
@@ -127,6 +133,22 @@ const RowsPerPageStandIn = React.forwardRef<
       disabled={disabled}
       data-neba-stand-in=""
       onPointerMove={trackPointer(undefined, !disabled)}
+      // The presses a Select opens on. A mouse opens it as the button goes
+      // down; a finger, a pen and Enter or Space arrive as a click, which a
+      // finger that only started a scroll never sends; and an arrow opens it
+      // from the keyboard.
+      onPointerDown={(event) => {
+        if (event.pointerType === 'mouse' && event.button === 0) {
+          onPress(event.currentTarget);
+        }
+      }}
+      onClick={(event) => onPress(event.currentTarget)}
+      onKeyDown={(event) => {
+        if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+          event.preventDefault();
+          onPress(event.currentTarget);
+        }
+      }}
       className={cx(
         selectTriggerClasses,
         fieldHeightClasses[size],
@@ -228,9 +250,17 @@ export function RowsPerPage(props: RowsPerPageProps) {
   const disabled = useFieldsetDisabled(false);
   const hydrated = useHydrated();
   const [ready, setReady] = React.useState(() => hydrated && rowsPerPageChunk.arrived());
+  /**
+   * Whether the Select mounts open. Settled before it mounts and never changed
+   * after, since it is only the Select's `defaultOpen`: from then on the
+   * Select's state is its own, exactly as when it was there from the start.
+   */
+  const [openOnArrival, setOpenOnArrival] = React.useState(false);
   const standInRef = React.useRef<HTMLButtonElement | null>(null);
   /** Whether the stand-in had the focus when the Select was sent for. */
   const focused = React.useRef(false);
+  /** Whether the stand-in was pressed while the Select was on its way. */
+  const pressed = React.useRef(false);
 
   React.useEffect(() => {
     if (ready) {
@@ -247,7 +277,15 @@ export function RowsPerPage(props: RowsPerPageProps) {
 
         focused.current =
           standInRef.current !== null && document.activeElement === standInRef.current;
-        React.startTransition(() => setReady(true));
+        // A press counts only while the reader is still where they pressed:
+        // one who has moved on is not sent back by a list opening behind them.
+        const opening = focused.current && pressed.current;
+
+        pressed.current = false;
+        React.startTransition(() => {
+          setReady(true);
+          setOpenOnArrival(opening);
+        });
       },
       // The stand-in stays. A table mounted later asks again.
       () => {}
@@ -275,12 +313,32 @@ export function RowsPerPage(props: RowsPerPageProps) {
     }
   }, []);
 
+  /*
+   * A press on the stand-in, kept for the Select. The focus goes to the
+   * stand-in with it, because Safari does not focus a button that is clicked
+   * and the press only counts while the focus is still there. Once the chunk
+   * is here and React is only drawing the Select from it, the stand-in is the
+   * Suspense fallback, and the press decides the Select's `defaultOpen` at
+   * once.
+   */
+  const press = (node: HTMLButtonElement) => {
+    node.focus();
+
+    if (ready) {
+      focused.current = true;
+      setOpenOnArrival(true);
+    } else {
+      pressed.current = true;
+    }
+  };
+
   const standIn = (
     <RowsPerPageStandIn
       ref={standInRef}
       {...props}
       labelPlacement={labelPlacement}
       disabled={disabled}
+      onPress={press}
     />
   );
 
@@ -299,6 +357,7 @@ export function RowsPerPage(props: RowsPerPageProps) {
         label={props.label}
         items={props.options.map((value) => ({ value }))}
         value={props.value}
+        defaultOpen={openOnArrival}
         onValueChange={(value) => props.onChange(Number(value))}
       />
     </React.Suspense>

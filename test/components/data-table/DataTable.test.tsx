@@ -838,6 +838,120 @@ describe('DataTable', () => {
         await expect.element(field).toHaveTextContent('50');
         await expect.element(field).toHaveFocus();
       });
+
+      /*
+       * A press on the stand-in did nothing: the focus was handed over when the
+       * Select came, and the reader had to press a second time to open it.
+       */
+      describe('a press before the Select arrives', () => {
+        /** Holds the Select's chunk back until `release` is called. */
+        function holdBack() {
+          let release: () => void = () => {};
+          const gate = new Promise<{ default: typeof Select }>((resolve) => {
+            release = () => resolve({ default: Select });
+          });
+
+          vi.spyOn(rowsPerPageChunk, 'arrived').mockReturnValue(false);
+          vi.spyOn(rowsPerPageChunk, 'load').mockReturnValue(gate);
+
+          return () => release();
+        }
+
+        const table = (onPageSizeChange?: (size: number) => void) => (
+          <>
+            <button type="button">Elsewhere</button>
+            <DataTable
+              headers={HEADERS}
+              items={manyItems(30)}
+              getRowKey={key}
+              paging="pages"
+              onPageSizeChange={onPageSizeChange}
+            />
+          </>
+        );
+
+        it('opens the Select once it arrives when the stand-in was clicked', async () => {
+          const release = holdBack();
+          const onPageSizeChange = vi.fn();
+          const screen = await render(table(onPageSizeChange));
+          const field = screen.getByRole('combobox', { name: 'Rows per page' });
+
+          await expect.poll(() => standIn(screen.container)).not.toBeNull();
+          await field.click();
+
+          expect(screen.getByRole('option').query()).toBeNull();
+
+          release();
+
+          await expect.poll(() => standIn(screen.container)).toBeNull();
+          await expect.element(screen.getByRole('option', { name: '10' })).toBeVisible();
+          await expect.element(field).toHaveAttribute('aria-expanded', 'true');
+
+          await screen.getByRole('option', { name: '10' }).click();
+
+          expect(onPageSizeChange).toHaveBeenLastCalledWith(10);
+        });
+
+        it.each([
+          ['ArrowDown', '{ArrowDown}'],
+          ['Enter', '{Enter}'],
+          ['Space', ' ']
+        ])('opens it for %s pressed on the focused stand-in', async (_name, keys) => {
+          const release = holdBack();
+          const onPageSizeChange = vi.fn();
+          const screen = await render(table(onPageSizeChange));
+          const field = screen.getByRole('combobox', { name: 'Rows per page' });
+
+          await expect.poll(() => standIn(screen.container)).not.toBeNull();
+          standIn(screen.container)!.focus();
+          await userEvent.keyboard(keys);
+          release();
+
+          await expect.poll(() => standIn(screen.container)).toBeNull();
+          await expect.element(field).toHaveAttribute('aria-expanded', 'true');
+          // Open the way the keys open it: on the chosen size, with the
+          // focus in the list, so the arrows carry on from there.
+          await expect
+            .element(screen.getByRole('option', { name: '25' }))
+            .toHaveAttribute('data-highlighted');
+
+          await userEvent.keyboard('{ArrowDown}{Enter}');
+
+          expect(onPageSizeChange).toHaveBeenLastCalledWith(50);
+        });
+
+        it('stays shut for a reader who has moved on by the time it arrives', async () => {
+          const release = holdBack();
+          const screen = await render(table());
+          const field = screen.getByRole('combobox', { name: 'Rows per page' });
+
+          await expect.poll(() => standIn(screen.container)).not.toBeNull();
+          await field.click();
+          // Moved on as the keyboard would: Safari gives the focus to no
+          // button that is clicked.
+          (screen.getByRole('button', { name: 'Elsewhere' }).element() as HTMLElement).focus();
+          release();
+
+          await expect.poll(() => standIn(screen.container)).toBeNull();
+          await expect.element(field).toHaveAttribute('aria-expanded', 'false');
+          await expect.element(screen.getByRole('button', { name: 'Elsewhere' })).toHaveFocus();
+          expect(screen.getByRole('option').query()).toBeNull();
+        });
+
+        it('stays shut when the stand-in only had the focus', async () => {
+          const release = holdBack();
+          const screen = await render(table());
+          const field = screen.getByRole('combobox', { name: 'Rows per page' });
+
+          await expect.poll(() => standIn(screen.container)).not.toBeNull();
+          standIn(screen.container)!.focus();
+          release();
+
+          await expect.poll(() => standIn(screen.container)).toBeNull();
+          await expect.element(field).toHaveFocus();
+          await expect.element(field).toHaveAttribute('aria-expanded', 'false');
+        });
+      });
     });
 
     // The pages were buttons only, so a crawler never got past the first one.
