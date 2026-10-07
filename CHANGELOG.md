@@ -96,6 +96,8 @@
 
 - **`HowToSteps` draws the step it starts on without fading it in.** The default `transition="fade"` also ran on the first panel, so a guide at the top of a page painted its largest content invisible and faded it in after the page had loaded, which delayed its first paint. A step the reader moves to still fades in, and so does the first one when they come back to it.
 
+- **A `Combobox` whose `items` are written inline no longer filters its whole list again each time the page around it renders.** A new array on every render read as a new list, so a combobox in a form ran its filter over every option on every keystroke in the field beside it. The options are now kept for as long as they say the same thing: the same values, labels and `disabled` flags.
+
 ### Fixed
 
 - **A `multiple` `Combobox` keeps the error a `Form` put on it while the page around it renders again, and a single one keeps what is typed after a value its `items` do not have.** The value handed to Base UI was a new object on every render, which Base UI took for a new choice: it cleared the field's errors, so a server error vanished the moment the reader typed in another field, and in single mode it wrote the chosen label back into the input, so typing after a custom value such as `defaultValue="Foo"` did nothing. The value now stays the same object for as long as it holds the same entries, including when `value` or `items` is written inline.

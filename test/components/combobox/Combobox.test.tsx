@@ -168,6 +168,46 @@ describe('Combobox', () => {
       expect(filter.mock.calls.length).toBe(calls);
     });
 
+    // Written inline, `items` is a new array on every render of the parent,
+    // and Base UI filters again whenever its items change identity.
+    it('does not filter again when inline items say the same thing', async () => {
+      const filter = vi.fn((option: { label?: string }, query: string) =>
+        (option.label ?? '').toLowerCase().includes(query.toLowerCase())
+      );
+      const inline = (description: string) => (
+        <Combobox
+          items={FRAMEWORKS.map((item) => ({ ...item }))}
+          label="Framework"
+          filter={filter}
+          description={description}
+        />
+      );
+      const screen = await render(inline('One'));
+
+      await screen.getByRole('combobox').fill('v');
+      await expect.element(screen.getByRole('option', { name: 'Vue' })).toBeInTheDocument();
+
+      const calls = filter.mock.calls.length;
+
+      await screen.rerender(inline('Two'));
+      await expect.element(screen.getByText('Two')).toBeInTheDocument();
+
+      expect(filter.mock.calls.length).toBe(calls);
+    });
+
+    it('lists the new options when inline items change', async () => {
+      const screen = await render(
+        <Combobox items={[{ value: 'a', label: 'Alpha' }]} label="Letter" />
+      );
+
+      await screen.getByRole('combobox').click();
+      await expect.element(screen.getByRole('option', { name: 'Alpha' })).toBeInTheDocument();
+
+      await screen.rerender(<Combobox items={[{ value: 'a', label: 'Alef' }]} label="Letter" />);
+
+      await expect.element(screen.getByRole('option', { name: 'Alef' })).toBeInTheDocument();
+    });
+
     it('honours a controlled value', async () => {
       const screen = await render(
         <Combobox items={FRAMEWORKS} label="Framework" value="react" onValueChange={() => {}} />

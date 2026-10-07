@@ -351,6 +351,26 @@ function sameEntry(a: Entry, b: Entry): boolean {
   return a.value === b.value;
 }
 
+const optionsKeys = new WeakMap<readonly ComboboxOption[], string>();
+
+/**
+ * What a list of options says, as one string: each value with its type, its
+ * label and whether it is disabled. Remembered per array, so a list the caller
+ * keeps between renders is read once.
+ */
+function optionsKeyOf(items: readonly ComboboxOption[]): string {
+  let key = optionsKeys.get(items);
+
+  if (key === undefined) {
+    key = JSON.stringify(
+      items.map((item) => [item.value, typeof item.value, item.label, item.disabled === true])
+    );
+    optionsKeys.set(items, key);
+  }
+
+  return key;
+}
+
 /** Always an array inside, however the caller spells it. */
 function toArray(value: unknown): ComboboxValue[] {
   if (value === null || value === undefined) {
@@ -445,6 +465,12 @@ export function Combobox<Multiple extends boolean | undefined = false>(
   const family: NebaColor = isInvalid ? 'danger' : color;
   const isMultiple = multiple === true;
 
+  /* Kept for as long as the items say the same thing, rather than for as long
+     as the array is the same one. `items` written inline is a new array on
+     every render, and Base UI filters the whole list again whenever its items
+     change identity, so a combobox in a form filtered every option on every
+     keystroke in the field beside it. */
+  const itemsKey = optionsKeyOf(items);
   const options = React.useMemo<Entry[]>(
     () =>
       items.map((item) => ({
@@ -452,7 +478,10 @@ export function Combobox<Multiple extends boolean | undefined = false>(
         label: item.label ?? String(item.value),
         disabled: item.disabled
       })),
-    [items]
+    // `items` is read inside and deliberately not listed: the key changes
+    // exactly when what they say does.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [itemsKey]
   );
 
   // The selection is mirrored internally even when the caller controls it. The
