@@ -56,6 +56,8 @@
 
 - **Dragging a run of rows in a `DataTable` no longer walks every row on each frame.** Each row the drag reached looked up where the run began and ended by searching the whole list of displayed rows twice, which on a hundred thousand rows was most of the frame; the arrow keys did the same to find the active row. Both are now a lookup in the positions the table already keeps, and the rows chosen are the same.
 
+- **Typing into a `DataTable`'s search field no longer stalls on a long table.** The first key prepared every row for matching before it could filter one, about a hundred milliseconds on a hundred thousand rows, and every key filtered every row before the field showed it. A table with `searchable` now prepares its rows while the page is idle after it mounts, and the rows follow the query a render behind the field when the table is busy, settling on the same result. A test that typed into the field and read the rows straight away should wait for them, for example with `expect.poll`.
+
 ### Fixed
 
 - **A `multiple` `Combobox` keeps the error a `Form` put on it while the page around it renders again, and a single one keeps what is typed after a value its `items` do not have.** The value handed to Base UI was a new object on every render, which Base UI took for a new choice: it cleared the field's errors, so a server error vanished the moment the reader typed in another field, and in single mode it wrote the chosen label back into the input, so typing after a custom value such as `defaultValue="Foo"` did nothing. The value now stays the same object for as long as it holds the same entries, including when `value` or `items` is written inline.

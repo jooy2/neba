@@ -594,6 +594,33 @@ const UNWINDOWED_ROWS = 500;
 const MOVE_SHORTCUTS = 'Alt+ArrowLeft Alt+ArrowRight';
 
 /**
+ * How many rows the search folds between two looks at the clock, and how long
+ * one idle slice may run. A row of six columns folds in about a microsecond,
+ * so a slice is a few hundred rows at most and a key pressed while one runs
+ * waits less than a frame for it.
+ */
+const FOLD_ROWS = 200;
+const FOLD_BUDGET = 8;
+
+/**
+ * Runs `task` when the browser next has nothing else to do, and returns what
+ * cancels it. A timer where there is no idle callback, which is Safari. The
+ * timeout makes the slice run within a second whatever else the page is doing,
+ * so a page that is never idle still has its rows folded before long.
+ */
+function whenIdle(task: (deadline?: IdleDeadline) => void): () => void {
+  if (typeof requestIdleCallback === 'function' && typeof cancelIdleCallback === 'function') {
+    const handle = requestIdleCallback(task, { timeout: 1000 });
+
+    return () => cancelIdleCallback(handle);
+  }
+
+  const handle = setTimeout(task, 16);
+
+  return () => clearTimeout(handle);
+}
+
+/**
  * Puts a plain cell's whole text in its `title` when the cell cuts it short.
  *
  * Measured as the pointer arrives rather than on render, because whether a
@@ -1241,7 +1268,13 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
   );
 
   const [uncontrolledSearch, setUncontrolledSearch] = React.useState(defaultSearch ?? '');
-  const query = (searchProp ?? uncontrolledSearch).trim();
+  /*
+   * The rows follow the query rather than keep up with it. The field shows
+   * what was typed at once, and filtering a long table runs in a render React
+   * may set aside for the next key: under load the rows can trail the text by
+   * a render, and the rows they settle on are the same.
+   */
+  const query = React.useDeferredValue((searchProp ?? uncontrolledSearch).trim());
 
   const searchedColumns = React.useMemo(
     () => columns.filter((column) => column.searchable !== false),
@@ -1258,25 +1291,77 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
    * not on the query, so it is done when *those* change and a keystroke is left
    * with an `includes` over a string that already exists.
    *
-   * Built the first time something is searched for, and kept until the rows
-   * or the columns change — not dropped when the field is cleared, which made
-   * the next search pay the whole fold again. A table nobody has typed at
-   * never builds them at all.
+   * Kept until the rows or the columns change — not dropped when the field is
+   * cleared, which made the next search pay the whole fold again. A table that
+   * draws its own search field folds them a slice at a time while the browser
+   * is idle, starting once it has mounted, because folding them all at the
+   * first key held that key back: a hundred milliseconds on a hundred thousand
+   * rows of six columns. Whatever is left when something is searched for is
+   * folded then. A table with no field of its own folds them the first time it
+   * is searched, and one nobody searches never folds them at all.
    */
   const haystacks = React.useMemo(() => {
-    let built: string[] | null = null;
+    const stacks: string[] = [];
 
-    return () =>
-      (built ??= entries.map((entry) =>
-        searchHaystack(
-          searchedColumns.map((column) =>
-            column.value
-              ? column.value(entry.row)
-              : (entry.row as Record<string, unknown>)[column.key]
+    /** Folds up to `count` more rows, and says whether any are left. */
+    const fold = (count: number) => {
+      const end = Math.min(entries.length, stacks.length + count);
+
+      for (let index = stacks.length; index < end; index += 1) {
+        const row = entries[index].row;
+
+        stacks.push(
+          searchHaystack(
+            searchedColumns.map((column) =>
+              column.value ? column.value(row) : (row as Record<string, unknown>)[column.key]
+            )
           )
-        )
-      ));
+        );
+      }
+
+      return stacks.length < entries.length;
+    };
+
+    return {
+      fold,
+      /** Every row folded, finishing whatever the idle slices left. */
+      all: () => {
+        fold(Infinity);
+
+        return stacks;
+      }
+    };
   }, [entries, searchedColumns]);
+
+  const filterStaged = stages.has('filter');
+
+  React.useEffect(() => {
+    if (!searchable || filterStaged || searchedColumns.length === 0) {
+      return;
+    }
+
+    let cancel = () => {};
+    const slice = (deadline?: IdleDeadline) => {
+      const until = performance.now() + FOLD_BUDGET;
+      let more = haystacks.fold(FOLD_ROWS);
+
+      while (
+        more &&
+        performance.now() < until &&
+        (deadline === undefined || deadline.timeRemaining() > 1)
+      ) {
+        more = haystacks.fold(FOLD_ROWS);
+      }
+
+      if (more) {
+        cancel = whenIdle(slice);
+      }
+    };
+
+    cancel = whenIdle(slice);
+
+    return () => cancel();
+  }, [searchable, filterStaged, searchedColumns.length, haystacks]);
 
   /*
    * The collator is built once per locale rather than per comparison: building
@@ -1335,7 +1420,7 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
 
   /** The sorted rows the search and the caller's `filter` keep, still in sort order. */
   const filtered = React.useMemo(() => {
-    if (stages.has('filter')) {
+    if (filterStaged) {
       return ordered;
     }
 
@@ -1346,13 +1431,13 @@ export function DataTable<Row>(rawProps: DataTableProps<Row>) {
     let result = ordered;
 
     if (needle !== '' && searchedColumns.length > 0) {
-      const stacks = haystacks();
+      const stacks = haystacks.all();
 
       result = ordered.filter((entry) => stacks[entry.origin].includes(needle));
     }
 
     return filter ? result.filter((entry) => filter(entry.row, entry.origin)) : result;
-  }, [ordered, query, filter, stages, searchedColumns, haystacks]);
+  }, [ordered, query, filter, filterStaged, searchedColumns, haystacks]);
 
   /* -- Paging -------------------------------------------------------------- */
 

@@ -375,7 +375,7 @@ describe('DataTable', () => {
 
       // `toBe`, not `toEqual`: two `<tr>`s holding the same text are
       // structurally equal, which is exactly the thing being ruled out here.
-      expect(bodyRows(screen.container)).toHaveLength(1);
+      await expect.poll(() => bodyRows(screen.container)).toHaveLength(1);
       expect(bodyRows(screen.container)[0]).toBe(cy);
     });
   });
@@ -462,7 +462,7 @@ describe('DataTable', () => {
       await screen.getByRole('searchbox').fill('Oslo');
 
       expect(onSearchChange).toHaveBeenLastCalledWith('Oslo');
-      expect(cellText(screen.container, 0)).toEqual(['Cy']);
+      await expect.poll(() => cellText(screen.container, 0)).toEqual(['Cy']);
     });
 
     // Clearing the field dropped the folded rows, so the next search paid for
@@ -485,15 +485,67 @@ describe('DataTable', () => {
       const field = screen.getByRole('searchbox');
 
       await field.fill('Oslo');
-      expect(cellText(screen.container, 0)).toEqual(['Oslo']);
+      await expect.poll(() => cellText(screen.container, 0)).toEqual(['Oslo']);
 
       const folded = read;
 
       await field.fill('');
       await field.fill('Lisbon');
 
-      expect(cellText(screen.container, 0)).toEqual(['Lisbon']);
+      await expect.poll(() => cellText(screen.container, 0)).toEqual(['Lisbon']);
       expect(read).toBe(folded);
+    });
+
+    // The first key folded every row before it could filter one: a hundred
+    // milliseconds on a hundred thousand rows, held against that keystroke.
+    it('folds its rows while the page is idle, before anything is typed', async () => {
+      let read = 0;
+      const items = manyItems(1000);
+      const headers: DataTableColumn<Person>[] = [
+        {
+          ...HEADERS[1],
+          value: (row) => {
+            read += 1;
+
+            return row.city;
+          }
+        }
+      ];
+      const screen = await render(
+        <DataTable headers={headers} items={items} getRowKey={key} searchable height={200} />
+      );
+
+      await expect.poll(() => read).toBe(items.length);
+
+      await screen.getByRole('searchbox').fill('City 999');
+
+      await expect.poll(() => cellText(screen.container, 0)).toEqual(['City 999']);
+      expect(read).toBe(items.length);
+    });
+
+    it('folds nothing for a table with no search field until it is searched', async () => {
+      let read = 0;
+      const headers: DataTableColumn<Person>[] = [
+        {
+          ...HEADERS[1],
+          value: (row) => {
+            read += 1;
+
+            return row.city;
+          }
+        }
+      ];
+      const screen = await render(<DataTable headers={headers} items={ITEMS} getRowKey={key} />);
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      expect(read).toBe(0);
+
+      await screen.rerender(
+        <DataTable headers={headers} items={ITEMS} getRowKey={key} search="Oslo" />
+      );
+
+      await expect.poll(() => cellText(screen.container, 0)).toEqual(['Oslo']);
+      expect(read).toBe(ITEMS.length);
     });
 
     // The search ran before the sort, so every keystroke sorted the matches
@@ -529,13 +581,17 @@ describe('DataTable', () => {
       expect(sorting).toBeGreaterThan(0);
 
       await field.fill('Person 1');
-      expect(cellText(screen.container, 0)).toEqual(sortedThenFiltered('Person 1'));
+      await expect
+        .poll(() => cellText(screen.container, 0))
+        .toEqual(sortedThenFiltered('Person 1'));
 
       await field.fill('Person 2');
-      expect(cellText(screen.container, 0)).toEqual(sortedThenFiltered('Person 2'));
+      await expect
+        .poll(() => cellText(screen.container, 0))
+        .toEqual(sortedThenFiltered('Person 2'));
 
       await field.fill('');
-      expect(cellText(screen.container, 0)).toEqual(sortedThenFiltered(''));
+      await expect.poll(() => cellText(screen.container, 0)).toEqual(sortedThenFiltered(''));
 
       expect(compare).toHaveBeenCalledTimes(sorting);
     });
@@ -691,7 +747,7 @@ describe('DataTable', () => {
 
       // One row matches, so there is one page. Left on page 3 the slice would
       // start past the end and the search would answer with nothing.
-      expect(cellText(screen.container, 0)).toEqual(['Person 1']);
+      await expect.poll(() => cellText(screen.container, 0)).toEqual(['Person 1']);
     });
 
     // The pages were buttons only, so a crawler never got past the first one.
@@ -1033,6 +1089,7 @@ describe('DataTable', () => {
 
       await screen.getByText('Seoul').click();
       await screen.getByRole('searchbox').fill('Lisbon');
+      await expect.poll(() => cellText(screen.container, 1)).toEqual(['Lisbon']);
       await userEvent.keyboard('{Shift>}');
       await screen.getByText('Lisbon').click();
       await userEvent.keyboard('{/Shift}');
