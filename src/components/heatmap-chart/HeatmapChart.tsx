@@ -448,6 +448,109 @@ export function HeatmapChart(rawProps: HeatmapChartProps) {
     return { heads, rows, points };
   }, [shape, labels, values, categories, intlLocale]);
 
+  /* Everything a cell draws, worked out once per layout rather than on every
+     render: its fill, its ink and the lines of text that fit on it, each
+     already formatted and cut. These were worked out again for every cell
+     each time the pointer crossed into a new one — a value formatted, measured
+     and cut per cell, for a picture where one cell changed — which on a grid
+     of forty rows by sixty columns was 16 ms a move under a fourfold CPU
+     slowdown, and 26 ms at worst. */
+  const isTreemap = shape === 'treemap';
+  const drawn = React.useMemo(() => {
+    const list: DrawnCell[] = [];
+
+    for (const one of cells) {
+      // The 2px between two cells is the surface showing through and never a
+      // stroke, exactly as it is between two bars.
+      const w = Math.max(0, one.width - markGap);
+      const h = Math.max(0, one.height - markGap);
+
+      if (w <= 0 || h <= 0) {
+        continue;
+      }
+
+      const step = stepOf(one.cell.value ?? 0);
+
+      /* A tile says what it is and a cell says how much. On the grid the two
+         coordinates are already written down the side and along the bottom,
+         so the only thing left to write is the number; on a treemap nothing is
+         written anywhere else, so the name comes first and the value only if
+         there is still room under it. */
+      const value = valueLabels === 'all' ? formatValue(one.cell.value ?? 0) : '';
+      const lines = isTreemap
+        ? valueLabels === 'all'
+          ? [cellName(one), value]
+          : [cellName(one)]
+        : valueLabels === 'all'
+          ? [value]
+          : [];
+
+      list.push({
+        key: `${one.row}-${one.index}`,
+        row: one.row,
+        index: one.index,
+        x: one.x,
+        y: one.y,
+        width: one.width,
+        height: one.height,
+        w,
+        h,
+        fill: one.cell.color ?? rampFill(step, scale),
+        ink: one.cell.color ? 'var(--neba-surface)' : rampInk(step, scale),
+        lines: lines
+          .filter((line) => fits(line, w, h / lines.length, fontSize))
+          .map((line) => truncate(line, one.width - 8, fontSize))
+      });
+    }
+
+    return list;
+  }, [cells, stepOf, scale, valueLabels, formatValue, isTreemap, cellName, fontSize]);
+
+  /* The cells in blocks, so the pointer moving from one cell to the next draws
+     the block it left and the block it entered rather than every cell — the
+     arrangement a ScatterChart's marks are drawn in. */
+  const blocks = React.useMemo(() => {
+    const list: DrawnCell[][] = [];
+
+    for (let at = 0; at < drawn.length; at += cellBlock) {
+      list.push(drawn.slice(at, at + cellBlock));
+    }
+
+    return list;
+  }, [drawn]);
+  const blockOf = React.useMemo(() => {
+    const map = new Map<string, DrawnCell[]>();
+
+    for (const block of blocks) {
+      for (const one of block) {
+        map.set(one.key, block);
+      }
+    }
+
+    return map;
+  }, [blocks]);
+
+  const activeKey = active === null ? null : `${active.row}-${active.index}`;
+  const activeBlock = activeKey === null ? undefined : blockOf.get(activeKey);
+
+  /* One listener on the drawing rather than one per cell. Each cell carries its
+     two coordinates, and the pointer arriving on one is the same moment the
+     cell's own `pointerenter` was: the text on a cell lets presses through, so
+     the target is always the cell itself. */
+  const onCellOver = (event: React.PointerEvent<SVGSVGElement>) => {
+    const target = event.target as Element;
+    const row = target.getAttribute('data-row');
+    const index = target.getAttribute('data-index');
+
+    if (row === null || index === null) {
+      return;
+    }
+
+    if (active?.row !== Number(row) || active?.index !== Number(index)) {
+      setActive({ row: Number(row), index: Number(index) });
+    }
+  };
+
   const hovered =
     active === null
       ? null
@@ -609,75 +712,17 @@ export function HeatmapChart(rawProps: HeatmapChartProps) {
             viewBox={`0 0 ${width} ${plotHeight}`}
             aria-hidden="true"
             className="block"
+            onPointerOver={tooltipOff ? undefined : onCellOver}
           >
-            {cells.map((one) => {
-              const step = stepOf(one.cell.value ?? 0);
-              const is = active?.row === one.row && active?.index === one.index;
-              // The 2px between two cells is the surface showing through and
-              // never a stroke, exactly as it is between two bars.
-              const w = Math.max(0, one.width - markGap);
-              const h = Math.max(0, one.height - markGap);
-
-              if (w <= 0 || h <= 0) {
-                return null;
-              }
-
-              /* A tile says what it is and a cell says how much. On the grid
-                 the two coordinates are already written down the side and along
-                 the bottom, so the only thing left to write is the number; on a
-                 treemap nothing is written anywhere else, so the name comes
-                 first and the value only if there is still room under it. */
-              const value = formatValue(one.cell.value ?? 0);
-              const lines =
-                shape === 'treemap'
-                  ? valueLabels === 'all'
-                    ? [cellName(one), value]
-                    : [cellName(one)]
-                  : valueLabels === 'all'
-                    ? [value]
-                    : [];
-              const written = lines.filter((line) => fits(line, w, h / lines.length, fontSize));
-              const ink = one.cell.color ? 'var(--neba-surface)' : rampInk(step, scale);
-
-              return (
-                <g key={`${one.row}-${one.index}`}>
-                  <rect
-                    x={one.x + markGap / 2}
-                    y={one.y + markGap / 2}
-                    width={w}
-                    height={h}
-                    rx={Math.min(cellRadius, w / 2, h / 2)}
-                    fill={one.cell.color ?? rampFill(step, scale)}
-                    opacity={is ? 1 : 0.94}
-                    onPointerEnter={
-                      tooltipOff ? undefined : () => setActive({ row: one.row, index: one.index })
-                    }
-                    className={markTransitionClasses}
-                  />
-                  {written.map((line, row) => (
-                    <text
-                      key={row}
-                      x={one.x + one.width / 2}
-                      y={one.y + one.height / 2 + (row - (written.length - 1) / 2) * (fontSize + 2)}
-                      textAnchor="middle"
-                      dominantBaseline="central"
-                      fontSize={fontSize}
-                      fontWeight={row === 0 ? 500 : 400}
-                      // Inside a filled mark is the one place a label does not
-                      // wear a text token. Which of the two it wears is decided
-                      // per step in `styles.css`, where the step's lightness is
-                      // known and the answer flips between the themes.
-                      fill={ink}
-                      opacity={row === 0 ? 1 : 0.85}
-                      pointerEvents="none"
-                      className={row === 0 && shape === 'treemap' ? undefined : 'tabular-nums'}
-                    >
-                      {truncate(line, one.width - 8, fontSize)}
-                    </text>
-                  ))}
-                </g>
-              );
-            })}
+            {blocks.map((block, at) => (
+              <CellBlock
+                key={at}
+                cells={block}
+                active={block === activeBlock ? activeKey : null}
+                treemap={isTreemap}
+                fontSize={fontSize}
+              />
+            ))}
 
             {/* The grid's two axes. Names down the side and along the bottom,
                 each in a band of its own — written over the cells they would be
@@ -904,6 +949,88 @@ interface Cell {
   width: number;
   height: number;
 }
+
+/** A cell with everything it draws worked out. */
+interface DrawnCell {
+  key: string;
+  row: number;
+  index: number;
+  /** Its slot, from the layout. */
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  /** The rectangle drawn in it, once the gap is taken off. */
+  w: number;
+  h: number;
+  fill: string;
+  ink: string;
+  /** The lines written on it, already formatted and cut to its width. */
+  lines: readonly string[];
+}
+
+/** How many cells one memoised block draws — ScatterChart's `markBlock`. */
+const cellBlock = 128;
+
+interface CellBlockProps {
+  cells: readonly DrawnCell[];
+  /** The key of the cell under the pointer, when it is one of these. */
+  active: string | null;
+  treemap: boolean;
+  fontSize: number;
+}
+
+/** A block of cells, drawn again only when something in it changes. */
+const CellBlock = React.memo(function CellBlock({
+  cells,
+  active,
+  treemap,
+  fontSize
+}: CellBlockProps) {
+  return (
+    <>
+      {cells.map((one) => (
+        <g key={one.key}>
+          <rect
+            // Read by the one listener on the drawing, which is how the
+            // pointer arriving on a cell is told which one it is.
+            data-row={one.row}
+            data-index={one.index}
+            x={one.x + markGap / 2}
+            y={one.y + markGap / 2}
+            width={one.w}
+            height={one.h}
+            rx={Math.min(cellRadius, one.w / 2, one.h / 2)}
+            fill={one.fill}
+            opacity={one.key === active ? 1 : 0.94}
+            className={markTransitionClasses}
+          />
+          {one.lines.map((line, row) => (
+            <text
+              key={row}
+              x={one.x + one.width / 2}
+              y={one.y + one.height / 2 + (row - (one.lines.length - 1) / 2) * (fontSize + 2)}
+              textAnchor="middle"
+              dominantBaseline="central"
+              fontSize={fontSize}
+              fontWeight={row === 0 ? 500 : 400}
+              // Inside a filled mark is the one place a label does not wear a
+              // text token. Which of the two it wears is decided per step in
+              // `styles.css`, where the step's lightness is known and the
+              // answer flips between the themes.
+              fill={one.ink}
+              opacity={row === 0 ? 1 : 0.85}
+              pointerEvents="none"
+              className={row === 0 && treemap ? undefined : 'tabular-nums'}
+            >
+              {line}
+            </text>
+          ))}
+        </g>
+      ))}
+    </>
+  );
+});
 
 /** How far the further arm of a diverging scale reaches from its middle. */
 function reach(low: number, high: number, midpoint: number): number {

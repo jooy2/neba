@@ -766,6 +766,51 @@ describe('HeatmapChart', () => {
       expect(status.element().textContent).toContain('00');
     });
 
+    // Every cell's label was formatted, measured and cut again each time the
+    // pointer crossed into a new cell, for a picture where one cell changed.
+    it('writes no cell again as the pointer moves from one to the next', async () => {
+      const screen = await render(
+        <HeatmapChart
+          label="Sessions"
+          height={300}
+          valueLabels="all"
+          series={Array.from({ length: 10 }, (_, row) => ({
+            name: `R${row}`,
+            data: Array.from({ length: 10 }, (_, column) => row * 10 + column)
+          }))}
+        />
+      );
+
+      const plot = screen.getByRole('img', { name: 'Sessions' });
+
+      await expect.element(plot).toBeInTheDocument();
+      await expect.poll(() => cells(plot.element()).length).toBe(100);
+
+      const centre = (cell: Element) => ({
+        x: Number(cell.getAttribute('x')) + Number(cell.getAttribute('width')) / 2,
+        y: Number(cell.getAttribute('y')) + Number(cell.getAttribute('height')) / 2
+      });
+      const status = screen.getByRole('status');
+
+      await plot.hover({ position: centre(cells(plot.element())[0]) });
+      await expect.element(status).toMatchTextContent('R0');
+
+      // `format` is a getter that hands back a bound function, so each number
+      // the chart writes is one read of it.
+      const formats = vi.spyOn(Intl.NumberFormat.prototype as { format: unknown }, 'format', 'get');
+
+      try {
+        await plot.hover({ position: centre(cells(plot.element())[55]) });
+        await expect.element(status).toMatchTextContent('R5');
+
+        // The tooltip's number, the status line's and the summary's, and no
+        // more: a hundred cells formatted again would be a hundred.
+        expect(formats.mock.calls.length).toBeLessThan(10);
+      } finally {
+        formats.mockRestore();
+      }
+    });
+
     it('is not reachable when it is turned off', async () => {
       const screen = await render(
         <HeatmapChart
