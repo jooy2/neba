@@ -72,6 +72,8 @@ XP와 Aero는 헤어라인이 아니라 **띠**를 가진 둘이라, 내용이 �
 
 둘 다 흐름 안에서도 동작하며, 이때 offset은 레이아웃이 놓아 준 자리에서 창을 옮깁니다. 직접 정한 상자를 기준으로 움직이려면 `position="absolute"`와 positioned 조상을, 뷰포트를 기준으로 하려면 `position="fixed"`를 주세요. fixed나 absolute 창은 제목표시줄이 그 상자 안에 남도록 붙잡히고, 크기를 바꾼 뒤 새로 준 `width`나 `height`는 손으로 정한 크기를 대신합니다.
 
+독자가 아무것도 하지 않았는데 `width`, `height`, `offset`이 바뀌면, 예를 들어 페이지를 불러온 뒤 저장소에서 위치와 크기를 복원하면, 창은 다른 변경과 똑같이 240ms에 걸쳐 새 값으로 움직이고 브라우저는 이 움직임을 layout shift로 셉니다. 저장해 둔 위치와 크기는 첫 렌더링부터 넘기세요. 위치는 `defaultOffset`으로, 크기는 창에 처음 주는 `width`와 `height`로 넘기면 됩니다.
+
 <Demo src="window-pane/interactive" minHeight="400">
 
 <<< @/.vitepress/demos/window-pane/interactive.tsx

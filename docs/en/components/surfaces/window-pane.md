@@ -72,6 +72,8 @@ Each one is a controlled/uncontrolled pair: `open`, `minimized` and `maximized`,
 
 Both work in the flow, where the offset moves the window from the place the layout gave it. To move it against a box of your own, give it `position="absolute"` and a positioned ancestor, or `position="fixed"` for the viewport. A fixed or absolute window is held so that its title bar stays inside that box, and a `width` or `height` passed after a resize replaces the size the resize gave it.
 
+A `width`, `height` or `offset` that changes without the reader doing anything, such as a geometry restored from storage once the page has loaded, travels to its new value over 240 ms like any other change, and the browser counts that move as layout shift. Restore a saved geometry on the first render instead: the position as `defaultOffset`, and the size as the first `width` and `height` the window is given.
+
 <Demo src="window-pane/interactive" minHeight="400">
 
 <<< @/.vitepress/demos/window-pane/interactive.tsx
