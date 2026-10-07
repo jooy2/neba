@@ -99,7 +99,7 @@ const iconOnlyClasses: Record<NebaSize, string> = {
 };
 
 const baseClasses =
-  'relative inline-flex shrink-0 select-none items-center justify-center ' +
+  'relative inline-flex shrink-0 select-none items-center justify-center no-underline ' +
   'whitespace-nowrap align-middle font-medium leading-none ' +
   '[-webkit-tap-highlight-color:transparent] [touch-action:manipulation] ' +
   transitionClasses +

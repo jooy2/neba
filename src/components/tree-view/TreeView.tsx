@@ -907,7 +907,7 @@ export const TreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(function 
   }
 
   const rowClassNames = cx(
-    'flex min-w-0 flex-1 cursor-pointer items-center text-start',
+    'flex min-w-0 flex-1 cursor-pointer items-center text-start no-underline',
     'h-(--n-tree-row)',
     rowPaddingXClasses[density][size],
     rowRadiusClasses[size],
@@ -926,7 +926,7 @@ export const TreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(function 
       ? 'cursor-not-allowed text-(--neba-disabled-fg)'
       : isSelected
         ? 'bg-(--n-soft-press) font-medium text-(--n-on-tint) hover:bg-(--n-soft-press)'
-        : 'hover:bg-(--n-soft)'
+        : 'text-inherit hover:bg-(--n-soft)'
   );
 
   const body = (

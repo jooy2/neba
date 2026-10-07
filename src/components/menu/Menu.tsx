@@ -323,7 +323,7 @@ function rowClasses(
   className?: string
 ): string {
   return cx(
-    'relative flex w-full cursor-pointer items-center select-none',
+    'relative flex w-full cursor-pointer items-center select-none no-underline',
     // The spotlight, without the press flash: a row is gone the moment it is
     // chosen, and an afterglow on an element that has already unmounted is
     // nine hundred milliseconds of nothing. See `internal/glow.ts`.

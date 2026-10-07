@@ -571,7 +571,7 @@ export const BreadcrumbItem = React.forwardRef<HTMLLIElement, BreadcrumbItemProp
     const link = interactive && Boolean(href || render);
 
     const stepClassNames = cx(
-      'inline-flex min-w-0 items-center px-1',
+      'inline-flex min-w-0 items-center px-1 no-underline',
       gapClasses[size],
       stepRadiusClasses[size],
       transitionClasses,

@@ -150,6 +150,8 @@
 
 - **A `PromptInput` holding a server-rendered draft is the right height from the first paint, and typing in it no longer forces a layout per keystroke.** The field measured its own height on every character, and a draft rendered on the server was one row tall until the page hydrated. A field that starts at one row now uses `field-sizing: content` in Chrome and Edge 123, Firefox 152 and Safari 26.2 and later; elsewhere, and with `minRows` above one, it measures as before. A measuring field also no longer pulls the page up in Firefox when it is typed into at the bottom of the page.
 
+- **Links drawn by `BottomNavigation`, `FloatingBottomNavigation`, `Breadcrumb`, `Pagination`, `Menu`, `List`, `TreeView`, a `ChatBubble` card and a `Button` or `IconButton` rendered as an `<a>` look the same with `neba/styles.css` as they do under Tailwind.** The stylesheet's reset leaves links alone, since a page's own links are the page's, and these relied on Tailwind's Preflight to take the browser's underline and, for a `List` row, a `TreeView` row and a `ChatBubble` card, its blue away. Each now says so itself; under Tailwind nothing changes.
+
 ### Documentation
 
 - **Getting started says more about server rendering.** A `locale` also keeps a date picker's field from widening at hydration and spares each component a render; a chart can draw in the server's HTML with `initialWidth`; content in the first screen should keep `trigger="mount"`; a `Shortcut` takes its platform from the request; and `colorSchemeScript()` should be called with the options the provider has.

@@ -25,7 +25,12 @@ import { render } from 'vitest-browser-react';
 import { userEvent } from 'vitest/browser';
 import {
   Badge,
+  BottomNavigation,
+  BottomNavigationItem,
+  Breadcrumb,
+  BreadcrumbItem,
   Button,
+  ChatBubble,
   Checkbox,
   Chip,
   Combobox,
@@ -43,6 +48,8 @@ import {
   Select,
   Switch,
   TextField,
+  TreeItem,
+  TreeView,
   Typography
 } from 'neba';
 import resetSource from '../../src/reset.css?raw';
@@ -149,6 +156,45 @@ describe('neba/styles.css', () => {
   });
 
   describe('the reset', () => {
+    // The reset leaves links alone on purpose: it is a floor under the
+    // components, and a page's own links are the page's. So a component that
+    // draws an `<a>` says how it looks itself, or a project without Tailwind's
+    // Preflight gets the browser's blue, underlined default inside it.
+    it('leaves no browser link styling on the links the components draw', async () => {
+      const screen = await render(
+        <>
+          <BottomNavigation value="home">
+            <BottomNavigationItem value="home" href="/home">
+              Home
+            </BottomNavigationItem>
+          </BottomNavigation>
+          <Breadcrumb>
+            <BreadcrumbItem href="/">Root</BreadcrumbItem>
+            <BreadcrumbItem>Here</BreadcrumbItem>
+          </Breadcrumb>
+          <Button render={<a href="/go" />}>Go</Button>
+          <ChatBubble preview={{ url: 'https://example.com', title: 'Preview' }}>Look</ChatBubble>
+          <List>
+            <ListItem href="#row">Row</ListItem>
+          </List>
+          <TreeView>
+            <TreeItem value="guide" label="Guide" href="#guide" />
+          </TreeView>
+        </>
+      );
+      const links = [...screen.container.querySelectorAll('a[href]')];
+
+      expect(links.length).toBe(6);
+
+      for (const link of links) {
+        const style = getComputedStyle(link);
+
+        expect(style.textDecorationLine, link.textContent ?? '').toBe('none');
+        // The browser's own link blue, which only a link nobody styled keeps.
+        expect(style.color, link.textContent ?? '').not.toBe('rgb(0, 0, 238)');
+      }
+    });
+
     it('puts padding and border inside a control box', async () => {
       const screen = await render(<Button>Save</Button>);
       const element = screen.getByRole('button').element();

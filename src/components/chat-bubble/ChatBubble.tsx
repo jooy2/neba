@@ -292,7 +292,7 @@ const statusToneClasses: Record<ChatBubbleStatus, string> = {
  * fixed token would be invisible against one of the two.
  */
 const previewSurfaceClasses =
-  'block overflow-hidden rounded-(--neba-radius-sm) border no-underline ' +
+  'block overflow-hidden rounded-(--neba-radius-sm) border text-inherit no-underline ' +
   '[border-color:color-mix(in_oklab,currentColor_18%,transparent)] ' +
   '[background-color:color-mix(in_oklab,currentColor_7%,transparent)] ' +
   'hover:[background-color:color-mix(in_oklab,currentColor_12%,transparent)] ' +

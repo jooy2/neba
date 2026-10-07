@@ -270,7 +270,7 @@ export const ListItem = React.forwardRef<HTMLLIElement, ListItemProps>(function 
   const padY = rowPaddingYClasses[density][size];
 
   const bodyClassNames = cx(
-    'flex min-w-0 flex-1 items-center text-start',
+    'flex min-w-0 flex-1 items-center text-start no-underline',
     padX,
     padY,
     gapClasses[size],
@@ -286,7 +286,7 @@ export const ListItem = React.forwardRef<HTMLLIElement, ListItemProps>(function 
       ? 'cursor-not-allowed text-(--neba-disabled-fg)'
       : selected
         ? 'bg-(--n-soft-press) font-medium text-(--n-on-tint)'
-        : '',
+        : 'text-inherit',
     // Inside the edge when the rows are ruled, for Accordion's reason: the sheet
     // clips its overflow then, and a ring outside a full-width row is cut off.
     interactive ? `cursor-pointer ${dividers ? insetRingClasses : focusRingClasses}` : '',
