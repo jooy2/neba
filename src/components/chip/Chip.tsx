@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useRender } from '@base-ui/react/use-render';
 import { actionMessages, fillMessage, useMessages } from '../../internal/i18n.js';
 import { CloseIcon } from '../../internal/icons.js';
 import { safeHref, safeRel } from '../../internal/link.js';
@@ -85,6 +86,13 @@ export interface ChipProps
    * `disabled` chip is not a link.
    */
   href?: string;
+  /**
+   * Renders the link as something other than an `<a>` — the `Link` a router
+   * brings, so a chip moves without reloading the page. `href` still goes
+   * through. Only a chip that is a link uses it: a `disabled` one stays text,
+   * and the `onDelete` button stays beside the link, never inside it.
+   */
+  render?: useRender.RenderProp;
   /** Where the link opens. Anything but this tab also gets `rel="noopener noreferrer"`. */
   target?: string;
   /**
@@ -198,7 +206,8 @@ const labelLinkClasses = `${labelButtonClasses} text-inherit no-underline`;
  *
  * The shell is always a `<span>`. What changes is what is inside it: a plain run
  * of content, a real `<button>` wrapping that content when `onClick` is given,
- * or an `<a>` wrapping it when `href` is, plus a second button for `onDelete`.
+ * or an `<a>` wrapping it when `href` is — or whatever `render` draws in its
+ * place — plus a second button for `onDelete`.
  * Both are reachable by keyboard, and neither is nested inside the other, which
  * is as true of a link as of a button: interactive content inside an `<a>` is
  * invalid too.
@@ -224,6 +233,7 @@ export const Chip = React.forwardRef<HTMLElement, ChipProps>(function Chip(rawPr
     transition,
     selected,
     href: hrefProp,
+    render,
     target,
     rel,
     disabled = false,
@@ -236,7 +246,8 @@ export const Chip = React.forwardRef<HTMLElement, ChipProps>(function Chip(rawPr
 
   const messages = useMessages(actionMessages, locale);
   const href = disabled ? undefined : safeHref(hrefProp);
-  const interactive = (href !== undefined || Boolean(onClick)) && !disabled;
+  const link = (href !== undefined || render !== undefined) && !disabled;
+  const interactive = (link || Boolean(onClick)) && !disabled;
   const step = chipScale[size];
   const animation = transitionProps(transition);
 
@@ -300,6 +311,28 @@ export const Chip = React.forwardRef<HTMLElement, ChipProps>(function Chip(rawPr
     </>
   );
 
+  // Called whatever the chip turns out to be, because it is a hook; only a
+  // link reads it.
+  const linkElement = useRender({
+    render: render ?? <a />,
+    props: {
+      href,
+      target,
+      rel: safeRel(target, rel),
+      // A link is not a toggle, so a chosen one is the current one of its set
+      // rather than a pressed button.
+      'aria-current': selected ? 'true' : undefined,
+      className: `${labelLinkClasses} ${gapClasses[step]} ${padX}`,
+      onClick: onClick as React.MouseEventHandler<HTMLAnchorElement>,
+      children: (
+        <>
+          {label}
+          <NewTabNote target={target} locale={locale} />
+        </>
+      )
+    }
+  });
+
   return (
     <span
       ref={ref as React.Ref<HTMLSpanElement>}
@@ -308,20 +341,8 @@ export const Chip = React.forwardRef<HTMLElement, ChipProps>(function Chip(rawPr
       aria-disabled={disabled && !interactive ? true : undefined}
       {...props}
     >
-      {href !== undefined ? (
-        <a
-          href={href}
-          target={target}
-          rel={safeRel(target, rel)}
-          // A link is not a toggle, so a chosen one is the current one of its
-          // set rather than a pressed button.
-          aria-current={selected ? 'true' : undefined}
-          className={`${labelLinkClasses} ${gapClasses[step]} ${padX}`}
-          onClick={onClick as React.MouseEventHandler<HTMLAnchorElement>}
-        >
-          {label}
-          <NewTabNote target={target} locale={locale} />
-        </a>
+      {link ? (
+        linkElement
       ) : interactive ? (
         <button
           type="button"

@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { Chip } from 'neba';
@@ -318,6 +319,69 @@ describe('Chip', () => {
 
       expect(screen.getByRole('link').query()).toBeNull();
       await expect.element(screen.getByRole('button', { name: 'React' })).toBeInTheDocument();
+    });
+
+    it('renders the link through render, keeping the href', async () => {
+      const screen = await render(
+        <Chip href="/tags/react" render={<a data-router="" />}>
+          React
+        </Chip>
+      );
+      const link = screen.getByRole('link', { name: 'React' });
+
+      await expect.element(link).toHaveAttribute('data-router', '');
+      await expect.element(link).toHaveAttribute('href', '/tags/react');
+    });
+
+    it('hands a router link everything an anchor gets, and keeps the delete button beside it', async () => {
+      const RouterLink = React.forwardRef<HTMLAnchorElement, React.ComponentPropsWithoutRef<'a'>>(
+        function RouterLink(props, ref) {
+          return <a ref={ref} data-router="" {...props} />;
+        }
+      );
+      const screen = await render(
+        <Chip
+          href="https://react.dev"
+          target="_blank"
+          rel="tag"
+          selected
+          onDelete={() => {}}
+          render={<RouterLink />}
+        >
+          React
+        </Chip>
+      );
+      const link = screen.getByRole('link', { name: 'React (opens in a new tab)' });
+      const remove = screen.getByRole('button', { name: 'Remove React' }).element();
+
+      await expect.element(link).toHaveAttribute('data-router', '');
+      await expect.element(link).toHaveAttribute('rel', 'tag noopener noreferrer');
+      await expect.element(link).toHaveAttribute('aria-current', 'true');
+      expect(link.element().contains(remove)).toBe(false);
+      expect(link.element().parentElement).toBe(remove.parentElement);
+    });
+
+    it('drops an address with a scheme that runs code even through render', async () => {
+      const screen = await render(
+        <Chip href="javascript:alert(1)" render={<a data-router="" />}>
+          React
+        </Chip>
+      );
+
+      await expect.element(screen.getByText('React')).toBeInTheDocument();
+      expect(document.querySelector('[data-router]')?.hasAttribute('href')).toBe(false);
+    });
+
+    it('is not a link while disabled, whatever render says', async () => {
+      const screen = await render(
+        <Chip href="/tags/react" render={<a data-router="" />} disabled>
+          React
+        </Chip>
+      );
+
+      await expect.element(screen.getByText('React')).toBeInTheDocument();
+      expect(screen.getByRole('link').query()).toBeNull();
+      expect(document.querySelector('[data-router]')).toBeNull();
     });
 
     it('still calls onClick, for a router that takes the navigation over', async () => {

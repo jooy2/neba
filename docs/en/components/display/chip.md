@@ -63,6 +63,16 @@ Chip's `size` sits one step below the control heights: an `md` Chip is 26px, the
 
 </Demo>
 
+### render
+
+A chip with an `href` is an `<a>`, which reloads the page. Pass a router's `Link` as `render` to move without a reload. Keep the `href` on the chip as well: it goes through to the `Link`, and so do `target`, the merged `rel` and `aria-current`. The `onDelete` button stays beside the link, and a `disabled` chip is not a link.
+
+```tsx
+<Chip href="/tags/react" render={<Link to="/tags/react" />} onDelete={remove}>
+  react
+</Chip>
+```
+
 ### size
 
 <Demo src="chip/sizes">

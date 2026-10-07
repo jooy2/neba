@@ -63,6 +63,16 @@ Chip의 `size`는 컨트롤 높이보다 한 단계 아래입니다. `md` Chip�
 
 </Demo>
 
+### render
+
+`href`가 있는 Chip은 `<a>`이므로 페이지를 다시 불러옵니다. 라우터의 `Link`를 `render`로 넘기면 다시 불러오지 않고 이동합니다. Chip에도 `href`를 그대로 두세요. `Link`로 전달되고, `target`과 합쳐진 `rel`, `aria-current`도 함께 전달됩니다. `onDelete`의 삭제 버튼은 링크 옆에 놓이고, `disabled`인 Chip은 링크가 되지 않습니다.
+
+```tsx
+<Chip href="/tags/react" render={<Link to="/tags/react" />} onDelete={remove}>
+  react
+</Chip>
+```
+
 ### size
 
 <Demo src="chip/sizes">

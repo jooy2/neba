@@ -6422,6 +6422,14 @@ export const propTables: Record<string, PropRow[]> = {
       }
     },
     {
+      name: 'render',
+      type: 'RenderProp',
+      description: {
+        ko: '링크를 <a> 대신 다른 요소로 렌더링합니다. 보통 라우터의 Link이며, 페이지를 다시 불러오지 않고 이동합니다. href는 그대로 전달됩니다. disabled Chip은 텍스트로 남고, 삭제 버튼은 링크 옆에 놓입니다',
+        en: 'Renders the link as something other than an <a>, usually a router Link, so the chip moves without reloading the page. href still goes through. A disabled chip stays text, and the delete button stays beside the link'
+      }
+    },
+    {
       name: 'target',
       type: 'string',
       description: {
