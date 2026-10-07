@@ -3214,24 +3214,28 @@
 /*
  * Lighting: a light travelling around the outside of something.
  *
- * The arc is a conic gradient and what moves is its `from` angle, which is only
- * animatable because the angle is a registered custom property with a type. The
- * alternative — rotating the pseudo-element itself — swings its corners out
- * past the element on every quarter turn.
+ * The arc is a conic gradient on a square, and what moves is the square, on
+ * `rotate`. The ring around it holds it: a box the size of the element plus the
+ * spread, with the element's corners, clipping the square to itself and
+ * blurring what is left. A rotation is the one way to move the light that the
+ * compositor runs without the page — the arc used to travel on the gradient's
+ * `from` angle, a registered custom property, which restyled and repainted a
+ * blurred gradient on the main thread on every frame for as long as the light
+ * was on. Rotating a box the element's own shape instead swings its corners out
+ * past the element on every quarter turn, which is what the ring is for. The
+ * square is as wide as the ring is wide and tall together, which covers the
+ * ring at every angle, and is measured in the ring's own container units.
  *
  * `z-index: -1` inside an isolated stacking context puts the glow behind the
  * content but still inside the component, so it reads as light escaping from
  * under a sheet rather than as a border drawn around one.
  */
-@property --neba-glow-angle {
-  syntax: '<angle>';
-  initial-value: 0deg;
-  inherits: false;
-}
-
 @keyframes neba-anim-lighting {
+  from {
+    rotate: 0deg;
+  }
   to {
-    --neba-glow-angle: 360deg;
+    rotate: 360deg;
   }
 }
 
@@ -3240,20 +3244,30 @@
   isolation: isolate;
 }
 
-.neba-anim-lighting::before {
-  content: '';
+.neba-lighting-ring {
   position: absolute;
   z-index: -1;
   inset: calc(-1 * var(--n-anim-glow-width, 3px));
+  overflow: hidden;
   border-radius: inherit;
+  filter: blur(var(--n-anim-glow-blur, 4px));
+  container-type: size;
+  pointer-events: none;
+}
+
+.neba-lighting-beam {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: calc(100cqw + 100cqh);
+  height: calc(100cqw + 100cqh);
+  translate: -50% -50%;
   background: conic-gradient(
-    from var(--neba-glow-angle),
     transparent 0deg,
     var(--n-anim-glow, var(--n-accent)) var(--n-anim-glow-arc, 50deg),
     transparent calc(var(--n-anim-glow-arc, 50deg) * 2),
     transparent 360deg
   );
-  filter: blur(var(--n-anim-glow-blur, 4px));
   animation-name: neba-anim-lighting;
   animation-duration: var(--n-anim-duration, 3s);
   animation-delay: var(--n-anim-delay, 0ms);
@@ -3574,9 +3588,12 @@
 
   /* The arc stops travelling and becomes an even glow. The same trade the
      skeleton makes: the decoration survives, the motion does not. */
-  .neba-anim-lighting::before {
+  .neba-lighting-ring {
     background: var(--n-anim-glow, var(--n-accent));
-    animation: none;
+  }
+
+  .neba-lighting-beam {
+    display: none;
   }
 
   /* A marquee that cannot move is a row of content, so it is drawn as one:

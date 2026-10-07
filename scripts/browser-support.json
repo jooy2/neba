@@ -21,7 +21,7 @@
     },
     {
       "feature": "css.at-rules.property",
-      "reason": "Registers the angle AnimateLighting animates. Without it the light stays in one place. Tailwind's own registered properties carry a fallback of their own."
+      "reason": "Tailwind's own registered properties, which carry a fallback of their own. Nothing in the library's own rules registers a property."
     },
     {
       "feature": "css.selectors.dir",

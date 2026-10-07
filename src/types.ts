@@ -374,7 +374,7 @@ export interface NebaAnimateProps {
  * `NebaStaggerProps` is: only the effects whose motion is one `@keyframes` on
  * the element itself can be pointed at another timeline. A marquee that measures
  * its own track, a typewriter counting characters and a light travelling round a
- * pseudo-element are motion written in other places, and offering them a prop
+ * ring of its own are motion written in other places, and offering them a prop
  * that quietly did nothing would be worse than not offering it.
  */
 export interface NebaTimelineProps {

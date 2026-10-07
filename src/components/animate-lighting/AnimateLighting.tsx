@@ -97,7 +97,7 @@ export const AnimateLighting = React.forwardRef<HTMLDivElement, AnimateLightingP
 
     const animate = useAnimateElement({
       caller: props,
-      // The keyframe runs on a pseudo-element rather than on the root, so there
+      // The keyframe runs on the light inside rather than on the root, so there
       // is no effect class to apply here — only the slots it reads.
       effect: null,
       duration,
@@ -129,7 +129,20 @@ export const AnimateLighting = React.forwardRef<HTMLDivElement, AnimateLightingP
         } as React.CSSProperties,
         ...animate.props,
         'data-neba-animation': 'lighting',
-        children
+        children: (
+          <>
+            {/* The light: a ring the shape of the element plus the spread, and
+                the arc turning inside it. Two elements rather than a
+                pseudo-element, because the arc turns on `rotate`, which the
+                compositor runs, and only a box around it can keep its corners
+                from swinging out. First, so a caller's `:last-child` still
+                finds their own content. */}
+            <span aria-hidden="true" className="neba-lighting-ring">
+              <span className="neba-lighting-beam" />
+            </span>
+            {children}
+          </>
+        )
       }
     });
   }

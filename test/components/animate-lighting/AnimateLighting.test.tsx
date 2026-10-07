@@ -3,8 +3,7 @@ import { render } from 'vitest-browser-react';
 import { AnimateLighting } from 'neba';
 
 describe('AnimateLighting', () => {
-  // The arc travels at a constant rate on a pseudo-element, and `easing` reached
-  // nothing that moved.
+  // The arc travels at a constant rate, and `easing` reached nothing that moved.
   it('takes no easing, which nothing it draws would follow', () => {
     // @ts-expect-error — the arc runs linearly by design
     const props: React.ComponentProps<typeof AnimateLighting> = { easing: 'ease-in' };
@@ -36,6 +35,25 @@ describe('AnimateLighting', () => {
       );
 
       expect(screen.getByTestId('lighting').element()).toHaveClass('neba-anim-lighting');
+    });
+
+    // The light turns inside a ring of its own, so the compositor can run it.
+    // It is first, hidden from assistive technology and holds no text, so the
+    // content is read, copied and found exactly as it was.
+    it('draws its light before the content, where nothing reads it', async () => {
+      const screen = await render(
+        <AnimateLighting data-testid="lighting">
+          <p>Processing</p>
+        </AnimateLighting>
+      );
+      const root = screen.getByTestId('lighting').element();
+      const ring = root.firstElementChild!;
+
+      expect(ring).toHaveClass('neba-lighting-ring');
+      expect(ring).toHaveAttribute('aria-hidden', 'true');
+      expect(ring.firstElementChild).toHaveClass('neba-lighting-beam');
+      expect(root.lastElementChild?.textContent).toBe('Processing');
+      expect(root.textContent).toBe('Processing');
     });
 
     it('renders something other than a div when told', async () => {

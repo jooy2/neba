@@ -114,3 +114,14 @@ describe('the loops that only fade', () => {
     expect(new Set(properties)).toEqual(new Set(['opacity']));
   });
 });
+
+// An AnimateLighting's arc travelled on a registered custom property, which
+// restyled and repainted a blurred gradient on every frame it was on.
+describe('the light that travels round', () => {
+  it('turns on rotate alone', () => {
+    const properties = keyframeProperties('neba-anim-lighting');
+
+    expect(properties.length).toBeGreaterThan(0);
+    expect(new Set(properties)).toEqual(new Set(['rotate']));
+  });
+});

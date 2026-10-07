@@ -843,7 +843,7 @@ export interface AnimateElement {
  * Marquee, Headline, Appear, Split, Scramble and Counter — call
  * `useAnimationRun` directly and put the classes where their own structure
  * needs them. `effect` may be `null` for the one effect component, Lighting,
- * whose keyframe runs on a pseudo-element rather than on its root.
+ * whose keyframe runs on the light it draws inside the root rather than on the root.
  *
  * `data-neba-animation` and `data-state` are here rather than in each component
  * because they are the same two facts every time, and because a test that has

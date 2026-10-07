@@ -86,6 +86,8 @@
 
 - **A `ChatBubble`'s typing dots and a `Skeleton`'s reduced-motion pulse no longer repaint the page on every frame.** Both changed a background colour for as long as they ran; they fade on `opacity` now, which the browser hands to the compositor. They look the same.
 
+- **`AnimateLighting` no longer repaints the page on every frame.** The arc travelled on an animated custom property, which restyled the element and repainted a blurred gradient on the main thread for as long as the light was on. It now turns on `rotate`, which the compositor runs, and looks the same. The light is drawn by an `aria-hidden` `span` added as the first child of the root, in place of `::before`; a stylesheet or a test that counted on the caller's content being the first child should skip `.neba-lighting-ring`. Firefox 113 to 127, which have no `@property`, now show the light travelling too.
+
 ### Fixed
 
 - **A `multiple` `Combobox` keeps the error a `Form` put on it while the page around it renders again, and a single one keeps what is typed after a value its `items` do not have.** The value handed to Base UI was a new object on every render, which Base UI took for a new choice: it cleared the field's errors, so a server error vanished the moment the reader typed in another field, and in single mode it wrote the chosen label back into the input, so typing after a custom value such as `defaultValue="Foo"` did nothing. The value now stays the same object for as long as it holds the same entries, including when `value` or `items` is written inline.
