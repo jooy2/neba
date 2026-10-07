@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useMergedRef } from '../../internal/refs.js';
 import { Field } from '@base-ui/react/field';
 import { Input } from '@base-ui/react/input';
 import { fieldLight, fieldSpotlightSlot, glowClasses } from '../../internal/glow.js';
@@ -268,17 +269,9 @@ export const TextField = React.forwardRef<HTMLInputElement | HTMLTextAreaElement
     const rests = notched && labelPlacement === 'float' && !hasContent(startIcon);
 
     const controlRef = React.useRef<HTMLElement | null>(null);
-    const setControlRef = React.useCallback(
-      (node: HTMLElement | null) => {
-        controlRef.current = node;
-        if (typeof ref === 'function') {
-          ref(node as HTMLInputElement | HTMLTextAreaElement | null);
-        } else if (ref) {
-          ref.current = node as HTMLInputElement | HTMLTextAreaElement | null;
-        }
-      },
-      [ref]
-    );
+    // The control is an `<input>` or a `<textarea>`, and only the caller's ref
+    // is typed as one of the two; the shell's own needs no more than focus.
+    const setControlRef = useMergedRef<HTMLElement>(controlRef, ref as React.Ref<HTMLElement>);
 
     const shellClasses = cx(
       shellBaseClasses,

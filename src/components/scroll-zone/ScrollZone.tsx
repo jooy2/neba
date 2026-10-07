@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useMergedRef } from '../../internal/refs.js';
 import { IconButton } from '../icon-button/IconButton.js';
 import { drawnScale } from '../../internal/drag.js';
 import { spacingValue } from '../../internal/grid.js';
@@ -280,15 +281,7 @@ export const ScrollZone = React.forwardRef<HTMLDivElement, ScrollZoneProps>(
     const scrollerRef = React.useRef<HTMLDivElement>(null);
     const trackRef = React.useRef<HTMLDivElement>(null);
 
-    const setScrollerRef = React.useCallback(
-      (node: HTMLDivElement | null) => {
-        scrollerRef.current = node;
-
-        if (typeof scrollerRefProp === 'function') scrollerRefProp(node);
-        else if (scrollerRefProp) scrollerRefProp.current = node;
-      },
-      [scrollerRefProp]
-    );
+    const setScrollerRef = useMergedRef(scrollerRef, scrollerRefProp);
 
     /** Whether there is anything left in each direction, as one object so a
      *  measurement that changed nothing costs no render — or `null` before the

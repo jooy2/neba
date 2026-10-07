@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useMergedRef } from '../../internal/refs.js';
 import { TextLink } from '../text-link/TextLink.js';
 import {
   fillMessage,
@@ -252,18 +253,7 @@ export const InlineCitation = React.forwardRef<HTMLElement, InlineCitationProps>
 
     // The mark as it is now, which the swap replaces, and the caller's ref.
     const node = React.useRef<HTMLElement | null>(null);
-    const attach = React.useCallback(
-      (element: HTMLElement | null) => {
-        node.current = element;
-
-        if (typeof ref === 'function') {
-          ref(element);
-        } else if (ref) {
-          (ref as React.MutableRefObject<HTMLElement | null>).current = element;
-        }
-      },
-      [ref]
-    );
+    const attach = useMergedRef(node, ref);
 
     /*
      * What the old mark had, carried across the swap. After the card's own

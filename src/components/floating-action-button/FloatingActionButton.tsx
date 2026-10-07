@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useMergedRef } from '../../internal/refs.js';
 import { Button } from '../button/Button.js';
 import { CloseIcon, PlusIcon } from '../../internal/icons.js';
 import {
@@ -313,6 +314,7 @@ export const FloatingActionButton = React.forwardRef<HTMLDivElement, FloatingAct
     const dialId = React.useId();
     const triggerRef = React.useRef<HTMLButtonElement>(null);
     const rootRef = React.useRef<HTMLDivElement>(null);
+    const setRootRef = useMergedRef(rootRef, ref);
 
     const [uncontrolled, setUncontrolled] = React.useState(defaultOpen);
     const controlled = openProp !== undefined;
@@ -387,14 +389,7 @@ export const FloatingActionButton = React.forwardRef<HTMLDivElement, FloatingAct
 
     return (
       <div
-        ref={(node) => {
-          rootRef.current = node;
-          if (typeof ref === 'function') {
-            ref(node);
-          } else if (ref) {
-            ref.current = node;
-          }
-        }}
+        ref={setRootRef}
         className={cx(
           'flex w-fit',
           // The trigger is first in the document whichever way the dial fans, so

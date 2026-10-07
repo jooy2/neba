@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { useLayoutEffectOnClient } from './layout-effect.js';
 import { useMediaQuery, widthBelow } from './media.js';
+import { attachRef } from './refs.js';
 import { hiddenBelowClasses, hiddenFromClasses } from './responsive.js';
 import type { NebaBreakpoint, NebaPosition, NebaSide, NebaSize } from '../types.js';
 
@@ -128,12 +129,6 @@ export const PageLayoutSlotContext = React.createContext<PageLayoutSlot | null>(
  */
 export const SidebarSideContext = React.createContext<SidebarSide | null>(null);
 
-/** Hands a node to a ref of either kind. */
-function assignRef<T>(ref: React.ForwardedRef<T>, node: T | null) {
-  if (typeof ref === 'function') ref(node);
-  else if (ref) ref.current = node;
-}
-
 /**
  * The ref a Header or a Footer puts on its bar: it hands the bar to the layout
  * when the bar fills that slot, and forwards it to the caller's own ref.
@@ -149,8 +144,10 @@ function assignRef<T>(ref: React.ForwardedRef<T>, node: T | null) {
  * height and fires no resize, and the room reserved for it is what changed.
  *
  * The caller's ref is therefore read from a ref of its own rather than closed
- * over. When it changes, the old one is handed `null` and the new one the bar,
- * which is what React does for a ref that changes, one phase later.
+ * over. When it changes, the old one lets go of the bar and the new one is
+ * handed it, which is what React does for a ref that changes, one phase later.
+ * Letting go is whatever `attachRef` returned when the bar was handed over: a
+ * React 19 ref's own cleanup, or a call with `null` for one that returned none.
  */
 export function useBarRef(
   slot: PageLayoutSlot,
@@ -162,6 +159,8 @@ export function useBarRef(
   const slotted = React.useContext(PageLayoutSlotContext) === slot;
   const nodeRef = React.useRef<HTMLElement | null>(null);
   const forwardedRef = React.useRef(ref);
+  /** What takes the bar back from the caller's ref, while it holds it. */
+  const releaseRef = React.useRef<(() => void) | null>(null);
 
   useLayoutEffectOnClient(() => {
     const previous = forwardedRef.current;
@@ -169,8 +168,8 @@ export function useBarRef(
     if (previous === ref) return;
 
     forwardedRef.current = ref;
-    assignRef(previous, null);
-    assignRef(ref, nodeRef.current);
+    releaseRef.current?.();
+    releaseRef.current = nodeRef.current ? attachRef(ref, nodeRef.current) : null;
   }, [ref]);
 
   return React.useCallback(
@@ -179,7 +178,8 @@ export function useBarRef(
 
       if (slotted) register(slot, node);
 
-      assignRef(forwardedRef.current, node);
+      releaseRef.current?.();
+      releaseRef.current = node ? attachRef(forwardedRef.current, node) : null;
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps -- `position` re-attaches the ref on purpose
     [register, slot, slotted, position]

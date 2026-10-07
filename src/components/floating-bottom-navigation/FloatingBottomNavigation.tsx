@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useMergedRef } from '../../internal/refs.js';
 import { useLayoutEffectOnClient } from '../../internal/layout-effect.js';
 import { useRender } from '@base-ui/react/use-render';
 import { barMinHeightClasses, BottomNavigationContext } from '../../internal/bottom-navigation.js';
@@ -250,15 +251,7 @@ export const FloatingBottomNavigation = React.forwardRef<
   /** The box last written onto the tile, and which tile it was written onto. */
   const placed = React.useRef<{ tile: HTMLElement; box: string } | null>(null);
 
-  const setRootRef = React.useCallback(
-    (node: HTMLElement | null) => {
-      rootRef.current = node;
-
-      if (typeof ref === 'function') ref(node);
-      else if (ref) ref.current = node;
-    },
-    [ref]
-  );
+  const setRootRef = useMergedRef(rootRef, ref);
 
   /**
    * Writes the current destination's box onto the tile as four custom

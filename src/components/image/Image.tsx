@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useMergedRef } from '../../internal/refs.js';
 import { AspectRatio } from '../aspect-ratio/AspectRatio.js';
 import { Skeleton } from '../skeleton/Skeleton.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
@@ -1003,18 +1004,7 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(function Ima
     reportRef.current = onLoadingStatusChange;
   });
 
-  const attach = React.useCallback(
-    (node: HTMLImageElement | null) => {
-      pictureRef.current = node;
-
-      if (typeof ref === 'function') {
-        ref(node);
-      } else if (ref) {
-        ref.current = node;
-      }
-    },
-    [ref]
-  );
+  const attach = useMergedRef(pictureRef, ref);
 
   /*
    * A source that changes is a different picture, so it starts over. Without

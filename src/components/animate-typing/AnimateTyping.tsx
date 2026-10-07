@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useMergedRef } from '../../internal/refs.js';
 import { useRender } from '@base-ui/react/use-render';
 import { isInfinite, useAnimationRun, usePrefersReducedMotion } from '../../internal/animate.js';
 import { cx, srOnlyClasses } from '../../internal/styles.js';
@@ -284,19 +285,7 @@ export const AnimateTyping = React.forwardRef<HTMLElement, AnimateTypingProps>(
     // every render, which React answers by calling the old one with `null` and
     // the new one with the node — every render, and this one renders for every
     // character it types.
-    const runRef = run.ref;
-    const attach = React.useCallback(
-      (node: HTMLElement | null) => {
-        runRef(node);
-
-        if (typeof ref === 'function') {
-          ref(node);
-        } else if (ref) {
-          (ref as React.MutableRefObject<HTMLElement | null>).current = node;
-        }
-      },
-      [ref, runRef]
-    );
+    const attach = useMergedRef(run.ref, ref);
 
     // A caret given as a string is drawn the way the line is. One that is a node
     // is the caller's own and is rendered as one: there is nothing to put in an

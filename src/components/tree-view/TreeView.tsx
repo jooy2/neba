@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useMergedRef } from '../../internal/refs.js';
 import { inertValue } from '../../internal/inert.js';
 import { safeHref } from '../../internal/link.js';
 import { searchText } from '../../internal/search.js';
@@ -386,14 +387,7 @@ export const TreeView = React.forwardRef<HTMLUListElement, TreeViewProps>(
     const selectedValues = selected ?? uncontrolledSelected;
 
     const rootRef = React.useRef<HTMLUListElement | null>(null);
-    const setRootRef = React.useCallback(
-      (node: HTMLUListElement | null) => {
-        rootRef.current = node;
-        if (typeof ref === 'function') ref(node);
-        else if (ref) ref.current = node;
-      },
-      [ref]
-    );
+    const setRootRef = useMergedRef(rootRef, ref);
 
     /*
      * What `toggle` and `select` read, so the two can keep one identity for the
@@ -793,14 +787,7 @@ export const TreeItem = React.forwardRef<HTMLLIElement, TreeItemProps>(function 
   const key = keyOf(identity);
 
   const itemRef = React.useRef<HTMLLIElement | null>(null);
-  const setItemRef = React.useCallback(
-    (node: HTMLLIElement | null) => {
-      itemRef.current = node;
-      if (typeof ref === 'function') ref(node);
-      else if (ref) ref.current = node;
-    },
-    [ref]
-  );
+  const setItemRef = useMergedRef(itemRef, ref);
 
   // `toArray` rather than `count`: it drops the `null` that a `{when && …}`
   // leaves behind, so a branch whose children all filtered out is a leaf.

@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useMergedRef } from '../../internal/refs.js';
 import { useRender } from '@base-ui/react/use-render';
 import { isInfinite, lengthValue, useAnimationRun } from '../../internal/animate.js';
 import { inertValue } from '../../internal/inert.js';
@@ -232,19 +233,14 @@ export const AnimateMarquee = React.forwardRef<HTMLElement, AnimateMarqueeProps>
     // every render, which React answers by calling the old one with `null` and
     // the new one with the node — every render, for a ref that has not moved.
     const runRef = run.ref;
-    const attach = React.useCallback(
+    const own = React.useCallback(
       (node: HTMLElement | null) => {
         boxRef.current = node;
         runRef(node);
-
-        if (typeof ref === 'function') {
-          ref(node);
-        } else if (ref) {
-          (ref as React.MutableRefObject<HTMLElement | null>).current = node;
-        }
       },
-      [ref, runRef]
+      [runRef]
     );
+    const attach = useMergedRef(own, ref);
 
     return useRender({
       render: render ?? <span />,

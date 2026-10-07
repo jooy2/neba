@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useMergedRef } from '../../internal/refs.js';
 import { useRender } from '@base-ui/react/use-render';
 import {
   isInfinite,
@@ -201,19 +202,7 @@ export const AnimateHeadline = React.forwardRef<HTMLElement, AnimateHeadlineProp
     // every render, which React answers by calling the old one with `null` and
     // the new one with the node — every render, and this one renders for every
     // line it turns.
-    const runRef = run.ref;
-    const attach = React.useCallback(
-      (node: HTMLElement | null) => {
-        runRef(node);
-
-        if (typeof ref === 'function') {
-          ref(node);
-        } else if (ref) {
-          (ref as React.MutableRefObject<HTMLElement | null>).current = node;
-        }
-      },
-      [ref, runRef]
-    );
+    const attach = useMergedRef(run.ref, ref);
 
     return useRender({
       render: render ?? <span />,

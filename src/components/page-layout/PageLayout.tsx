@@ -15,6 +15,7 @@ import {
 } from '../../internal/page-layout.js';
 import { useLayoutEffectOnClient } from '../../internal/layout-effect.js';
 import { observeResize } from '../../internal/observe.js';
+import { useMergedRef } from '../../internal/refs.js';
 import { controlSlots, cx, hasContent, insetRingClasses, toLength } from '../../internal/styles.js';
 import type { NebaColor } from '../../types.js';
 import { DefaultsContext, useStyleDefaults } from '../../internal/defaults.js';
@@ -242,15 +243,7 @@ export const PageLayout = React.forwardRef<HTMLDivElement, PageLayoutProps>(
     );
 
     const rootRef = React.useRef<HTMLDivElement | null>(null);
-    const setRootRef = React.useCallback(
-      (node: HTMLDivElement | null) => {
-        rootRef.current = node;
-
-        if (typeof ref === 'function') ref(node);
-        else if (ref) ref.current = node;
-      },
-      [ref]
-    );
+    const setRootRef = useMergedRef(rootRef, ref);
 
     const slotsRef = React.useRef<Record<PageLayoutSlot, HTMLElement | null>>({
       header: null,

@@ -18,6 +18,7 @@ import {
   transitionClasses
 } from '../../internal/styles.js';
 import { observeResize } from '../../internal/observe.js';
+import { useMergedRef } from '../../internal/refs.js';
 import { bindAxisWheelWhileOverflowing } from '../../internal/wheel.js';
 import type { AxisWheelBinding } from '../../internal/wheel.js';
 import type {
@@ -454,6 +455,7 @@ export const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(function Tabs(ra
   const horizontal = orientation === 'horizontal';
   const wraps = overflow === 'wrap';
   const rootRef = React.useRef<HTMLDivElement | null>(null);
+  const setRootRef = useMergedRef(rootRef, ref);
   const listRef = React.useRef<HTMLDivElement | null>(null);
   /** The wheel, while it is on; the measurement below tells it what changed. */
   const wheelRef = React.useRef<AxisWheelBinding | null>(null);
@@ -567,15 +569,7 @@ export const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(function Tabs(ra
   return (
     <TabsContext.Provider value={context}>
       <BaseUITabs.Root
-        ref={(node) => {
-          rootRef.current = node;
-
-          if (typeof ref === 'function') {
-            ref(node);
-          } else if (ref) {
-            (ref as React.MutableRefObject<HTMLDivElement | null>).current = node;
-          }
-        }}
+        ref={setRootRef}
         value={value}
         defaultValue={defaultValue}
         onValueChange={(next) => onValueChange?.(next as TabValue | null)}

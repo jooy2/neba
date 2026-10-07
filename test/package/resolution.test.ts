@@ -552,6 +552,22 @@ describe('the published package', () => {
 
       expect(offenders).toEqual([]);
     });
+
+    it("hands a caller's ref the node only through the helper that keeps a cleanup", () => {
+      // React 19 lets a callback ref return a cleanup and then never calls it
+      // with `null`. A merge written by hand called `ref(node)`, dropped what it
+      // returned and called `ref(null)` on the way out, so the cleanup never ran.
+      // `refs.test.tsx` renders every merge it has a case for; this catches a
+      // new one written by hand anywhere else.
+      const offenders = Object.entries(sources)
+        .filter(([path]) => !path.endsWith('src/internal/refs.ts'))
+        .filter(([, source]) =>
+          /typeof \w*Ref\w* === 'function'|typeof ref === 'function'/.test(source)
+        )
+        .map(([path]) => path.replace('../../', ''));
+
+      expect(offenders).toEqual([]);
+    });
   });
 
   /**

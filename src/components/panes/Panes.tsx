@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useMergedRef } from '../../internal/refs.js';
 import { beginPointerDrag, drawnScale } from '../../internal/drag.js';
 import { useLayoutEffectOnClient } from '../../internal/layout-effect.js';
 import { observeResize } from '../../internal/observe.js';
@@ -241,14 +242,7 @@ export const Panes = React.forwardRef<HTMLDivElement, PanesProps>(function Panes
   const paneId = (index: number) => items[index]?.props.id ?? `${baseId}-pane-${index}`;
 
   const rootRef = React.useRef<HTMLDivElement | null>(null);
-  const setRootRef = React.useCallback(
-    (node: HTMLDivElement | null) => {
-      rootRef.current = node;
-      if (typeof ref === 'function') ref(node);
-      else if (ref) ref.current = node;
-    },
-    [ref]
-  );
+  const setRootRef = useMergedRef(rootRef, ref);
 
   // The constraints are read during render and used inside pointer handlers that
   // outlive it, so they go through a ref rather than through the closure.

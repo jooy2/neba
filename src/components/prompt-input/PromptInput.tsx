@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useMergedRef } from '../../internal/refs.js';
 import { useLayoutEffectOnClient } from '../../internal/layout-effect.js';
 import { IconButton } from '../icon-button/IconButton.js';
 import { useDropZone } from '../../internal/drop.js';
@@ -235,17 +236,7 @@ export const PromptInput = React.forwardRef<HTMLTextAreaElement, PromptInputProp
     const generatedId = React.useId();
     const controlId = id ?? generatedId;
     const controlRef = React.useRef<HTMLTextAreaElement | null>(null);
-    const setControlRef = React.useCallback(
-      (node: HTMLTextAreaElement | null) => {
-        controlRef.current = node;
-        if (typeof ref === 'function') {
-          ref(node);
-        } else if (ref) {
-          ref.current = node;
-        }
-      },
-      [ref]
-    );
+    const setControlRef = useMergedRef(controlRef, ref);
 
     /*
      * Whether the browser sizes the field to its text by itself.

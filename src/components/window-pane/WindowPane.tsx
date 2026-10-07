@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useMergedRef } from '../../internal/refs.js';
 import { useLayoutEffectOnClient } from '../../internal/layout-effect.js';
 import { useRender } from '@base-ui/react/use-render';
 import { beginPointerDrag, drawnScale } from '../../internal/drag.js';
@@ -407,15 +408,7 @@ export const WindowPane = React.forwardRef<HTMLDivElement, WindowPaneProps>(
     }, [leaving]);
 
     const rootRef = React.useRef<HTMLDivElement | null>(null);
-    const setRootRef = React.useCallback(
-      (node: HTMLDivElement | null) => {
-        rootRef.current = node;
-
-        if (typeof ref === 'function') ref(node);
-        else if (ref) ref.current = node;
-      },
-      [ref]
-    );
+    const setRootRef = useMergedRef(rootRef, ref);
 
     React.useEffect(() => {
       if (activeProp !== undefined || !open) {

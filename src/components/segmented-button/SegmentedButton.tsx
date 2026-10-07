@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useMergedRef } from '../../internal/refs.js';
 import { useLayoutEffectOnClient } from '../../internal/layout-effect.js';
 import { glowClasses, trackPointer } from '../../internal/glow.js';
 import { Radio as BaseUIRadio } from '@base-ui/react/radio';
@@ -283,6 +284,7 @@ export const SegmentedButton = React.forwardRef<HTMLDivElement, SegmentedButtonP
     const value = controlled ? valueProp : uncontrolled;
 
     const rootRef = React.useRef<HTMLDivElement>(null);
+    const setRootRef = useMergedRef(rootRef, ref);
     const tileRef = React.useRef<HTMLSpanElement>(null);
     /** The box last written onto the tile, and which tile it was written onto. */
     const placed = React.useRef<{ tile: HTMLElement; box: string } | null>(null);
@@ -419,14 +421,7 @@ export const SegmentedButton = React.forwardRef<HTMLDivElement, SegmentedButtonP
     return (
       <SegmentedButtonContext.Provider value={context}>
         <BaseUIRadioGroup
-          ref={(node: HTMLDivElement | null) => {
-            rootRef.current = node;
-            if (typeof ref === 'function') {
-              ref(node);
-            } else if (ref) {
-              ref.current = node;
-            }
-          }}
+          ref={setRootRef}
           value={value}
           onValueChange={(next) => {
             const chosen = (next ?? null) as SegmentValue | null;

@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { boxPaddingXClasses, boxPaddingYClasses } from '../box/Box.js';
 import { beginPointerDrag, drawnScale } from '../../internal/drag.js';
+import { useMergedRef } from '../../internal/refs.js';
 import { layoutMessages, useMessages } from '../../internal/i18n.js';
 import {
   drawerChunk,
@@ -349,15 +350,7 @@ export const Sidebar = React.forwardRef<HTMLElement, SidebarProps>(function Side
   const width = toLength(widthProp) ?? widthValues[size];
 
   const rootRef = React.useRef<HTMLElement | null>(null);
-  const setRootRef = React.useCallback(
-    (node: HTMLElement | null) => {
-      rootRef.current = node;
-
-      if (typeof ref === 'function') ref(node);
-      else if (ref) ref.current = node;
-    },
-    [ref]
-  );
+  const setRootRef = useMergedRef(rootRef, ref);
 
   /**
    * A drag writes the width straight onto the element rather than into state.

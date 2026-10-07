@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useMergedRef } from '../../internal/refs.js';
 import { useLayoutEffectOnClient } from '../../internal/layout-effect.js';
 import { ScreenContext } from '../../internal/screen.js';
 import { useRender } from '@base-ui/react/use-render';
@@ -309,18 +310,7 @@ export const Mockup = React.forwardRef<HTMLDivElement, MockupProps>(function Moc
     return observeResize(box, measure);
   }, [frame.width, frame.height]);
 
-  const setRef = React.useCallback(
-    (node: HTMLDivElement | null) => {
-      boxRef.current = node;
-
-      if (typeof ref === 'function') {
-        ref(node);
-      } else if (ref) {
-        ref.current = node;
-      }
-    },
-    [ref]
-  );
+  const setRef = useMergedRef(boxRef, ref);
 
   const chrome = systemUi ? mockupChrome({ os: system, notch: cutout, landscape, time }) : {};
   const animation = transitionProps(transition);
