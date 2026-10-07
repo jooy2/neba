@@ -690,32 +690,23 @@ export const CodeBlock = React.forwardRef<HTMLDivElement, CodeBlockProps>(
     const namedByTitle = titleIsNode && toolbar;
     const regionName = typeof title === 'string' && title !== '' ? title : (name ?? messages.code);
 
-    const body = (
-      <div
-        ref={scrollRef}
-        // A scrollable region has to be reachable by a keyboard that has no
-        // pointer to drag with, and a focusable region has to have a name. One
-        // that does not scroll is neither.
-        role={overflows ? 'region' : undefined}
-        aria-label={overflows && !namedByTitle ? regionName : undefined}
-        aria-labelledby={overflows && namedByTitle ? titleId : undefined}
-        tabIndex={overflows ? 0 : undefined}
-        onKeyDown={selectEverything}
-        className={cx(
-          'min-h-0 overflow-auto',
-          bodyPaddingYClasses[density][size],
-          'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:-outline-offset-2'
-        )}
-        style={maxHeight === undefined ? undefined : { maxHeight: toLength(maxHeight) }}
-      >
-        {/*
-        `w-max min-w-full` is what keeps the gutter and the prompts aligned
-        while the code is scrolled sideways: the rows are as wide as the
-        longest line rather than as wide as the window onto them, so every
-        line's number starts at the same place instead of at the scroll's. It
-        is also what lets a marked line's tint reach the same right edge as
-        every other one.
-      */}
+    /*
+     * The lines, kept between renders until something they draw changes.
+     *
+     * Everything else here is state the lines do not read — the copy button's
+     * word, what the live region says, whether the block overflows, whether it
+     * has come near the screen — and each was a render of the whole block. On a
+     * long file that was thousands of elements reconciled again for a button's
+     * label, three or four times over for one press of Copy.
+     *
+     * `w-max min-w-full` is what keeps the gutter and the prompts aligned while
+     * the code is scrolled sideways: the rows are as wide as the longest line
+     * rather than as wide as the window onto them, so every line's number
+     * starts at the same place instead of at the scroll's. It is also what lets
+     * a marked line's tint reach the same right edge as every other one.
+     */
+    const drawnLines = React.useMemo(
+      () => (
         <pre
           ref={codeRef}
           className={cx('m-0 bg-transparent p-0 font-mono', wrap ? 'w-full' : 'w-max min-w-full')}
@@ -746,6 +737,29 @@ export const CodeBlock = React.forwardRef<HTMLDivElement, CodeBlockProps>(
             );
           })}
         </pre>
+      ),
+      [lines, wrap, startLine, density, size, lineNumbers, marked, prompt]
+    );
+
+    const body = (
+      <div
+        ref={scrollRef}
+        // A scrollable region has to be reachable by a keyboard that has no
+        // pointer to drag with, and a focusable region has to have a name. One
+        // that does not scroll is neither.
+        role={overflows ? 'region' : undefined}
+        aria-label={overflows && !namedByTitle ? regionName : undefined}
+        aria-labelledby={overflows && namedByTitle ? titleId : undefined}
+        tabIndex={overflows ? 0 : undefined}
+        onKeyDown={selectEverything}
+        className={cx(
+          'min-h-0 overflow-auto',
+          bodyPaddingYClasses[density][size],
+          'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:-outline-offset-2'
+        )}
+        style={maxHeight === undefined ? undefined : { maxHeight: toLength(maxHeight) }}
+      >
+        {drawnLines}
       </div>
     );
 

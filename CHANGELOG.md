@@ -62,6 +62,8 @@
 
 - **A `DataTable` weighs half what it did unless it pages.** Every table carried the `Select` its footer draws with `paging="pages"`, which was half of its 66.0 kB gzipped; a table that scrolls is now 34.6 kB. A table that pages fetches the Select as it mounts and draws the closed control in its place until it arrives, the same size and with the same label and value, so nothing moves when it takes over. A server sends that stand-in too, so a server render never waits on the Select. A test that opens the page-size control should wait for it to be the Select, which happens just after the table mounts.
 
+- **Pressing Copy on a long `CodeBlock` no longer draws every line again.** The button's label, the announcement and the overflow check are each a render of the block, and every one of them reconciled every line and token of the file; one press was three or four of those. The lines are now kept until something they show changes.
+
 ### Fixed
 
 - **A `multiple` `Combobox` keeps the error a `Form` put on it while the page around it renders again, and a single one keeps what is typed after a value its `items` do not have.** The value handed to Base UI was a new object on every render, which Base UI took for a new choice: it cleared the field's errors, so a server error vanished the moment the reader typed in another field, and in single mode it wrote the chosen label back into the input, so typing after a custom value such as `defaultValue="Foo"` did nothing. The value now stays the same object for as long as it holds the same entries, including when `value` or `items` is written inline.
