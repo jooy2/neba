@@ -3061,6 +3061,31 @@
   animation-name: neba-anim-rotate;
 }
 
+/*
+ * An entrance waiting to be scrolled into view, drawn where the layout put it.
+ *
+ * Its first frame is somewhere else — a slide a full width to one side, a zoom
+ * shrunk to the middle of a box taller than the screen — and the observer that
+ * decides when it starts measures the box as drawn. A full-width slide moved a
+ * full width sideways, or one moved out of a box with `overflow: hidden`, was
+ * never on the screen at all and never started. `data-waiting` is only written
+ * while that first frame has an opacity of `0`, so taking the move away until
+ * it starts changes nothing anyone can see, and the observer measures the box
+ * the reader is scrolling towards. `!important` because an animation's held
+ * frame outranks every ordinary declaration.
+ */
+.neba-anim-slide[data-waiting] {
+  translate: none !important;
+}
+
+.neba-anim-scale[data-waiting] {
+  scale: none !important;
+}
+
+.neba-anim-rotate[data-waiting] {
+  rotate: none !important;
+}
+
 /* Symmetric on purpose: a blink that ended anywhere but where it started would
    leave the element half drawn whenever the count ran out. */
 @keyframes neba-anim-blink {

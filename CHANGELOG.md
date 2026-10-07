@@ -122,6 +122,8 @@
 
 - **`useOnScreen` answers for an element something else is already watching.** The library shares one `IntersectionObserver` per threshold, and an element it had already reported was not reported again until it moved, so a `useOnScreen` on an element an `Animate*` or a `Carousel` was watching at the same threshold stayed `false` while the element sat on screen. It is now told where things stand as soon as it starts watching.
 
+- **An `Animate*` with `trigger="visible"` starts when its own box scrolls into view, wherever its first frame is.** The observer measured the element as drawn on its first frame, so a full-width `AnimateSlide` from the left or the right, or one inside a box with `overflow: hidden`, was never on screen and never started, and an element taller than the screen never showed the share `threshold` asked for and stayed invisible. While an entrance whose first frame cannot be seen waits, it is now drawn where it belongs, and carries `data-waiting`; on an element larger than the screen, `threshold` is a share of the screen. A slide with `fade={false}` inside a clipping box or a frame can still wait for good, since what it shows while it waits has to stay where it is.
+
 ## 1.18.1 (2026-10-07)
 
 ### Added

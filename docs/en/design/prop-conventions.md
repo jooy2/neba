@@ -95,7 +95,7 @@ Anything past a mount (a replay, a scroll trigger, a hover, your own control) is
 | `mode` | `'in'` or `'out'`. `out` is the same animation reversed, held at the end |
 | `trigger` | `'mount'` (default), `'visible'`, `'hover'` or `'manual'` |
 | `play` | Runs a `manual` one. Each `false` → `true`, or a new number, starts it over |
-| `once` / `threshold` | For `'visible'`: only the first time, and how much has to be on screen |
+| `once` / `threshold` | For `'visible'`: only the first time, and how much has to be on screen (of the screen, for an element larger than it) |
 | `paused` | Holds the animation where it is |
 
 Five more go on the eleven whose motion is a `@keyframes` on the element or on the pieces it cuts: AnimateFade, AnimateGrow, AnimateZoom, AnimateSlide, AnimateRotate, AnimateBlink, AnimateReveal, AnimateFloat, AnimateShake, AnimateAppear and AnimateSplit. AnimateTyping, AnimateScramble, AnimateCounter, AnimateMarquee, AnimateHeadline and AnimateLighting write their motion elsewhere and take none of them:

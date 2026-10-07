@@ -359,7 +359,9 @@ export interface NebaAnimateProps {
   once?: boolean;
   /**
    * With `trigger="visible"`, how much of the element has to be on screen
-   * before it counts as visible, from `0` to `1`.
+   * before it counts as visible, from `0` to `1`. On an element larger than the
+   * screen it is a share of the screen instead: `0.2` is a fifth of the screen
+   * filled by it, rather than a fifth of something no screen can show.
    * @default 0.2
    */
   threshold?: number;

@@ -95,7 +95,7 @@ type NebaTransition = NebaAnimation | NebaTransitionOptions;
 | `mode` | `'in'` 또는 `'out'`. `out`은 같은 애니메이션을 거꾸로 재생하고 끝에서 멈춥니다 |
 | `trigger` | `'mount'`(기본값), `'visible'`, `'hover'`, `'manual'` |
 | `play` | `manual`을 재생합니다. `false` → `true`, 또는 새 숫자마다 처음부터 다시 |
-| `once` / `threshold` | `'visible'`용: 처음 한 번만인지, 얼마나 화면에 들어와야 하는지 |
+| `once` / `threshold` | `'visible'`용: 처음 한 번만인지, 얼마나 화면에 들어와야 하는지(화면보다 큰 요소는 화면에 대한 비율) |
 | `paused` | 애니메이션을 있는 자리에 붙들어 둡니다 |
 
 움직임이 요소 자신이나 요소가 자른 조각에 걸린 `@keyframes`인 열한 개는 아래 다섯 가지를 더 받습니다. AnimateFade, AnimateGrow, AnimateZoom, AnimateSlide, AnimateRotate, AnimateBlink, AnimateReveal, AnimateFloat, AnimateShake, AnimateAppear, AnimateSplit입니다. AnimateTyping, AnimateScramble, AnimateCounter, AnimateMarquee, AnimateHeadline, AnimateLighting은 움직임이 다른 곳에 쓰여 있어 받지 않습니다.
