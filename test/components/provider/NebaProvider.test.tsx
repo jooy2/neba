@@ -531,6 +531,116 @@ describe('colour scheme', () => {
 
     expect(seen).toEqual(['1:dark']);
   });
+
+  describe('when <html> was showing another scheme', () => {
+    function watchWarnings() {
+      return vi.spyOn(console, 'warn').mockImplementation(() => {});
+    }
+
+    const schemeWarnings = (warn: ReturnType<typeof watchWarnings>) =>
+      warn.mock.calls.filter(([message]) => String(message).includes('colorSchemeScript()'));
+
+    it('says so when the page shows one scheme and the provider resolves the other', async () => {
+      const warn = watchWarnings();
+
+      try {
+        root().setAttribute('data-theme', 'light');
+
+        await render(
+          <NebaProvider defaultColorScheme="dark">
+            <Switcher />
+          </NebaProvider>
+        );
+
+        await expect.poll(() => root().getAttribute('data-theme')).toBe('dark');
+        expect(schemeWarnings(warn)).toHaveLength(1);
+        expect(String(schemeWarnings(warn)[0][0])).toContain('shows "light"');
+      } finally {
+        warn.mockRestore();
+      }
+    });
+
+    it('says so when the page has no scheme and the provider asks for one', async () => {
+      const warn = watchWarnings();
+
+      try {
+        await render(
+          <NebaProvider defaultColorScheme="dark">
+            <Switcher />
+          </NebaProvider>
+        );
+
+        await expect.poll(() => root().getAttribute('data-theme')).toBe('dark');
+        expect(schemeWarnings(warn)).toHaveLength(1);
+        expect(String(schemeWarnings(warn)[0][0])).toContain('has no data-theme');
+      } finally {
+        warn.mockRestore();
+      }
+    });
+
+    // A page with no scheme of its own follows the system, which is what
+    // `system` resolves to.
+    it('says nothing for `system` on a page with no scheme of its own', async () => {
+      const warn = watchWarnings();
+
+      try {
+        await render(
+          <NebaProvider>
+            <Switcher />
+          </NebaProvider>
+        );
+
+        await expect.poll(() => root().getAttribute('data-theme')).not.toBeNull();
+        expect(schemeWarnings(warn)).toHaveLength(0);
+      } finally {
+        warn.mockRestore();
+      }
+    });
+
+    it('says nothing after the script ran with the same options', async () => {
+      const warn = watchWarnings();
+
+      try {
+        localStorage.setItem('my-key', 'dark');
+        // The script as a page inlines it in <head>, run before the provider.
+        new Function(colorSchemeScript({ storageKey: 'my-key', defaultColorScheme: 'light' }))();
+
+        const screen = await render(
+          <NebaProvider storageKey="my-key" defaultColorScheme="light">
+            <Switcher />
+          </NebaProvider>
+        );
+
+        await expect.element(screen.getByText('dark → dark')).toBeInTheDocument();
+        expect(root().getAttribute('data-theme')).toBe('dark');
+        expect(schemeWarnings(warn)).toHaveLength(0);
+      } finally {
+        warn.mockRestore();
+      }
+    });
+
+    it('asks only when it mounts, not when the reader changes the scheme', async () => {
+      const warn = watchWarnings();
+
+      try {
+        const screen = await render(
+          <NebaProvider defaultColorScheme="light">
+            <Switcher />
+          </NebaProvider>
+        );
+
+        await expect.poll(() => root().getAttribute('data-theme')).toBe('light');
+        warn.mockClear();
+
+        await screen.getByRole('button', { name: 'Dark' }).click();
+
+        await expect.poll(() => root().getAttribute('data-theme')).toBe('dark');
+        expect(schemeWarnings(warn)).toHaveLength(0);
+      } finally {
+        warn.mockRestore();
+      }
+    });
+  });
 });
 
 describe('direction', () => {

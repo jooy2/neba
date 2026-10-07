@@ -76,6 +76,8 @@ React는 문서가 한 번 그려진 다음에 실행되므로, 다크 모드를
 
 client 모듈이 아닌 일반 함수라서, Server Component인 root layout에서도 호출할 수 있습니다. 이 스크립트는 React가 hydrate하기 전에 `<html>`에 속성과 style을 쓰므로 그 요소에 `suppressHydrationWarning`을 붙이세요. 전체 layout 예시는 [서버 렌더링](./getting-started#서버-렌더링)에 있습니다.
 
+`storageKey`와 `defaultColorScheme`은 provider에 준 값과 똑같이 넘기세요. 개발 빌드에서는 mount 시점에 `<html>`에 있는 scheme이 provider가 정한 scheme과 다르면 콘솔에 경고가 나옵니다. 스크립트가 빠졌거나 다른 옵션으로 호출됐을 때 생기는 일입니다.
+
 ### storageKey
 
 기본값은 `'neba-color-scheme'`입니다. 직접 정하거나, `false`로 두면 이번 방문에만 적용하고 잊습니다. 저장이 예외를 던지는 일은 없습니다. 쓰기를 거부하는 시크릿 창에서도 스킴은 적용되고, 기억만 안 될 뿐입니다.

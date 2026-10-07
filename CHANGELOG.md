@@ -16,6 +16,8 @@
 
 - **`href`, `target` and `rel` on `Chip`**, so a chip that leads somewhere, a tag to its page or a filter that is a URL, is a link a crawler can follow and a reader can open in a new tab. The label becomes an `<a>` that looks and focuses like the pressable label, and the `onDelete` button stays beside it rather than inside it. A link that opens in a new tab gets `noopener noreferrer` merged into its `rel` and says that it opens a new tab, as every other link in the library does. A selected link chip is marked `aria-current="true"`, and a `disabled` chip is not a link.
 
+- **`NebaProvider` warns in a development build when the scheme on `<html>` at mount is not the one it resolves.** The provider writes `data-theme` only once it has mounted, so a page without `colorSchemeScript()`, or with one called with another `storageKey` or `defaultColorScheme`, is drawn in one scheme and changes to the other as it mounts. Call `colorSchemeScript()` in `<head>` with the provider's options. A page with no scheme of its own and a provider on `system` count as a match.
+
 ### Changed
 
 - **A `Combobox` filters its list only when the query, the options or `filter` change.** The functions it handed Base UI were new on every render, so every render of anything above it, a keystroke in another field of the same form included, ran the filter over every option again. A `filter` of your own is no longer called on a render that changes none of those, as long as it is the same function from one render to the next.

@@ -76,6 +76,8 @@ Inline it in `<head>`, above everything. It reads the same key and writes the sa
 
 It is a plain function rather than part of the client module, so a root layout that is a Server Component can call it. The script writes an attribute and a style on `<html>` before React hydrates, so put `suppressHydrationWarning` on that element. [Server rendering](./getting-started#server-rendering) has the whole layout.
 
+Pass it the same `storageKey` and `defaultColorScheme` as the provider. In development the provider warns in the console when the scheme on `<html>` at mount is not the one it resolves, which is what a missing script or one called with other options looks like.
+
 ### storageKey
 
 `'neba-color-scheme'` by default. Pass your own, or `false` to apply the scheme for this visit and forget it. Storage is never allowed to throw: a private window that denies the write still gets the scheme, it just does not remember it.

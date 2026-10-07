@@ -167,6 +167,19 @@ export function NebaProvider({
     [controlled, storageKey]
   );
 
+  /*
+   * Whether the scheme on `<html>` before the provider first writes it is the
+   * one the provider resolves. It is written from an effect, after the page has
+   * been painted at least once, so a page that was showing another scheme
+   * changes just after it appears — which is what `colorSchemeScript()` is for,
+   * and what happens when it is missing or reads another `storageKey` or
+   * `defaultColorScheme` than the provider. Nothing on the screen says why, so
+   * the developer is told, once per mount, in a development build. A page with
+   * no scheme of its own follows the system's, which is what `system` resolves
+   * to, so that counts as a match.
+   */
+  const checkedScheme = React.useRef(false);
+
   React.useEffect(() => {
     if (!hydrated) {
       return;
@@ -185,13 +198,37 @@ export function NebaProvider({
     if (!element) {
       return;
     }
+
+    const first = !checkedScheme.current;
+    checkedScheme.current = true;
+
+    if (process.env.NODE_ENV !== 'production' && first && element === document.documentElement) {
+      const attribute = element.getAttribute('data-theme');
+      // `.dark` and `.light` are the other spelling the stylesheet answers to.
+      const showing =
+        attribute ??
+        (element.classList.contains('dark')
+          ? 'dark'
+          : element.classList.contains('light')
+            ? 'light'
+            : null);
+
+      if (showing === null ? colorScheme !== 'system' : showing !== resolved) {
+        console.warn(
+          `Neba: a NebaProvider resolved the colour scheme "${resolved}", and <html> ${
+            showing === null ? 'has no data-theme' : `shows "${showing}"`
+          }. The provider writes it only once it has mounted, so the page is drawn in the other scheme until then and changes when it does. Call colorSchemeScript() in <head>, with the same storageKey and defaultColorScheme as the provider.`
+        );
+      }
+    }
+
     element.setAttribute('data-theme', resolved);
     // `color-scheme` is what turns the browser's own furniture over — the
     // scrollbars, the form controls it still draws itself, the canvas behind
     // an overscroll. A page that changes only its own colours keeps a white
     // scrollbar down the side of a dark one.
     (element as HTMLElement).style.colorScheme = resolved;
-  }, [hydrated, resolved, colorSchemeElement, outerScheme]);
+  }, [hydrated, resolved, colorScheme, colorSchemeElement, outerScheme]);
 
   /*
    * `dir` is written from an effect, which is after the page has been painted
