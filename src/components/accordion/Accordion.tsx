@@ -295,9 +295,9 @@ export const AccordionItem = React.forwardRef<HTMLDivElement, AccordionItemProps
   ) {
     const group = React.useContext(AccordionContext);
     const { size, density, dividers, headingLevel } = group;
-    // The whole accordion or this one section. Base UI's trigger stays
-    // focusable while disabled, so it never carries the `disabled` attribute and
-    // a `disabled:` variant could not match it; the state is decided here.
+    // The whole accordion or this one section, decided here rather than with a
+    // `disabled:` variant that the trigger's other variants would be ordered
+    // against by the stylesheet.
     const off = disabled || group.disabled;
     const clamp = lines ? clampClasses(lines) : '';
     const clampStyle = clampSlot(lines);

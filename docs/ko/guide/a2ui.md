@@ -37,22 +37,24 @@ https://neba.cdget.com/a2ui/catalog.json
 npm install @a2ui/react @a2ui/web_core zod
 ```
 
-셋 다 **optional peer dependency**입니다. `neba/a2ui`가 `neba`에서 다시 export되지 않기 때문에 안전합니다. 번들러가 패키지를 훑을 때 여기까지 오지 않으므로, `Button`만 쓰고 A2UI를 들어 본 적 없는 프로젝트는 새로 해석할 것이 하나도 없습니다. 아래 import를 쓸 때만 딸려 옵니다. 이 셋을 external로 두면 어댑터는 gzip으로 약 93 kB입니다. 어댑터 자체의 코드는 약 29 kB이고, 나머지는 열여덟 개 컴포넌트 뒤의 Base UI입니다. 어댑터는 설명을 뺀 카탈로그 사본을 읽습니다. 렌더러는 모델에게 주는 설명을 읽지 않으므로, 에이전트가 읽는 파일이 페이지까지 따라오지 않습니다.
+셋 다 **optional peer dependency**입니다. `neba/a2ui`가 `neba`에서 다시 export되지 않기 때문에 안전합니다. 번들러가 패키지를 훑을 때 여기까지 오지 않으므로, `Button`만 쓰고 A2UI를 들어 본 적 없는 프로젝트는 새로 해석할 것이 하나도 없습니다. 아래 import를 쓸 때만 딸려 옵니다. 이 셋을 external로 두면 어댑터는 gzip으로 약 97 kB입니다. 어댑터 자체의 코드는 약 32 kB이고, 나머지는 열여덟 개 컴포넌트 뒤의 Base UI입니다. 어댑터는 설명을 뺀 카탈로그 사본을 읽습니다. 렌더러는 모델에게 주는 설명을 읽지 않으므로, 에이전트가 읽는 파일이 페이지까지 따라오지 않습니다.
 
 `zod`는 3.25 이상의 3.x든 4든 됩니다. 어댑터는 두 버전이 모두 `zod/v3`로 제공하는 Zod 3 API로 스키마를 만들고, Zod 4를 쓰는 프로젝트에서는 `@a2ui/web_core`가 자기 Zod 3을 따로 설치합니다. 그래서 프로젝트의 Zod 버전을 바꿀 필요가 없습니다.
 
 ```tsx
 import { MessageProcessor } from '@a2ui/web_core/v0_9';
-import { A2uiSurface } from '@a2ui/react/v0_9';
+import { A2uiSurface, type ReactComponentImplementation } from '@a2ui/react/v0_9';
 import { createNebaCatalog } from 'neba/a2ui';
 
-const processor = new MessageProcessor([createNebaCatalog()]);
+const processor = new MessageProcessor<ReactComponentImplementation>([createNebaCatalog()]);
 
 processor.processMessages(whateverTheAgentSent);
 
 // …그리고 에이전트가 만든 화면을 하나씩 그립니다.
 <A2uiSurface surface={surface} />;
 ```
+
+타입 인자를 적어야 processor가 만든 화면을 `A2uiSurface`에 넘길 수 있습니다. `MessageProcessor`는 카탈로그에서 이 타입을 알아내지 않습니다. 어댑터가 그리는 메시지는 v0.9이고, 메시지마다 `"version": "v0.9"`가 있어야 합니다. `@a2ui/web_core`는 카탈로그와 다른 버전을 적은 메시지의 화면도, 버전을 적지 않은 메시지의 화면도 거부합니다.
 
 이게 전부입니다. 어댑터가 컴포넌트 열여덟 개와 함수 열네 개를 등록하고, 화면이 지정하는 `catalogId`는 에이전트에게 건넨 그 파일의 것입니다. 두 반쪽이 어긋날 수가 없습니다.
 
@@ -93,7 +95,7 @@ processor.processMessages(whateverTheAgentSent);
 
 함수를 선언한다는 것은 렌더러가 그것을 구현한다는 주장입니다. 다섯은 값을 검사하고, 셋은 각각 `Intl` 호출 하나이며, `formatString`과 `formatDate`는 문자열을 만들고, 셋은 불 연산입니다. 페이지에 무언가를 하는 것은 `openUrl` 하나뿐입니다. 그래서 그것만 `rendererOnly`이고 사용자 활성화를 요구한다고 선언되어 있습니다. 어댑터는 두 번째 조건을 지킵니다. 누름을 처리하는 동안에만 주소를 열므로, 에이전트가 라벨에 적은 호출은 라벨을 그릴 때 아무 일도 하지 않습니다. `navigator.userActivation`이 없는 브라우저(120 이전의 Firefox)에서는 이를 팝업 차단기에 맡깁니다.
 
-`formatNumber`, `formatCurrency`, `pluralize`는 카탈로그를 만들 때 준 언어로 씁니다. `createNebaCatalog({ locale: 'ko' })`처럼 `NebaProvider`에 준 `locale`을 그대로 넘기세요. 넘기지 않으면 컴포넌트는 provider를 따르고 이 셋은 런타임 언어를 따릅니다. `formatDate`는 언어를 받지 않습니다. `MMM d, yyyy` 같은 TR35 패턴으로 쓰며, 그 안의 달과 요일 이름은 영어입니다. 카탈로그가 모델에게 이 점을 알려 줍니다.
+`formatNumber`, `formatCurrency`, `formatDate`, `pluralize`는 카탈로그를 만들 때 준 언어로 씁니다. `formatDate`에서는 `MMM d, yyyy` 같은 TR35 패턴 안의 달과 요일 이름이 그 언어로 나옵니다. `createNebaCatalog({ locale: 'ko' })`처럼 `NebaProvider`에 준 `locale`을 그대로 넘기세요. 넘기지 않으면 컴포넌트는 provider를 따르고, 이 넷은 서버에서든 어느 브라우저에서든 미국 영어(`en-US`)로 씁니다.
 
 알아 둘 것은 `formatString`입니다. A2UI에는 연산자가 없어서, 값을 문장에 넣는 유일한 방법입니다.
 
@@ -101,9 +103,9 @@ processor.processMessages(whateverTheAgentSent);
 
 카탈로그는 **A2UI v1.0** 기준으로 썼고, 파일이 스스로 `protocolVersion`에 그렇게 적어 둡니다. v0.9 카탈로그에는 `theme` 키가 있었고 모든 컴포넌트를 `ComponentCommon`으로 감쌌습니다. v1.0에는 둘 다 없고 대신 `instructions`와 `anyComponent`·`anyFunction`을 담은 `$defs`가 생겼습니다.
 
-**어댑터는 `@a2ui/react/v0_9`에 등록합니다.** 0.11에는 v1.0 렌더러가 없기 때문입니다. 루트 export는 아직 v0.8입니다. 열여덟 개 컴포넌트는 두 버전이 공유하는 구성만 쓰므로 연결이 번역이 아니라 이름 바꾸기로 끝나고, 실제로 다른 세 가지 때문에 렌더러가 메시지를 거부하는 일도 없습니다. v1.0은 `accessibility`를 카탈로그 항목에서 봉투로 옮겼는데 어댑터가 다시 넣어 줍니다. v1.0에서는 check의 `message`를 빼도 되지만 v0.9는 요구하므로, 어댑터는 `message` 없는 check도 받고 필드에는 "Validation failed"가 나옵니다. v1.0의 `Action`에 생긴 `userMessage`는 v0.9 렌더러가 받기는 하지만 전달하지 않으므로, host가 받는 action에는 event의 `name`과 `context`만 있습니다.
+**어댑터는 `@a2ui/react/v0_9`에 등록합니다.** 0.12에는 v1.0 렌더러가 없기 때문입니다. 루트 export는 아직 v0.8입니다. 열여덟 개 컴포넌트는 두 버전이 공유하는 구성만 쓰므로 연결이 번역이 아니라 이름 바꾸기로 끝나고, 실제로 다른 세 가지 때문에 렌더러가 메시지를 거부하는 일도 없습니다. v1.0은 `accessibility`를 카탈로그 항목에서 봉투로 옮겼는데 어댑터가 다시 넣어 줍니다. v1.0에서는 check의 `message`를 빼도 되지만 v0.9는 요구하므로, 어댑터는 `message` 없는 check도 받고 필드에는 "Validation failed"가 나옵니다. v1.0의 `Action`에 생긴 `userMessage`는 v0.9가 거부하므로 어댑터가 받아 주고, host가 받는 action에는 event의 `name`, `context`와 함께 값을 풀어 둔 `userMessage`가 들어 있습니다.
 
-`@a2ui/*` 패키지들은 스펙이 1.0인 지금도 0.11.x에 있으므로, 형식보다 그 주변 도구가 먼저 움직일 것으로 보면 됩니다. v1.0 React 렌더러가 나오면 바뀌는 것은 이 패키지 안의 import 한 줄이고 `catalog.json`은 그대로입니다.
+`@a2ui/*` 패키지들은 스펙이 1.0인 지금도 0.12.x에 있으므로, 형식보다 그 주변 도구가 먼저 움직일 것으로 보면 됩니다. v1.0 React 렌더러가 나오면 바뀌는 것은 이 패키지 안의 import 한 줄이고 `catalog.json`은 그대로입니다.
 
 ## 다음
 

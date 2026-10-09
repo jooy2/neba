@@ -15,7 +15,7 @@ import { flushSync } from 'react-dom';
 import { createRoot } from 'react-dom/client';
 import { render } from 'vitest-browser-react';
 import { BASIC_FUNCTIONS, MessageProcessor } from '@a2ui/web_core/v0_9';
-import { A2uiSurface } from '@a2ui/react/v0_9';
+import { A2uiSurface, type ReactComponentImplementation } from '@a2ui/react/v0_9';
 import { createNebaCatalog, nebaCatalogId } from '../../src/a2ui/index.js';
 import { componentSchema, type CatalogSchema } from '../../src/a2ui/schema.js';
 import catalog from '../../src/a2ui/catalog.json';
@@ -41,7 +41,7 @@ function surfaceOf(
   data: Record<string, unknown> = {},
   onAction?: (action: unknown) => void
 ) {
-  const processor = new MessageProcessor(
+  const processor = new MessageProcessor<ReactComponentImplementation>(
     [createNebaCatalog()],
     onAction === undefined ? undefined : (action) => onAction(action)
   );
@@ -256,36 +256,49 @@ describe('the A2UI adapter', () => {
   describe('speaks the language it is given', () => {
     // The components follow a `NebaProvider`; the formatting functions follow
     // whatever the catalog was built with, and the two have to agree.
-    it('formats numbers and plurals in the locale the catalog was built for', async () => {
-      const processor = new MessageProcessor([createNebaCatalog({ locale: 'de' })]);
-
-      processor.processMessages([
-        { version: 'v0.9', createSurface: { surfaceId: SURFACE, catalogId: nebaCatalogId } },
+    for (const [what, text, written] of [
+      [
+        'numbers',
+        { call: 'formatNumber', args: { value: 1234.5 }, returnType: 'string' },
+        '1.234,5'
+      ],
+      [
+        'the names of months',
         {
-          version: 'v0.9',
-          updateComponents: {
-            surfaceId: SURFACE,
-            components: [
-              {
-                id: 'root',
-                component: 'Typography',
-                text: { call: 'formatNumber', args: { value: 1234.5 }, returnType: 'string' }
-              }
-            ]
+          call: 'formatDate',
+          args: { value: '2026-10-09', format: 'd. MMMM yyyy' },
+          returnType: 'string'
+        },
+        '9. Oktober 2026'
+      ]
+    ] as const) {
+      it(`writes ${what} in the locale the catalog was built for`, async () => {
+        const processor = new MessageProcessor<ReactComponentImplementation>([
+          createNebaCatalog({ locale: 'de' })
+        ]);
+
+        processor.processMessages([
+          { version: 'v0.9', createSurface: { surfaceId: SURFACE, catalogId: nebaCatalogId } },
+          {
+            version: 'v0.9',
+            updateComponents: {
+              surfaceId: SURFACE,
+              components: [{ id: 'root', component: 'Typography', text }]
+            }
           }
+        ] as Message[]);
+
+        const surface = processor.model.surfacesMap.get(SURFACE);
+
+        if (!surface) {
+          throw new Error('the processor refused the surface');
         }
-      ] as Message[]);
 
-      const surface = processor.model.surfacesMap.get(SURFACE);
+        const screen = await render(<A2uiSurface surface={surface} />);
 
-      if (!surface) {
-        throw new Error('the processor refused the surface');
-      }
-
-      const screen = await render(<A2uiSurface surface={surface} />);
-
-      await expect.element(screen.getByText('1.234,5')).toBeInTheDocument();
-    });
+        await expect.element(screen.getByText(written)).toBeInTheDocument();
+      });
+    }
   });
 
   describe('keeps its defaults', () => {
@@ -648,6 +661,41 @@ describe('the A2UI adapter', () => {
 
       expect(onAction).toHaveBeenCalled();
     });
+
+    // v1.0's `Action` has a `userMessage` that v0.9's schema refuses, and the
+    // refusal took the button with it.
+    it('hands the host an action’s `userMessage`, resolved', async () => {
+      const onAction = vi.fn();
+      const { surface } = surfaceOf(
+        [
+          {
+            id: 'root',
+            component: 'Button',
+            text: 'Roll back',
+            action: {
+              event: {
+                name: 'rollback',
+                userMessage: {
+                  call: 'formatString',
+                  args: { value: 'Roll back ${/release}' },
+                  returnType: 'string'
+                }
+              }
+            }
+          }
+        ],
+        { release: '1.19.0' },
+        onAction
+      );
+
+      const screen = await render(<A2uiSurface surface={surface} />);
+
+      await screen.getByRole('button', { name: 'Roll back' }).click();
+
+      await expect
+        .poll(() => onAction.mock.calls[0]?.[0])
+        .toMatchObject({ name: 'rollback', userMessage: 'Roll back 1.19.0' });
+    });
   });
 
   // `openUrl` is declared as needing a user activation and nothing enforced
@@ -707,6 +755,40 @@ describe('the A2UI adapter', () => {
         open.mockRestore();
       }
     });
+
+    // The catalog lets `url` be bound, and `web_core`'s schema took only a
+    // literal, so the button was refused along with the rest of its component.
+    it('opens an address the data model holds', async () => {
+      const open = vi.spyOn(window, 'open').mockReturnValue(null);
+
+      try {
+        const { surface } = surfaceOf(
+          [
+            {
+              id: 'root',
+              component: 'Button',
+              text: 'Read more',
+              action: {
+                functionCall: {
+                  call: 'openUrl',
+                  args: { url: { path: '/link' } },
+                  returnType: 'void'
+                }
+              }
+            }
+          ],
+          { link: 'https://example.com/bound' }
+        );
+
+        const screen = await render(<A2uiSurface surface={surface} />);
+
+        await screen.getByRole('button', { name: 'Read more' }).click();
+
+        await expect.poll(() => open.mock.calls[0]?.[0]).toBe('https://example.com/bound');
+      } finally {
+        open.mockRestore();
+      }
+    });
   });
 
   describe('runs the checks the agent wrote', () => {
@@ -739,6 +821,44 @@ describe('the A2UI adapter', () => {
 
       await expect.element(screen.getByText('That is not an address')).toBeInTheDocument();
     });
+
+    // `numeric` reads what a field holds, which is text, and `web_core`'s
+    // schema took only a number: a field holding "42" failed a check it passes.
+    for (const [text, passes] of [
+      ['42', true],
+      ['12', false],
+      ['forty', false]
+    ] as const) {
+      it(`reads a field’s text as a number: "${text}" ${passes ? 'passes' : 'fails'}`, async () => {
+        const { surface } = surfaceOf(
+          [
+            {
+              id: 'root',
+              component: 'TextField',
+              label: 'Age',
+              value: { path: '/age' },
+              checks: [
+                {
+                  condition: { call: 'numeric', args: { value: { path: '/age' }, min: 18 } },
+                  message: 'Give an age of 18 or over'
+                }
+              ]
+            }
+          ],
+          { age: text }
+        );
+
+        const screen = await render(<A2uiSurface surface={surface} />);
+
+        await expect.element(screen.getByRole('textbox', { name: 'Age' })).toBeInTheDocument();
+
+        if (passes) {
+          expect(screen.getByText('Give an age of 18 or over').query()).toBeNull();
+        } else {
+          await expect.element(screen.getByText('Give an age of 18 or over')).toBeInTheDocument();
+        }
+      });
+    }
 
     // v1.0 lets a check leave its message out and v0.9's schema refused it,
     // and the refusal took every component in the batch with it.

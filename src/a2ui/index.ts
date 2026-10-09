@@ -23,16 +23,17 @@
  *
  * ## Versions
  *
- * The catalog is written against **A2UI v1.0** and `@a2ui/react` 0.11's newest
- * renderer is **v0.9**, so this registers with `@a2ui/react/v0_9`. The eighteen
- * components only use constructs the two versions share, which is what makes
- * the bridge a rename rather than a translation, and none of the three
- * differences that exist makes the renderer refuse a message: v1.0 moved
- * `accessibility` from the catalog entry to the envelope, which `schema.ts` puts
- * back; v1.0 lets a check leave out the `message` v0.9 requires, which
- * `schema.ts` accepts; and v1.0's `Action` gained a `userMessage` that the v0.9
- * renderer accepts and never passes on — the action a host receives is built
- * from the event's `name` and `context` alone.
+ * The catalog is written against **A2UI v1.0** and `@a2ui/react` 0.12's newest
+ * renderer is **v0.9**, so this registers with `@a2ui/react/v0_9`, and the
+ * messages it draws are v0.9's: `web_core` refuses a surface whose messages name
+ * another version than its catalog. The eighteen components only use constructs
+ * the two versions share, which is what makes the bridge a rename rather than a
+ * translation, and none of the three differences that exist makes the renderer
+ * refuse a message: v1.0 moved `accessibility` from the catalog entry to the
+ * envelope, which `schema.ts` puts back; v1.0 lets a check leave out the
+ * `message` v0.9 requires, which `schema.ts` accepts; and v1.0's `Action`
+ * gained a `userMessage` that v0.9's refuses, which `schema.ts` accepts and the
+ * host receives resolved.
  *
  * There is no v1.0 React renderer to register with yet. When there is, what
  * changes is this file's import and nothing in `catalog.json`.
@@ -45,6 +46,7 @@ import {
 } from '@a2ui/web_core/v0_9';
 import catalog from './catalog.json' with { type: 'json' };
 import { nebaComponents } from './components.js';
+import { functionSchema } from './schema.js';
 
 export { nebaComponents } from './components.js';
 export { componentSchema, type CatalogSchema } from './schema.js';
@@ -76,7 +78,11 @@ function functions(locale: string | undefined): FunctionImplementation[] {
     );
   }
 
-  return available.map((one) => (one.name === 'openUrl' ? onlyWhenActivated(one) : one));
+  return available.map((one) => {
+    const widened = { ...one, schema: functionSchema(one.name, one.schema) };
+
+    return one.name === 'openUrl' ? onlyWhenActivated(widened) : widened;
+  });
 }
 
 /**
@@ -110,10 +116,10 @@ function onlyWhenActivated(implementation: FunctionImplementation): FunctionImpl
 /** What `createNebaCatalog` takes. */
 export interface NebaCatalogOptions {
   /**
-   * The language `formatNumber`, `formatCurrency` and `pluralize` write in.
-   * Pass the one the components are in — a `NebaProvider`'s `locale` — or the
-   * three follow the runtime's language while the components follow the
-   * provider. Left out, they follow the runtime.
+   * The language `formatNumber`, `formatCurrency`, `formatDate` and `pluralize`
+   * write in. Pass the one the components are in — a `NebaProvider`'s `locale` —
+   * or the four write American English while the components follow the
+   * provider. Left out, they write `en-US`, on a server and in every browser.
    */
   locale?: string;
 }
@@ -127,12 +133,16 @@ export interface NebaCatalogOptions {
  *
  * ```tsx
  * import { MessageProcessor } from '@a2ui/web_core/v0_9';
- * import { A2uiSurface } from '@a2ui/react/v0_9';
+ * import { A2uiSurface, type ReactComponentImplementation } from '@a2ui/react/v0_9';
  * import { createNebaCatalog } from 'neba/a2ui';
  *
  * const catalog = createNebaCatalog({ locale: 'ko' });
- * const processor = new MessageProcessor([catalog]);
+ * const processor = new MessageProcessor<ReactComponentImplementation>([catalog]);
  * ```
+ *
+ * The type argument is what makes a surface the processor creates one
+ * `A2uiSurface` takes; `MessageProcessor` does not work it out from the
+ * catalog.
  *
  * The `catalogId` is the one in `catalog.json`, which is also the URL the file
  * is served from — so the id a surface names and the schema an agent was given
@@ -141,7 +151,10 @@ export interface NebaCatalogOptions {
 export function createNebaCatalog(
   options: NebaCatalogOptions = {}
 ): Catalog<(typeof nebaComponents)[number], FunctionImplementation> {
-  return new Catalog(catalog.catalogId, nebaComponents, functions(options.locale));
+  // `0.9` is the renderer's version rather than the file's `protocolVersion`:
+  // the processor refuses a surface whose messages name another version than
+  // its catalog, and the components are bound to v0.9's schemas.
+  return new Catalog(catalog.catalogId, '0.9', nebaComponents, functions(options.locale));
 }
 
 /** The catalog's own id, for a `createSurface` message written by hand. */

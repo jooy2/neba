@@ -243,8 +243,8 @@ describe('Accordion', () => {
         .toHaveAttribute('aria-expanded', 'false');
     });
 
-    // Base UI's trigger stays focusable while disabled, so it carries no
-    // `disabled` attribute and the `disabled:` classes never applied.
+    // The disabled look is chosen in the component rather than by a
+    // `disabled:` variant, for the accordion and for one section alike.
     it('looks disabled, whether the section or the accordion is', async () => {
       const screen = await render(
         <>

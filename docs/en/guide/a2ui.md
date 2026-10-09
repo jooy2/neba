@@ -37,22 +37,24 @@ A catalog is how the two sides agree on the vocabulary. It is a single JSON Sche
 npm install @a2ui/react @a2ui/web_core zod
 ```
 
-They are **optional peer dependencies**, which is safe here because `neba/a2ui` is not re-exported from `neba`: a bundler walking the package never reaches it, so a project that imports `Button` and has never heard of A2UI resolves nothing new. Only the import below pulls them in. The adapter itself is about 93 kB gzipped with those three external: its own code is about 29 kB, and the rest is the Base UI behind the eighteen components. It reads a copy of the catalog with the descriptions taken out, since the renderer never reads the prose a model is given, so the file an agent reads does not travel into the page.
+They are **optional peer dependencies**, which is safe here because `neba/a2ui` is not re-exported from `neba`: a bundler walking the package never reaches it, so a project that imports `Button` and has never heard of A2UI resolves nothing new. Only the import below pulls them in. The adapter itself is about 97 kB gzipped with those three external: its own code is about 32 kB, and the rest is the Base UI behind the eighteen components. It reads a copy of the catalog with the descriptions taken out, since the renderer never reads the prose a model is given, so the file an agent reads does not travel into the page.
 
 `zod` can be 3.25 or any later 3.x, or 4. The adapter builds its schemas with the Zod 3 API at `zod/v3`, which both serve, and in a project on Zod 4 `@a2ui/web_core` installs a Zod 3 of its own, so the project's version does not have to change.
 
 ```tsx
 import { MessageProcessor } from '@a2ui/web_core/v0_9';
-import { A2uiSurface } from '@a2ui/react/v0_9';
+import { A2uiSurface, type ReactComponentImplementation } from '@a2ui/react/v0_9';
 import { createNebaCatalog } from 'neba/a2ui';
 
-const processor = new MessageProcessor([createNebaCatalog()]);
+const processor = new MessageProcessor<ReactComponentImplementation>([createNebaCatalog()]);
 
 processor.processMessages(whateverTheAgentSent);
 
 // …then render each surface the agent created.
 <A2uiSurface surface={surface} />;
 ```
+
+The type argument is what makes the surfaces the processor creates ones `A2uiSurface` takes, since `MessageProcessor` does not work it out from the catalog. The messages it draws are v0.9's, each with `"version": "v0.9"`: `@a2ui/web_core` refuses a surface whose messages name another version than its catalog, and one with no version at all.
 
 That is the whole of it. The adapter registers the eighteen components and the fourteen functions, and the `catalogId` a surface names is the one in the file the agent was given — so the two halves cannot drift apart.
 
@@ -93,7 +95,7 @@ Fourteen, with the specification's own names and call signatures: `required`, `l
 
 Declaring one is a claim that your renderer implements it. Five check a value, three are one `Intl` call each, `formatString` and `formatDate` build a string, three are boolean arithmetic, and `openUrl` is the only one that does anything to the page — which is why it is declared `rendererOnly` and needing a user activation. The adapter holds it to the second: it opens an address only while a press is being handled, so a call an agent wrote into a label does nothing when the label is drawn. A browser without `navigator.userActivation` (Firefox before 120) leaves that to its popup blocker.
 
-`formatNumber`, `formatCurrency` and `pluralize` write in the language the catalog was built with, `createNebaCatalog({ locale: 'ko' })`. Pass the `locale` your `NebaProvider` has; left out, the components follow the provider and those three follow the runtime. `formatDate` does not take one: it writes a TR35 pattern such as `MMM d, yyyy`, and the names of months and weekdays in it are English, which the catalog tells the model.
+`formatNumber`, `formatCurrency`, `formatDate` and `pluralize` write in the language the catalog was built with, `createNebaCatalog({ locale: 'ko' })`, which for `formatDate` means the names of months and weekdays in a TR35 pattern such as `MMM d, yyyy`. Pass the `locale` your `NebaProvider` has; left out, the components follow the provider and those four write American English (`en-US`), on a server and in every browser alike.
 
 `formatString` is the one to know about: A2UI has no operators, so it is the only way to put a value into a sentence.
 
@@ -101,9 +103,9 @@ Declaring one is a claim that your renderer implements it. Five check a value, t
 
 The catalog is written against **A2UI v1.0**, which the file states in its own `protocolVersion`. The v0.9 catalog had a `theme` key and wrapped every component in a `ComponentCommon`; v1.0 has neither, and adds `instructions` and a `$defs` holding `anyComponent` and `anyFunction`.
 
-**The adapter registers with `@a2ui/react/v0_9`**, because 0.11 has no v1.0 renderer — its root export is still v0.8. The eighteen components only use constructs the two versions share, which is what makes the bridge a rename rather than a translation, and none of the three differences that exist makes the renderer refuse a message: v1.0 moved `accessibility` out of the catalog entry and into the envelope, which the adapter puts back; v1.0 lets a check leave out its `message`, which v0.9 requires, so the adapter accepts one without it and the field shows "Validation failed"; and v1.0's `Action` gained a `userMessage` that the v0.9 renderer accepts and never passes on, so the action a host receives carries the event's `name` and `context` only.
+**The adapter registers with `@a2ui/react/v0_9`**, because 0.12 has no v1.0 renderer — its root export is still v0.8. The eighteen components only use constructs the two versions share, which is what makes the bridge a rename rather than a translation, and none of the three differences that exist makes the renderer refuse a message: v1.0 moved `accessibility` out of the catalog entry and into the envelope, which the adapter puts back; v1.0 lets a check leave out its `message`, which v0.9 requires, so the adapter accepts one without it and the field shows "Validation failed"; and v1.0's `Action` gained a `userMessage` that v0.9 refuses, so the adapter accepts it and the action a host receives carries it, resolved, beside the event's `name` and `context`.
 
-The `@a2ui/*` packages are on 0.11.x while the specification is at 1.0, so expect the tooling to move before the format does. When there is a v1.0 React renderer, what changes is one import inside this package and nothing in `catalog.json`.
+The `@a2ui/*` packages are on 0.12.x while the specification is at 1.0, so expect the tooling to move before the format does. When there is a v1.0 React renderer, what changes is one import inside this package and nothing in `catalog.json`.
 
 ## Next
 

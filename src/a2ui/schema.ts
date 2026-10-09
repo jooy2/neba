@@ -98,7 +98,7 @@ function checkKeywords(schema: CatalogSchema, at: string, allowed: ReadonlySet<s
  * binder its `isValid` and `validationErrors`.
  */
 const commonTypes: Record<string, () => z.ZodTypeAny> = {
-  Action: () => CommonSchemas.Action,
+  Action: () => action,
   Child: () => componentId(),
   ChildList: () => childList(),
   DynamicBoolean: () => CommonSchemas.DynamicBoolean,
@@ -225,6 +225,66 @@ const checkable = (() => {
       .describe(checks.description ?? '')
   });
 })();
+
+/**
+ * `Action`, with v1.0's `userMessage`.
+ *
+ * v1.0 gave an action's event a `userMessage`, the line a host shows as what
+ * the reader asked for, and v0.9's event refuses a key it does not declare —
+ * so a button written exactly as the catalog allows was refused with the rest
+ * of its component. The binder already resolves a `userMessage` and the surface
+ * hands it to the host, so the only change is to stop refusing it. The
+ * description is kept, because it is how the binder knows the prop is an action.
+ */
+const action = (() => {
+  const [event, functionCall] = (
+    CommonSchemas.Action as z.ZodUnion<[z.ZodObject<z.ZodRawShape>, z.ZodTypeAny]>
+  ).options;
+  const inner = event.shape.event as z.ZodObject<z.ZodRawShape>;
+
+  return z
+    .union([
+      event.extend({
+        event: inner.extend({ userMessage: CommonSchemas.DynamicString.optional() })
+      }),
+      functionCall
+    ])
+    .describe(CommonSchemas.Action.description ?? '');
+})();
+
+/**
+ * The arguments the catalog declares wider than `web_core` does.
+ *
+ * `web_core` parses a call's arguments twice: as the agent wrote them, when a
+ * component arrives, and resolved, before the function runs. Its v0.9 schemas
+ * are narrower than this catalog in two places, and each refused a call the
+ * catalog allows. `numeric`'s `value` is a number there and a string here,
+ * because what a check reads is the text a `TextField` holds, so a field
+ * holding "42" failed the check it passes. `openUrl`'s `url` is a literal there
+ * and may be bound here, so a button that opened an address from the data
+ * model was refused with the rest of its component. Both functions already
+ * take what the catalog declares — `numeric` reads a string as a number, and
+ * text that is not one fails the check — so the only change is to stop
+ * refusing it.
+ */
+const widenedArguments: Record<string, () => z.ZodRawShape> = {
+  numeric: () => ({
+    value: z.union([CommonSchemas.DynamicNumber, CommonSchemas.DynamicString])
+  }),
+  openUrl: () => ({ url: CommonSchemas.DynamicString })
+};
+
+/**
+ * A function's argument schema, as wide as the catalog declares it.
+ *
+ * `extend` for `componentSchema`'s reason: the schema is built by `web_core`'s
+ * copy of Zod, and only the arguments named above are this copy's.
+ */
+export function functionSchema(name: string, schema: z.ZodTypeAny): z.ZodTypeAny {
+  const widened = widenedArguments[name];
+
+  return widened ? (schema as z.ZodObject<z.ZodRawShape>).extend(widened()) : schema;
+}
 
 /**
  * One component's entry, as the schema a `ComponentApi` carries.

@@ -229,9 +229,9 @@ export const Collapsible = React.forwardRef<HTMLDivElement, CollapsibleProps>(
                 // ring on a trigger that fills the top of the sheet would be
                 // shaved off on three sides.
                 ' focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:[outline-offset:-2px] ' +
-                // Decided here: Base UI's trigger stays focusable while disabled,
-                // so it never carries the `disabled` attribute a `disabled:`
-                // variant would need.
+                // Decided here rather than with a `disabled:` variant, which
+                // would be ordered against the `hover:` and `data-[panel-open]:`
+                // variants beside it by the stylesheet rather than by intent.
                 (disabled
                   ? 'cursor-not-allowed bg-transparent text-(--neba-disabled-fg)'
                   : 'cursor-pointer hover:bg-(--n-soft) data-[panel-open]:text-(--n-on-tint)')

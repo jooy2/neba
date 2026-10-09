@@ -379,23 +379,23 @@ Where it stands, gzipped, with `react`/`react-dom` external:
 
 | What a consumer imports       | Bundle   | Of which is Neba's own code |
 | ----------------------------- | -------- | --------------------------- |
-| `Divider`                     | 2.7 kB   | 1.0 kB                      |
+| `Divider`                     | 2.5 kB   | 1.0 kB                      |
 | `Button`                      | 5.0 kB   | 2.3 kB                      |
-| `Chip`                        | 5.5 kB   | 3.9 kB                      |
-| `LineChart`                   | 18.1 kB  | 16.6 kB                     |
+| `Chip`                        | 5.3 kB   | 3.9 kB                      |
+| `LineChart`                   | 17.9 kB  | 16.6 kB                     |
 | `CodeBlock`                   | 5.9 kB   | 5.6 kB                      |
-| `Image`                       | 9.5 kB   | 7.8 kB                      |
-| `Gallery`                     | 12.8 kB  | 11.1 kB                     |
-| `DataTable`                   | 34.9 kB  | 23.0 kB                     |
+| `Image`                       | 9.3 kB   | 7.8 kB                      |
+| `Gallery`                     | 12.6 kB  | 11.1 kB                     |
+| `DataTable`                   | 35.1 kB  | 23.0 kB                     |
 | `CommandPalette`              | 1.9 kB   | 1.9 kB                      |
-| `InlineCitation`              | 6.7 kB   | 5.0 kB                      |
-| 12 components — a typical app | 75.6 kB  | 17.1 kB                     |
-| 25 components — a large one   | 123.8 kB | 25.4 kB                     |
+| `InlineCitation`              | 6.5 kB   | 5.0 kB                      |
+| 12 components — a typical app | 76.0 kB  | 17.1 kB                     |
+| 25 components — a large one   | 125.3 kB | 25.4 kB                     |
 | a whole page shell            | 13.8 kB  | 10.7 kB                     |
-| all 187 exports               | 317.9 kB | 180.6 kB                    |
-| `neba/a2ui`, peers external   | 95.9 kB  | 32.1 kB                     |
+| all 187 exports               | 320.9 kB | 180.7 kB                    |
+| `neba/a2ui`, peers external   | 96.8 kB  | 32.2 kB                     |
 
-The **Bundle** column is [scripts/bundle-budget.json](scripts/bundle-budget.json), so `npm run size` keeps it honest. The second column is not budgeted and is the same measurement with `@base-ui/react` and `highlight.js` external as well — what is left once the dependencies are taken out. `Divider` is not a budgeted scenario; it is here because it is the smallest thing the library exports, and the row says what the floor is. The nine components of the `agent` group are 3.6 kB of own code for a `ToolCall` down to 1.2 kB for a `StreamingText`, and an `InlineCitation` is 6.7 kB before it is touched: its preview is a `HoverCard`, 26.6 kB of Base UI's floating machinery, fetched the first time a pointer, the focus or a finger reaches a citation, as the Image viewer is.
+The **Bundle** column is [scripts/bundle-budget.json](scripts/bundle-budget.json), so `npm run size` keeps it honest. The second column is not budgeted and is the same measurement with `@base-ui/react` and `highlight.js` external as well — what is left once the dependencies are taken out. `Divider` is not a budgeted scenario; it is here because it is the smallest thing the library exports, and the row says what the floor is. The nine components of the `agent` group are 3.6 kB of own code for a `ToolCall` down to 1.2 kB for a `StreamingText`, and an `InlineCitation` is 6.5 kB before it is touched: its preview is a `HoverCard`, 27.1 kB of Base UI's floating machinery, fetched the first time a pointer, the focus or a finger reaches a citation, as the Image viewer is.
 
 The page shell row is `PageLayout` with `Header`, `Footer`, `Sidebar`, `SidebarTrigger` and `AppLogo`. Two thirds of it used to be the Base UI dialog a collapsing sidebar becomes below its breakpoint, carried by every page with a sidebar, desktop included; `drawerChunk` in `internal/page-layout.ts` now fetches that drawer once a sidebar has collapsed, or once a reader reaches for a `SidebarTrigger`, which took the row from 30.6 kB to 13.8 kB. A sidebar never collapses on a server, so the lazy drawer never suspends in a server render.
 
@@ -451,7 +451,7 @@ Four things about it are decisions rather than details:
 
 **Zod is imported as `zod/v3`, never as `zod`.** npm checks an optional peer against whatever version a project already has, so a range of `^3` alone made every `npm install` fail in a project on Zod 4, whether it used the adapter or not. The range is `^3.25.76 || ^4.0.0`, and it is only true because both majors serve the v3 API at that path. The cost is two copies of the v3 classes in one tree: `web_core` builds its schemas with Zod 3 and, under a project's Zod 4, installs a Zod 3 of its own. `web_core` reads a schema by `_def.typeName` and never by class, and the adapter has to keep the other half — no object built by one copy may reach the other's `instanceof`. That is why `componentSchema` composes with `extend(shape)` and never `merge`, which takes the other object's `catchall`. The `zod-4` CI job is the only place that layout exists, and it runs the adapter's tests and not `npm run typecheck`: the two copies' types are not assignable to each other, so this repository's own source does not type-check there, while the `.d.ts` a consumer reads does.
 
-The catalog is v1.0 and the renderer is v0.9, which is the one seam. The eighteen components use only constructs the two share; the three differences are that v1.0 moved `accessibility` into the envelope, which `schema.ts` puts back; that v1.0 lets a check leave out its `message`, which v0.9's rule requires, so `schema.ts` merges a `Checkable` whose rule has it optional; and that v1.0's `Action` gained a `userMessage` the v0.9 renderer accepts and never passes on, since the action a host receives is built from the event's `name` and `context` alone. When there is a v1.0 React renderer, what changes is one import.
+The catalog is v1.0 and the renderer is v0.9, which is the one seam. `createNebaCatalog` registers the catalog as protocol `0.9` rather than the file's `1.0`, because `web_core` refuses a surface whose messages name another version than its catalog, so an agent's messages say `v0.9`. The eighteen components use only constructs the two share; the three differences are that v1.0 moved `accessibility` into the envelope, which `schema.ts` puts back; that v1.0 lets a check leave out its `message`, which v0.9's rule requires, so `schema.ts` merges a `Checkable` whose rule has it optional; and that v1.0's `Action` gained a `userMessage` that v0.9's strict event refuses, so `schema.ts` adds it back and the host receives it resolved. The functions get the same treatment one level down. `web_core` parses a call's arguments when a component arrives as well as before the call runs, and its v0.9 schemas declare two of them narrower than the catalog: `numeric`'s `value`, which is a field's text, and `openUrl`'s `url`, which may be bound. `functionSchema` widens exactly those two, and the function bodies stay `web_core`'s. When there is a v1.0 React renderer, what changes is one import.
 
 `test/a2ui/adapter.test.tsx` is the only thing in the repository that finds out whether any of this works: it feeds a `MessageProcessor` the messages an agent sends and asserts that Neba components come out, that a binding resolves, that a field writes back and that a failed check lands in the field's own error. The schemas are built at runtime, so a prop misspelled in `components.tsx` type-checks against nothing at all.
 

@@ -2,6 +2,22 @@
 
 ## vNext (2026--)
 
+### Breaking changes
+
+- **`neba/a2ui` needs `@a2ui/react` and `@a2ui/web_core` 0.12.** The optional peers were `^0.11.0` and are `^0.12.0`, because 0.12 changed the `Catalog` the adapter builds, so upgrade both together with this release. Two changes in 0.12 reach the code around the adapter. `MessageProcessor` no longer takes its component type from the catalog, so its surfaces type-check as `A2uiSurface`'s only when it is written `new MessageProcessor<ReactComponentImplementation>([createNebaCatalog()])`. And it refuses a surface whose messages name another version than the catalog, or none: every message has to carry `"version": "v0.9"`, where 0.11 read any. Everything else the catalog allows keeps working, although 0.12 declares two arguments narrower than it does: a `numeric` check still reads a field's text, and `openUrl`'s `url` may still be bound to the data model.
+
+- **The A2UI catalog's `formatNumber`, `formatCurrency`, `formatDate` and `pluralize` write `en-US` when `createNebaCatalog` is given no `locale`**, rather than the runtime's language, so a server and every browser write the same text. `formatDate` also writes the names of months and weekdays in the catalog's `locale`, where it used to write them in English whatever the language. Both come from `@a2ui/web_core` 0.12, and the catalog now tells the model so. Pass the `locale` your `NebaProvider` has to keep all four in the components' language.
+
+- **A disabled `Accordion` section's header and a disabled `Collapsible`'s header are out of the tab order.** `@base-ui/react` 1.9.0 gives the trigger the native `disabled` attribute, where 1.8.0 kept it focusable and marked it `aria-disabled`, so a keyboard reader no longer stops on a header that cannot open. A test that focused a disabled header should expect the focus to pass it by.
+
+### Added
+
+- **An A2UI action's `userMessage` reaches the host**, resolved, beside its `name` and `context`. v1.0 gave an action's event the line a host shows as what the reader asked for, and the v0.9 renderer dropped it; under `@a2ui/web_core` 0.12 it refused the whole button instead. The adapter accepts it, and a `userMessage` written as a path or a `formatString` call arrives as text.
+
+### Changed
+
+- **`@base-ui/react` is on 1.9.0**, which is the floor `dependencies` declares. It is the only runtime dependency that moved. A `Chip`, a `LineChart`, an `Image`, a `Gallery` and an `InlineCitation` are each 0.2 kB smaller and a `DataTable` 0.2 kB larger, while a twelve-component app is 0.4 kB larger, a twenty-five-component one 1.5 kB and every export 3.0 kB. Neba's own code weighs what it did.
+
 ### Fixed
 
 - **A `Carousel` with `autoPlay` below the fold no longer turns once before it learns it is out of view.** Its timer started straight away and the observer that pauses it answers a frame later, so a short `interval` could turn the strip once while nobody could see it. The timer now waits for that first answer.

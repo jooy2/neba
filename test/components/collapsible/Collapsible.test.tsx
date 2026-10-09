@@ -181,7 +181,8 @@ describe('Collapsible', () => {
       );
 
       await expect.element(screen.getByRole('button', { name: 'Advanced' })).toBeDisabled();
-      // And looks it: the trigger stays focusable, so no `disabled:` class matched.
+      // And looks it, through the classes the component chose rather than a
+      // `disabled:` variant.
       expect(screen.getByRole('button', { name: 'Advanced' }).element()).toHaveClass(
         'text-(--neba-disabled-fg)'
       );
