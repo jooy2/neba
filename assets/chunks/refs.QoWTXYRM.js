@@ -1,0 +1,1 @@
+import{r as l}from"./index.BC-ZOPMe.js";const r=()=>{};function i(t,n){if(typeof t=="function"){const e=t(n);return typeof e=="function"?e:()=>{t(null)}}return t?(t.current=n,()=>{t.current===n&&(t.current=null)}):r}function s(t,n){let e=r,u=r;return c=>{e(),u(),e=r,u=r,c!==null&&(e=i(t,c),u=i(n,c))}}function f(t,n){return l.useMemo(()=>s(t,n),[t,n])}export{i as a,f as u};

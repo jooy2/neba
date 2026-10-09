@@ -1,0 +1,1 @@
+function n(s,a){return function(e,...o){const r=new URL(s);return r.searchParams.set("code",e.toString()),o.forEach(t=>r.searchParams.append("args[]",t)),`${a} error #${e}; visit ${r} for the full message.`}}const f=n("https://base-ui.com/production-error","Base UI");export{f};
