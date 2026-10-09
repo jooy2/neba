@@ -89,8 +89,41 @@ function functions(locale: string | undefined): FunctionImplementation[] {
   return available.map((one) => {
     const widened = { ...one, schema: functionSchema(one.name, one.schema) };
 
-    return one.name === 'openUrl' ? onlyWhenActivated(widened) : widened;
+    switch (one.name) {
+      case 'openUrl':
+        return onlyWhenActivated(widened);
+      case 'formatDate':
+        return withTimeOfDay(widened);
+      default:
+        return widened;
+    }
   });
+}
+
+/** A date with no time and no offset, such as `2026-10-09`. */
+const dateAlone = /^\d{4}-\d{2}-\d{2}$/;
+
+/**
+ * `formatDate`, given a date with no time in every browser.
+ *
+ * `web_core` reads a value with no offset as UTC by writing a `Z` after it,
+ * which turns `2026-10-09` into `2026-10-09Z`. The language defines no such
+ * form: Chromium and Firefox read it as midnight UTC anyway, and Safari reads
+ * it as no date at all, so a date the catalog allows came out there as an
+ * empty string. A date alone is handed over with that midnight written out.
+ */
+function withTimeOfDay(implementation: FunctionImplementation): FunctionImplementation {
+  return {
+    ...implementation,
+    execute: (args, context, abortSignal) =>
+      implementation.execute(
+        typeof args.value === 'string' && dateAlone.test(args.value)
+          ? { ...args, value: `${args.value}T00:00:00` }
+          : args,
+        context,
+        abortSignal
+      )
+  };
 }
 
 /**

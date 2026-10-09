@@ -302,6 +302,30 @@ describe('the A2UI adapter', () => {
     }
   });
 
+  // `web_core` reads a value with no offset by writing a `Z` after it, and
+  // Safari reads `2026-10-09Z` as no date at all, so a date alone came out as
+  // an empty string there and only there.
+  describe('writes a date in every browser', () => {
+    for (const [value, format, written] of [
+      ['2026-10-09', 'MMM d, yyyy', 'Oct 9, 2026'],
+      ['2026-10-09T14:30:00Z', 'HH:mm', '14:30']
+    ] as const) {
+      it(`writes ${value} as "${written}"`, async () => {
+        const { surface } = surfaceOf([
+          {
+            id: 'root',
+            component: 'Typography',
+            text: { call: 'formatDate', args: { value, format }, returnType: 'string' }
+          }
+        ]);
+
+        const screen = await render(<A2uiSurface surface={surface} />);
+
+        await expect.element(screen.getByText(written)).toBeInTheDocument();
+      });
+    }
+  });
+
   describe('keeps its defaults', () => {
     /*
      * A `default` in the catalog is a claim about what the renderer does when
