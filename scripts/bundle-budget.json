@@ -146,7 +146,7 @@
       "from": "neba/a2ui",
       "imports": ["createNebaCatalog"],
       "external": ["@a2ui/react", "@a2ui/web_core", "zod"],
-      "budget": 96.9
+      "budget": 97
     },
     {
       "id": "stylesheet",

@@ -393,7 +393,7 @@ Where it stands, gzipped, with `react`/`react-dom` external:
 | 25 components — a large one   | 125.3 kB | 25.4 kB                     |
 | a whole page shell            | 13.8 kB  | 10.7 kB                     |
 | all 187 exports               | 320.9 kB | 180.7 kB                    |
-| `neba/a2ui`, peers external   | 96.9 kB  | 32.3 kB                     |
+| `neba/a2ui`, peers external   | 97.0 kB  | 32.4 kB                     |
 
 The **Bundle** column is [scripts/bundle-budget.json](scripts/bundle-budget.json), so `npm run size` keeps it honest. The second column is not budgeted and is the same measurement with `@base-ui/react` and `highlight.js` external as well — what is left once the dependencies are taken out. `Divider` is not a budgeted scenario; it is here because it is the smallest thing the library exports, and the row says what the floor is. The nine components of the `agent` group are 3.6 kB of own code for a `ToolCall` down to 1.2 kB for a `StreamingText`, and an `InlineCitation` is 6.5 kB before it is touched: its preview is a `HoverCard`, 27.1 kB of Base UI's floating machinery, fetched the first time a pointer, the focus or a finger reaches a citation, as the Image viewer is.
 
