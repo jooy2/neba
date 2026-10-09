@@ -65,6 +65,8 @@ export default defineConfig({
   },
   test: {
     include: ['test/**/*.test.{ts,tsx}'],
+    // Gives each file's document the focus before it starts; it says why.
+    setupFiles: ['test/setup.ts'],
     // One file at a time. Test files run as frames of one browser, and a
     // browser has a single focus to hand out: a click in one file takes it from
     // whichever file was holding it. That is not a nuisance the assertions can

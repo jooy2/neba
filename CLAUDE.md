@@ -649,6 +649,8 @@ Conventions, following [test/components/button/Button.test.tsx](test/components/
 
 `fileParallelism` is off. Test files run as frames of one browser, and a browser has a single focus to hand out — a click in one file takes it from whichever file was holding it. Focus is half of what these components do: a toast stops its dismissal timer while the window is blurred, and a keystroke aimed at a menu goes wherever the focus went. Both produced failures that appeared only in a full run and never when the file was run on its own, which is the worst kind. The suite takes about twice as long.
 
+`test/setup.ts` gives every file's document the focus before its first test, which a real tab would already have. Firefox 157 starts each file's frame without it, so a test whose first use of the focus was a `focus()` call failed only in a full run, on whichever files happened to start before anything had moved the focus into the frame. Do not remove it because the suite passes in Chromium.
+
 The same asymmetry is worth remembering when writing a test around a timer: a duration short enough to expire during a query round trip has already expired by the time the assertion looks, and Firefox in CI is slower at that round trip than anything local.
 
 ### And a browser at a time
