@@ -54,7 +54,7 @@ processor.processMessages(whateverTheAgentSent);
 <A2uiSurface surface={surface} />;
 ```
 
-The type argument is what makes the surfaces the processor creates ones `A2uiSurface` takes, since `MessageProcessor` does not work it out from the catalog. The messages it draws are v0.9's, each with `"version": "v0.9"`: `@a2ui/web_core` refuses a surface whose messages name another version than its catalog, and one with no version at all.
+The type argument is what makes the surfaces the processor creates ones `A2uiSurface` takes, since `MessageProcessor` does not work it out from the catalog. The messages it draws are v0.9's by default, each with `"version": "v0.9"`. An agent that writes v1.0's, each with `"version": "v1.0"`, needs `createNebaCatalog({ protocolVersion: 'v1.0' })`. `@a2ui/web_core` refuses a surface whose messages name another version than its catalog, and one with no version at all. One catalog draws one version, and so does the processor holding it, because a surface finds its catalog by id alone; a host whose agents write both keeps a processor for each and hands every message to the one its `version` names.
 
 That is the whole of it. The adapter registers the eighteen components and the fourteen functions, and the `catalogId` a surface names is the one in the file the agent was given — so the two halves cannot drift apart.
 
@@ -104,6 +104,8 @@ Declaring one is a claim that your renderer implements it. Five check a value, t
 The catalog is written against **A2UI v1.0**, which the file states in its own `protocolVersion`. The v0.9 catalog had a `theme` key and wrapped every component in a `ComponentCommon`; v1.0 has neither, and adds `instructions` and a `$defs` holding `anyComponent` and `anyFunction`.
 
 **The adapter registers with `@a2ui/react/v0_9`**, because 0.12 has no v1.0 renderer — its root export is still v0.8. The eighteen components only use constructs the two versions share, which is what makes the bridge a rename rather than a translation, and none of the three differences that exist makes the renderer refuse a message: v1.0 moved `accessibility` out of the catalog entry and into the envelope, which the adapter puts back; v1.0 lets a check leave out its `message`, which v0.9 requires, so the adapter accepts one without it and the field shows "Validation failed"; and v1.0's `Action` gained a `userMessage` that v0.9 refuses, so the adapter accepts it and the action a host receives carries it, resolved, beside the event's `name` and `context`.
+
+**`protocolVersion: 'v1.0'` draws v1.0's messages with the same components and functions.** A v1.0 component may also carry `accessibility.live`, `accessibility.hidden` and a `metadata` object; no component reads them, and the adapter drops them rather than refusing the component. The functions are the v0.9 set under either version, because the catalog declares that a check returns a boolean, which is what they return, while the v1.0 set in `@a2ui/web_core` returns a validation result.
 
 The `@a2ui/*` packages are on 0.12.x while the specification is at 1.0, so expect the tooling to move before the format does. When there is a v1.0 React renderer, what changes is one import inside this package and nothing in `catalog.json`.
 

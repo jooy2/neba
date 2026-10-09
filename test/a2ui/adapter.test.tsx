@@ -39,17 +39,18 @@ type Message = Parameters<MessageProcessor<never>['processMessages']>[0] extends
 function surfaceOf(
   components: readonly Record<string, unknown>[],
   data: Record<string, unknown> = {},
-  onAction?: (action: unknown) => void
+  onAction?: (action: unknown) => void,
+  version: 'v0.9' | 'v1.0' = 'v0.9'
 ) {
   const processor = new MessageProcessor<ReactComponentImplementation>(
-    [createNebaCatalog()],
+    [createNebaCatalog({ protocolVersion: version })],
     onAction === undefined ? undefined : (action) => onAction(action)
   );
 
   processor.processMessages([
-    { version: 'v0.9', createSurface: { surfaceId: SURFACE, catalogId: nebaCatalogId } },
-    { version: 'v0.9', updateComponents: { surfaceId: SURFACE, components } },
-    { version: 'v0.9', updateDataModel: { surfaceId: SURFACE, path: '/', value: data } }
+    { version, createSurface: { surfaceId: SURFACE, catalogId: nebaCatalogId } },
+    { version, updateComponents: { surfaceId: SURFACE, components } },
+    { version, updateDataModel: { surfaceId: SURFACE, path: '/', value: data } }
   ] as Message[]);
 
   const surface = processor.model.surfacesMap.get(SURFACE);
@@ -880,6 +881,146 @@ describe('the A2UI adapter', () => {
 
       await expect.element(screen.getByRole('textbox', { name: 'Email' })).toBeInTheDocument();
       await expect.element(screen.getByText('Validation failed')).toBeInTheDocument();
+    });
+  });
+
+  describe('speaks the protocol version it was built for', () => {
+    // `web_core` pairs a surface with its catalog by version as well as by id,
+    // so a catalog that took both would only ever be half right.
+    it('refuses the messages of the other version', () => {
+      for (const [built, sent] of [
+        ['v0.9', 'v1.0'],
+        ['v1.0', 'v0.9']
+      ] as const) {
+        const processor = new MessageProcessor<ReactComponentImplementation>([
+          createNebaCatalog({ protocolVersion: built })
+        ]);
+
+        expect(() =>
+          processor.processMessages([
+            { version: sent, createSurface: { surfaceId: SURFACE, catalogId: nebaCatalogId } }
+          ] as Message[])
+        ).toThrow(/version/);
+      }
+    });
+
+    it('refuses a version it does not draw', () => {
+      expect(() => createNebaCatalog({ protocolVersion: 'v0.8' as 'v0.9' })).toThrow(
+        /protocolVersion/
+      );
+    });
+
+    /*
+     * A v1.0 component carries `accessibility.live`, `accessibility.hidden` and
+     * `metadata` beside its props. No component reads them, and a schema that
+     * refused them would refuse the component with them.
+     */
+    it('draws, binds and writes back a v1.0 surface', async () => {
+      const { surface } = surfaceOf(
+        [
+          {
+            id: 'root',
+            component: 'Flex',
+            children: ['name'],
+            accessibility: { label: 'Profile', live: 'polite', hidden: false },
+            metadata: { extensions: { 'example:trace': 'one' } }
+          },
+          {
+            id: 'name',
+            component: 'TextField',
+            label: 'Name',
+            value: { path: '/name' },
+            metadata: { extensions: { 'example:trace': 'two' } }
+          }
+        ],
+        { name: 'Ada' },
+        undefined,
+        'v1.0'
+      );
+
+      const screen = await render(<A2uiSurface surface={surface} />);
+      const field = screen.getByRole('textbox', { name: 'Name' });
+
+      await expect.element(screen.getByRole('group', { name: 'Profile' })).toBeInTheDocument();
+      await expect.element(field).toHaveValue('Ada');
+
+      await field.fill('Grace');
+
+      await expect.poll(() => surface.dataModel.get('/name')).toBe('Grace');
+    });
+
+    /*
+     * The functions are v0.9's under both versions. `web_core`'s v1.0 checks
+     * return a validation result, and its `and` reads any such result as true,
+     * so a field that fails one of two checks would pass both.
+     */
+    for (const [text, passes] of [
+      ['42', true],
+      ['12', false]
+    ] as const) {
+      it(`runs a v1.0 check written without a message: "${text}" ${passes ? 'passes' : 'fails'}`, async () => {
+        const { surface } = surfaceOf(
+          [
+            {
+              id: 'root',
+              component: 'TextField',
+              label: 'Age',
+              value: { path: '/age' },
+              checks: [
+                {
+                  condition: {
+                    call: 'and',
+                    args: {
+                      values: [
+                        { call: 'required', args: { value: { path: '/age' } } },
+                        { call: 'numeric', args: { value: { path: '/age' }, min: 18 } }
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          { age: text },
+          undefined,
+          'v1.0'
+        );
+
+        const screen = await render(<A2uiSurface surface={surface} />);
+
+        await expect.element(screen.getByRole('textbox', { name: 'Age' })).toBeInTheDocument();
+
+        if (passes) {
+          expect(screen.getByText('Validation failed').query()).toBeNull();
+        } else {
+          await expect.element(screen.getByText('Validation failed')).toBeInTheDocument();
+        }
+      });
+    }
+
+    it('hands the host a v1.0 action with its `userMessage`', async () => {
+      const onAction = vi.fn();
+      const { surface } = surfaceOf(
+        [
+          {
+            id: 'root',
+            component: 'Button',
+            text: 'Roll back',
+            action: { event: { name: 'rollback', userMessage: 'Roll back the release' } }
+          }
+        ],
+        {},
+        onAction,
+        'v1.0'
+      );
+
+      const screen = await render(<A2uiSurface surface={surface} />);
+
+      await screen.getByRole('button', { name: 'Roll back' }).click();
+
+      await expect
+        .poll(() => onAction.mock.calls[0]?.[0])
+        .toMatchObject({ name: 'rollback', userMessage: 'Roll back the release' });
     });
   });
 });

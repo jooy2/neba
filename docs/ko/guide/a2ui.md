@@ -54,7 +54,7 @@ processor.processMessages(whateverTheAgentSent);
 <A2uiSurface surface={surface} />;
 ```
 
-타입 인자를 적어야 processor가 만든 화면을 `A2uiSurface`에 넘길 수 있습니다. `MessageProcessor`는 카탈로그에서 이 타입을 알아내지 않습니다. 어댑터가 그리는 메시지는 v0.9이고, 메시지마다 `"version": "v0.9"`가 있어야 합니다. `@a2ui/web_core`는 카탈로그와 다른 버전을 적은 메시지의 화면도, 버전을 적지 않은 메시지의 화면도 거부합니다.
+타입 인자를 적어야 processor가 만든 화면을 `A2uiSurface`에 넘길 수 있습니다. `MessageProcessor`는 카탈로그에서 이 타입을 알아내지 않습니다. 어댑터가 그리는 메시지는 기본이 v0.9이고, 메시지마다 `"version": "v0.9"`가 있어야 합니다. 에이전트가 `"version": "v1.0"`을 적은 v1.0 메시지를 보낸다면 `createNebaCatalog({ protocolVersion: 'v1.0' })`으로 만드세요. `@a2ui/web_core`는 카탈로그와 다른 버전을 적은 메시지의 화면도, 버전을 적지 않은 메시지의 화면도 거부합니다. 화면은 카탈로그를 id로만 찾으므로 카탈로그 하나는 한 버전만 그리고, 그 카탈로그를 가진 processor도 마찬가지입니다. 에이전트가 두 버전을 모두 쓰는 host라면 버전마다 processor를 하나씩 두고, 메시지의 `version`에 맞는 processor에 넘기면 됩니다.
 
 이게 전부입니다. 어댑터가 컴포넌트 열여덟 개와 함수 열네 개를 등록하고, 화면이 지정하는 `catalogId`는 에이전트에게 건넨 그 파일의 것입니다. 두 반쪽이 어긋날 수가 없습니다.
 
@@ -104,6 +104,8 @@ processor.processMessages(whateverTheAgentSent);
 카탈로그는 **A2UI v1.0** 기준으로 썼고, 파일이 스스로 `protocolVersion`에 그렇게 적어 둡니다. v0.9 카탈로그에는 `theme` 키가 있었고 모든 컴포넌트를 `ComponentCommon`으로 감쌌습니다. v1.0에는 둘 다 없고 대신 `instructions`와 `anyComponent`·`anyFunction`을 담은 `$defs`가 생겼습니다.
 
 **어댑터는 `@a2ui/react/v0_9`에 등록합니다.** 0.12에는 v1.0 렌더러가 없기 때문입니다. 루트 export는 아직 v0.8입니다. 열여덟 개 컴포넌트는 두 버전이 공유하는 구성만 쓰므로 연결이 번역이 아니라 이름 바꾸기로 끝나고, 실제로 다른 세 가지 때문에 렌더러가 메시지를 거부하는 일도 없습니다. v1.0은 `accessibility`를 카탈로그 항목에서 봉투로 옮겼는데 어댑터가 다시 넣어 줍니다. v1.0에서는 check의 `message`를 빼도 되지만 v0.9는 요구하므로, 어댑터는 `message` 없는 check도 받고 필드에는 "Validation failed"가 나옵니다. v1.0의 `Action`에 생긴 `userMessage`는 v0.9가 거부하므로 어댑터가 받아 주고, host가 받는 action에는 event의 `name`, `context`와 함께 값을 풀어 둔 `userMessage`가 들어 있습니다.
+
+**`protocolVersion: 'v1.0'`은 같은 컴포넌트와 함수로 v1.0 메시지를 그립니다.** v1.0 컴포넌트에는 `accessibility.live`, `accessibility.hidden`, `metadata` 객체가 더 붙을 수 있습니다. 이를 읽는 컴포넌트는 없고, 어댑터는 컴포넌트를 거부하지 않고 이 키들만 버립니다. 함수는 어느 버전에서든 v0.9 함수를 씁니다. 카탈로그는 check가 boolean을 돌려준다고 선언하고 v0.9 함수가 그렇게 동작하는 반면, `@a2ui/web_core`의 v1.0 함수는 검사 결과 객체를 돌려주기 때문입니다.
 
 `@a2ui/*` 패키지들은 스펙이 1.0인 지금도 0.12.x에 있으므로, 형식보다 그 주변 도구가 먼저 움직일 것으로 보면 됩니다. v1.0 React 렌더러가 나오면 바뀌는 것은 이 패키지 안의 import 한 줄이고 `catalog.json`은 그대로입니다.
 
