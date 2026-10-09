@@ -1232,7 +1232,7 @@
     },
     "formatDate": {
       "type": "object",
-      "description": "Writes a date or a time through a pattern. The names of months and weekdays are English whatever the reader's language, so for a reader in another language write a pattern of numbers in the order that language uses.",
+      "description": "Writes a date or a time through a pattern. The names of months and weekdays are written in the language the renderer was built for, and the pattern decides their order, so write one in the order the reader's language uses.",
       "properties": {
         "call": {
           "const": "formatDate"

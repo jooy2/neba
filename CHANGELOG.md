@@ -2,6 +2,8 @@
 
 ## vNext (2026--)
 
+## 1.19.1 (2026-10-09)
+
 ### Breaking changes
 
 - **`neba/a2ui` needs `@a2ui/react` and `@a2ui/web_core` 0.12.** The optional peers were `^0.11.0` and are `^0.12.0`, because 0.12 changed the `Catalog` the adapter builds, so upgrade both together with this release. Two changes in 0.12 reach the code around the adapter. `MessageProcessor` no longer takes its component type from the catalog, so its surfaces type-check as `A2uiSurface`'s only when it is written `new MessageProcessor<ReactComponentImplementation>([createNebaCatalog()])`. And it refuses a surface whose messages name another version than the catalog, or none: every message has to carry the catalog's version, `"version": "v0.9"` unless the `protocolVersion` below asks for `"v1.0"`, where 0.11 read any. Everything else the catalog allows keeps working, although 0.12 declares two arguments narrower than it does: a `numeric` check still reads a field's text, `openUrl`'s `url` may still be bound to the data model, and `formatDate` still writes a date that has no time in Safari, where 0.12 alone writes an empty string.
