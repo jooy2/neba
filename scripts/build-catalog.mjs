@@ -20,8 +20,11 @@
  * reason: two files that say the same thing say it until the day one of them
  * does not. The exception is a released minor: `--release` writes a snapshot to
  * `docs/a2ui/<major>.<minor>.json`, which is committed with the release, and
- * `--docs` serves every snapshot at its own path, so an older minor's URL keeps
- * answering after the site has moved on.
+ * `--docs` serves every snapshot at its own path, so a minor's URL keeps
+ * answering with what that minor shipped after the site has moved on. That
+ * includes the minor `package.json` still names: between a release and the
+ * next cut, the source on `main` already holds the next minor's changes, and
+ * the installed adapter of the released one cannot read them.
  *
  * The build also writes `dist/a2ui/adapter-catalog.json`, the same catalog with
  * its prose taken out, and points the adapter's two imports at it. Most of the
@@ -93,28 +96,32 @@ if (release) {
   const served = resolve(root, 'docs/public/a2ui');
 
   write(resolve(served, 'catalog.json'), stamped, 2);
-  write(resolve(served, minor, 'catalog.json'), stamped, 2);
 
-  // Every released minor at its own path, the one being built included only
-  // if it has been released — otherwise the source is newer than the snapshot.
+  // Every released minor at its own path, the one `package.json` names
+  // included: once it has a snapshot it has been released, and the source may
+  // already be newer than what it shipped. Only a minor with no snapshot yet
+  // is served from the source.
   const snapshots = existsSync(releases)
     ? readdirSync(releases).filter((name) => /^\d+\.\d+\.json$/.test(name))
     : [];
 
   for (const name of snapshots) {
-    const released = name.replace(/\.json$/, '');
+    write(
+      resolve(served, name.replace(/\.json$/, ''), 'catalog.json'),
+      JSON.parse(readFileSync(resolve(releases, name), 'utf8')),
+      2
+    );
+  }
 
-    if (released !== minor) {
-      write(
-        resolve(served, released, 'catalog.json'),
-        JSON.parse(readFileSync(resolve(releases, name), 'utf8')),
-        2
-      );
-    }
+  const released = snapshots.includes(`${minor}.json`);
+
+  if (!released) {
+    write(resolve(served, minor, 'catalog.json'), stamped, 2);
   }
 
   console.log(
-    `a2ui: docs/public/a2ui/ — latest and ${minor}, and ${snapshots.length} released snapshot(s)`
+    `a2ui: docs/public/a2ui/ — latest, ${snapshots.length} released snapshot(s)` +
+      (released ? '' : `, and ${minor} from the source`)
   );
 } else {
   const folder = resolve(root, 'dist/a2ui');
