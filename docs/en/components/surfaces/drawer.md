@@ -98,6 +98,16 @@ A closed drawer's contents are not in the DOM by default. `keepMounted` keeps th
 </Drawer>
 ```
 
+### classNames
+
+`className` lands on the panel. Everything around and inside it is reached through `classNames`.
+
+```tsx
+<Drawer title="Filters" classNames={{ body: 'flex flex-col gap-4', actions: 'justify-between' }} />
+```
+
+The slots are `backdrop`, `viewport`, `title`, `description`, `close`, `body` and `actions`, the same as [Dialog](../feedback/dialog)'s. `backdrop` and `viewport` exist only in `overlay` mode, where both render at the end of `<body>`, outside the panel. An `inline` drawer's title holds off a host stylesheet's heading rule, but a property your `classNames.title` sets is left to your class. See [prop conventions](../../design/prop-conventions) for how a class name you pass resolves against the component's own.
+
 ## Accessibility
 
 - In `overlay` mode the panel is a modal dialog: focus is trapped inside, the page behind goes inert, Escape closes it and focus returns to the trigger.

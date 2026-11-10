@@ -98,6 +98,16 @@ import { Button, Drawer, List } from 'neba';
 </Drawer>
 ```
 
+### classNames
+
+`className`은 panel에 붙습니다. 그 바깥과 안쪽은 모두 `classNames`로 닿습니다.
+
+```tsx
+<Drawer title="Filters" classNames={{ body: 'flex flex-col gap-4', actions: 'justify-between' }} />
+```
+
+slot은 [Dialog](../feedback/dialog)와 같은 `backdrop`, `viewport`, `title`, `description`, `close`, `body`, `actions`입니다. `backdrop`과 `viewport`는 `overlay` mode에만 있고, 둘 다 panel 바깥인 `<body>` 끝에 그려집니다. `inline` drawer의 제목은 호스트 stylesheet의 heading 규칙을 막아 두지만, `classNames.title`이 정하는 속성은 넘긴 class를 따릅니다. 넘긴 class가 컴포넌트 자신의 class와 어떻게 겨루는지는 [prop 규약](../../design/prop-conventions)을 보세요.
+
 ## 접근성
 
 - `overlay` mode에서 패널은 modal dialog입니다. focus가 안에 갇히고, 뒤 페이지는 inert가 되며, Esc로 닫히고 focus는 trigger로 돌아갑니다.

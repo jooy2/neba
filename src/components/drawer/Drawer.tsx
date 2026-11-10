@@ -6,9 +6,19 @@ import { boxPaddingXClasses, boxPaddingYClasses } from '../box/Box.js';
 import { actionMessages, useMessages } from '../../internal/i18n.js';
 import { CloseIcon } from '../../internal/icons.js';
 import {
+  COLOR,
+  FONT_SIZE,
+  FONT_WEIGHT,
+  LINE_HEIGHT,
+  MARGIN_BOTTOM,
+  MARGIN_TOP,
+  overriddenBy
+} from '../../internal/overrides.js';
+import {
   cx,
   hasContent,
   headingTitleClasses,
+  headingTitleFloorClasses,
   metaTextClasses,
   popupFadeClasses,
   sheetBodyClasses,
@@ -19,7 +29,7 @@ import {
   surfaceClasses,
   surfaceSlots
 } from '../../internal/styles.js';
-import type { NebaSide, NebaSize, NebaStyleProps } from '../../types.js';
+import type { NebaSide, NebaSize, NebaSlots, NebaStyleProps } from '../../types.js';
 import { useStyleDefaults } from '../../internal/defaults.js';
 
 /**
@@ -36,6 +46,16 @@ import { useStyleDefaults } from '../../internal/defaults.js';
  * across the whole library and would be a second spelling of nothing.
  */
 export type NebaDrawerMode = 'overlay' | 'inline';
+
+/**
+ * The parts a Drawer draws around its panel. `className` is the panel.
+ *
+ * The same names as Dialog's, because they are the same parts. `backdrop` and
+ * `viewport` exist only in `overlay` mode, where both render at the end of
+ * `<body>`, outside the panel; an `inline` drawer draws neither.
+ */
+export type DrawerSlot =
+  'backdrop' | 'viewport' | 'title' | 'description' | 'close' | 'body' | 'actions';
 
 /**
  * A drawer takes `size`, `color` and `density` and stops there.
@@ -168,6 +188,11 @@ export interface DrawerProps
    * @default false
    */
   keepMounted?: boolean;
+  /**
+   * Class names for the parts around the panel. `className` is the panel, so
+   * the scrim behind it is `classNames.backdrop`.
+   */
+  classNames?: NebaSlots<DrawerSlot>;
   /** The body. */
   children?: React.ReactNode;
 }
@@ -390,6 +415,7 @@ export const Drawer = React.forwardRef<HTMLDivElement, DrawerProps>(function Dra
     safeArea = true,
     keepMounted = false,
     className,
+    classNames,
     style,
     children,
     ...props
@@ -436,14 +462,22 @@ export const Drawer = React.forwardRef<HTMLDivElement, DrawerProps>(function Dra
   // gets the plain tags rather than a dialog's parts outside a dialog.
   const heading = `h${headingLevel}` as const;
   const DescriptionTag = overlay ? BaseUIDialog.Description : 'p';
+  const titleOverridden = React.useMemo(() => overriddenBy(classNames?.title), [classNames?.title]);
   const titleClasses = cx(
     // An inline Drawer's title is a heading sitting in the page, so it is
     // written at two-class strength — see `headingTitleClasses`. The overlay
     // one is portalled and out of a host's reach either way; one code path is
-    // worth more than the handful of characters.
+    // worth more than the handful of characters. That guard would beat a
+    // caller's `classNames.title` as well, so each property that class sets
+    // drops to the zero-specificity floor instead — `internal/overrides.ts`.
     'neba-heading',
-    '[&.neba-heading]:m-0 [&.neba-heading]:font-semibold [&.neba-heading]:text-inherit',
-    headingTitleClasses[size]
+    titleOverridden & (MARGIN_TOP | MARGIN_BOTTOM) ? '[:where(&)]:m-0' : '[&.neba-heading]:m-0',
+    titleOverridden & FONT_WEIGHT ? '[:where(&)]:font-semibold' : '[&.neba-heading]:font-semibold',
+    titleOverridden & COLOR ? '[:where(&)]:text-inherit' : '[&.neba-heading]:text-inherit',
+    titleOverridden & (FONT_SIZE | LINE_HEIGHT)
+      ? headingTitleFloorClasses[size]
+      : headingTitleClasses[size],
+    classNames?.title
   );
 
   const contents = (
@@ -461,7 +495,13 @@ export const Drawer = React.forwardRef<HTMLDivElement, DrawerProps>(function Dra
               )
             ) : null}
             {hasContent(description) ? (
-              <DescriptionTag className={`m-0 text-(--neba-muted-fg) ${metaTextClasses[size]}`}>
+              <DescriptionTag
+                className={cx(
+                  'm-0 text-(--neba-muted-fg)',
+                  metaTextClasses[size],
+                  classNames?.description
+                )}
+              >
                 {description}
               </DescriptionTag>
             ) : null}
@@ -471,7 +511,7 @@ export const Drawer = React.forwardRef<HTMLDivElement, DrawerProps>(function Dra
             overlay ? (
               <BaseUIDialog.Close
                 aria-label={closeLabel ?? messages.close}
-                className={sheetCloseClasses}
+                className={cx(sheetCloseClasses, classNames?.close)}
               >
                 <CloseIcon />
               </BaseUIDialog.Close>
@@ -479,7 +519,7 @@ export const Drawer = React.forwardRef<HTMLDivElement, DrawerProps>(function Dra
               <button
                 type="button"
                 aria-label={closeLabel ?? messages.close}
-                className={sheetCloseClasses}
+                className={cx(sheetCloseClasses, classNames?.close)}
                 onClick={() => {
                   if (open === undefined) setInlineOpen(false);
                   onOpenChange?.(false);
@@ -506,7 +546,8 @@ export const Drawer = React.forwardRef<HTMLDivElement, DrawerProps>(function Dra
             // the top of a floated label. The padding is room for both and the
             // negative margin hands it straight back, so nothing on the sheet
             // moves — see `sheetScrollRoomClasses`.
-            dividers ? '' : sheetScrollRoomClasses[size]
+            dividers ? '' : sheetScrollRoomClasses[size],
+            classNames?.body
           )}
         >
           {children}
@@ -518,7 +559,8 @@ export const Drawer = React.forwardRef<HTMLDivElement, DrawerProps>(function Dra
           className={cx(
             'flex shrink-0 flex-wrap items-center justify-end gap-2',
             sectionClasses,
-            dividers ? dividerClasses : ''
+            dividers ? dividerClasses : '',
+            classNames?.actions
           )}
         >
           {actions}
@@ -583,7 +625,8 @@ export const Drawer = React.forwardRef<HTMLDivElement, DrawerProps>(function Dra
           className={cx(
             'neba-portal',
             backdropClasses,
-            modal === true ? '' : 'pointer-events-none'
+            modal === true ? '' : 'pointer-events-none',
+            classNames?.backdrop
           )}
         />
 
@@ -591,7 +634,8 @@ export const Drawer = React.forwardRef<HTMLDivElement, DrawerProps>(function Dra
           className={cx(
             'neba-portal fixed inset-0 z-(--neba-z-portal) flex [&[hidden]]:hidden',
             viewportClasses[side],
-            modal === true ? '' : 'pointer-events-none'
+            modal === true ? '' : 'pointer-events-none',
+            classNames?.viewport
           )}
         >
           <BaseUIDialog.Popup

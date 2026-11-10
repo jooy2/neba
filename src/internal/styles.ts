@@ -421,9 +421,10 @@ export const sheetTitleHeadingClasses =
  *
  * So those three write their type through `[&.neba-heading]`, which compiles to
  * two classes, and carry `neba-heading` to close the selector. It is the same
- * guard `neba-link` and `neba-typography` write, without the floor they drop
- * to for a property a caller sets (`internal/overrides.ts`): none of the three
- * headings takes a caller's `className`, so the host is all it holds off.
+ * guard `neba-link` and `neba-typography` write. A Drawer's title is the one of
+ * the three that takes a caller's class, `classNames.title`, so it drops to
+ * `headingTitleFloorClasses` below for the size and the leading when that class
+ * sets either (`internal/overrides.ts`).
  *
  * This is a second spelling of one ladder, which is normally the thing to avoid.
  * It is checked rather than trusted — `test/package/resolution.test.ts` asserts
@@ -436,6 +437,19 @@ export const headingTitleClasses: Record<NebaSize, string> = {
   md: '[&.neba-heading]:text-[0.9375rem]/[1.25rem]',
   lg: '[&.neba-heading]:text-[1.0625rem]/[1.5rem]',
   xl: '[&.neba-heading]:text-[1.25rem]/[1.75rem]'
+};
+
+/**
+ * The same ladder at zero specificity: the floor a heading's size and leading
+ * drop to when a caller's class sets either, so that class wins. The resolution
+ * test holds it to `sheetTitleClasses` the same way.
+ */
+export const headingTitleFloorClasses: Record<NebaSize, string> = {
+  xs: '[:where(&)]:text-[0.75rem]/[1rem]',
+  sm: '[:where(&)]:text-[0.8125rem]/[1.125rem]',
+  md: '[:where(&)]:text-[0.9375rem]/[1.25rem]',
+  lg: '[:where(&)]:text-[1.0625rem]/[1.5rem]',
+  xl: '[:where(&)]:text-[1.25rem]/[1.75rem]'
 };
 
 /**

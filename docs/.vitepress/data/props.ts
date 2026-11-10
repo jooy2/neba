@@ -11952,6 +11952,7 @@ export const propTables: Record<string, PropRow[]> = {
         en: "Keeps a closed drawer's panel and contents in the DOM, hidden. An overlay drawer is portalled, so they arrive once the page has hydrated; an inline one is in the server's HTML as well"
       }
     },
+    slotsProp('backdrop', 'viewport', 'title', 'description', 'close', 'body', 'actions'),
     {
       name: 'children',
       type: 'ReactNode',

@@ -446,6 +446,105 @@ describe('Drawer', () => {
     });
   });
 
+  describe('slots', () => {
+    const parts = {
+      title: 'slot-title',
+      description: 'slot-description',
+      close: 'slot-close',
+      body: 'slot-body',
+      actions: 'slot-actions'
+    };
+
+    it('puts a class name on every part of an overlay drawer', async () => {
+      const screen = await render(
+        <Drawer
+          defaultOpen
+          title="Filters"
+          description="Narrow the list."
+          actions={<Button>Apply</Button>}
+          className="panel-class"
+          classNames={parts}
+        >
+          The body.
+        </Drawer>
+      );
+      const panel = screen.getByRole('dialog');
+
+      await expect.element(panel).toHaveClass('panel-class');
+      expect(panel.element()).not.toHaveClass('slot-body');
+      expect(screen.getByRole('heading', { name: 'Filters' }).element()).toHaveClass('slot-title');
+      expect(screen.getByText('Narrow the list.').element()).toHaveClass('slot-description');
+      expect(screen.getByRole('button', { name: 'Close' }).element()).toHaveClass('slot-close');
+      expect(screen.getByText('The body.').element()).toHaveClass('slot-body');
+      expect(panel.element().querySelector('.slot-actions')).not.toBeNull();
+    });
+
+    it('puts a class name on every part of an inline drawer', async () => {
+      const screen = await render(
+        <Drawer
+          mode="inline"
+          showClose
+          title="Filters"
+          description="Narrow the list."
+          actions={<Button>Apply</Button>}
+          classNames={parts}
+        >
+          The body.
+        </Drawer>
+      );
+
+      await expect
+        .element(screen.getByRole('heading', { name: 'Filters' }))
+        .toHaveClass('slot-title');
+      expect(screen.getByText('Narrow the list.').element()).toHaveClass('slot-description');
+      expect(screen.getByRole('button', { name: 'Close' }).element()).toHaveClass('slot-close');
+      expect(screen.getByText('The body.').element()).toHaveClass('slot-body');
+      expect(screen.container.querySelector('.slot-actions')).not.toBeNull();
+    });
+
+    /** Both render outside the panel, so nothing written against it finds them. */
+    it('reaches the backdrop and the viewport, which sit outside the panel', async () => {
+      const screen = await render(
+        <Drawer
+          defaultOpen
+          title="Filters"
+          classNames={{ backdrop: 'slot-backdrop', viewport: 'slot-viewport' }}
+        />
+      );
+      const panel = screen.getByRole('dialog').element();
+
+      expect(panel.closest('.slot-viewport')).not.toBeNull();
+      expect(panel.querySelector('.slot-backdrop')).toBeNull();
+      expect(document.querySelector('.slot-backdrop')).not.toBeNull();
+    });
+
+    /**
+     * The title is written at two-class strength to hold off a host's `h2`
+     * rule, which would hold off a caller's one-class utility too. What the
+     * caller's class sets drops to the floor; the rest stays guarded.
+     * `test/styles/class-overrides.test.tsx` measures the outcome.
+     */
+    it('drops only what the title class sets from the guard to the floor', async () => {
+      const screen = await render(
+        <Drawer mode="inline" size="md" title="Filters" classNames={{ title: 'text-xl' }} />
+      );
+      const heading = screen.getByRole('heading', { name: 'Filters' }).element();
+
+      expect(heading).toHaveClass('[:where(&)]:text-[0.9375rem]/[1.25rem]');
+      expect(heading).not.toHaveClass('[&.neba-heading]:text-[0.9375rem]/[1.25rem]');
+      expect(heading).toHaveClass('[&.neba-heading]:font-semibold');
+      expect(heading).toHaveClass('[&.neba-heading]:m-0');
+    });
+
+    it('keeps the whole guard on a title with no class', async () => {
+      const screen = await render(<Drawer mode="inline" size="md" title="Filters" />);
+      const heading = screen.getByRole('heading', { name: 'Filters' }).element();
+
+      expect(heading).toHaveClass('[&.neba-heading]:text-[0.9375rem]/[1.25rem]');
+      expect(heading.className).not.toMatch(/\[:where\(&\)\]/);
+    });
+  });
+
   // A heading level is a claim about the page the drawer is on, which only the
   // caller knows.
   describe('headingLevel', () => {

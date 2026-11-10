@@ -16,7 +16,7 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { page } from 'vitest/browser';
 import { render } from 'vitest-browser-react';
-import { Card, TextLink, Typography } from 'neba';
+import { Card, Drawer, TextLink, Typography } from 'neba';
 import overridesCss from './class-overrides.css?inline';
 
 const HOST = `
@@ -265,5 +265,47 @@ describe('a heading passed as a sheet title', () => {
     expect(heading.marginBottom).toBe('8px');
     // What the classes do not say is still the sheet's.
     expect(heading.fontWeight).toBe('600');
+  });
+});
+
+/**
+ * An inline Drawer's title is an `h2` in the page, guarded like Typography's
+ * scale, and the one such heading that takes a caller's class.
+ */
+describe('an inline Drawer title', () => {
+  it('keeps the sheet scale inside an article that styles its tag', async () => {
+    const screen = await render(
+      <div className="prose">
+        <Drawer mode="inline" title="Filters" />
+      </div>
+    );
+    const heading = await styleOf(screen, 'Filters');
+
+    expect(heading.fontSize).toBe('15px');
+    expect(heading.fontWeight).toBe('600');
+    expect(heading.marginTop).toBe('0px');
+  });
+
+  it('takes a size from classNames.title', async () => {
+    const screen = await render(
+      <Drawer mode="inline" title="Filters" classNames={{ title: 'text-xl' }} />
+    );
+    const heading = await styleOf(screen, 'Filters');
+
+    expect(heading.fontSize).toBe('20px');
+    expect(heading.fontWeight).toBe('600');
+  });
+
+  it('keeps the guard on what that class does not set', async () => {
+    const screen = await render(
+      <div className="prose">
+        <Drawer mode="inline" title="Filters" classNames={{ title: 'text-xl' }} />
+      </div>
+    );
+    const heading = await styleOf(screen, 'Filters');
+
+    expect(heading.fontWeight).toBe('600');
+    expect(heading.marginTop).toBe('0px');
+    expect(heading.marginBottom).toBe('0px');
   });
 });

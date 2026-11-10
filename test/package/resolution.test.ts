@@ -30,7 +30,11 @@ import { describe, expect, it } from 'vitest';
 import pkg from '../../package.json';
 import terser from '../../terser.config.json';
 import * as i18n from '../../src/internal/i18n.js';
-import { headingTitleClasses, sheetTitleClasses } from '../../src/internal/styles.js';
+import {
+  headingTitleClasses,
+  headingTitleFloorClasses,
+  sheetTitleClasses
+} from '../../src/internal/styles.js';
 
 /** Every module under `src/`, as text. Vite inlines these at build time. */
 const sources = import.meta.glob('../../src/**/*.{ts,tsx}', {
@@ -770,17 +774,21 @@ describe('the published package', () => {
     });
 
     /* `headingTitleClasses` is `sheetTitleClasses` written so it survives a
-       host stylesheet, and a second spelling of one ladder is normally the thing
-       to avoid. It is kept honest here rather than by hand: the two tables are
-       the same values, and only the prefix differs. */
-    it('keeps the two title ladders in step', () => {
-      const prefix = '[&.neba-heading]:';
+       host stylesheet, and `headingTitleFloorClasses` is the same ladder at zero
+       specificity, for a heading a caller's class has to win on. A second
+       spelling of one ladder is normally the thing to avoid, so they are kept
+       honest here rather than by hand: the tables are the same values, and only
+       the prefix differs. */
+    it.each([
+      ['guard', headingTitleClasses, '[&.neba-heading]:'],
+      ['floor', headingTitleFloorClasses, '[:where(&)]:']
+    ] as const)('keeps the heading title %s in step with the title ladder', (_, ladder, prefix) => {
       const sizes = Object.keys(sheetTitleClasses) as (keyof typeof sheetTitleClasses)[];
 
-      expect(Object.keys(headingTitleClasses)).toEqual(sizes);
+      expect(Object.keys(ladder)).toEqual(sizes);
 
       for (const size of sizes) {
-        const doubled = headingTitleClasses[size].split(' ');
+        const doubled = ladder[size].split(' ');
 
         expect(doubled.every((name) => name.startsWith(prefix))).toBe(true);
         expect(doubled.map((name) => name.slice(prefix.length)).join(' ')).toBe(

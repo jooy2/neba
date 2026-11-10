@@ -2,6 +2,10 @@
 
 ## vNext (2026--)
 
+### Added
+
+- **`Drawer` takes `classNames`**, with the seven slots `Dialog` has: `backdrop`, `viewport`, `title`, `description`, `close`, `body` and `actions`. The first two exist only in `overlay` mode. An `inline` drawer's title still holds off a host stylesheet's `h2` rule, and a property your `classNames.title` sets is left to your class. `DrawerSlot` is exported.
+
 ### Fixed
 
 - **A label floated onto a field's top edge is no longer cut off at the top of a `Dialog` or `Drawer` body.** The body kept 4px above its first child for a focus ring, and a `labelPlacement="float"` or `"notch"` label rises half its line box above the field, 7.5px at `lg`, so its top was clipped. The body now keeps that much room at its own `size`, from 6px at `xs` to 9px at `xl`, and takes it back with a negative margin, so nothing on the sheet moves at rest. While the body scrolls, its content is cut off up to 5px closer to the header than before. A field set larger than its sheet's `size` gets only the sheet's room.
