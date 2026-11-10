@@ -424,8 +424,9 @@ export const Panes = React.forwardRef<HTMLDivElement, PanesProps>(function Panes
     // No `[outline:none]` beside it: the house transition already declares the
     // ring at rest for the colour to travel from, and two `outline` shorthands
     // of equal specificity are decided by the order Tailwind generated them in
-    // rather than by intent.
-    'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-0',
+    // rather than by intent. Inside the edge, because the handle runs the full
+    // length of the panes, and a Pane around nested panes clips its content.
+    'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-[-2px]',
     resizable
       ? cx(
           horizontal ? 'cursor-col-resize' : 'cursor-row-resize',

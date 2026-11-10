@@ -574,8 +574,10 @@ export const Sidebar = React.forwardRef<HTMLElement, SidebarProps>(function Side
             // No `[outline:none]` beside it: the house transition already declares
             // the ring at rest for the colour to travel from, and two `outline`
             // shorthands of equal specificity are decided by the order Tailwind
-            // generated them in rather than by intent.
-            'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-0'
+            // generated them in rather than by intent. Inside the edge, because
+            // the handle runs the sidebar's full height, and a page shell that
+            // fills the window clips at its top and bottom.
+            'focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-[-2px]'
           )}
           onPointerDown={beginDrag}
           onKeyDown={(event) => {

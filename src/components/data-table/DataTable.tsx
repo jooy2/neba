@@ -572,7 +572,9 @@ const resizeHandleClasses =
   // arrow keys move is drawn while they move it.
   'hover:after:[background:var(--n-accent)] data-[dragging]:after:[background:var(--n-accent)] ' +
   'focus-visible:after:[background:var(--n-accent)] ' +
-  '[outline:0_solid_transparent] focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-0';
+  // Inside the edge: the handle is as tall as the header cell, and the header
+  // is at the top of the box that scrolls.
+  '[outline:0_solid_transparent] focus-visible:[outline:2px_solid_var(--n-ring)] focus-visible:outline-offset-[-2px]';
 
 /** How far one arrow key press moves a column's boundary. The Sidebar's step. */
 const KEYBOARD_STEP = 16;

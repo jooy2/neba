@@ -15,8 +15,12 @@ import {
   AccordionItem,
   Button,
   Collapsible,
+  DataTable,
   HowToSteps,
+  Pane,
+  Panes,
   Reasoning,
+  Sidebar,
   TextField,
   ToolCall
 } from 'neba';
@@ -176,5 +180,58 @@ describe('a focus ring', () => {
     expect(
       clippedSides(button, button.getBoundingClientRect(), reach, ['right', 'bottom', 'left'])
     ).toEqual([]);
+  });
+
+  /**
+   * A resize handle runs the full length of the edge it moves, so a ring drawn
+   * outside it crosses the box it is in at both ends.
+   */
+  describe('on a resize handle', () => {
+    it('stays inside a Panes handle', async () => {
+      const screen = await render(
+        <div style={{ height: 240 }}>
+          <Panes>
+            <Pane>First</Pane>
+            <Pane>Second</Pane>
+          </Panes>
+        </div>
+      );
+
+      expect(focusRing(screen.getByRole('separator').element() as HTMLElement)).toBeLessThanOrEqual(
+        0
+      );
+    });
+
+    it('stays inside a Sidebar handle', async () => {
+      const screen = await render(
+        <div style={{ height: 240, display: 'flex' }}>
+          <Sidebar collapseBelow="none" resizable>
+            Links
+          </Sidebar>
+        </div>
+      );
+
+      expect(focusRing(screen.getByRole('separator').element() as HTMLElement)).toBeLessThanOrEqual(
+        0
+      );
+    });
+
+    it('stays inside a DataTable column handle', async () => {
+      const screen = await render(
+        <DataTable
+          label="Regions"
+          resizable
+          headers={[
+            { key: 'name', label: 'Name' },
+            { key: 'code', label: 'Code' }
+          ]}
+          items={[{ name: 'Seoul', code: 'KR' }]}
+          getRowKey={(row) => row.code}
+        />
+      );
+      const handle = screen.getByRole('separator').first().element() as HTMLElement;
+
+      expect(focusRing(handle)).toBeLessThanOrEqual(0);
+    });
   });
 });
