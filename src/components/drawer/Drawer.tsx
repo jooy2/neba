@@ -14,6 +14,7 @@ import {
   sheetBodyClasses,
   sheetCloseClasses,
   sheetHeaderGapClasses,
+  sheetScrollRoomClasses,
   sheetSectionGapClasses,
   surfaceClasses,
   surfaceSlots
@@ -500,12 +501,12 @@ export const Drawer = React.forwardRef<HTMLDivElement, DrawerProps>(function Dra
             'min-h-0 flex-1 overflow-y-auto overscroll-contain',
             sectionClasses,
             dividers && (hasHeader || showCloseButton) ? dividerClasses : '',
-            // A scroll container clips at its padding box and a focus ring is
-            // drawn outside the control that owns it, so a field at the top or
-            // bottom of an unruled body would have its ring sliced off. The
-            // padding is room for the ring and the negative margin hands the
-            // space straight back, so nothing on the sheet moves.
-            dividers ? '' : 'py-1 -my-1'
+            // A scroll container clips at its padding box, so a field at the
+            // top or bottom of an unruled body would lose its focus ring and
+            // the top of a floated label. The padding is room for both and the
+            // negative margin hands it straight back, so nothing on the sheet
+            // moves — see `sheetScrollRoomClasses`.
+            dividers ? '' : sheetScrollRoomClasses[size]
           )}
         >
           {children}

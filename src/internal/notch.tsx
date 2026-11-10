@@ -46,6 +46,10 @@ const gapValues: Record<NebaSize, string> = {
  * The label's line box on the edge. Only its height matters: the label is
  * centred on the edge by it, and a line box as tall as the control's would
  * centre the text on nothing in particular.
+ *
+ * Half of it is how far the label rises above the field, and so the room a
+ * Dialog's and a Drawer's body keeps above its first child:
+ * `sheetScrollRoomClasses` in `internal/styles`. Keep the two in step.
  */
 const floatLeadingValues: Record<NebaSize, string> = {
   xs: '0.75rem',

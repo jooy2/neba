@@ -469,6 +469,34 @@ export const sheetSectionGapClasses: Record<NebaSize, string> = {
 };
 
 /**
+ * Room around the scrolling body of a Dialog and a Drawer, when there are no
+ * dividers, and the negative margin that hands it straight back, so nothing on
+ * the sheet moves.
+ *
+ * A scroll container clips at its padding box, and two things are drawn past
+ * the top of a field: its focus ring, 4px out, and a label floated onto its top
+ * edge, half that label's line box out. The bottom only ever needs the ring. The
+ * top is half of `floatLeadingValues` in `internal/notch.tsx`, at the same size,
+ * so a field the size of its sheet keeps its whole label — keep the two in step.
+ *
+ * Each step also fits inside `sheetSectionGapClasses` beside it, which is what
+ * the negative margin is taken back out of under a header. Past the gap, the
+ * body would lie over the header's last pixels and take their clicks.
+ *
+ * It is written on `padding-block` and `margin-block`, the properties `py-*` and
+ * `-my-*` set, so a caller's `py-*` in `classNames.body` competes with it on one
+ * property. Split into `pt-*` and `pb-*`, it sorts after every `py-*`, and a
+ * caller's `py-*` stops applying.
+ */
+export const sheetScrollRoomClasses: Record<NebaSize, string> = {
+  xs: '[padding-block:0.375rem_0.25rem] [margin-block:-0.375rem_-0.25rem]',
+  sm: '[padding-block:0.4375rem_0.25rem] [margin-block:-0.4375rem_-0.25rem]',
+  md: '[padding-block:0.5rem_0.25rem] [margin-block:-0.5rem_-0.25rem]',
+  lg: '[padding-block:0.5rem_0.25rem] [margin-block:-0.5rem_-0.25rem]',
+  xl: '[padding-block:0.5625rem_0.25rem] [margin-block:-0.5625rem_-0.25rem]'
+};
+
+/**
  * Between the options of a RadioGroup or a CheckboxGroup, when no `spacing`
  * says otherwise.
  *

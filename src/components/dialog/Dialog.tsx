@@ -14,6 +14,7 @@ import {
   sheetBodyClasses,
   sheetCloseClasses,
   sheetHeaderGapClasses,
+  sheetScrollRoomClasses,
   sheetSectionGapClasses,
   sheetTitleClasses,
   surfaceClasses,
@@ -370,15 +371,14 @@ export function Dialog(rawProps: DialogProps) {
                   'min-h-0 flex-1 overflow-y-auto overscroll-contain',
                   sectionClasses,
                   dividers && (hasHeader || showClose) ? dividerClasses : '',
-                  // A scroll container clips at its padding box, and a focus
-                  // ring is drawn 4px outside the control that owns it — so a
-                  // field at the top or bottom of an unruled body had its ring
-                  // sliced off. The padding is room for the ring and the
-                  // negative margin hands the space straight back, so nothing
-                  // on the sheet moves. Only without `dividers`: with them the
-                  // body already carries `insetY`, and pulling it up would drag
-                  // the rule into the section above.
-                  dividers ? '' : 'py-1 -my-1',
+                  // A scroll container clips at its padding box, so a field at
+                  // the top or bottom of an unruled body lost its focus ring and
+                  // the top of a floated label. The padding is room for both and
+                  // the negative margin hands it straight back, so nothing on
+                  // the sheet moves — see `sheetScrollRoomClasses`. Only without
+                  // `dividers`: with them the body already carries `insetY`, and
+                  // pulling it up would drag the rule into the section above.
+                  dividers ? '' : sheetScrollRoomClasses[size],
                   classNames?.body
                 )}
               >

@@ -171,10 +171,12 @@ describe('Dialog', () => {
     /**
      * The body is a scroll container and a scroll container clips at its padding
      * box, so a field flush against the top or bottom of it had its focus ring —
-     * drawn 4px outside the control — sliced off. The padding is room for the
-     * ring and the negative margin hands the space straight back.
+     * drawn 4px outside the control — sliced off, and a label floated onto its
+     * top edge lost its top. The padding is room for both and the negative
+     * margin hands the space straight back. `test/styles/sheet-body.test.tsx`
+     * measures that it is enough.
      */
-    it('leaves room for a focus ring at the edges of the scrolling body', async () => {
+    it('leaves room at the edges of the scrolling body and takes it back', async () => {
       const screen = await render(
         <Dialog defaultOpen title="Delete">
           <input aria-label="Name" />
@@ -183,8 +185,8 @@ describe('Dialog', () => {
       const body = screen.getByLabelText('Name').element().parentElement as HTMLElement;
 
       expect(body).toHaveClass('overflow-y-auto');
-      expect(body).toHaveClass('py-1');
-      expect(body).toHaveClass('-my-1');
+      expect(body.className).toMatch(/\[padding-block:/);
+      expect(body.className).toMatch(/\[margin-block:-/);
     });
 
     it('does not pull the body up when dividers already give it room', async () => {
@@ -195,7 +197,7 @@ describe('Dialog', () => {
       );
       const body = screen.getByLabelText('Name').element().parentElement as HTMLElement;
 
-      expect(body).not.toHaveClass('-my-1');
+      expect(body.className).not.toMatch(/\[margin-block:/);
       expect(body).toHaveClass('border-t');
     });
 
