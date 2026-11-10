@@ -80,6 +80,23 @@ jobs:
       # below, so running it here as well would build twice.
       - run: npm ci --ignore-scripts
 
+      # npm records the commit a version was built from as `gitHead`, and it
+      # reads it from `.git/HEAD` only when it publishes a folder. A tarball is
+      # read where npm unpacks it, in its cache, where there is no repository to
+      # ask, so every version published from one went out without it. npm keeps
+      # a `gitHead` the manifest already has, so the commit is written into
+      # `package.json` before it is packed: the tarball carries it, and the
+      # version on npm names this commit again. Written with `node` rather than
+      # `npm pkg set`, which also sorts the dependency maps it rewrites.
+      - name: Record the commit in package.json
+        run: |
+          node -e "
+            const fs = require('node:fs');
+            const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+            pkg.gitHead = process.argv[1];
+            fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
+          " "$(git rev-parse HEAD)"
+
       # `npm pack` runs `prepare` and packs what `.npmignore` lets through, which
       # is exactly what `npm publish` will upload — the tarball on the release
       # is the package, not a second build of it.
