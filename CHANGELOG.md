@@ -10,6 +10,8 @@
 
 - **A focus ring or a floated label at the top of a `Collapsible`, `Accordion`, `Reasoning`, `ToolCall` or `Sources` panel is no longer cut off.** The panel clipped at the top edge of its body, so a field, a button or a link placed first lost the top of its ring, and a floated label lost up to 8.5px. The panel now keeps 9px of room above its body and takes it back with a negative margin, so nothing moves. That strip lies over the bottom of the trigger and lets the pointer through, so the trigger keeps its whole hit area.
 
+- **A `Collapsible` with its own `trigger` no longer cuts that trigger's focus ring off on every side.** The root clipped its content to keep the default trigger's hover fill inside the sheet's corners. Given a `trigger`, it no longer clips, and the panel rounds its own bottom corners instead.
+
 - **A label floated onto a field's top edge is no longer cut off at the top of a `Dialog` or `Drawer` body.** The body kept 4px above its first child for a focus ring, and a `labelPlacement="float"` or `"notch"` label rises half its line box above the field, 7.5px at `lg`, so its top was clipped. The body now keeps that much room at its own `size`, from 6px at `xs` to 9px at `xl`, and takes it back with a negative margin, so nothing on the sheet moves at rest. While the body scrolls, its content is cut off up to 5px closer to the header than before. A field set larger than its sheet's `size` gets only the sheet's room.
 
 ## 1.19.1 (2026-10-09)

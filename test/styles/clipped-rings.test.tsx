@@ -10,7 +10,15 @@
 import * as React from 'react';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-react';
-import { Accordion, AccordionItem, Collapsible, Reasoning, TextField, ToolCall } from 'neba';
+import {
+  Accordion,
+  AccordionItem,
+  Button,
+  Collapsible,
+  Reasoning,
+  TextField,
+  ToolCall
+} from 'neba';
 import standaloneCss from '../../src/standalone.css?inline';
 
 let sheet: HTMLStyleElement;
@@ -74,6 +82,14 @@ function labelClipping(): string[] {
   return clippedSides(label, label.getBoundingClientRect(), 0, ['top']);
 }
 
+/** Focuses `element` from the keyboard and returns how far its ring reaches out. */
+function focusRing(element: HTMLElement): number {
+  element.focus({ focusVisible: true } as FocusOptions);
+  const style = getComputedStyle(element);
+
+  return parseFloat(style.outlineWidth) + parseFloat(style.outlineOffset);
+}
+
 const field = <TextField label="Name" labelPlacement="float" defaultValue="Draft" fullWidth />;
 
 /** Lets a panel finish opening, which is when its clip settles. */
@@ -120,5 +136,27 @@ describe('a floated label at the top of a disclosure panel', () => {
     const hit = document.elementFromPoint(rect.left + rect.width / 2, rect.bottom - 2);
 
     expect(trigger.contains(hit)).toBe(true);
+  });
+});
+
+describe('a focus ring', () => {
+  it('reaches round a Collapsible’s own trigger on every side', async () => {
+    const screen = await render(
+      <Collapsible variant="text" padded={false} trigger={<Button>Show more</Button>}>
+        The rest.
+      </Collapsible>
+    );
+    const button = screen.getByRole('button', { name: 'Show more' }).element() as HTMLElement;
+    const reach = focusRing(button);
+
+    expect(reach).toBeGreaterThan(0);
+    expect(
+      clippedSides(button, button.getBoundingClientRect(), reach, [
+        'top',
+        'right',
+        'bottom',
+        'left'
+      ])
+    ).toEqual([]);
   });
 });

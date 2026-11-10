@@ -192,9 +192,12 @@ export const Collapsible = React.forwardRef<HTMLDivElement, CollapsibleProps>(
         onOpenChange={(next) => onOpenChange?.(next)}
         disabled={disabled}
         className={[
-          // `overflow-hidden` is what makes the panel a window rather than
-          // something that spills past the sheet's own corners while it moves.
-          'flex flex-col overflow-hidden',
+          // `overflow-hidden` keeps the default trigger's hover fill and the
+          // moving panel inside the sheet's rounded corners. A caller's own
+          // `trigger` draws its own surface, and the clip only cut its focus
+          // ring off on every side, so there the panel rounds its own bottom
+          // corners instead.
+          trigger ? 'flex flex-col' : 'flex flex-col overflow-hidden',
           radiusClasses[size],
           variantClasses[variant],
           transitionClasses,
@@ -291,7 +294,9 @@ export const Collapsible = React.forwardRef<HTMLDivElement, CollapsibleProps>(
           // own: Base UI warns about a `keepMounted={false}` beside it, and that
           // pair is the default, so every Collapsible on a page said so.
           keepMounted={hiddenUntilFound ? undefined : keepMounted}
-          className={collapsiblePanelClasses}
+          className={
+            trigger ? `${collapsiblePanelClasses} rounded-b-[inherit]` : collapsiblePanelClasses
+          }
         >
           <div
             className={[
