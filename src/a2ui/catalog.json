@@ -5,7 +5,7 @@
   "title": "Neba",
   "description": "The subset of the Neba component library an agent can describe: eighteen components whose every prop is a literal, an enumerated value or a reference to another component by ID.",
   "catalogId": "https://neba.cdget.com/a2ui/catalog.json",
-  "instructions": "Neba is a React component library. Every component below is a real one, and what you write here is turned into that component rather than into markup.\n\n## Laying a surface out\n\nNothing has a margin of its own. Two components sit beside each other only inside a `Flex`, and the gutter between them is that `Flex`'s `spacing`. Nest a vertical `Flex` inside a horizontal one to build a grid.\n\nA component that takes a child takes an **ID**, never an inline definition, and a `Card` and an `Alert` take exactly one — wrap several in a `Flex` and pass that.\n\n## Colour means something here\n\n`color` is one of six semantic families and never a decorative choice. `success`, `warning` and `danger` say how something went; `info` is a note; `primary` is the product's own accent and `secondary` is the quiet one. Do not reach for a family because a screen needs variety, and do not use `danger` for anything but something that failed or something that destroys.\n\nThere is **one** `solid` control in a view — the action the view exists for. Everything else is `outline` or `text`.\n\n## One ladder\n\n`size` is the same five steps on every component, so an `md` Button, an `md` TextField and an `md` Select are the same height and line up in a row. Pick one size for a screen and stay on it; `density` is the prop for making something tighter, and it changes padding only.\n\n## Fields carry their own words\n\nA `TextField`, a `Select`, a `Checkbox` and the rest each draw their own label, helper line and error message. Never add a `Typography` above a field to label it, and never add one below it to show an error — put the message in the field's own `checks`. Give every check a `message` that says what to fix: one without a message shows \"Validation failed\", which tells the reader nothing.\n\n## Text\n\nEvery string a reader sees is a `Typography`. Its `level` says what the text *is* rather than how big it should be: use `h1`…`h6` in order for real headings, and do not pick a heading level because you want larger text.\n\n## Building a sentence out of a value\n\nThere are no operators. `formatString(\"Hello ${/user/name}\")` is how a value is put into a sentence, and `formatNumber`, `formatCurrency`, `formatDate` and `pluralize` are how a number or a date is written in the reader's own language. Never assemble a date out of its parts.",
+  "instructions": "Neba is a React component library. Every component below is a real one, and what you write here is turned into that component rather than into markup.\n\n## Laying a surface out\n\nNothing has a margin of its own. Two components sit beside each other only inside a `Flex`, and the gutter between them is that `Flex`'s `spacing`. Nest a vertical `Flex` inside a horizontal one to build a grid.\n\nA component that takes a child takes an **ID**, never an inline definition, and a `Card` and an `Alert` take exactly one — wrap several in a `Flex` and pass that.\n\n## Colour means something here\n\n`color` is one of six semantic families and never a decorative choice. `success`, `warning` and `danger` say how something went; `info` is a note; `primary` is the product's own accent and `secondary` is the quiet one. Do not reach for a family because a screen needs variety, and do not use `danger` for anything but something that failed or something that destroys.\n\nThere is **one** `solid` control in a view — the action the view exists for. Everything else is `outline` or `text`.\n\n## One ladder\n\n`size` is the same five steps on every component, so an `md` Button, an `md` TextField and an `md` Select are the same height and line up in a row. Pick one size for a screen and stay on it; `density` is the prop for making something tighter, and it changes padding only.\n\n## Fields carry their own words\n\nA `TextField`, a `Select`, a `Checkbox` and the rest each draw their own label, helper line and error message. Never add a `Typography` above a field to label it, and never add one below it to show an error — put the message in the field's own `checks`. Give every check a `message` that says what to fix, in the language of the page: one without a message shows a generic English line such as \"Validation failed\" or \"This field is required.\"\n\n## Text\n\nEvery string a reader sees is a `Typography`. Its `level` says what the text *is* rather than how big it should be: use `h1`…`h6` in order for real headings, and do not pick a heading level because you want larger text.\n\n## Building a sentence out of a value\n\nThere are no operators. `formatString(\"Hello ${/user/name}\")` is how a value is put into a sentence, and `formatNumber`, `formatCurrency`, `formatDate` and `pluralize` are how a number or a date is written in the reader's own language. Never assemble a date out of its parts.",
   "components": {
     "Flex": {
       "type": "object",
@@ -1011,9 +1011,9 @@
   "functions": {
     "required": {
       "type": "object",
-      "description": "True when the value is not empty. The check to put on every field that has to be answered.",
+      "description": "Passes when the value is not empty. The check to put on every field that has to be answered.",
       "properties": {
-        "call": {
+        "@call": {
           "const": "required"
         },
         "args": {
@@ -1027,14 +1027,14 @@
           "unevaluatedProperties": false
         }
       },
-      "required": ["call", "args"],
-      "returnType": "boolean"
+      "required": ["@call", "args"],
+      "returnType": "validationResult"
     },
     "length": {
       "type": "object",
-      "description": "True when the value is at least `min` and at most `max` characters long. Give at least one of the two.",
+      "description": "Passes when the value is at least `min` and at most `max` characters long. Give at least one of the two.",
       "properties": {
-        "call": {
+        "@call": {
           "const": "length"
         },
         "args": {
@@ -1062,14 +1062,14 @@
           ]
         }
       },
-      "required": ["call", "args"],
-      "returnType": "boolean"
+      "required": ["@call", "args"],
+      "returnType": "validationResult"
     },
     "regex": {
       "type": "object",
-      "description": "True when the value matches the pattern. Reach for `email` before writing one of these.",
+      "description": "Passes when the value matches the pattern. Reach for `email` before writing one of these.",
       "properties": {
-        "call": {
+        "@call": {
           "const": "regex"
         },
         "args": {
@@ -1086,14 +1086,14 @@
           "unevaluatedProperties": false
         }
       },
-      "required": ["call", "args"],
-      "returnType": "boolean"
+      "required": ["@call", "args"],
+      "returnType": "validationResult"
     },
     "numeric": {
       "type": "object",
-      "description": "True when the value is a number at least `min` and at most `max`. Give at least one of the two.",
+      "description": "Passes when the value is a number at least `min` and at most `max`. Give at least one of the two.",
       "properties": {
-        "call": {
+        "@call": {
           "const": "numeric"
         },
         "args": {
@@ -1121,14 +1121,14 @@
           ]
         }
       },
-      "required": ["call", "args"],
-      "returnType": "boolean"
+      "required": ["@call", "args"],
+      "returnType": "validationResult"
     },
     "email": {
       "type": "object",
-      "description": "True when the value looks like an email address.",
+      "description": "Passes when the value looks like an email address.",
       "properties": {
-        "call": {
+        "@call": {
           "const": "email"
         },
         "args": {
@@ -1142,14 +1142,14 @@
           "unevaluatedProperties": false
         }
       },
-      "required": ["call", "args"],
-      "returnType": "boolean"
+      "required": ["@call", "args"],
+      "returnType": "validationResult"
     },
     "formatString": {
       "type": "object",
       "description": "Fills the `${…}` placeholders in the string with what they point at in the data model. It is the only way to build a sentence out of a value: there is no string concatenation anywhere in this catalog.",
       "properties": {
-        "call": {
+        "@call": {
           "const": "formatString"
         },
         "args": {
@@ -1163,14 +1163,14 @@
           "unevaluatedProperties": false
         }
       },
-      "required": ["call", "args"],
+      "required": ["@call", "args"],
       "returnType": "string"
     },
     "formatNumber": {
       "type": "object",
       "description": "Writes a number in the language the renderer was built for, with the digit grouping that language uses.",
       "properties": {
-        "call": {
+        "@call": {
           "const": "formatNumber"
         },
         "args": {
@@ -1193,14 +1193,14 @@
           "unevaluatedProperties": false
         }
       },
-      "required": ["call", "args"],
+      "required": ["@call", "args"],
       "returnType": "string"
     },
     "formatCurrency": {
       "type": "object",
       "description": "Writes an amount of money, with the symbol and the placement that language uses.",
       "properties": {
-        "call": {
+        "@call": {
           "const": "formatCurrency"
         },
         "args": {
@@ -1227,14 +1227,14 @@
           "unevaluatedProperties": false
         }
       },
-      "required": ["call", "args"],
+      "required": ["@call", "args"],
       "returnType": "string"
     },
     "formatDate": {
       "type": "object",
       "description": "Writes a date or a time through a pattern. The names of months and weekdays are written in the language the renderer was built for, and the pattern decides their order, so write one in the order the reader's language uses.",
       "properties": {
-        "call": {
+        "@call": {
           "const": "formatDate"
         },
         "args": {
@@ -1253,14 +1253,14 @@
           "unevaluatedProperties": false
         }
       },
-      "required": ["call", "args"],
+      "required": ["@call", "args"],
       "returnType": "string"
     },
     "pluralize": {
       "type": "object",
       "description": "Picks the wording that goes with a count, by the plural category of the language the renderer was built for. English needs `one` and `other`; other languages use up to six categories, and `other` is the one that is always required.",
       "properties": {
-        "call": {
+        "@call": {
           "const": "pluralize"
         },
         "args": {
@@ -1293,14 +1293,14 @@
           "unevaluatedProperties": false
         }
       },
-      "required": ["call", "args"],
+      "required": ["@call", "args"],
       "returnType": "string"
     },
     "openUrl": {
       "type": "object",
       "description": "Opens an address. It is an action rather than a value, and it is the renderer that decides whether a new tab is involved.",
       "properties": {
-        "call": {
+        "@call": {
           "const": "openUrl"
         },
         "args": {
@@ -1314,7 +1314,7 @@
           "unevaluatedProperties": false
         }
       },
-      "required": ["call", "args"],
+      "required": ["@call", "args"],
       "returnType": "void",
       "allowedCallers": "rendererOnly",
       "requiresUserActivation": true
@@ -1323,7 +1323,7 @@
       "type": "object",
       "description": "True when every one of two or more values is.",
       "properties": {
-        "call": {
+        "@call": {
           "const": "and"
         },
         "args": {
@@ -1341,14 +1341,14 @@
           "unevaluatedProperties": false
         }
       },
-      "required": ["call", "args"],
+      "required": ["@call", "args"],
       "returnType": "boolean"
     },
     "or": {
       "type": "object",
       "description": "True when any one of two or more values is.",
       "properties": {
-        "call": {
+        "@call": {
           "const": "or"
         },
         "args": {
@@ -1366,14 +1366,14 @@
           "unevaluatedProperties": false
         }
       },
-      "required": ["call", "args"],
+      "required": ["@call", "args"],
       "returnType": "boolean"
     },
     "not": {
       "type": "object",
       "description": "The opposite.",
       "properties": {
-        "call": {
+        "@call": {
           "const": "not"
         },
         "args": {
@@ -1387,7 +1387,7 @@
           "unevaluatedProperties": false
         }
       },
-      "required": ["call", "args"],
+      "required": ["@call", "args"],
       "returnType": "boolean"
     }
   },

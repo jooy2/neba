@@ -2,7 +2,7 @@
  * The renderer half of the A2UI support: `neba/a2ui`.
  *
  * `neba/a2ui/catalog.json` is what an agent is handed. This is what draws what
- * the agent writes back — a `Catalog` for `@a2ui/react`'s v0.9 surface, with
+ * the agent writes back — a `Catalog` for `@a2ui/react`'s `A2uiSurface`, with
  * the eighteen components implemented against this library and the protocol's
  * own fourteen functions.
  *
@@ -23,36 +23,38 @@
  *
  * ## Versions
  *
- * The catalog is written against **A2UI v1.0** and `@a2ui/react` 0.12's newest
- * renderer is **v0.9**, so this registers with `@a2ui/react/v0_9`. The messages
- * it draws are v0.9's unless `protocolVersion` asks for v1.0's: `web_core` reads
- * either into the surface model `A2uiSurface` draws, and refuses a surface
- * whose messages name another version than its catalog. The eighteen components only use constructs
- * the two versions share, which is what makes the bridge a rename rather than a
- * translation, and none of the three differences that exist makes the renderer
- * refuse a message: v1.0 moved `accessibility` from the catalog entry to the
- * envelope, which `schema.ts` puts back; v1.0 lets a check leave out the
- * `message` v0.9 requires, which `schema.ts` accepts; and v1.0's `Action`
- * gained a `userMessage` that v0.9's refuses, which `schema.ts` accepts and the
- * host receives resolved. A v1.0 message may also carry `accessibility.live`,
- * `accessibility.hidden` and a component's `metadata`; no component reads them,
- * and the schemas drop them rather than refusing the component.
+ * The catalog is written against **A2UI v1.0**, and the messages this draws
+ * are v1.0's unless `protocolVersion` asks for v0.9's. `web_core` reads either
+ * into the surface model `A2uiSurface` draws, and refuses a surface whose
+ * messages name another version than its catalog. `@a2ui/react` has no entry
+ * point per version past v0.9: its root is one renderer for both, and its
+ * `v0_9` entry, which this imports, re-exports that root.
  *
- * There is no v1.0 React renderer to register with yet. When there is, what
- * changes is this file's import and nothing in `catalog.json`.
+ * The two versions no longer write a binding the same way. v1.0 binds with
+ * `{ "@path": … }` and calls with `{ "@call": … }`, its messages carry
+ * `"version": "1.0"`, and its checks return a validation result; v0.9 binds
+ * with `{ "path": … }`, calls with `{ "call": … }` and carries
+ * `"version": "v0.9"`. So each version gets its own schemas, from `schema.ts`,
+ * and its own functions, below, while the views are the same. The catalog
+ * spells v1.0's, so a host that draws v0.9 messages has an agent that writes
+ * them from somewhere other than this file.
+ *
+ * A v1.0 message may also carry `accessibility.live`, `accessibility.hidden`
+ * and a component's `metadata`; no component reads them, and the component is
+ * drawn all the same.
  */
 
 import {
-  Catalog,
-  createBasicCatalogFunctions,
+  createBasicCatalogFunctions as createFunctionsV09,
   type FunctionImplementation
 } from '@a2ui/web_core/v0_9';
+import { Catalog, createBasicCatalogFunctions as createFunctionsV10 } from '@a2ui/web_core/v1_0';
 import catalog from './catalog.json' with { type: 'json' };
-import { nebaComponents } from './components.js';
-import { functionSchema } from './schema.js';
+import { componentsFor, nebaComponents } from './components.js';
+import { functionSchema, type ProtocolVersion } from './schema.js';
 
 export { nebaComponents } from './components.js';
-export { componentSchema, type CatalogSchema } from './schema.js';
+export { componentSchema, type CatalogSchema, type ProtocolVersion } from './schema.js';
 
 /**
  * The fourteen the catalog declares, taken from the ones `web_core` already
@@ -64,17 +66,18 @@ export { componentSchema, type CatalogSchema } from './schema.js';
  * second chance to disagree with the agent about what `formatCurrency` does,
  * on the one thing both sides have to read the same way.
  *
- * They are v0.9's set whichever version the messages are. The catalog declares
- * its checks as returning a boolean, which is what these return; `web_core`'s
- * v1.0 set returns a validation result instead, and its `and` and `or` read
- * any such result as true.
+ * Each version gets its own set, because each reads its arguments the way its
+ * messages write them. v1.0's checks return a validation result, which is what
+ * the catalog declares, and its `and`, `or` and `not` read one by its `valid`
+ * member; v0.9's return a boolean.
  *
  * `test/a2ui/adapter.test.tsx` checks that every name the catalog declares is
  * one `web_core` has, so a function added to the JSON and to nothing else fails
  * here rather than at the first surface that calls it.
  */
-function functions(locale: string | undefined): FunctionImplementation[] {
-  const basic = createBasicCatalogFunctions({ locale });
+function functions(locale: string | undefined, version: ProtocolVersion): FunctionImplementation[] {
+  const basic =
+    version === 'v1.0' ? createFunctionsV10({ locale }) : createFunctionsV09({ locale });
   const declared = new Set(Object.keys(catalog.functions));
   const available = basic.filter((one) => declared.has(one.name));
 
@@ -87,7 +90,7 @@ function functions(locale: string | undefined): FunctionImplementation[] {
   }
 
   return available.map((one) => {
-    const widened = { ...one, schema: functionSchema(one.name, one.schema) };
+    const widened = { ...one, schema: functionSchema(one.name, one.schema, version) };
 
     switch (one.name) {
       case 'openUrl':
@@ -129,15 +132,16 @@ function withTimeOfDay(implementation: FunctionImplementation): FunctionImplemen
 /**
  * `openUrl`, run only while the reader is acting on the page.
  *
- * The catalog declares it `rendererOnly` and `requiresUserActivation`, and
- * nothing enforced either: `web_core` runs it wherever an agent writes the
- * call, and a call written into any string is evaluated when the component
- * binds and again on every change to the data it reads. So a surface could
- * open a page the moment it was drawn. Here it acts only under a transient
- * user activation — a press that is still being handled — which is what a
- * button's action is and a binding is not. A browser without
- * `navigator.userActivation` (Firefox before 120) keeps the old behaviour,
- * where its popup blocker is what stands in the way.
+ * The catalog declares it `rendererOnly` and `requiresUserActivation`. v1.0's
+ * `openUrl` carries the same flag and `web_core` refuses a call to it that no
+ * press is behind; v0.9's carries none, so `web_core` runs it wherever an agent
+ * writes the call, and a call written into any string is evaluated when the
+ * component binds and again on every change to the data it reads. So a v0.9
+ * surface could open a page the moment it was drawn. Here it acts only under a
+ * transient user activation — a press that is still being handled — which is
+ * what a button's action is and a binding is not, under both versions. A
+ * browser without `navigator.userActivation` (Firefox before 120) keeps the
+ * old behaviour, where its popup blocker is what stands in the way.
  */
 function onlyWhenActivated(implementation: FunctionImplementation): FunctionImplementation {
   return {
@@ -164,14 +168,15 @@ export interface NebaCatalogOptions {
    */
   locale?: string;
   /**
-   * The protocol version of the messages the catalog draws, as their `version`
-   * spells it. `web_core` refuses a surface whose messages name another
-   * version than its catalog, so pass the one the agent writes. The components
-   * and the functions are the same for both.
+   * The protocol version of the messages the catalog draws. A v1.0 message
+   * carries `"version": "1.0"` and a v0.9 one `"version": "v0.9"`. `web_core`
+   * refuses a surface whose messages name another version than its catalog,
+   * so pass the one the agent writes. The components are the same for both;
+   * the schemas and the functions are each version's own.
    *
-   * @default 'v0.9'
+   * @default 'v1.0'
    */
-  protocolVersion?: 'v0.9' | 'v1.0';
+  protocolVersion?: ProtocolVersion;
 }
 
 /**
@@ -182,7 +187,7 @@ export interface NebaCatalogOptions {
  * gives you: a `Catalog` is immutable and the `MessageProcessor` holds on to it.
  *
  * ```tsx
- * import { MessageProcessor } from '@a2ui/web_core/v0_9';
+ * import { MessageProcessor } from '@a2ui/web_core/v1_0';
  * import { A2uiSurface, type ReactComponentImplementation } from '@a2ui/react/v0_9';
  * import { createNebaCatalog } from 'neba/a2ui';
  *
@@ -205,7 +210,7 @@ export interface NebaCatalogOptions {
 export function createNebaCatalog(
   options: NebaCatalogOptions = {}
 ): Catalog<(typeof nebaComponents)[number], FunctionImplementation> {
-  const { locale, protocolVersion = 'v0.9' } = options;
+  const { locale, protocolVersion = 'v1.0' } = options;
 
   // Checked rather than trusted: `web_core` takes any string, and pairs the
   // catalog with messages of whatever version it names, `v0.8` included.
@@ -220,8 +225,8 @@ export function createNebaCatalog(
   return new Catalog(
     catalog.catalogId,
     protocolVersion.slice(1),
-    nebaComponents,
-    functions(locale)
+    componentsFor(protocolVersion),
+    functions(locale, protocolVersion)
   );
 }
 

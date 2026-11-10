@@ -21,6 +21,13 @@
  * schemas to work out which props are child references, so a `Card.child` built
  * from a bare string is a card that never resolves its child.
  *
+ * Every `$ref` resolves to the common type of the protocol version the schema
+ * is built for, because the two versions no longer write a binding the same
+ * way: v1.0 writes `{ "@path": … }` and `{ "@call": … }`, v0.9 `{ "path": … }`
+ * and `{ "call": … }`. The catalog is written against v1.0, so a v1.0 schema
+ * takes `web_core`'s v1.0 types as they are, and a v0.9 one takes v0.9's with
+ * the two bridges below that let it accept what the catalog allows.
+ *
  * The import is `zod/v3` rather than `zod` because `web_core` builds its
  * schemas with Zod 3, and the ones built here sit in the same objects as
  * those. Zod 3.25 and every Zod 4 serve the v3 API at that path, so the peer
@@ -33,7 +40,19 @@
  */
 
 import { z } from 'zod/v3';
-import { childList, CommonSchemas, componentId } from '@a2ui/web_core/v0_9';
+import {
+  childList as childListV09,
+  CommonSchemas as CommonSchemasV09,
+  componentId as componentIdV09
+} from '@a2ui/web_core/v0_9';
+import {
+  childList as childListV10,
+  CommonSchemas as CommonSchemasV10,
+  componentId as componentIdV10
+} from '@a2ui/web_core/v1_0';
+
+/** The protocol versions the adapter draws, as `createNebaCatalog` names them. */
+export type ProtocolVersion = 'v0.9' | 'v1.0';
 
 /** As much of JSON Schema as the catalog is written in. */
 export interface CatalogSchema {
@@ -90,29 +109,83 @@ function checkKeywords(schema: CatalogSchema, at: string, allowed: ReadonlySet<s
   }
 }
 
+/** The common types of one protocol version, as the schemas below use them. */
+interface CommonTypes {
+  /**
+   * What each `$ref` the catalog makes becomes in Zod. `Checkable` is not here
+   * because it is never a property: it arrives through an `allOf` and merges
+   * into the component's own shape, which is what gives the binder its
+   * `isValid` and `validationErrors`.
+   */
+  refs: Record<string, () => z.ZodTypeAny>;
+  checkable: z.ZodObject<z.ZodRawShape>;
+  accessibility: z.ZodTypeAny;
+  /** The function arguments this catalog declares wider than `web_core`. */
+  widened: Record<string, () => z.ZodRawShape>;
+}
+
+/** v1.0's, which are the ones the catalog is written against, as they are. */
+function typesV10(): CommonTypes {
+  return {
+    refs: {
+      Action: () => CommonSchemasV10.Action,
+      Child: () => componentIdV10(),
+      ChildList: () => childListV10(),
+      DynamicBoolean: () => CommonSchemasV10.DynamicBoolean,
+      DynamicNumber: () => CommonSchemasV10.DynamicNumber,
+      DynamicString: () => CommonSchemasV10.DynamicString
+    },
+    checkable: CommonSchemasV10.Checkable as z.ZodObject<z.ZodRawShape>,
+    accessibility: CommonSchemasV10.AccessibilityAttributes,
+    widened: {
+      numeric: () => ({
+        value: z.union([CommonSchemasV10.DynamicNumber, CommonSchemasV10.DynamicString])
+      })
+    }
+  };
+}
+
+/** v0.9's, with an `Action` and a `Checkable` that take what v1.0 allows. */
+function typesV09(): CommonTypes {
+  const action = actionV09();
+
+  return {
+    refs: {
+      Action: () => action,
+      Child: () => componentIdV09(),
+      ChildList: () => childListV09(),
+      DynamicBoolean: () => CommonSchemasV09.DynamicBoolean,
+      DynamicNumber: () => CommonSchemasV09.DynamicNumber,
+      DynamicString: () => CommonSchemasV09.DynamicString
+    },
+    checkable: checkableV09(),
+    accessibility: CommonSchemasV09.AccessibilityAttributes,
+    widened: {
+      numeric: () => ({
+        value: z.union([CommonSchemasV09.DynamicNumber, CommonSchemasV09.DynamicString])
+      }),
+      openUrl: () => ({ url: CommonSchemasV09.DynamicString })
+    }
+  };
+}
+
 /**
- * The common types the catalog refers to, and what each one is in Zod.
- *
- * `Checkable` is not here because it is never a property: it arrives through an
- * `allOf` and merges into the component's own shape, which is what gives the
- * binder its `isValid` and `validationErrors`.
+ * Built the first time a version is asked for: a host drawing one version
+ * never builds the other's bridges.
  */
-const commonTypes: Record<string, () => z.ZodTypeAny> = {
-  Action: () => action,
-  Child: () => componentId(),
-  ChildList: () => childList(),
-  DynamicBoolean: () => CommonSchemas.DynamicBoolean,
-  DynamicNumber: () => CommonSchemas.DynamicNumber,
-  DynamicString: () => CommonSchemas.DynamicString
-};
+const builtTypes: Partial<Record<ProtocolVersion, CommonTypes>> = {};
+
+function commonTypes(version: ProtocolVersion): CommonTypes {
+  return (builtTypes[version] ??= version === 'v1.0' ? typesV10() : typesV09());
+}
 
 /** One property, or one whole component's own object. */
-function convert(schema: CatalogSchema, at: string): z.ZodTypeAny {
+function convert(schema: CatalogSchema, at: string, types: CommonTypes): z.ZodTypeAny {
   checkKeywords(schema, at, KEYWORDS);
 
   if (schema.$ref) {
     const name = schema.$ref.startsWith(COMMON) ? schema.$ref.slice(COMMON.length) : '';
-    const build = commonTypes[name];
+    const build = types.refs[name];
 
     if (!build) {
       throw new Error(`a2ui: ${at} refers to ${schema.$ref}, which this adapter does not know`);
@@ -157,16 +230,16 @@ function convert(schema: CatalogSchema, at: string): z.ZodTypeAny {
         throw new Error(`a2ui: ${at} is an array with no items`);
       }
 
-      return z.array(convert(schema.items, `${at}[]`));
+      return z.array(convert(schema.items, `${at}[]`, types));
     case 'object':
-      return shape(schema, at);
+      return shape(schema, at, types);
     default:
       throw new Error(`a2ui: ${at} has a type this adapter does not know`);
   }
 }
 
 /** An object's properties, with the required ones required and the rest not. */
-function shape(schema: CatalogSchema, at: string): z.ZodObject<z.ZodRawShape> {
+function shape(schema: CatalogSchema, at: string, types: CommonTypes): z.ZodObject<z.ZodRawShape> {
   // `false` is what the catalog says and what Zod does anyway: an object it
   // parses keeps only the keys it declares. A key an agent adds is dropped
   // rather than refused, because a refusal drops the whole message with it.
@@ -184,7 +257,7 @@ function shape(schema: CatalogSchema, at: string): z.ZodObject<z.ZodRawShape> {
       continue;
     }
 
-    const value = convert(property, `${at}.${name}`);
+    const value = convert(property, `${at}.${name}`, types);
 
     entries[name] =
       property.default === undefined
@@ -202,7 +275,7 @@ function shape(schema: CatalogSchema, at: string): z.ZodObject<z.ZodRawShape> {
 }
 
 /**
- * `Checkable`, with v1.0's rule rather than v0.9's.
+ * v0.9's `Checkable`, with v1.0's rule.
  *
  * v1.0 lets a check leave its `message` out, and v0.9's rule requires one — so
  * a check an agent wrote exactly as the catalog allows was refused, and the
@@ -211,9 +284,9 @@ function shape(schema: CatalogSchema, at: string): z.ZodObject<z.ZodRawShape> {
  * change is to stop refusing it; the catalog asks the model for a message all
  * the same, since that text tells a reader nothing.
  */
-const checkable = (() => {
-  const base = CommonSchemas.Checkable as z.ZodObject<z.ZodRawShape>;
-  const rule = (CommonSchemas.CheckRule as z.ZodObject<z.ZodRawShape>).extend({
+function checkableV09(): z.ZodObject<z.ZodRawShape> {
+  const base = CommonSchemasV09.Checkable as z.ZodObject<z.ZodRawShape>;
+  const rule = (CommonSchemasV09.CheckRule as z.ZodObject<z.ZodRawShape>).extend({
     message: z.string().optional()
   });
   const checks = base.shape.checks as z.ZodTypeAny;
@@ -224,10 +297,10 @@ const checkable = (() => {
       .optional()
       .describe(checks.description ?? '')
   });
-})();
+}
 
 /**
- * `Action`, with v1.0's `userMessage`.
+ * v0.9's `Action`, with v1.0's `userMessage`.
  *
  * v1.0 gave an action's event a `userMessage`, the line a host shows as what
  * the reader asked for, and v0.9's event refuses a key it does not declare —
@@ -236,69 +309,68 @@ const checkable = (() => {
  * hands it to the host, so the only change is to stop refusing it. The
  * description is kept, because it is how the binder knows the prop is an action.
  */
-const action = (() => {
+function actionV09(): z.ZodTypeAny {
   const [event, functionCall] = (
-    CommonSchemas.Action as z.ZodUnion<[z.ZodObject<z.ZodRawShape>, z.ZodTypeAny]>
+    CommonSchemasV09.Action as z.ZodUnion<[z.ZodObject<z.ZodRawShape>, z.ZodTypeAny]>
   ).options;
   const inner = event.shape.event as z.ZodObject<z.ZodRawShape>;
 
   return z
     .union([
       event.extend({
-        event: inner.extend({ userMessage: CommonSchemas.DynamicString.optional() })
+        event: inner.extend({ userMessage: CommonSchemasV09.DynamicString.optional() })
       }),
       functionCall
     ])
-    .describe(CommonSchemas.Action.description ?? '');
-})();
-
-/**
- * The arguments the catalog declares wider than `web_core` does.
- *
- * `web_core` parses a call's arguments twice: as the agent wrote them, when a
- * component arrives, and resolved, before the function runs. Its v0.9 schemas
- * are narrower than this catalog in two places, and each refused a call the
- * catalog allows. `numeric`'s `value` is a number there and a string here,
- * because what a check reads is the text a `TextField` holds, so a field
- * holding "42" failed the check it passes. `openUrl`'s `url` is a literal there
- * and may be bound here, so a button that opened an address from the data
- * model was refused with the rest of its component. Both functions already
- * take what the catalog declares — `numeric` reads a string as a number, and
- * text that is not one fails the check — so the only change is to stop
- * refusing it.
- */
-const widenedArguments: Record<string, () => z.ZodRawShape> = {
-  numeric: () => ({
-    value: z.union([CommonSchemas.DynamicNumber, CommonSchemas.DynamicString])
-  }),
-  openUrl: () => ({ url: CommonSchemas.DynamicString })
-};
+    .describe(CommonSchemasV09.Action.description ?? '');
+}
 
 /**
  * A function's argument schema, as wide as the catalog declares it.
  *
+ * `web_core` parses a call's arguments twice: as the agent wrote them, when a
+ * component arrives, and resolved, before the function runs. Its schemas are
+ * narrower than this catalog in places, and each refused a call the catalog
+ * allows. `numeric`'s `value` is a number there and a string here in both
+ * versions, because what a check reads is the text a `TextField` holds, so a
+ * field holding "42" failed the check it passes. v0.9's `openUrl` takes its
+ * `url` as a literal, while the catalog lets it be bound, so a button that
+ * opened an address from the data model was refused with the rest of its
+ * component; v1.0's takes a binding already. Both functions take what the
+ * catalog declares — `numeric` reads a string as a number, and text that is not
+ * one fails the check — so the only change is to stop refusing it.
+ *
  * `extend` for `componentSchema`'s reason: the schema is built by `web_core`'s
  * copy of Zod, and only the arguments named above are this copy's.
  */
-export function functionSchema(name: string, schema: z.ZodTypeAny): z.ZodTypeAny {
-  const widened = widenedArguments[name];
+export function functionSchema(
+  name: string,
+  schema: z.ZodTypeAny,
+  version: ProtocolVersion = 'v1.0'
+): z.ZodTypeAny {
+  const widened = commonTypes(version).widened[name];
 
   return widened ? (schema as z.ZodObject<z.ZodRawShape>).extend(widened()) : schema;
 }
 
 /**
- * One component's entry, as the schema a `ComponentApi` carries.
+ * One component's entry, as the schema a `ComponentApi` carries, for the
+ * protocol version its messages are written in.
  *
  * `accessibility` is added rather than read, because v1.0 moved it out of the
- * catalog and into the envelope while the renderer this adapter registers with
- * still expects a component to declare it. That and a check's optional
- * `message`, above, are the two places the versions are bridged rather than
- * mapped.
+ * catalog and into the envelope while the renderer still resolves it as one of
+ * the component's props. Under v0.9 that and a check's optional `message`,
+ * above, are the places the versions are bridged rather than mapped.
  */
-export function componentSchema(name: string, definition: CatalogSchema): z.ZodTypeAny {
+export function componentSchema(
+  name: string,
+  definition: CatalogSchema,
+  version: ProtocolVersion = 'v1.0'
+): z.ZodTypeAny {
+  const types = commonTypes(version);
   const parts = definition.allOf ?? [definition];
   let built: z.ZodObject<z.ZodRawShape> = z.object({
-    accessibility: CommonSchemas.AccessibilityAttributes.optional()
+    accessibility: types.accessibility.optional()
   });
 
   // `extend` with a shape, never `merge` with an object: `merge` takes the
@@ -309,7 +381,7 @@ export function componentSchema(name: string, definition: CatalogSchema): z.ZodT
   // a node over a stray key instead of stripping it.
   for (const part of parts) {
     if (part.$ref === `${COMMON}Checkable`) {
-      built = built.extend(checkable.shape);
+      built = built.extend(types.checkable.shape);
       continue;
     }
 
@@ -320,7 +392,7 @@ export function componentSchema(name: string, definition: CatalogSchema): z.ZodT
     }
 
     checkKeywords(part, name, OBJECT_KEYWORDS);
-    built = built.extend(shape(part, name).shape);
+    built = built.extend(shape(part, name, types).shape);
   }
 
   return built;

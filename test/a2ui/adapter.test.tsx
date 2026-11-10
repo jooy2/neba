@@ -14,10 +14,15 @@ import type { z } from 'zod/v3';
 import { flushSync } from 'react-dom';
 import { createRoot } from 'react-dom/client';
 import { render } from 'vitest-browser-react';
-import { BASIC_FUNCTIONS, MessageProcessor } from '@a2ui/web_core/v0_9';
+import { BASIC_FUNCTIONS as functionsV09 } from '@a2ui/web_core/v0_9';
+import { BASIC_FUNCTIONS as functionsV10, MessageProcessor } from '@a2ui/web_core/v1_0';
 import { A2uiSurface, type ReactComponentImplementation } from '@a2ui/react/v0_9';
 import { createNebaCatalog, nebaCatalogId } from '../../src/a2ui/index.js';
-import { componentSchema, type CatalogSchema } from '../../src/a2ui/schema.js';
+import {
+  componentSchema,
+  type CatalogSchema,
+  type ProtocolVersion
+} from '../../src/a2ui/schema.js';
 import catalog from '../../src/a2ui/catalog.json';
 
 const SURFACE = 'test-surface';
@@ -35,17 +40,26 @@ type Message = Parameters<MessageProcessor<never>['processMessages']>[0] extends
   ? M
   : never;
 
+/**
+ * The `version` a message carries for each `protocolVersion`. v1.0 writes its
+ * own without the `v`, and `web_core` refuses a v1.0 message that keeps it.
+ */
+const wireVersion = { 'v0.9': 'v0.9', 'v1.0': '1.0' } as const;
+
+const versions = ['v1.0', 'v0.9'] as const satisfies readonly ProtocolVersion[];
+
 /** A processor fed a surface, a component tree and a data model. */
 function surfaceOf(
   components: readonly Record<string, unknown>[],
   data: Record<string, unknown> = {},
   onAction?: (action: unknown) => void,
-  version: 'v0.9' | 'v1.0' = 'v0.9'
+  protocolVersion: ProtocolVersion = 'v1.0'
 ) {
   const processor = new MessageProcessor<ReactComponentImplementation>(
-    [createNebaCatalog({ protocolVersion: version })],
+    [createNebaCatalog({ protocolVersion })],
     onAction === undefined ? undefined : (action) => onAction(action)
   );
+  const version = wireVersion[protocolVersion];
 
   processor.processMessages([
     { version, createSurface: { surfaceId: SURFACE, catalogId: nebaCatalogId } },
@@ -73,14 +87,29 @@ describe('the A2UI adapter', () => {
     // Declaring a function is a claim the renderer runs it. `web_core` already
     // implements the protocol's own, and a second implementation of
     // `formatCurrency` is a second chance to disagree with the agent.
-    it('finds an implementation for every function the catalog declares', () => {
-      const implemented = new Set(BASIC_FUNCTIONS.map((one) => one.name));
-      const missing = Object.keys(catalog.functions).filter((name) => !implemented.has(name));
+    for (const [version, basic] of [
+      ['v1.0', functionsV10],
+      ['v0.9', functionsV09]
+    ] as const) {
+      it(`finds an implementation for every function the catalog declares, under ${version}`, () => {
+        const implemented = new Set(basic.map((one) => one.name));
+        const missing = Object.keys(catalog.functions).filter((name) => !implemented.has(name));
 
-      expect(missing).toEqual([]);
-      expect([...createNebaCatalog().functions.keys()].sort()).toEqual(
-        Object.keys(catalog.functions).sort()
-      );
+        expect(missing).toEqual([]);
+        expect(
+          [...createNebaCatalog({ protocolVersion: version }).functions.keys()].sort()
+        ).toEqual(Object.keys(catalog.functions).sort());
+      });
+    }
+
+    // A check's result is the protocol's to define, and v1.0's checks return a
+    // validation result rather than a boolean.
+    it('declares each function as returning what the v1.0 one returns', () => {
+      const functions = createNebaCatalog().functions;
+
+      for (const [name, definition] of Object.entries(catalog.functions)) {
+        expect(definition.returnType, name).toBe(functions.get(name)!.returnType);
+      }
     });
 
     /*
@@ -92,56 +121,62 @@ describe('the A2UI adapter', () => {
      * call outright. Both directions are checked: every argument declared is
      * one the implementation knows, and the least the catalog allows parses.
      */
-    describe('agrees with the implementations about arguments', () => {
-      type ArgSchema = {
-        properties: Record<string, { $ref?: string; type?: string; minItems?: number }>;
-        required?: string[];
-        anyOf?: { required: string[] }[];
-      };
-      const functions = createNebaCatalog().functions;
-      const known = (schema: z.ZodTypeAny): string[] => {
-        const def = schema._def as { shape?: () => Record<string, unknown>; schema?: z.ZodTypeAny };
+    describe.each(versions)(
+      'agrees with the implementations about arguments, under %s',
+      (version) => {
+        type ArgSchema = {
+          properties: Record<string, { $ref?: string; type?: string; minItems?: number }>;
+          required?: string[];
+          anyOf?: { required: string[] }[];
+        };
+        const functions = createNebaCatalog({ protocolVersion: version }).functions;
+        const known = (schema: z.ZodTypeAny): string[] => {
+          const def = schema._def as {
+            shape?: () => Record<string, unknown>;
+            schema?: z.ZodTypeAny;
+          };
 
-        return def.shape ? Object.keys(def.shape()) : def.schema ? known(def.schema) : [];
-      };
-      const sample = (
-        name: string,
-        key: string,
-        prop: ArgSchema['properties'][string]
-      ): unknown => {
-        if (key === 'url') return 'https://example.com';
-        if (key === 'currency') return 'USD';
-        if (key === 'pattern') return '.*';
-        if (name === 'formatDate' && key === 'format') return 'yyyy';
-        // A field's text, which `numeric` checks is a number.
-        if (name === 'numeric' && key === 'value') return '3';
-        if (prop.type === 'array') return Array.from({ length: prop.minItems ?? 1 }, () => true);
-        if (prop.$ref?.endsWith('DynamicNumber') || prop.type === 'number') return 3;
-        if (prop.$ref?.endsWith('DynamicBoolean') || prop.type === 'boolean') return true;
-        return 'x';
-      };
+          return def.shape ? Object.keys(def.shape()) : def.schema ? known(def.schema) : [];
+        };
+        const sample = (
+          name: string,
+          key: string,
+          prop: ArgSchema['properties'][string]
+        ): unknown => {
+          if (key === 'url') return 'https://example.com';
+          if (key === 'currency') return 'USD';
+          if (key === 'pattern') return '.*';
+          if (name === 'formatDate' && key === 'format') return 'yyyy';
+          // A field's text, which `numeric` checks is a number.
+          if (name === 'numeric' && key === 'value') return '3';
+          if (prop.type === 'array') return Array.from({ length: prop.minItems ?? 1 }, () => true);
+          if (prop.$ref?.endsWith('DynamicNumber') || prop.type === 'number') return 3;
+          if (prop.$ref?.endsWith('DynamicBoolean') || prop.type === 'boolean') return true;
+          return 'x';
+        };
 
-      for (const [name, definition] of Object.entries(catalog.functions)) {
-        const args = (definition as { properties: { args: ArgSchema } }).properties.args;
+        for (const [name, definition] of Object.entries(catalog.functions)) {
+          const args = (definition as { properties: { args: ArgSchema } }).properties.args;
 
-        it(`${name}: declares only arguments the implementation takes`, () => {
-          const implementation = functions.get(name)!;
+          it(`${name}: declares only arguments the implementation takes`, () => {
+            const implementation = functions.get(name)!;
 
-          expect(known(implementation.schema).sort()).toEqual(
-            expect.arrayContaining(Object.keys(args.properties).sort())
-          );
-        });
+            expect(known(implementation.schema).sort()).toEqual(
+              expect.arrayContaining(Object.keys(args.properties).sort())
+            );
+          });
 
-        it(`${name}: the fewest arguments the catalog allows are enough`, () => {
-          const needed = [...(args.required ?? []), ...(args.anyOf?.[0]?.required ?? [])];
-          const call = Object.fromEntries(
-            needed.map((key) => [key, sample(name, key, args.properties[key])])
-          );
+          it(`${name}: the fewest arguments the catalog allows are enough`, () => {
+            const needed = [...(args.required ?? []), ...(args.anyOf?.[0]?.required ?? [])];
+            const call = Object.fromEntries(
+              needed.map((key) => [key, sample(name, key, args.properties[key])])
+            );
 
-          expect(functions.get(name)!.schema.safeParse(call).success).toBe(true);
-        });
+            expect(functions.get(name)!.schema.safeParse(call).success).toBe(true);
+          });
+        }
       }
-    });
+    );
 
     /*
      * The converter throws on anything it has not met rather than returning
@@ -149,11 +184,17 @@ describe('the A2UI adapter', () => {
      * build — instead of quietly leaving a prop unvalidated in a consumer's
      * renderer.
      */
-    it('converts every component in the catalog without meeting anything it cannot', () => {
-      for (const [name, definition] of Object.entries(catalog.components)) {
-        expect(() => componentSchema(name, definition as CatalogSchema), name).not.toThrow();
+    it.each(versions)(
+      'converts every component in the catalog without meeting anything it cannot, under %s',
+      (version) => {
+        for (const [name, definition] of Object.entries(catalog.components)) {
+          expect(
+            () => componentSchema(name, definition as CatalogSchema, version),
+            name
+          ).not.toThrow();
+        }
       }
-    });
+    );
 
     // A keyword the converter passed over would be a prop the agent is told is
     // bounded and the renderer takes unbounded.
@@ -188,12 +229,12 @@ describe('the A2UI adapter', () => {
      * component refused every stray key. Only the run with Zod 4 installed can
      * fail this, so both orders are checked rather than the catalog's one.
      */
-    it('strips an undeclared key wherever `Checkable` sits in the composition', () => {
+    it.each(versions)('strips an undeclared key wherever `Checkable` sits, under %s', (version) => {
       const definition = catalog.components.TextField as CatalogSchema;
       const orders = [definition.allOf!, [...definition.allOf!].reverse()];
 
       for (const allOf of orders) {
-        const parsed = componentSchema('TextField', { allOf }).safeParse({
+        const parsed = componentSchema('TextField', { allOf }, version).safeParse({
           label: 'Name',
           stray: 1
         });
@@ -235,9 +276,13 @@ describe('the A2UI adapter', () => {
     // Every value the agent is told it may write has to be one the renderer
     // takes. `z.enum` refuses numbers, so an `elevation` of `0` to `3` was a
     // prop no agent could set without the whole message being dropped.
-    it('accepts every value of every enum in the catalog', () => {
+    it.each(versions)('accepts every value of every enum in the catalog, under %s', (version) => {
       for (const [name, definition] of Object.entries(catalog.components)) {
-        const schema = componentSchema(name, definition as CatalogSchema) as z.AnyZodObject;
+        const schema = componentSchema(
+          name,
+          definition as CatalogSchema,
+          version
+        ) as z.AnyZodObject;
         const parts = (definition as CatalogSchema).allOf ?? [definition as CatalogSchema];
 
         for (const part of parts) {
@@ -260,13 +305,13 @@ describe('the A2UI adapter', () => {
     for (const [what, text, written] of [
       [
         'numbers',
-        { call: 'formatNumber', args: { value: 1234.5 }, returnType: 'string' },
+        { '@call': 'formatNumber', args: { value: 1234.5 }, returnType: 'string' },
         '1.234,5'
       ],
       [
         'the names of months',
         {
-          call: 'formatDate',
+          '@call': 'formatDate',
           args: { value: '2026-10-09', format: 'd. MMMM yyyy' },
           returnType: 'string'
         },
@@ -279,9 +324,9 @@ describe('the A2UI adapter', () => {
         ]);
 
         processor.processMessages([
-          { version: 'v0.9', createSurface: { surfaceId: SURFACE, catalogId: nebaCatalogId } },
+          { version: '1.0', createSurface: { surfaceId: SURFACE, catalogId: nebaCatalogId } },
           {
-            version: 'v0.9',
+            version: '1.0',
             updateComponents: {
               surfaceId: SURFACE,
               components: [{ id: 'root', component: 'Typography', text }]
@@ -315,7 +360,7 @@ describe('the A2UI adapter', () => {
           {
             id: 'root',
             component: 'Typography',
-            text: { call: 'formatDate', args: { value, format }, returnType: 'string' }
+            text: { '@call': 'formatDate', args: { value, format }, returnType: 'string' }
           }
         ]);
 
@@ -437,7 +482,7 @@ describe('the A2UI adapter', () => {
             id: 'root',
             component: 'Flex',
             children: ['card', 'photo'],
-            accessibility: { label: 'Order', description: { path: '/note' } }
+            accessibility: { label: 'Order', description: { '@path': '/note' } }
           },
           {
             id: 'card',
@@ -479,7 +524,7 @@ describe('the A2UI adapter', () => {
 
     it('resolves a value the agent bound to the data model', async () => {
       const { surface } = surfaceOf(
-        [{ id: 'root', component: 'Typography', text: { path: '/headline' } }],
+        [{ id: 'root', component: 'Typography', text: { '@path': '/headline' } }],
         { headline: 'Bound, not written' }
       );
 
@@ -589,7 +634,7 @@ describe('the A2UI adapter', () => {
         [
           { id: 'root', component: 'Flex', direction: 'vertical', children: ['note', 'region'] },
           { id: 'note', component: 'Typography', text: 'Where should it deploy?' },
-          { id: 'region', component: 'TextField', label: 'Region', value: { path: '/region' } }
+          { id: 'region', component: 'TextField', label: 'Region', value: { '@path': '/region' } }
         ],
         { region: '' }
       );
@@ -604,7 +649,7 @@ describe('the A2UI adapter', () => {
 
       processor.processMessages([
         {
-          version: 'v0.9',
+          version: '1.0',
           updateComponents: {
             surfaceId: SURFACE,
             components: [
@@ -629,7 +674,7 @@ describe('the A2UI adapter', () => {
   describe('writes back', () => {
     it('puts what was typed into the data model', async () => {
       const { surface } = surfaceOf(
-        [{ id: 'root', component: 'TextField', label: 'Region', value: { path: '/region' } }],
+        [{ id: 'root', component: 'TextField', label: 'Region', value: { '@path': '/region' } }],
         { region: 'Seoul' }
       );
 
@@ -701,7 +746,7 @@ describe('the A2UI adapter', () => {
               event: {
                 name: 'rollback',
                 userMessage: {
-                  call: 'formatString',
+                  '@call': 'formatString',
                   args: { value: 'Roll back ${/release}' },
                   returnType: 'string'
                 }
@@ -739,7 +784,7 @@ describe('the A2UI adapter', () => {
           {
             id: 'root',
             component: 'Typography',
-            text: { call: 'openUrl', args: { url: 'https://example.com/' }, returnType: 'void' }
+            text: { '@call': 'openUrl', args: { url: 'https://example.com/' }, returnType: 'void' }
           }
         ]);
 
@@ -763,7 +808,7 @@ describe('the A2UI adapter', () => {
             text: 'Read more',
             action: {
               functionCall: {
-                call: 'openUrl',
+                '@call': 'openUrl',
                 args: { url: 'https://example.com/' },
                 returnType: 'void'
               }
@@ -795,8 +840,8 @@ describe('the A2UI adapter', () => {
               text: 'Read more',
               action: {
                 functionCall: {
-                  call: 'openUrl',
-                  args: { url: { path: '/link' } },
+                  '@call': 'openUrl',
+                  args: { url: { '@path': '/link' } },
                   returnType: 'void'
                 }
               }
@@ -830,10 +875,10 @@ describe('the A2UI adapter', () => {
             id: 'root',
             component: 'TextField',
             label: 'Email',
-            value: { path: '/email' },
+            value: { '@path': '/email' },
             checks: [
               {
-                condition: { call: 'email', args: { value: { path: '/email' } } },
+                condition: { '@call': 'email', args: { value: { '@path': '/email' } } },
                 message: 'That is not an address'
               }
             ]
@@ -861,10 +906,10 @@ describe('the A2UI adapter', () => {
               id: 'root',
               component: 'TextField',
               label: 'Age',
-              value: { path: '/age' },
+              value: { '@path': '/age' },
               checks: [
                 {
-                  condition: { call: 'numeric', args: { value: { path: '/age' }, min: 18 } },
+                  condition: { '@call': 'numeric', args: { value: { '@path': '/age' }, min: 18 } },
                   message: 'Give an age of 18 or over'
                 }
               ]
@@ -885,8 +930,8 @@ describe('the A2UI adapter', () => {
       });
     }
 
-    // v1.0 lets a check leave its message out and v0.9's schema refused it,
-    // and the refusal took every component in the batch with it.
+    // A check may leave its message out. A v1.0 check returns a validation
+    // result that carries a message of its own, so the field draws that one.
     it('draws a field whose check has no message', async () => {
       const { surface } = surfaceOf(
         [
@@ -894,37 +939,101 @@ describe('the A2UI adapter', () => {
             id: 'root',
             component: 'TextField',
             label: 'Email',
-            value: { path: '/email' },
-            checks: [{ condition: { call: 'email', args: { value: { path: '/email' } } } }]
+            value: { '@path': '/email' },
+            checks: [{ condition: { '@call': 'email', args: { value: { '@path': '/email' } } } }]
           }
         ],
         { email: 'not-an-address' }
       );
 
       const screen = await render(<A2uiSurface surface={surface} />);
+      const field = screen.getByRole('textbox', { name: 'Email' });
 
-      await expect.element(screen.getByRole('textbox', { name: 'Email' })).toBeInTheDocument();
-      await expect.element(screen.getByText('Validation failed')).toBeInTheDocument();
+      await expect.element(field).toHaveAttribute('aria-invalid', 'true');
+      expect(screen.getByText('Validation failed').query()).toBeNull();
     });
+
+    /*
+     * `and` reads a validation result by its `valid` member. Before
+     * `web_core` 0.13 it read any object as true, so a field that failed one
+     * of two checks passed both.
+     */
+    for (const [text, passes] of [
+      ['42', true],
+      ['12', false],
+      ['', false]
+    ] as const) {
+      it(`fails a field that fails one of two checks: "${text}" ${passes ? 'passes' : 'fails'}`, async () => {
+        const { surface } = surfaceOf(
+          [
+            {
+              id: 'root',
+              component: 'TextField',
+              label: 'Age',
+              value: { '@path': '/age' },
+              checks: [
+                {
+                  condition: {
+                    '@call': 'and',
+                    args: {
+                      values: [
+                        { '@call': 'required', args: { value: { '@path': '/age' } } },
+                        { '@call': 'numeric', args: { value: { '@path': '/age' }, min: 18 } }
+                      ]
+                    }
+                  },
+                  message: 'Give an age of 18 or over'
+                }
+              ]
+            }
+          ],
+          { age: text }
+        );
+
+        const screen = await render(<A2uiSurface surface={surface} />);
+
+        await expect.element(screen.getByRole('textbox', { name: 'Age' })).toBeInTheDocument();
+
+        if (passes) {
+          expect(screen.getByText('Give an age of 18 or over').query()).toBeNull();
+        } else {
+          await expect.element(screen.getByText('Give an age of 18 or over')).toBeInTheDocument();
+        }
+      });
+    }
   });
 
   describe('speaks the protocol version it was built for', () => {
+    it('draws v1.0 when it is given no version', () => {
+      const processor = new MessageProcessor<ReactComponentImplementation>([createNebaCatalog()]);
+
+      processor.processMessages([
+        { version: '1.0', createSurface: { surfaceId: SURFACE, catalogId: nebaCatalogId } }
+      ] as Message[]);
+
+      expect(processor.model.surfacesMap.get(SURFACE)).toBeDefined();
+    });
+
     // `web_core` pairs a surface with its catalog by version as well as by id,
-    // so a catalog that took both would only ever be half right.
-    it('refuses the messages of the other version', () => {
+    // so a catalog that took both would only ever be half right. A v1.0
+    // message spells its version without the `v` the option keeps.
+    it('refuses the messages of the other version, and a v1.0 one written with a `v`', () => {
       for (const [built, sent] of [
-        ['v0.9', 'v1.0'],
-        ['v1.0', 'v0.9']
+        ['v0.9', wireVersion['v1.0']],
+        ['v1.0', wireVersion['v0.9']],
+        ['v1.0', 'v1.0']
       ] as const) {
         const processor = new MessageProcessor<ReactComponentImplementation>([
           createNebaCatalog({ protocolVersion: built })
         ]);
 
-        expect(() =>
-          processor.processMessages([
-            { version: sent, createSurface: { surfaceId: SURFACE, catalogId: nebaCatalogId } }
-          ] as Message[])
-        ).toThrow(/version/);
+        expect(
+          () =>
+            processor.processMessages([
+              { version: sent, createSurface: { surfaceId: SURFACE, catalogId: nebaCatalogId } }
+            ] as Message[]),
+          `${built} given ${sent}`
+        ).toThrow();
       }
     });
 
@@ -939,7 +1048,7 @@ describe('the A2UI adapter', () => {
      * `metadata` beside its props. No component reads them, and a schema that
      * refused them would refuse the component with them.
      */
-    it('draws, binds and writes back a v1.0 surface', async () => {
+    it('draws a v1.0 component whatever else its envelope carries', async () => {
       const { surface } = surfaceOf(
         [
           {
@@ -947,19 +1056,17 @@ describe('the A2UI adapter', () => {
             component: 'Flex',
             children: ['name'],
             accessibility: { label: 'Profile', live: 'polite', hidden: false },
-            metadata: { extensions: { 'example:trace': 'one' } }
+            metadata: { extensions: { exampleTrace: 'one' } }
           },
           {
             id: 'name',
             component: 'TextField',
             label: 'Name',
-            value: { path: '/name' },
-            metadata: { extensions: { 'example:trace': 'two' } }
+            value: { '@path': '/name' },
+            metadata: { extensions: { exampleTrace: 'two' } }
           }
         ],
-        { name: 'Ada' },
-        undefined,
-        'v1.0'
+        { name: 'Ada' }
       );
 
       const screen = await render(<A2uiSurface surface={surface} />);
@@ -974,15 +1081,58 @@ describe('the A2UI adapter', () => {
     });
 
     /*
-     * The functions are v0.9's under both versions. `web_core`'s v1.0 checks
-     * return a validation result, and its `and` reads any such result as true,
-     * so a field that fails one of two checks would pass both.
+     * v0.9 is still drawn when it is asked for, through v0.9's own schemas and
+     * functions. What the catalog allows and v0.9 does not is bridged there.
      */
-    for (const [text, passes] of [
-      ['42', true],
-      ['12', false]
-    ] as const) {
-      it(`runs a v1.0 check written without a message: "${text}" ${passes ? 'passes' : 'fails'}`, async () => {
+    describe('under v0.9', () => {
+      it('draws, binds and writes back a v0.9 surface', async () => {
+        const { surface } = surfaceOf(
+          [
+            { id: 'root', component: 'Flex', children: ['name'] },
+            { id: 'name', component: 'TextField', label: 'Name', value: { path: '/name' } }
+          ],
+          { name: 'Ada' },
+          undefined,
+          'v0.9'
+        );
+
+        const screen = await render(<A2uiSurface surface={surface} />);
+        const field = screen.getByRole('textbox', { name: 'Name' });
+
+        await expect.element(field).toHaveValue('Ada');
+
+        await field.fill('Grace');
+
+        await expect.poll(() => surface.dataModel.get('/name')).toBe('Grace');
+      });
+
+      // v1.0 lets a check leave its message out and v0.9's schema refused it,
+      // and the refusal took every component in the batch with it.
+      it('draws a field whose check has no message', async () => {
+        const { surface } = surfaceOf(
+          [
+            {
+              id: 'root',
+              component: 'TextField',
+              label: 'Email',
+              value: { path: '/email' },
+              checks: [{ condition: { call: 'email', args: { value: { path: '/email' } } } }]
+            }
+          ],
+          { email: 'not-an-address' },
+          undefined,
+          'v0.9'
+        );
+
+        const screen = await render(<A2uiSurface surface={surface} />);
+
+        await expect.element(screen.getByRole('textbox', { name: 'Email' })).toBeInTheDocument();
+        await expect.element(screen.getByText('Validation failed')).toBeInTheDocument();
+      });
+
+      // `numeric` reads what a field holds, which is text, and `web_core`'s
+      // v0.9 schema took only a number.
+      it('reads a field’s text as a number', async () => {
         const { surface } = surfaceOf(
           [
             {
@@ -992,59 +1142,122 @@ describe('the A2UI adapter', () => {
               value: { path: '/age' },
               checks: [
                 {
-                  condition: {
-                    call: 'and',
-                    args: {
-                      values: [
-                        { call: 'required', args: { value: { path: '/age' } } },
-                        { call: 'numeric', args: { value: { path: '/age' }, min: 18 } }
-                      ]
-                    }
-                  }
+                  condition: { call: 'numeric', args: { value: { path: '/age' }, min: 18 } },
+                  message: 'Give an age of 18 or over'
                 }
               ]
             }
           ],
-          { age: text },
+          { age: '12' },
           undefined,
-          'v1.0'
+          'v0.9'
         );
 
         const screen = await render(<A2uiSurface surface={surface} />);
 
-        await expect.element(screen.getByRole('textbox', { name: 'Age' })).toBeInTheDocument();
+        await expect.element(screen.getByText('Give an age of 18 or over')).toBeInTheDocument();
+      });
 
-        if (passes) {
-          expect(screen.getByText('Validation failed').query()).toBeNull();
-        } else {
-          await expect.element(screen.getByText('Validation failed')).toBeInTheDocument();
+      // v1.0's `Action` has a `userMessage` that v0.9's schema refuses, and the
+      // refusal took the button with it.
+      it('hands the host an action’s `userMessage`, resolved', async () => {
+        const onAction = vi.fn();
+        const { surface } = surfaceOf(
+          [
+            {
+              id: 'root',
+              component: 'Button',
+              text: 'Roll back',
+              action: {
+                event: {
+                  name: 'rollback',
+                  userMessage: {
+                    call: 'formatString',
+                    args: { value: 'Roll back ${/release}' },
+                    returnType: 'string'
+                  }
+                }
+              }
+            }
+          ],
+          { release: '1.19.0' },
+          onAction,
+          'v0.9'
+        );
+
+        const screen = await render(<A2uiSurface surface={surface} />);
+
+        await screen.getByRole('button', { name: 'Roll back' }).click();
+
+        await expect
+          .poll(() => onAction.mock.calls[0]?.[0])
+          .toMatchObject({ name: 'rollback', userMessage: 'Roll back 1.19.0' });
+      });
+
+      // The catalog lets `url` be bound, and v0.9's schema took only a literal.
+      it('opens an address the data model holds', async () => {
+        const open = vi.spyOn(window, 'open').mockReturnValue(null);
+
+        try {
+          const { surface } = surfaceOf(
+            [
+              {
+                id: 'root',
+                component: 'Button',
+                text: 'Read more',
+                action: {
+                  functionCall: {
+                    call: 'openUrl',
+                    args: { url: { path: '/link' } },
+                    returnType: 'void'
+                  }
+                }
+              }
+            ],
+            { link: 'https://example.com/bound' },
+            undefined,
+            'v0.9'
+          );
+
+          const screen = await render(<A2uiSurface surface={surface} />);
+
+          await screen.getByRole('button', { name: 'Read more' }).click();
+
+          await expect.poll(() => open.mock.calls[0]?.[0]).toBe('https://example.com/bound');
+        } finally {
+          open.mockRestore();
         }
       });
-    }
 
-    it('hands the host a v1.0 action with its `userMessage`', async () => {
-      const onAction = vi.fn();
-      const { surface } = surfaceOf(
-        [
-          {
-            id: 'root',
-            component: 'Button',
-            text: 'Roll back',
-            action: { event: { name: 'rollback', userMessage: 'Roll back the release' } }
-          }
-        ],
-        {},
-        onAction,
-        'v1.0'
-      );
+      // v0.9's `openUrl` carries no user-activation flag, so this adapter is
+      // the only thing that keeps a binding from opening a page.
+      it('does not open an address from a binding', async () => {
+        await expect.poll(() => navigator.userActivation.isActive, { timeout: 8000 }).toBe(false);
 
-      const screen = await render(<A2uiSurface surface={surface} />);
+        const open = vi.spyOn(window, 'open').mockReturnValue(null);
 
-      await screen.getByRole('button', { name: 'Roll back' }).click();
+        try {
+          const { surface } = surfaceOf(
+            [
+              {
+                id: 'root',
+                component: 'Typography',
+                text: { call: 'openUrl', args: { url: 'https://example.com/' }, returnType: 'void' }
+              }
+            ],
+            {},
+            undefined,
+            'v0.9'
+          );
 
-      await expect
-        .poll(() => onAction.mock.calls[0]?.[0])
-        .toMatchObject({ name: 'rollback', userMessage: 'Roll back the release' });
+          await render(<A2uiSurface surface={surface} />);
+          await new Promise((resolve) => setTimeout(resolve, 50));
+
+          expect(open).not.toHaveBeenCalled();
+        } finally {
+          open.mockRestore();
+        }
+      });
     });
   });
 });

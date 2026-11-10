@@ -42,7 +42,7 @@ npm install @a2ui/react @a2ui/web_core zod
 `zod`는 3.25 이상의 3.x든 4든 됩니다. 어댑터는 두 버전이 모두 `zod/v3`로 제공하는 Zod 3 API로 스키마를 만들고, Zod 4를 쓰는 프로젝트에서는 `@a2ui/web_core`가 자기 Zod 3을 따로 설치합니다. 그래서 프로젝트의 Zod 버전을 바꿀 필요가 없습니다.
 
 ```tsx
-import { MessageProcessor } from '@a2ui/web_core/v0_9';
+import { MessageProcessor } from '@a2ui/web_core/v1_0';
 import { A2uiSurface, type ReactComponentImplementation } from '@a2ui/react/v0_9';
 import { createNebaCatalog } from 'neba/a2ui';
 
@@ -54,7 +54,7 @@ processor.processMessages(whateverTheAgentSent);
 <A2uiSurface surface={surface} />;
 ```
 
-타입 인자를 적어야 processor가 만든 화면을 `A2uiSurface`에 넘길 수 있습니다. `MessageProcessor`는 카탈로그에서 이 타입을 알아내지 않습니다. 어댑터가 그리는 메시지는 기본이 v0.9이고, 메시지마다 `"version": "v0.9"`가 있어야 합니다. 에이전트가 `"version": "v1.0"`을 적은 v1.0 메시지를 보낸다면 `createNebaCatalog({ protocolVersion: 'v1.0' })`으로 만드세요. `@a2ui/web_core`는 카탈로그와 다른 버전을 적은 메시지의 화면도, 버전을 적지 않은 메시지의 화면도 거부합니다. 화면은 카탈로그를 id로만 찾으므로 카탈로그 하나는 한 버전만 그리고, 그 카탈로그를 가진 processor도 마찬가지입니다. 에이전트가 두 버전을 모두 쓰는 host라면 버전마다 processor를 하나씩 두고, 메시지의 `version`에 맞는 processor에 넘기면 됩니다.
+타입 인자를 적어야 processor가 만든 화면을 `A2uiSurface`에 넘길 수 있습니다. `MessageProcessor`는 카탈로그에서 이 타입을 알아내지 않습니다. 어댑터가 그리는 메시지는 기본이 v1.0이고, 메시지마다 `"version": "1.0"`이 있어야 합니다. 에이전트가 `"version": "v0.9"`를 적은 v0.9 메시지를 보낸다면 `createNebaCatalog({ protocolVersion: 'v0.9' })`로 만드세요. `@a2ui/web_core`는 카탈로그와 다른 버전을 적은 메시지의 화면도, 버전을 적지 않은 메시지의 화면도 거부합니다. 화면은 카탈로그를 id로만 찾으므로 카탈로그 하나는 한 버전만 그리고, 그 카탈로그를 가진 processor도 마찬가지입니다. 에이전트가 두 버전을 모두 쓰는 host라면 버전마다 processor를 하나씩 두고, 메시지의 `version`에 맞는 processor에 넘기면 됩니다.
 
 이게 전부입니다. 어댑터가 컴포넌트 열여덟 개와 함수 열네 개를 등록하고, 화면이 지정하는 `catalogId`는 에이전트에게 건넨 그 파일의 것입니다. 두 반쪽이 어긋날 수가 없습니다.
 
@@ -103,11 +103,36 @@ processor.processMessages(whateverTheAgentSent);
 
 카탈로그는 **A2UI v1.0** 기준으로 썼고, 파일이 스스로 `protocolVersion`에 그렇게 적어 둡니다. v0.9 카탈로그에는 `theme` 키가 있었고 모든 컴포넌트를 `ComponentCommon`으로 감쌌습니다. v1.0에는 둘 다 없고 대신 `instructions`와 `anyComponent`·`anyFunction`을 담은 `$defs`가 생겼습니다.
 
-**어댑터는 `@a2ui/react/v0_9`에 등록합니다.** 0.12에는 v1.0 렌더러가 없기 때문입니다. 루트 export는 아직 v0.8입니다. 열여덟 개 컴포넌트는 두 버전이 공유하는 구성만 쓰므로 연결이 번역이 아니라 이름 바꾸기로 끝나고, 실제로 다른 세 가지 때문에 렌더러가 메시지를 거부하는 일도 없습니다. v1.0은 `accessibility`를 카탈로그 항목에서 봉투로 옮겼는데 어댑터가 다시 넣어 줍니다. v1.0에서는 check의 `message`를 빼도 되지만 v0.9는 요구하므로, 어댑터는 `message` 없는 check도 받고 필드에는 "Validation failed"가 나옵니다. v1.0의 `Action`에 생긴 `userMessage`는 v0.9가 거부하므로 어댑터가 받아 주고, host가 받는 action에는 event의 `name`, `context`와 함께 값을 풀어 둔 `userMessage`가 들어 있습니다.
+**어댑터는 기본으로 v1.0을 그립니다.** v1.0 메시지는 `"version": "1.0"`을 적고, prop을 `{ "@path": … }`로 바인딩하며, 함수를 `{ "@call": … }`로 호출합니다.
 
-**`protocolVersion: 'v1.0'`은 같은 컴포넌트와 함수로 v1.0 메시지를 그립니다.** v1.0 컴포넌트에는 `accessibility.live`, `accessibility.hidden`, `metadata` 객체가 더 붙을 수 있습니다. 이를 읽는 컴포넌트는 없고, 어댑터는 컴포넌트를 거부하지 않고 이 키들만 버립니다. 함수는 어느 버전에서든 v0.9 함수를 씁니다. 카탈로그는 check가 boolean을 돌려준다고 선언하고 v0.9 함수가 그렇게 동작하는 반면, `@a2ui/web_core`의 v1.0 함수는 검사 결과 객체를 돌려주기 때문입니다.
+```json
+{
+  "version": "1.0",
+  "updateComponents": {
+    "surfaceId": "profile",
+    "components": [
+      {
+        "id": "root",
+        "component": "TextField",
+        "label": "Email",
+        "value": { "@path": "/email" },
+        "checks": [
+          {
+            "condition": { "@call": "email", "args": { "value": { "@path": "/email" } } },
+            "message": "Enter an email address"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
 
-`@a2ui/*` 패키지들은 스펙이 1.0인 지금도 0.12.x에 있으므로, 형식보다 그 주변 도구가 먼저 움직일 것으로 보면 됩니다. v1.0 React 렌더러가 나오면 바뀌는 것은 이 패키지 안의 import 한 줄이고 `catalog.json`은 그대로입니다.
+v1.0에서 어댑터는 `@a2ui/web_core`의 v1.0 스키마와 함수를 그대로 씁니다. check는 카탈로그가 선언한 대로 검사 결과 객체를 돌려줍니다. `message` 없이 쓴 check는 함수가 돌려준 영어 메시지를 보여 주고, `and`, `or`, `not`이면 "Validation failed"를 보여 줍니다. v1.0 컴포넌트에는 `accessibility.live`, `accessibility.hidden`, `metadata` 객체가 더 붙을 수 있습니다. 이를 읽는 컴포넌트는 없고, 컴포넌트는 그대로 그려집니다. `metadata.extensions`의 키가 `:`처럼 유니코드 식별자에 쓸 수 없는 문자를 담고 있으면 `@a2ui/web_core`가 거부합니다.
+
+**`protocolVersion: 'v0.9'`는 v0.9 메시지를 그립니다.** v0.9 메시지는 `"version": "v0.9"`를 적고 `path`와 `call`로 바인딩하고 호출하며, 어댑터는 v0.9의 스키마와 함수로 이를 그립니다. 카탈로그는 v1.0 표기로 쓰여 있으므로, v0.9로 쓰는 에이전트는 이 파일이 아닌 다른 곳에서 형식을 알고 있어야 합니다. 카탈로그가 허용하지만 v0.9가 거부하는 세 가지는 받아 줍니다. 컴포넌트의 `accessibility`는 v1.0이 봉투로 옮긴 것입니다. `message` 없는 check는 필드에 "Validation failed"를 보여 줍니다. `Action`의 `userMessage`는 host가 받는 action에 event의 `name`, `context`와 함께 값을 풀어 둔 채로 들어 있습니다.
+
+**어댑터는 `@a2ui/react/v0_9`를 import합니다.** `@a2ui/react`에는 v0.9 다음 버전용 진입점이 따로 없습니다. 루트가 두 버전을 모두 그리는 렌더러 하나이고, `v0_9`는 그것을 다시 export합니다. 스펙은 1.0인데 `@a2ui/*` 패키지는 0.15.x이고, 0.13, 0.14, 0.15가 모두 v1.0을 읽는 방식을 바꿨습니다. 형식이 자리 잡기 전까지 주변 도구는 계속 움직일 것으로 보면 됩니다.
 
 ## 다음
 

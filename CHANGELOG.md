@@ -2,7 +2,15 @@
 
 ## vNext (2026--)
 
+### Breaking changes
+
+- **`neba/a2ui` draws A2UI v1.0 by default, and needs `@a2ui/react` and `@a2ui/web_core` 0.15.** The optional peers were `^0.12.0` and are `^0.15.0`; upgrade both together with this release. `createNebaCatalog()` now registers a v1.0 catalog, so every message has to carry `"version": "1.0"`, written without the `v` the `protocolVersion` option keeps, and bind and call the way v1.0 does since `@a2ui/web_core` 0.13: `{ "@path": "/email" }` and `{ "@call": "email", "args": … }`. A v1.0 surface reads a `path` or a `call` as a plain value, so a message written for v0.9 does not bind under v1.0. If your agent writes v0.9, pass `createNebaCatalog({ protocolVersion: 'v0.9' })`, and it draws as before. Under v1.0 the adapter runs `@a2ui/web_core`'s v1.0 functions, so a check returns a validation result and one written without a `message` shows the function's own English message rather than "Validation failed". A component's `metadata.extensions` key has to be a Unicode identifier, so a key such as `example:trace` is refused. `nebaComponents` and `componentSchema` carry the v1.0 schemas, and `componentSchema` takes the version as a third argument.
+
+- **The A2UI catalog writes its functions the way v1.0 does now.** Each one is called with `"@call"` rather than `"call"`, and `required`, `length`, `regex`, `numeric` and `email` return a `validationResult` rather than a `boolean`. Hand your agent the catalog from this release, or the URL of its minor version, so that it writes calls the adapter reads.
+
 ### Added
+
+- **`neba/a2ui` exports `ProtocolVersion`**, the type of `createNebaCatalog`'s `protocolVersion` and of `componentSchema`'s third argument: `'v1.0'` or `'v0.9'`.
 
 - **`Drawer` takes `classNames`**, with the seven slots `Dialog` has: `backdrop`, `viewport`, `title`, `description`, `close`, `body` and `actions`. The first two exist only in `overlay` mode. An `inline` drawer's title still holds off a host stylesheet's `h2` rule, and a property your `classNames.title` sets is left to your class. `DrawerSlot` is exported.
 

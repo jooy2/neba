@@ -44,7 +44,7 @@ import { Switch } from '../components/switch/Switch.js';
 import { TextField } from '../components/text-field/TextField.js';
 import { Typography } from '../components/typography/Typography.js';
 import catalog from './catalog.json' with { type: 'json' };
-import { componentSchema, type CatalogSchema } from './schema.js';
+import { componentSchema, type CatalogSchema, type ProtocolVersion } from './schema.js';
 
 /** What the binder hands a view, once the catalog's own props are resolved. */
 type Bound = Record<string, never>;
@@ -158,6 +158,13 @@ function firstError(props: { validationErrors?: readonly string[] }): string | u
   return props.validationErrors?.[0];
 }
 
+type ComponentName = keyof typeof catalog.components;
+
+type View = (bound: { props: never; buildChild: BuildChild }) => React.ReactNode;
+
+/** Every view by its component's name, for building another version's set. */
+const views = new Map<string, View>();
+
 /**
  * One implementation, with the schema read out of the catalog by name.
  *
@@ -167,16 +174,20 @@ function firstError(props: { validationErrors?: readonly string[] }): string | u
  * type-checks against a hand-written mirror of the catalog is a prop that
  * type-checks against the wrong thing.
  */
-function implement(
-  name: keyof typeof catalog.components,
-  view: (bound: { props: never; buildChild: BuildChild }) => React.ReactNode
-): ReactComponentImplementation {
+function build(name: ComponentName, view: View, version: ProtocolVersion) {
   const api = {
     name,
-    schema: componentSchema(name, catalog.components[name] as CatalogSchema)
+    schema: componentSchema(name, catalog.components[name] as CatalogSchema, version)
   };
 
   return createComponentImplementation(api, view as never);
+}
+
+/** The v1.0 implementation, which is what `nebaComponents` holds. */
+function implement(name: ComponentName, view: View): ReactComponentImplementation {
+  views.set(name, view);
+
+  return build(name, view, 'v1.0');
 }
 
 /* ---------------------------------------------------------------------------
@@ -731,7 +742,11 @@ export const A2uiSlider = implement('Slider', ({ props }) => {
   );
 });
 
-/** Every implementation, in the order the catalog lists them. */
+/**
+ * Every implementation, in the order the catalog lists them, with the schemas
+ * of A2UI v1.0 — the version the catalog is written against. A v0.9 catalog
+ * draws the same views through `componentsFor('v0.9')`.
+ */
 export const nebaComponents: ReactComponentImplementation[] = [
   A2uiFlex,
   A2uiCard,
@@ -752,3 +767,17 @@ export const nebaComponents: ReactComponentImplementation[] = [
   A2uiSelect,
   A2uiSlider
 ];
+
+/** v0.9's set, built the first time a v0.9 catalog asks for it. */
+let componentsV09: ReactComponentImplementation[] | undefined;
+
+/** The eighteen implementations, with the schemas of one protocol version. */
+export function componentsFor(version: ProtocolVersion): ReactComponentImplementation[] {
+  if (version === 'v1.0') {
+    return nebaComponents;
+  }
+
+  return (componentsV09 ??= nebaComponents.map((one) =>
+    build(one.name as ComponentName, views.get(one.name)!, version)
+  ));
+}

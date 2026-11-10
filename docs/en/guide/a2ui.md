@@ -42,7 +42,7 @@ They are **optional peer dependencies**, which is safe here because `neba/a2ui` 
 `zod` can be 3.25 or any later 3.x, or 4. The adapter builds its schemas with the Zod 3 API at `zod/v3`, which both serve, and in a project on Zod 4 `@a2ui/web_core` installs a Zod 3 of its own, so the project's version does not have to change.
 
 ```tsx
-import { MessageProcessor } from '@a2ui/web_core/v0_9';
+import { MessageProcessor } from '@a2ui/web_core/v1_0';
 import { A2uiSurface, type ReactComponentImplementation } from '@a2ui/react/v0_9';
 import { createNebaCatalog } from 'neba/a2ui';
 
@@ -54,7 +54,7 @@ processor.processMessages(whateverTheAgentSent);
 <A2uiSurface surface={surface} />;
 ```
 
-The type argument is what makes the surfaces the processor creates ones `A2uiSurface` takes, since `MessageProcessor` does not work it out from the catalog. The messages it draws are v0.9's by default, each with `"version": "v0.9"`. An agent that writes v1.0's, each with `"version": "v1.0"`, needs `createNebaCatalog({ protocolVersion: 'v1.0' })`. `@a2ui/web_core` refuses a surface whose messages name another version than its catalog, and one with no version at all. One catalog draws one version, and so does the processor holding it, because a surface finds its catalog by id alone; a host whose agents write both keeps a processor for each and hands every message to the one its `version` names.
+The type argument is what makes the surfaces the processor creates ones `A2uiSurface` takes, since `MessageProcessor` does not work it out from the catalog. The messages it draws are v1.0's by default, each with `"version": "1.0"`. An agent that writes v0.9's, each with `"version": "v0.9"`, needs `createNebaCatalog({ protocolVersion: 'v0.9' })`. `@a2ui/web_core` refuses a surface whose messages name another version than its catalog, and one with no version at all. One catalog draws one version, and so does the processor holding it, because a surface finds its catalog by id alone; a host whose agents write both keeps a processor for each and hands every message to the one its `version` names.
 
 That is the whole of it. The adapter registers the eighteen components and the fourteen functions, and the `catalogId` a surface names is the one in the file the agent was given — so the two halves cannot drift apart.
 
@@ -103,11 +103,36 @@ Declaring one is a claim that your renderer implements it. Five check a value, t
 
 The catalog is written against **A2UI v1.0**, which the file states in its own `protocolVersion`. The v0.9 catalog had a `theme` key and wrapped every component in a `ComponentCommon`; v1.0 has neither, and adds `instructions` and a `$defs` holding `anyComponent` and `anyFunction`.
 
-**The adapter registers with `@a2ui/react/v0_9`**, because 0.12 has no v1.0 renderer — its root export is still v0.8. The eighteen components only use constructs the two versions share, which is what makes the bridge a rename rather than a translation, and none of the three differences that exist makes the renderer refuse a message: v1.0 moved `accessibility` out of the catalog entry and into the envelope, which the adapter puts back; v1.0 lets a check leave out its `message`, which v0.9 requires, so the adapter accepts one without it and the field shows "Validation failed"; and v1.0's `Action` gained a `userMessage` that v0.9 refuses, so the adapter accepts it and the action a host receives carries it, resolved, beside the event's `name` and `context`.
+**The adapter draws v1.0 by default.** A v1.0 message carries `"version": "1.0"`, binds a prop with `{ "@path": … }` and calls a function with `{ "@call": … }`:
 
-**`protocolVersion: 'v1.0'` draws v1.0's messages with the same components and functions.** A v1.0 component may also carry `accessibility.live`, `accessibility.hidden` and a `metadata` object; no component reads them, and the adapter drops them rather than refusing the component. The functions are the v0.9 set under either version, because the catalog declares that a check returns a boolean, which is what they return, while the v1.0 set in `@a2ui/web_core` returns a validation result.
+```json
+{
+  "version": "1.0",
+  "updateComponents": {
+    "surfaceId": "profile",
+    "components": [
+      {
+        "id": "root",
+        "component": "TextField",
+        "label": "Email",
+        "value": { "@path": "/email" },
+        "checks": [
+          {
+            "condition": { "@call": "email", "args": { "value": { "@path": "/email" } } },
+            "message": "Enter an email address"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
 
-The `@a2ui/*` packages are on 0.12.x while the specification is at 1.0, so expect the tooling to move before the format does. When there is a v1.0 React renderer, what changes is one import inside this package and nothing in `catalog.json`.
+Under v1.0 the adapter uses the schemas and the functions of `@a2ui/web_core`'s v1.0 as they are. A check returns a validation result, as the catalog declares, and one written without a `message` shows the message the function returns, in English, or "Validation failed" for `and`, `or` and `not`. A v1.0 component may also carry `accessibility.live`, `accessibility.hidden` and a `metadata` object; no component reads them, and the component is drawn all the same. `@a2ui/web_core` refuses a `metadata.extensions` key that is not a Unicode identifier, such as one with a `:` in it.
+
+**`protocolVersion: 'v0.9'` draws v0.9's messages**, which carry `"version": "v0.9"` and bind and call with `path` and `call`, through v0.9's own schemas and functions. The catalog spells v1.0, so an agent that writes v0.9 has its format from somewhere other than this file. Three things the catalog allows and v0.9 refuses are let through: `accessibility` on a component, which v1.0 moved into the envelope; a check without a `message`, where the field shows "Validation failed"; and an `Action`'s `userMessage`, which the action a host receives carries, resolved, beside the event's `name` and `context`.
+
+**The adapter imports `@a2ui/react/v0_9`.** `@a2ui/react` has no entry point per version past v0.9: its root is one renderer for both versions, and `v0_9` re-exports it. The `@a2ui/*` packages are on 0.15.x while the specification is at 1.0, and each of 0.13, 0.14 and 0.15 changed how v1.0 is read, so expect the tooling to keep moving before the format settles.
 
 ## Next
 

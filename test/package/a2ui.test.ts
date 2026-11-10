@@ -13,6 +13,7 @@
  * `resolution.test.ts` rather than beside a component.
  */
 import { describe, expect, it } from 'vitest';
+import { ComponentDefinitionSchema, FunctionDefinitionSchema } from '@a2ui/web_core/v1_0';
 import catalog from '../../src/a2ui/catalog.json';
 import pkg from '../../package.json';
 
@@ -112,6 +113,27 @@ describe('the A2UI catalog', () => {
     it('never names a component `Surface`, which the definition schema forbids', () => {
       expect(Object.keys(catalog.components)).not.toContain('Surface');
     });
+
+    /*
+     * The definitions are checked against the v1.0 definition schema that the
+     * installed `web_core` ships, generated from the specification. v1.0 moved
+     * a function call from `call` to `@call` without a new version number, and
+     * only a check against the schema itself notices a change of that kind.
+     */
+    it('defines every component and function the way v1.0 defines one', () => {
+      const invalid = [
+        ...Object.entries(catalog.components).map(
+          ([name, definition]) => [name, ComponentDefinitionSchema.safeParse(definition)] as const
+        ),
+        ...Object.entries(catalog.functions).map(
+          ([name, definition]) => [name, FunctionDefinitionSchema.safeParse(definition)] as const
+        )
+      ]
+        .filter(([, result]) => !result.success)
+        .map(([name]) => name);
+
+      expect(invalid).toEqual([]);
+    });
   });
 
   describe('says the same name twice', () => {
@@ -121,9 +143,10 @@ describe('the A2UI catalog', () => {
       }
     });
 
-    it('gives every function a `call` const equal to its key', () => {
+    // v1.0 names a function call `@call`; `call` is v0.9's spelling.
+    it('gives every function a `@call` const equal to its key', () => {
       for (const [name, definition] of Object.entries(catalog.functions)) {
-        expect((definition as Schema).properties?.call?.const, name).toBe(name);
+        expect((definition as Schema).properties?.['@call']?.const, name).toBe(name);
       }
     });
 
