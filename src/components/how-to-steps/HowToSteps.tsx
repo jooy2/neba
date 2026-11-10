@@ -596,7 +596,11 @@ export const HowToSteps = React.forwardRef<HTMLDivElement, HowToStepsProps>(
               inert={inertValue(hidden)}
               className={cx(
                 'col-start-1 row-start-1 min-w-0',
-                bounded ? 'overflow-y-auto overscroll-contain' : '',
+                // Scrolling, the panel clips at its padding box, and a link or a
+                // button against its side or its foot lost its focus ring. The
+                // padding is room for the ring and the negative margin hands it
+                // back, out of the sheet's own padding and the gap below.
+                bounded ? 'overflow-y-auto overscroll-contain px-1 -mx-1 pb-1 -mb-1' : '',
                 hidden ? 'invisible' : (motion?.className ?? '')
               )}
               style={hidden ? undefined : motion?.style}

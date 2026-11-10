@@ -15,6 +15,7 @@ import {
   AccordionItem,
   Button,
   Collapsible,
+  HowToSteps,
   Reasoning,
   TextField,
   ToolCall
@@ -157,6 +158,23 @@ describe('a focus ring', () => {
         'bottom',
         'left'
       ])
+    ).toEqual([]);
+  });
+
+  it('reaches round a button at the side and foot of a bounded HowToSteps step', async () => {
+    const screen = await render(
+      <HowToSteps
+        maxHeight={320}
+        steps={[{ title: 'Install', content: <Button fullWidth>Copy the command</Button> }]}
+      />
+    );
+    const button = screen
+      .getByRole('button', { name: 'Copy the command' })
+      .element() as HTMLElement;
+    const reach = focusRing(button);
+
+    expect(
+      clippedSides(button, button.getBoundingClientRect(), reach, ['right', 'bottom', 'left'])
     ).toEqual([]);
   });
 });
