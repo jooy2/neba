@@ -771,6 +771,26 @@ const panelTravelClasses =
   'data-[starting-style]:h-0 data-[ending-style]:h-0';
 
 /**
+ * Room above what such a panel holds, taken back by a negative margin so the
+ * body does not move.
+ *
+ * The panel clips at its padding box, and its body starts right at the panel's
+ * top edge, because the trigger above has already paid for the space between
+ * them. So whatever is drawn above the body's first child was cut off: the
+ * focus ring of a link or a button, and a label floated onto a field's top
+ * edge, which rises half its line box. The room is the largest of those, a
+ * label at `xl`, as half of `floatLeadingValues` in `internal/notch.tsx`.
+ *
+ * The strip lies over the bottom of the trigger, so the panel lets the pointer
+ * through and only what it holds takes it back. Without that, the strip would
+ * take the trigger's clicks along its bottom edge. Base UI measures the panel's
+ * `scrollHeight`, which counts the padding, so the height it animates to is
+ * still the panel's whole height.
+ */
+const panelRoomClasses =
+  'pt-[0.5625rem] -mt-[0.5625rem] pointer-events-none [&>*]:pointer-events-auto';
+
+/**
  * A Base UI **Collapsible** panel: Collapsible itself, and the three agent
  * components built on the same primitive.
  *
@@ -779,10 +799,10 @@ const panelTravelClasses =
  * names the measurement after the component that made it, so this is the whole
  * of what the two differ by.
  */
-export const collapsiblePanelClasses = `h-(--collapsible-panel-height) overflow-hidden ${panelTravelClasses}`;
+export const collapsiblePanelClasses = `h-(--collapsible-panel-height) overflow-hidden ${panelTravelClasses} ${panelRoomClasses}`;
 
 /** And an **Accordion** section, which measures itself under its own name. */
-export const accordionPanelClasses = `h-(--accordion-panel-height) overflow-hidden ${panelTravelClasses}`;
+export const accordionPanelClasses = `h-(--accordion-panel-height) overflow-hidden ${panelTravelClasses} ${panelRoomClasses}`;
 
 /**
  * The trigger of one of those panels, named so the chevron inside it can read
