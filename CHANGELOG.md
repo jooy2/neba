@@ -14,6 +14,8 @@
 
 - **A link or a button against the side or the foot of a `HowToSteps` step keeps its focus ring when `maxHeight` makes the step scroll.**
 
+- **A child of a horizontal `ScrollZone` keeps the top and the bottom of its focus ring.** The strip clipped right at the children's edges, so a focused card or button showed its ring only at the sides. The strip now keeps 4px of room above and below them and takes it back with a negative margin, so the zone keeps its height. Without `snap`, a child the focus moves to is also scrolled a ring's width clear of the strip's edge. Along the strip, and across a vertical one, nothing changed: room there would make the strip wider than its zone and push a page laid out edge to edge sideways.
+
 - **A `Panes`, `Sidebar` or `DataTable` resize handle draws its focus ring inside its own edge.** A handle runs the full length of the edge it moves, so the ends of a ring drawn outside it were cut off by the box around it: the outer pane around nested panes, a page shell that fills the window, the top of a table's scroll area.
 
 - **A label floated onto a field's top edge is no longer cut off at the top of a `Dialog` or `Drawer` body.** The body kept 4px above its first child for a focus ring, and a `labelPlacement="float"` or `"notch"` label rises half its line box above the field, 7.5px at `lg`, so its top was clipped. The body now keeps that much room at its own `size`, from 6px at `xs` to 9px at `xl`, and takes it back with a negative margin, so nothing on the sheet moves at rest. While the body scrolls, its content is cut off up to 5px closer to the header than before. A field set larger than its sheet's `size` gets only the sheet's room.

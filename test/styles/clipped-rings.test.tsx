@@ -20,6 +20,7 @@ import {
   Pane,
   Panes,
   Reasoning,
+  ScrollZone,
   Sidebar,
   TextField,
   ToolCall
@@ -233,5 +234,65 @@ describe('a focus ring', () => {
 
       expect(focusRing(handle)).toBeLessThanOrEqual(0);
     });
+  });
+});
+
+/** A strip of things to press, which is what a ScrollZone most often holds. */
+describe('a focus ring in a horizontal ScrollZone', () => {
+  const shelf = (props: { snap?: boolean } = {}) => (
+    <div style={{ width: 320 }}>
+      <ScrollZone label="Shows" buttons="none" {...props}>
+        {Array.from({ length: 8 }, (_, index) => (
+          <Button key={index} style={{ width: 120 }}>
+            {`Show ${index + 1}`}
+          </Button>
+        ))}
+      </ScrollZone>
+    </div>
+  );
+
+  it('reaches above and below a child', async () => {
+    const screen = await render(shelf());
+    const button = screen.getByRole('button', { name: 'Show 1' }).element() as HTMLElement;
+    const reach = focusRing(button);
+
+    expect(clippedSides(button, button.getBoundingClientRect(), reach, ['top', 'bottom'])).toEqual(
+      []
+    );
+  });
+
+  it('keeps the zone as tall as what it holds', async () => {
+    const screen = await render(shelf());
+    const zone = screen.getByRole('group', { name: 'Shows' }).element().parentElement!;
+    const button = screen.getByRole('button', { name: 'Show 1' }).element();
+
+    expect(zone.getBoundingClientRect().height).toBeCloseTo(
+      button.getBoundingClientRect().height,
+      1
+    );
+  });
+
+  /**
+   * The browser scrolls a child the focus moves to only as far as the strip's
+   * scroll padding allows. Chromium centres a child it has to bring in, so the
+   * outcome cannot be watched there; the padding it would stop at can.
+   */
+  it('scrolls a child the focus moves to at least a ring clear of the edge', async () => {
+    const screen = await render(shelf());
+    const strip = screen.getByRole('group', { name: 'Shows' }).element();
+    const reach = focusRing(
+      screen.getByRole('button', { name: 'Show 1' }).element() as HTMLElement
+    );
+    const padding = getComputedStyle(strip);
+
+    expect(parseFloat(padding.scrollPaddingLeft)).toBeGreaterThanOrEqual(reach);
+    expect(parseFloat(padding.scrollPaddingRight)).toBeGreaterThanOrEqual(reach);
+  });
+
+  it('leaves a snapping strip to snap children flush with its edge', async () => {
+    const screen = await render(shelf({ snap: true }));
+    const strip = screen.getByRole('group', { name: 'Shows' }).element();
+
+    expect(getComputedStyle(strip).scrollPaddingLeft).toBe('auto');
   });
 });

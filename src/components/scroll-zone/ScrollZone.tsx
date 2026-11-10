@@ -745,7 +745,22 @@ export const ScrollZone = React.forwardRef<HTMLDivElement, ScrollZoneProps>(
             // in a column whose own height is `auto` resolves to no height at all,
             // and a horizontal strip would come out flat.
             'min-h-0 min-w-0 grow',
-            horizontal ? 'overflow-x-auto overflow-y-hidden' : 'overflow-y-auto overflow-x-hidden',
+            // The strip clips at its padding box, and what it holds is most often
+            // a row of things to press, whose focus rings are drawn 4px outside
+            // them. Across a horizontal strip that is room the padding gives and
+            // the negative margin takes back, so the zone keeps its height and
+            // only the gap beside it is overlapped. Not across a vertical one,
+            // nor along either: a strip 4px wider than its zone pushes a page
+            // laid out edge to edge sideways, and the lanes are measured off the
+            // strip's own box.
+            horizontal
+              ? 'overflow-x-auto overflow-y-hidden py-1 -my-1'
+              : 'overflow-y-auto overflow-x-hidden',
+            // Along the strip, the browser scrolls a child the focus moves to only
+            // as far as its own edge, which leaves its ring outside. Not with
+            // `snap`, where the same padding would set every child 4px in from
+            // the edge it snaps to.
+            snap ? '' : horizontal ? 'scroll-px-1' : 'scroll-py-1',
             // The other half of the same rule, for the gestures the browser
             // scrolls itself: a finger, a sideways trackpad swipe, and the wheel
             // over a vertical zone all stop at the ends rather than carrying on
