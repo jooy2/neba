@@ -1,0 +1,1 @@
+function a(e,l,n=16){if(typeof requestIdleCallback=="function"&&typeof cancelIdleCallback=="function"){const t=requestIdleCallback(e,{timeout:l});return()=>cancelIdleCallback(t)}const c=setTimeout(e,n);return()=>clearTimeout(c)}export{a as w};

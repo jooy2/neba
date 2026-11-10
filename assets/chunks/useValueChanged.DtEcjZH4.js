@@ -1,0 +1,1 @@
+import{r as a}from"./index.CKsxLMuf.js";import{u as s}from"./useIsoLayoutEffect.C_Yz53OT.js";import{u}from"./useStableCallback.CFhfizr4.js";function m(r,o){const t=a.useRef(r),e=u(o);s(()=>{t.current!==r&&e(t.current),t.current=r},[r,e])}export{m as u};

@@ -1,0 +1,1 @@
+import{r as o}from"./index.CKsxLMuf.js";import{u as a}from"./useRenderElement.B1XuV26y.js";import{u as n,p}from"./ProgressValue.C_iwpUVA.js";const P=o.forwardRef(function(e,r){const{render:i,className:c,style:u,...t}=e,{state:s}=n();return a("div",e,{state:s,ref:r,props:t,stateAttributesMapping:p})});export{P};
