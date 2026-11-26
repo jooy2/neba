@@ -571,7 +571,37 @@ const vitePressConfig: UserConfig = {
     hostname: packageJson.homepage
   },
   markdown: {
-    anchor: { getTokensText: headingText },
+    anchor: {
+      /**
+       * Heading ids a Korean link can be written against.
+       *
+       * VitePress slugs a heading through `NFKD` and drops the combining marks,
+       * which is how `Café` becomes `cafe`. Hangul has no combining marks: `NFKD`
+       * splits every syllable into its jamo and all of them survive, so `서버`
+       * came out as five code points that look like `서버` and are not the two
+       * anybody types. Every Korean `#anchor` written by hand in the Markdown
+       * landed at the top of its page instead of at its heading, and neither the
+       * link nor the id looked wrong.
+       *
+       * Composing the result puts the syllables back. `NFC` undoes only the
+       * canonical half of `NFKD`, so the compatibility folding the slug relies on
+       * stays, and an id with no Hangul in it is what it was: `Café` is still
+       * `cafe`, because the accent was dropped before this runs. The rest is
+       * VitePress's own slug, repeated because it is not exported (VitePress 1.6).
+       */
+      slugify: (text: string) =>
+        text
+          .normalize('NFKD')
+          .replace(/[\u0300-\u036F]/g, '')
+          .replace(/[\u0000-\u001f]/g, '')
+          .replace(/[\s~`!@#$%^&*()\-_+=[\]{}|\\;:"'\u201c\u201d\u2018\u2019<>,.?/]+/g, '-')
+          .replace(/-{2,}/g, '-')
+          .replace(/^-+|-+$/g, '')
+          .replace(/^(\d)/, '_$1')
+          .toLowerCase()
+          .normalize('NFC'),
+      getTokensText: headingText
+    },
     config(md) {
       frameworkBlocks(md);
     }

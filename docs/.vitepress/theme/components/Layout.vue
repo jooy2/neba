@@ -47,23 +47,11 @@ const roadmap = computed(() => {
  * renamed to the half that is shown; VitePress would otherwise list both names
  * with a slash between them. Rerun when the framework changes and after every
  * page the outline is rebuilt for.
- *
- * Headings are matched in NFC on both sides: VitePress slugs a Korean heading
- * through NFKD, so its `id` is decomposed jamo that look like the syllables
- * and are not equal to them, and a plain `getElementById` with the link's
- * target finds nothing.
  */
 function fitOutline() {
-  const headings = new Map(
-    [...document.querySelectorAll('.vp-doc :is(h2, h3, h4)[id]')].map((heading) => [
-      heading.id.normalize('NFC'),
-      heading
-    ])
-  );
-
   for (const link of document.querySelectorAll('.VPDocAsideOutline .outline-link')) {
-    const id = decodeURIComponent(link.getAttribute('href')?.slice(1) ?? '').normalize('NFC');
-    const heading = headings.get(id);
+    const id = decodeURIComponent(link.getAttribute('href')?.slice(1) ?? '');
+    const heading = id ? document.getElementById(id) : null;
     const block = heading?.closest('.neba-fw');
     const item = link.closest('li');
 
