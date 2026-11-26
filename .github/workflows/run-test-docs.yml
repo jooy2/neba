@@ -43,5 +43,11 @@ jobs:
         run: npm run lint
       - name: Check formatting
         run: npx prettier . --check
+      # The Flutter previews: `npm run build` builds the gallery for the web
+      # into `docs/public/flutter` before the site.
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
       - name: Build
         run: npm run build

@@ -12,8 +12,9 @@
   "scripts": {
     "changelog": "node scripts/copy-changelog.mjs",
     "catalog": "node ../packages/react/scripts/build-catalog.mjs --docs",
+    "flutter:demos": "node scripts/build-flutter-demos.mjs",
     "dev": "npm run changelog && npm run catalog && vitepress dev",
-    "build": "npm run changelog && npm run catalog && node scripts/build-site.mjs",
+    "build": "npm run changelog && npm run catalog && npm run flutter:demos && node scripts/build-site.mjs",
     "serve": "npm run build && vitepress serve",
     "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
     "lint:fix": "eslint . --report-unused-disable-directives --fix",

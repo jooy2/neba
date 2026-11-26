@@ -115,3 +115,18 @@ html[data-fw='flutter'] .neba-framework-option[data-fw='flutter'] {
   font-size: 14px;
   line-height: 22px;
 }
+
+/* A Flutter preview ------------------------------------------------------------ */
+
+/* The gallery draws the canvas's backdrop and padding itself, because a blur
+   inside the frame can only blur what the frame draws, so the canvas gives the
+   frame its whole box. */
+.neba-demo-canvas--frame {
+  padding: 0;
+}
+
+.neba-demo-frame {
+  display: block;
+  width: 100%;
+  border: 0;
+}

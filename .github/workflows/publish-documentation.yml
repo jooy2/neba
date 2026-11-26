@@ -45,7 +45,14 @@ jobs:
         working-directory: ./docs
         run: npm ci
 
-      # Copies both changelogs and the A2UI catalog in, then builds.
+      # The Flutter previews: `npm run build` builds the gallery for the web
+      # into `docs/public/flutter` before the site.
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      # Copies both changelogs and the A2UI catalog in, builds the Flutter previews, then the site.
       - name: Build VitePress site
         working-directory: ./docs
         run: npm run build

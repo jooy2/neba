@@ -23,11 +23,32 @@ function reactRuntime() {
  * Wide enough that scrolling reaches a mounted preview rather than an empty box.
  */
 const MOUNT_MARGIN = 300;
+
+/** The channel the Flutter gallery and this page talk on. `host_bridge_web.dart` agrees. */
+const CHANNEL = 'neba-demo';
+
+let flutterList = null;
+
+/**
+ * The demos the Flutter gallery has, from the `demos.json` that
+ * `scripts/build-flutter-demos.mjs` writes beside the build. Fetched once, and
+ * only for a reader on Flutter. A site built without Flutter has no file, and
+ * every preview stays the React one.
+ */
+function flutterDemos(url) {
+  flutterList ??= fetch(url)
+    .then((response) => (response.ok ? response.json() : []))
+    .catch(() => [])
+    .then((keys) => new Set(keys));
+
+  return flutterList;
+}
 </script>
 
 <script setup>
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
-import { useData } from 'vitepress';
+import { computed, onBeforeUnmount, onMounted, ref, watch, watchEffect } from 'vue';
+import { useData, withBase } from 'vitepress';
+import { framework } from '../../data/framework';
 import { basePath, localeOf, t } from '../../data/i18n';
 
 /**
@@ -36,6 +57,12 @@ import { basePath, localeOf, t } from '../../data/i18n';
  * VitePress compiles Markdown to Vue, so `<Button />` cannot be written
  * directly. The bridge is the usual one: Vue owns a plain `<div>`, and React
  * takes it over with `createRoot()` once the page is in the browser.
+ *
+ * On Flutter, a demo the Flutter gallery also has is shown as that instead: an
+ * iframe of `public/flutter` with `?demo=<src>`, sized to the height the
+ * gallery reports and themed by message, so one `<Demo src>` names both. A
+ * demo with no Dart twin stays the React one, which the page's note about an
+ * unported component already says.
  *
  * `src` names a file under `.vitepress/demos` without its extension, so
  * `<Demo src="button/variants" />` renders `demos/button/variants.tsx`. The
@@ -128,7 +155,7 @@ function flip() {
   override.value = next === pageTheme.value ? null : next;
 }
 
-async function mount() {
+async function mountReact() {
   const key = `../../demos/${props.src}.tsx`;
   const load = demos[key];
 
@@ -160,7 +187,84 @@ function isNear() {
   return top < window.innerHeight + MOUNT_MARGIN && bottom > -MOUNT_MARGIN;
 }
 
+/*
+ * The framework this preview is drawn in. Everything here waits for the
+ * component to mount, so the first render is the server's, whose HTML only
+ * ever has the React mount point in it.
+ */
+const hydrated = ref(false);
+const near = ref(false);
+const reactStarted = ref(false);
+/** `null` until the gallery's list has answered for this demo. */
+const inGallery = ref(null);
+const wantsFlutter = computed(
+  () => hydrated.value && framework.value === 'flutter' && !props.plain
+);
+const useFrame = computed(() => wantsFlutter.value && inGallery.value === true);
+const frame = ref(null);
+const frameUrl = ref(null);
+const frameHeight = ref(null);
+
+watch(
+  wantsFlutter,
+  async (wanted) => {
+    if (!wanted || inGallery.value !== null) {
+      return;
+    }
+
+    const keys = await flutterDemos(withBase('/flutter/demos.json'));
+    inGallery.value = keys.has(props.src);
+  },
+  { immediate: true }
+);
+
+/*
+ * Mounts whichever half is wanted once the preview is near the screen, and
+ * waits while a Flutter reader's list is still on its way, so that a page
+ * whose demos are all in the gallery does not boot React for nothing.
+ */
+watchEffect(() => {
+  if (!near.value || (wantsFlutter.value && inGallery.value === null)) {
+    return;
+  }
+
+  if (useFrame.value) {
+    frameUrl.value ??=
+      `${withBase('/flutter/index.html')}?demo=${encodeURIComponent(props.src)}` +
+      `&theme=${theme.value}&align=${props.align}`;
+  } else if (!reactStarted.value) {
+    reactStarted.value = true;
+    mountReact();
+  }
+});
+
+/** The gallery's height reports, from this preview's own frame only. */
+function onMessage(event) {
+  const data = event.data;
+
+  if (
+    event.origin !== window.location.origin ||
+    event.source !== frame.value?.contentWindow ||
+    data?.channel !== CHANNEL ||
+    data.type !== 'size'
+  ) {
+    return;
+  }
+
+  frameHeight.value = Math.ceil(data.height);
+}
+
+watch(theme, (next) => {
+  frame.value?.contentWindow?.postMessage(
+    { channel: CHANNEL, type: 'theme', theme: next },
+    window.location.origin
+  );
+});
+
 onMounted(() => {
+  hydrated.value = true;
+  window.addEventListener('message', onMessage);
+
   /*
    * A component page holds a dozen previews and every one of them used to mount
    * at the same moment, so the preview being read waited its turn behind chunks
@@ -172,7 +276,7 @@ onMounted(() => {
    * exactly what that task would delay.
    */
   if (typeof IntersectionObserver === 'undefined' || isNear()) {
-    mount();
+    near.value = true;
     return;
   }
 
@@ -184,7 +288,7 @@ onMounted(() => {
 
       observer.disconnect();
       observer = null;
-      mount();
+      near.value = true;
     },
     { rootMargin: `${MOUNT_MARGIN}px 0px` }
   );
@@ -193,6 +297,7 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
+  window.removeEventListener('message', onMessage);
   const mounted = root;
   root = null;
 
@@ -209,7 +314,12 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="neba-demo" :class="{ 'neba-demo--plain': plain, 'vp-raw': raw }">
-    <div class="neba-demo-canvas" :data-align="align" :data-theme="override">
+    <div
+      class="neba-demo-canvas"
+      :class="{ 'neba-demo-canvas--frame': useFrame }"
+      :data-align="align"
+      :data-theme="override"
+    >
       <button
         v-if="!plain"
         type="button"
@@ -248,7 +358,20 @@ onBeforeUnmount(() => {
           <path d="M13.4 10.1A5.7 5.7 0 0 1 5.9 2.6a5.7 5.7 0 1 0 7.5 7.5Z" />
         </svg>
       </button>
-      <div ref="host" class="neba-scope neba-demo-mount" :style="{ minHeight: reserve }" />
+      <div
+        v-show="!useFrame"
+        ref="host"
+        class="neba-scope neba-demo-mount"
+        :style="{ minHeight: reserve }"
+      />
+      <iframe
+        v-if="useFrame && frameUrl"
+        ref="frame"
+        class="neba-demo-frame"
+        :src="frameUrl"
+        :title="t(locale, 'flutterFrame')"
+        :style="{ height: frameHeight ? `${frameHeight}px` : reserve }"
+      />
     </div>
     <div v-if="$slots.default" class="neba-demo-source">
       <button

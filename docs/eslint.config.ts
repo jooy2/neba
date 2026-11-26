@@ -21,6 +21,7 @@ export default pluginTypeScriptESLint.config(
     '**/.vitepress/cache',
     '**/.vitepress/.temp',
     'public/a2ui',
+    'public/flutter',
     '**/*-lock.json',
     '**/*-lock.yaml'
   ]),

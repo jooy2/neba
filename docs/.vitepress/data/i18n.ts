@@ -54,6 +54,7 @@ const strings = {
     en: 'This component is not in the Flutter package yet. What follows describes the React package.'
   },
   flutterPendingLink: { ko: '포팅 진행 상황', en: 'Where the port stands' },
+  flutterFrame: { ko: 'Flutter 미리보기', en: 'Flutter preview' },
   flutterPropsPending: {
     ko: 'Flutter 패키지의 props 표는 이 컴포넌트가 포팅되면 추가됩니다.',
     en: 'The Flutter props table arrives with the component’s port.'
