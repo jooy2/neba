@@ -28,6 +28,7 @@ export 'src/components/flex/neba_flex.dart';
 export 'src/components/grid/neba_grid.dart';
 export 'src/components/grid_container/neba_grid_container.dart';
 export 'src/components/provider/neba_provider.dart';
+export 'src/components/stack/neba_stack.dart';
 export 'src/theme/scale.dart';
 export 'src/theme/theme.dart';
 export 'src/theme/tokens.dart';

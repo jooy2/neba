@@ -56,6 +56,7 @@ The React guide states each rule of [the design language](../../docs/ko/design/d
 | `focus_ring.dart` | `NebaFocusRing`: two pixels, two pixels off, eased in colour and never in width |
 | `ink.dart` | `NebaInk`: a label's and an icon's colour, eased with the fill |
 | `animate.dart` | `NebaEntrance`: what a `transition` plays, every effect on one tree of opacity, translation, transform and clip, and every pass of a repeat on one clock |
+| `ring.dart` | `NebaRingScope` and `NebaRing`: the ring a ringed pile asks for, drawn by the first widget below it that draws a shape, around that shape. Every widget with a shape of its own wraps it in `NebaRing` |
 | `messages.dart` | `NebaLocale`, `registerNebaMessages`, `nebaMessages` and `fillNebaMessage`: the words a widget says on its own behalf, by namespace, in the React package's namespaces |
 | `svg_path.dart`, `glyphs.dart` | The React package's SVG glyphs, read from the same path data: ×, chevron, tick, minus, plus, dot, the turning ring and the severity set |
 

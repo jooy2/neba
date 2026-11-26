@@ -4,6 +4,7 @@ library;
 import 'package:flutter/widgets.dart';
 
 import 'package:neba/src/internal/animate.dart';
+import 'package:neba/src/internal/ring.dart';
 import 'package:neba/src/internal/surface.dart';
 import 'package:neba/src/theme/theme.dart';
 import 'package:neba/src/theme/tokens.dart';
@@ -104,7 +105,7 @@ class NebaBox extends StatelessWidget {
       content = Padding(padding: EdgeInsets.all(padding[density]![size]!), child: content);
     }
 
-    final Widget box = switch (variant) {
+    final Widget sheet = switch (variant) {
       NebaVariant.solid => NebaSheet(
         fill: tokens.panelHover,
         elevation: elevation,
@@ -121,6 +122,8 @@ class NebaBox extends StatelessWidget {
       ),
       NebaVariant.text => content,
     };
+    // The ring of a pile the box is in, around its corners.
+    final Widget box = NebaRing(borderRadius: radius, child: sheet);
     final NebaTransition? transition = this.transition;
 
     return transition == null ? box : NebaEntrance(transition: transition, child: box);
