@@ -6,6 +6,41 @@ Tick a box in the same commit as the work it records, and add what you find alon
 
 The Flutter package's first version is **1.21.0**, the same number as the React package's next release. Both changelogs keep their entries under `## vNext (2026--)` until that release is cut.
 
+## Where the last session stopped
+
+The port lives on the branch **`flutter-port`**, pushed to GitHub and not merged. `main` on GitHub is still at `4f092a45`, from before the port began. Merging into `main` runs `publish-documentation.yml`, which deploys the site with the React/Flutter switch and the Flutter install instructions, so merge when the Flutter package is ready to be public, ideally together with its first pub.dev release.
+
+The last commit of that session is the `NebaButton` port. What comes next, in order:
+
+1. `NebaChip`, `NebaAvatar` and `NebaCard`. Most of the demos waiting below need one of the three, so each port is also the moment to add those demos' Flutter twins.
+2. `NebaButtonGroup`, and with it the group's scope that `NebaButton` reads before `NebaProvider`: `variant`, `size`, `color`, `density`, `elevation` and `disabled`, as the React `ButtonGroupContext` does. `NebaButton` resolves argument, then provider, then default today, with no group step yet.
+3. The rest of the layout group (`NebaScrollZone`, `NebaPanes`, `NebaPortal`, the page shell), then the inputs, in the order of section 2.
+
+To set up a machine (Flutter 3.50.1 stable and Node 26 were used; the package floor is Flutter 3.41):
+
+```bash
+git fetch origin && git switch flutter-port
+cd packages/react && npm install && npx playwright install chromium
+cd ../flutter && flutter pub get
+cd example && flutter pub get
+cd ../../../examples/flutter && flutter pub get
+cd ../../docs && npm install && npm run flutter:demos
+```
+
+`docs/public/flutter/`, `docs-dist/`, the generated changelog copies and every `build/` folder are git-ignored and rebuilt by those commands; nothing outside the repository is needed.
+
+The six steps of a port are in `packages/flutter/CLAUDE.md`. What the last session learned doing them:
+
+- **A page's Flutter half.** Wrap a React-only paragraph, snippet or list in `::: fw react` and write its Flutter counterpart in `::: fw flutter` after it; a single word or phrase is `<Fw react="…" flutter="…" />`, and a heading may carry one. Leave a blank line before and after every fence, also after a list item: Prettier otherwise joins the fence to the line above. A container around a `<Demo>` that itself holds a fenced block needs four colons. A demo with no Dart twin keeps its React quote only; a demo that makes no sense in Flutter (`button/render`) goes inside `::: fw react` whole.
+- **Dart demos** are quoted inside the `<Demo>` slot with `<<< @/../packages/flutter/example/lib/demos/{folder}/{case}.dart`, folder and file with underscores, and the gallery registers them under the React key with hyphens. A button in a demo takes `onPressed: () {}`: with no `onPressed` a Flutter button is disabled. `ConstrainedBox` is not a `const` constructor, so the `const` goes on its child.
+- **The props table** is `docs/.vitepress/data/props-flutter/{page}.ts`, rows built with `from()`, `renamed()` and the row helpers in `shared.ts`; `transitionRow()` is the Flutter description of `transition`. Override a description wherever the React one speaks of CSS, an element or an event.
+- **Pictures** are copied from `docs/public/samples/` into `packages/flutter/example/assets/samples/` at the same path and loaded as `Image.asset('assets/samples/…')`; `example/test/samples_test.dart` holds the copies to the originals, and the sample app maps those keys to `packages/neba_example/` itself. A row that holds text wraps it in `Flexible`, as a CSS flex item shrinks, or it overflows at a phone's width.
+- **Checking it.** `flutter analyze` and `flutter test` in `packages/flutter`, in `packages/flutter/example` (every demo in both themes and at a phone's width) and in `examples/flutter` (the sample app, which shows every demo too), `npm run typecheck`, `npm run lint`, `npx prettier . --check` and `npm run build` in `docs` (the build runs the container check), and `npm run flutter:demos -- --force` before looking at a preview. With the browser pane hidden, a preview below the first screen never mounts; open the gallery directly at `/flutter/index.html?demo={key}&theme=dark` on the dev server to see one.
+
+Still open from that session:
+
+- [ ] **Check whether a consumer of `neba/tailwind.css` loses the library's classes.** The docs did: Vite inlined the stylesheet's `@import`, and the `@source '.'` inside it stopped pointing at `src/` (fixed in the docs by naming `packages/react/src`). A consumer who runs Tailwind through `@tailwindcss/postcss` in Vite may meet the same thing; `@tailwindcss/vite` probably does not. Not verified either way.
+
 ## 1. Foundation
 
 What is done:
