@@ -3,7 +3,7 @@ import { writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { withSidebar } from 'vitepress-sidebar';
-import packageJson from '../../package.json' with { type: 'json' };
+import packageJson from '../../packages/react/package.json' with { type: 'json' };
 import { defineConfig, HeadConfig, SiteData, TransformContext, UserConfig } from 'vitepress';
 import { withI18n } from 'vitepress-i18n';
 import ReactPlugin from '@vitejs/plugin-react';
@@ -13,12 +13,14 @@ import type { VitePressSidebarOptions } from 'vitepress-sidebar/types';
 const vitePressDir = dirname(fileURLToPath(import.meta.url));
 const rootDir = resolve(vitePressDir, '../..');
 const srcDir = resolve(rootDir, 'docs');
+/** The React package, whose source the previews render. */
+const reactDir = resolve(rootDir, 'packages/react');
 
 const defaultLocale: string = 'en';
 const supportLocales: string[] = [defaultLocale, 'ko'];
 const siteUrl = packageJson.homepage.replace(/\/+$/, '');
 // `repository.url` is in the form npm writes, `git+https://….git`, which is an
-// address for git and not a page; `scripts/release-notes.mjs` strips it alike.
+// address for git and not a page; `.github/scripts/release-notes.mjs` strips it alike.
 const repoUrl = packageJson.repository.url.replace(/^git\+/, '').replace(/\.git$/, '');
 const editLinkPattern = `${repoUrl}/edit/main/docs/:path`;
 const npmUrl = `https://www.npmjs.com/package/${packageJson.name}`;
@@ -44,7 +46,7 @@ const glob = (pattern: string) => resolve(rootDir, pattern).replaceAll('\\', '/'
  * undeclared one is discovered while somebody is reading the page it colours.
  */
 function vendorEntries(): string[] {
-  const srcDir = resolve(rootDir, 'src');
+  const srcDir = resolve(reactDir, 'src');
   const entries = new Set<string>();
   const pattern = /'(@base-ui\/react\/[a-z-]+|highlight\.js\/lib\/(?:core|languages\/[\w.+-]+))'/g;
 
@@ -108,7 +110,9 @@ const vitePressSidebarConfig = [
   ...supportLocales.map((lang) => {
     return {
       ...commonSidebarConfig,
-      documentRootPath: `/docs/${lang}`,
+      // Resolved from the working directory, which is this site's folder: the
+      // site is its own npm project and every script runs from `docs/`.
+      documentRootPath: `/${lang}`,
       resolvePath: localeBase(lang),
       ...(defaultLocale === lang ? {} : { basePath: localeBase(lang) })
     };
@@ -441,13 +445,16 @@ const vitePressConfig: UserConfig = {
         // Anchored, so `neba/styles.css` is not rewritten into the barrel too.
         // Pointing at the source rather than `dist/` is what lets a component
         // edit show up in the docs without a rebuild.
-        { find: /^neba$/, replacement: resolve(rootDir, 'src/index.ts') }
-      ]
+        { find: /^neba$/, replacement: resolve(reactDir, 'src/index.ts') }
+      ],
+      // `packages/react` has a `node_modules` of its own, and a module the
+      // library imports would otherwise resolve to that copy while a demo's
+      // resolves to this site's: two Reacts on one page, and every hook throws.
+      dedupe: ['react', 'react-dom', '@base-ui/react', 'highlight.js']
     },
     css: {
-      // VitePress's Vite root is `docs/`; the Tailwind plugin lives in the
-      // repository root's `postcss.config.mjs`.
-      postcss: rootDir
+      // The site's own `postcss.config.mjs`, beside this folder.
+      postcss: srcDir
     },
     optimizeDeps: {
       // Every one of these is only ever reached through a dynamic import inside
@@ -462,13 +469,16 @@ const vitePressConfig: UserConfig = {
       ]
     },
     server: {
+      // The previews import the library from `packages/react/src`, which is
+      // outside this project's root.
+      fs: { allow: [rootDir] },
       warmup: {
         // The library is behind a dynamic import too, so the dev server would
         // not transform a single file of it until the first preview asks — and
         // then it asks for all of it at once, through the barrel. The demos are
         // left out on purpose: a session touches a handful of them, whereas
         // `src/` is what every one of them pulls in.
-        clientFiles: [glob('src/**/*.{ts,tsx}')]
+        clientFiles: [glob('packages/react/src/**/*.{ts,tsx}')]
       }
     }
   },

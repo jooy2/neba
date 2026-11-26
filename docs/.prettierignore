@@ -1,0 +1,8 @@
+.vitepress/cache
+.vitepress/.temp
+public/a2ui/
+*/changelog.md
+node_modules/
+
+*-lock.json
+*-lock.yaml

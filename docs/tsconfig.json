@@ -14,7 +14,7 @@
     "resolveJsonModule": true,
     "types": ["vite/client"],
     "paths": {
-      "neba": ["../src/index.ts"]
+      "neba": ["../packages/react/src/index.ts"]
     }
   },
   "include": [".vitepress/**/*.ts", ".vitepress/**/*.tsx"]

@@ -1,0 +1,61 @@
+{
+  "name": "neba-docs",
+  "private": true,
+  "description": "The documentation site of Neba UI, shared by the React and the Flutter package.",
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jooy2/neba.git",
+    "directory": "docs"
+  },
+  "scripts": {
+    "changelog": "node scripts/copy-changelog.mjs",
+    "catalog": "node ../packages/react/scripts/build-catalog.mjs --docs",
+    "dev": "npm run changelog && npm run catalog && vitepress dev",
+    "build": "npm run changelog && npm run catalog && node scripts/build-site.mjs",
+    "serve": "npm run build && vitepress serve",
+    "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
+    "lint:fix": "eslint . --report-unused-disable-directives --fix",
+    "format": "prettier .",
+    "format:fix": "prettier . --write",
+    "typecheck": "tsc --project tsconfig.json"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "dependencies": {
+    "@base-ui/react": "^1.9.0",
+    "highlight.js": "^11.12.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "vue": "^3.5.45"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "@tailwindcss/postcss": "^4.3.5",
+    "@types/node": "^26.6.6",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@typescript-eslint/parser": "^8.72.2",
+    "@vitejs/plugin-react": "^6.3.0",
+    "eslint": "^9.39.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-n": "^18.5.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "globals": "^17.14.0",
+    "jiti": "^2.7.0",
+    "postcss": "^8.5.32",
+    "prettier": "^3.9.10",
+    "tailwindcss": "^4.3.5",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.72.2",
+    "vitepress": "^1.6.4",
+    "vitepress-i18n": "^1.5.0",
+    "vitepress-sidebar": "^1.41.0"
+  },
+  "allowScripts": {
+    "esbuild": false,
+    "fsevents": false
+  }
+}
