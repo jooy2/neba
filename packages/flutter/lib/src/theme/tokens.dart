@@ -205,6 +205,174 @@ class NebaColorRoles {
   Color get accent => family.accent;
 }
 
+/// Which of the theme's two inks a label on a chart colour wears: the text
+/// colour, or the page's surface.
+///
+/// Kept as a choice rather than a colour, as the stylesheet keeps it as a
+/// `var()`, so a product that changes `fg` or `surface` carries every chart
+/// label along.
+enum NebaInkTone {
+  /// [NebaTokens.fg].
+  foreground,
+
+  /// [NebaTokens.surface].
+  surface,
+}
+
+/// The colours a chart draws its data in.
+///
+/// The eight series colours are handed out in order, and the order is what
+/// makes neighbours the pairs that were checked for colour-vision separation:
+/// a ninth series is an "Other" row or a second chart, not a ninth hue. The
+/// sequential ramp is one hue from least to most, for a magnitude; the
+/// diverging one is two poles and a neutral, for a magnitude with a
+/// meaningful middle. Each colour comes with the ink a label on it wears.
+@immutable
+class NebaChartPalette {
+  /// A chart palette.
+  const NebaChartPalette({
+    required this.series,
+    required this.seriesInk,
+    required this.sequential,
+    required this.sequentialInk,
+    required this.diverging,
+    required this.divergingInk,
+  });
+
+  /// The eight series colours, in the order they are handed out.
+  final List<Color> series;
+
+  /// The ink of a label on each series colour.
+  final List<NebaInkTone> seriesInk;
+
+  /// The sequential ramp, five steps from least to most.
+  final List<Color> sequential;
+
+  /// The ink of a label on each sequential step.
+  final List<NebaInkTone> sequentialInk;
+
+  /// The diverging ramp, five steps from one pole through the neutral middle
+  /// to the other.
+  final List<Color> diverging;
+
+  /// The ink of a label on each diverging step.
+  final List<NebaInkTone> divergingInk;
+
+  @override
+  bool operator ==(Object other) {
+    return other is NebaChartPalette &&
+        listEquals(other.series, series) &&
+        listEquals(other.seriesInk, seriesInk) &&
+        listEquals(other.sequential, sequential) &&
+        listEquals(other.sequentialInk, sequentialInk) &&
+        listEquals(other.diverging, diverging) &&
+        listEquals(other.divergingInk, divergingInk);
+  }
+
+  @override
+  int get hashCode {
+    return Object.hash(
+      Object.hashAll(series),
+      Object.hashAll(seriesInk),
+      Object.hashAll(sequential),
+      Object.hashAll(sequentialInk),
+      Object.hashAll(diverging),
+      Object.hashAll(divergingInk),
+    );
+  }
+}
+
+/// The `auto` palette of a code block: the colours of the theme the page is
+/// in, rather than one of the code themes a caller names.
+@immutable
+class NebaCodePalette {
+  /// A code palette.
+  const NebaCodePalette({
+    required this.background,
+    required this.foreground,
+    required this.comment,
+    required this.keyword,
+    required this.string,
+    required this.number,
+    required this.function,
+    required this.type,
+    required this.variable,
+    required this.tag,
+    required this.attribute,
+    required this.meta,
+    required this.addition,
+    required this.deletion,
+  });
+
+  /// The block's background.
+  final Color background;
+
+  /// Plain code.
+  final Color foreground;
+
+  /// Comments.
+  final Color comment;
+
+  /// Keywords.
+  final Color keyword;
+
+  /// String literals.
+  final Color string;
+
+  /// Number literals.
+  final Color number;
+
+  /// Function names.
+  final Color function;
+
+  /// Type names.
+  final Color type;
+
+  /// Variables and properties.
+  final Color variable;
+
+  /// Markup tags.
+  final Color tag;
+
+  /// Markup attributes.
+  final Color attribute;
+
+  /// Directives, decorators and other metadata.
+  final Color meta;
+
+  /// An added line in a diff.
+  final Color addition;
+
+  /// A removed line in a diff.
+  final Color deletion;
+
+  /// Every colour, in the order the fields are declared.
+  List<Color> get all => <Color>[
+    background,
+    foreground,
+    comment,
+    keyword,
+    string,
+    number,
+    function,
+    type,
+    variable,
+    tag,
+    attribute,
+    meta,
+    addition,
+    deletion,
+  ];
+
+  @override
+  bool operator ==(Object other) {
+    return other is NebaCodePalette && listEquals(other.all, all);
+  }
+
+  @override
+  int get hashCode => Object.hashAll(all);
+}
+
 /// The tokens of one theme, light or dark.
 ///
 /// [NebaTokens.light] and [NebaTokens.dark] are the React package's two theme
@@ -240,6 +408,8 @@ class NebaTokens {
     required Color scrim,
     required Color shadowAmbient,
     required Map<NebaColor, NebaColorFamily> families,
+    required NebaChartPalette chart,
+    required NebaCodePalette code,
     Map<NebaSize, double> radius = defaultRadius,
   }) {
     final NebaTokens tokens = NebaTokens._(
@@ -268,6 +438,8 @@ class NebaTokens {
       scrim: scrim,
       shadowAmbient: shadowAmbient,
       families: Map<NebaColor, NebaColorFamily>.unmodifiable(families),
+      chart: chart,
+      code: code,
       radius: Map<NebaSize, double>.unmodifiable(radius),
       roles: <NebaColor, NebaColorRoles>{},
     );
@@ -311,6 +483,8 @@ class NebaTokens {
     required this.scrim,
     required this.shadowAmbient,
     required this.families,
+    required this.chart,
+    required this.code,
     required this.radius,
     required Map<NebaColor, NebaColorRoles> roles,
   }) : _roles = roles,
@@ -401,6 +575,72 @@ class NebaTokens {
         accent: oklch(0.535, 0.096, 223),
       ),
     },
+    chart: NebaChartPalette(
+      series: <Color>[
+        oklch(0.605, 0.214, 262),
+        oklch(0.61, 0.166, 48),
+        oklch(0.625, 0.22, 352),
+        oklch(0.595, 0.122, 92),
+        oklch(0.59, 0.12, 232),
+        oklch(0.575, 0.18, 145),
+        oklch(0.62, 0.22, 305),
+        oklch(0.585, 0.104, 182),
+      ],
+      seriesInk: const <NebaInkTone>[
+        NebaInkTone.foreground,
+        NebaInkTone.surface,
+        NebaInkTone.foreground,
+        NebaInkTone.surface,
+        NebaInkTone.foreground,
+        NebaInkTone.surface,
+        NebaInkTone.foreground,
+        NebaInkTone.foreground,
+      ],
+      sequential: <Color>[
+        oklch(0.77, 0.09, 262),
+        oklch(0.69, 0.13, 262),
+        oklch(0.61, 0.17, 262),
+        oklch(0.53, 0.19, 262),
+        oklch(0.43, 0.17, 262),
+      ],
+      sequentialInk: const <NebaInkTone>[
+        NebaInkTone.foreground,
+        NebaInkTone.foreground,
+        NebaInkTone.foreground,
+        NebaInkTone.surface,
+        NebaInkTone.surface,
+      ],
+      diverging: <Color>[
+        oklch(0.45, 0.09, 232),
+        oklch(0.63, 0.12, 232),
+        oklch(0.77, 0.008, 262),
+        oklch(0.63, 0.15, 32),
+        oklch(0.45, 0.16, 32),
+      ],
+      divergingInk: const <NebaInkTone>[
+        NebaInkTone.surface,
+        NebaInkTone.foreground,
+        NebaInkTone.foreground,
+        NebaInkTone.foreground,
+        NebaInkTone.surface,
+      ],
+    ),
+    code: NebaCodePalette(
+      background: oklch(0.984, 0.003, 262),
+      foreground: oklch(0.3, 0.016, 262),
+      comment: oklch(0.58, 0.022, 262),
+      keyword: oklch(0.48, 0.19, 322),
+      string: oklch(0.46, 0.12, 148),
+      number: oklch(0.5, 0.14, 48),
+      function: oklch(0.48, 0.17, 264),
+      type: oklch(0.45, 0.1, 214),
+      variable: oklch(0.45, 0.12, 28),
+      tag: oklch(0.48, 0.18, 22),
+      attribute: oklch(0.47, 0.13, 82),
+      meta: oklch(0.52, 0.05, 262),
+      addition: oklch(0.45, 0.14, 152),
+      deletion: oklch(0.48, 0.18, 25),
+    ),
   );
 
   static final NebaTokens _dark = NebaTokens(
@@ -474,6 +714,72 @@ class NebaTokens {
         accent: oklch(0.79, 0.11, 223),
       ),
     },
+    chart: NebaChartPalette(
+      series: <Color>[
+        oklch(0.66, 0.18, 262),
+        oklch(0.66, 0.18, 48),
+        oklch(0.66, 0.22, 352),
+        oklch(0.66, 0.134, 92),
+        oklch(0.66, 0.134, 232),
+        oklch(0.66, 0.206, 145),
+        oklch(0.66, 0.22, 305),
+        oklch(0.66, 0.118, 182),
+      ],
+      seriesInk: const <NebaInkTone>[
+        NebaInkTone.surface,
+        NebaInkTone.surface,
+        NebaInkTone.surface,
+        NebaInkTone.surface,
+        NebaInkTone.surface,
+        NebaInkTone.surface,
+        NebaInkTone.surface,
+        NebaInkTone.surface,
+      ],
+      sequential: <Color>[
+        oklch(0.43, 0.12, 262),
+        oklch(0.52, 0.16, 262),
+        oklch(0.61, 0.19, 262),
+        oklch(0.7, 0.15, 262),
+        oklch(0.8, 0.09, 262),
+      ],
+      sequentialInk: const <NebaInkTone>[
+        NebaInkTone.foreground,
+        NebaInkTone.foreground,
+        NebaInkTone.surface,
+        NebaInkTone.surface,
+        NebaInkTone.surface,
+      ],
+      diverging: <Color>[
+        oklch(0.46, 0.092, 232),
+        oklch(0.62, 0.125, 232),
+        oklch(0.76, 0.008, 262),
+        oklch(0.62, 0.15, 32),
+        oklch(0.46, 0.15, 32),
+      ],
+      divergingInk: const <NebaInkTone>[
+        NebaInkTone.foreground,
+        NebaInkTone.surface,
+        NebaInkTone.surface,
+        NebaInkTone.surface,
+        NebaInkTone.foreground,
+      ],
+    ),
+    code: NebaCodePalette(
+      background: oklch(0.195, 0.014, 262),
+      foreground: oklch(0.9, 0.012, 262),
+      comment: oklch(0.6, 0.024, 262),
+      keyword: oklch(0.76, 0.13, 324),
+      string: oklch(0.8, 0.13, 148),
+      number: oklch(0.81, 0.12, 62),
+      function: oklch(0.78, 0.12, 258),
+      type: oklch(0.82, 0.1, 210),
+      variable: oklch(0.82, 0.09, 32),
+      tag: oklch(0.77, 0.13, 22),
+      attribute: oklch(0.85, 0.11, 92),
+      meta: oklch(0.7, 0.05, 262),
+      addition: oklch(0.8, 0.14, 152),
+      deletion: oklch(0.75, 0.15, 25),
+    ),
   );
 
   /// The corner radius at each size: about 45% of the control's height, held
@@ -574,6 +880,12 @@ class NebaTokens {
   /// The base tokens of each colour family.
   final Map<NebaColor, NebaColorFamily> families;
 
+  /// The colours a chart draws its data in.
+  final NebaChartPalette chart;
+
+  /// A code block's `auto` palette.
+  final NebaCodePalette code;
+
   /// The corner radius at each size.
   final Map<NebaSize, double> radius;
 
@@ -590,6 +902,22 @@ class NebaTokens {
 
   /// [panel] while pressed.
   final Color panelPress;
+
+  /// A chart's grid lines.
+  Color get chartGrid => mixSrgb(border, 0.70, transparent);
+
+  /// A chart's axis rules.
+  Color get chartAxis => border;
+
+  /// A chart's zero line.
+  Color get chartBaseline => mixSrgb(mutedFg, 0.35, transparent);
+
+  /// What a mark is separated from its neighbour by, and what a marker is
+  /// ringed with: the page's own surface.
+  Color get chartGap => surface;
+
+  /// The colour of [tone].
+  Color ink(NebaInkTone tone) => tone == NebaInkTone.foreground ? fg : surface;
 
   /// Every colour a widget draws in [color]'s family.
   NebaColorRoles roles(NebaColor color) => _roles[color]!;
@@ -666,6 +994,8 @@ class NebaTokens {
     Color? scrim,
     Color? shadowAmbient,
     Map<NebaColor, NebaColorFamily>? families,
+    NebaChartPalette? chart,
+    NebaCodePalette? code,
     Map<NebaSize, double>? radius,
   }) {
     return NebaTokens(
@@ -694,6 +1024,8 @@ class NebaTokens {
       scrim: scrim ?? this.scrim,
       shadowAmbient: shadowAmbient ?? this.shadowAmbient,
       families: families ?? this.families,
+      chart: chart ?? this.chart,
+      code: code ?? this.code,
       radius: radius ?? this.radius,
     );
   }
@@ -726,6 +1058,8 @@ class NebaTokens {
         other.scrim == scrim &&
         other.shadowAmbient == shadowAmbient &&
         mapEquals(other.families, families) &&
+        other.chart == chart &&
+        other.code == code &&
         mapEquals(other.radius, radius);
   }
 
@@ -761,6 +1095,8 @@ class NebaTokens {
           return Object.hash(e.key, e.value);
         }),
       ),
+      chart,
+      code,
       Object.hashAllUnordered(
         radius.entries.map((MapEntry<NebaSize, double> e) {
           return Object.hash(e.key, e.value);

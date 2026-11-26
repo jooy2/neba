@@ -66,6 +66,65 @@ void main() {
         expect(sheen, endsWith('52%)'));
       });
 
+      test('draws charts in the same colours, with the same ink on each', () {
+        void ramp(String name, List<Color> colours, List<NebaInkTone> inks, int length) {
+          expect(colours, hasLength(length), reason: name);
+          expect(inks, hasLength(length), reason: name);
+
+          for (int i = 0; i < length; i++) {
+            final String step = name.isEmpty ? '${i + 1}' : '$name-${i + 1}';
+            final String on = name.isEmpty ? 'on-${i + 1}' : '$name-on-${i + 1}';
+
+            _expectColor(css.color('var(--neba-chart-$step)'), colours[i], '--neba-chart-$step');
+            _expectColor(
+              css.color('var(--neba-chart-$on)'),
+              tokens.ink(inks[i]),
+              '--neba-chart-$on',
+            );
+          }
+        }
+
+        final NebaChartPalette chart = tokens.chart;
+        ramp('', chart.series, chart.seriesInk, 8);
+        ramp('seq', chart.sequential, chart.sequentialInk, 5);
+        ramp('div', chart.diverging, chart.divergingInk, 5);
+
+        _expectColors(css, <String, Color>{
+          '--neba-chart-grid': tokens.chartGrid,
+          '--neba-chart-axis': tokens.chartAxis,
+          '--neba-chart-baseline': tokens.chartBaseline,
+          '--neba-chart-gap': tokens.chartGap,
+        });
+      });
+
+      test('colours code in the same palette', () {
+        const List<String> names = <String>[
+          'bg',
+          'fg',
+          'comment',
+          'keyword',
+          'string',
+          'number',
+          'function',
+          'type',
+          'variable',
+          'tag',
+          'attr',
+          'meta',
+          'add',
+          'del',
+        ];
+        final List<Color> palette = tokens.code.all;
+
+        for (int i = 0; i < names.length; i++) {
+          _expectColor(
+            css.color('var(--neba-code-auto-${names[i]})'),
+            palette[i],
+            '--neba-code-auto-${names[i]}',
+          );
+        }
+      });
+
       test('makes the same sheets opaque under reduced transparency', () {
         final _Css opaque = _Css(<String, String>{
           ...theme.value,
