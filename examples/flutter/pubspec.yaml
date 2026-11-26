@@ -1,0 +1,26 @@
+name: neba_showcase
+description: >-
+  A sample app built with Neba UI for Flutter, run on simulators, emulators and
+  real devices.
+publish_to: none
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.11.0
+  flutter: '>=3.41.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  neba:
+    path: ../../packages/flutter
+  # The gallery's demos, so the app shows the same files the documentation does.
+  neba_example:
+    path: ../../packages/flutter/example
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  integration_test:
+    sdk: flutter
+  flutter_lints: 6.0.0

@@ -1,0 +1,26 @@
+# The showcase app is held to the same style as the package it shows, without
+# the rule that every public member carries documentation: an app has no
+# public API.
+
+include: package:flutter_lints/flutter.yaml
+
+formatter:
+  page_width: 100
+
+linter:
+  rules:
+    - always_declare_return_types
+    - always_use_package_imports
+    - always_put_control_body_on_new_line
+    - curly_braces_in_flow_control_structures
+    - prefer_single_quotes
+    - prefer_final_locals
+    - directives_ordering
+    - unawaited_futures
+    - use_super_parameters
+
+analyzer:
+  exclude:
+    - build/**
+    - ios/**
+    - android/**
