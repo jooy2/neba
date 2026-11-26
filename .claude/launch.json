@@ -4,8 +4,30 @@
     {
       "name": "docs",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["--prefix", "docs", "run", "dev", "--", "--port", "5273", "--strictPort"],
+      "runtimeArgs": [
+        "--prefix",
+        "docs",
+        "run",
+        "dev",
+        "--",
+        "--port",
+        "5273",
+        "--strictPort"
+      ],
       "port": 5273,
+      "autoPort": false
+    },
+    {
+      "name": "flutter-gallery",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "5290",
+        "--directory",
+        "packages/flutter/example/build/web"
+      ],
+      "port": 5290,
       "autoPort": false
     }
   ]
