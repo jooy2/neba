@@ -17,7 +17,27 @@ When creating an issue, keep the following in mind:
 - Describe in detail what is happening and what needs to be fixed. You may need additional materials such as images or video.
 - Use appropriate keyword titles to make it easy for others to search and understand.
 - Please use English in all content.
-- You may need to describe the environment in which the issue occurs.
+- Name the package and its version: for `neba` on npm, the React version and the browser you saw it in; for `neba` on pub.dev, the Flutter version and the platform.
+
+## Where things live
+
+The repository holds one design language and the things built out of it:
+
+| Path | What it is | How it is run |
+| --- | --- | --- |
+| `packages/react` | The npm package, `neba` | `cd packages/react && npm install`, then `npm test`, `npm run lint`, `npm run build` |
+| `packages/flutter` | The pub.dev package, `neba` | `cd packages/flutter && flutter pub get`, then `flutter test`, `flutter analyze` |
+| `docs` | The documentation site, shared by both | `cd docs && npm install`, then `npm run dev` |
+| `examples/flutter` | A sample app for iOS, iPadOS and Android | `cd examples/flutter && flutter test`; [examples/README.md](examples/README.md) says how to run it on a device |
+
+There is no install at the repository root, and no root `package.json`. Each of these is entered and run on its own. Node.js 22.12 or later is needed for the React package and the site, and Flutter 3.41 or later for the Flutter package.
+
+A few things that are easy to trip over:
+
+- The site renders the React components from `packages/react/src`, so a component edit shows up in `npm run dev` without a rebuild, but the site needs `packages/react/node_modules` to resolve the library's own imports. Run `npm install` in `packages/react` first.
+- The Flutter tokens are the React stylesheet's, computed in Dart. A change to a value in `packages/react/src/styles.css` is a change to `packages/flutter/lib/src/theme/tokens.dart` in the same pull request, and `packages/flutter/test/theme/tokens_parity_test.dart` fails until both say the same thing.
+- `packages/flutter/lib/neba.dart` and `packages/flutter/example/lib/demos/registry.dart` are generated. After adding a widget or a demo, run `dart run tool/generate.dart` in `packages/flutter`.
+- The Flutter port is in progress, and [TODO.md](TODO.md) is its roadmap.
 
 ## How to contribute (Pull Requests)
 
@@ -26,11 +46,11 @@ When creating an issue, keep the following in mind:
 Here's the process for contributing to the project:
 
 1. Clone the project (or rebase to the latest commit in the main branch)
-2. Install the dependencies with `npm install`, and the browser the tests run in with `npx playwright install chromium`
-3. Set up ESLint and Prettier in your editor. CI runs `npm run lint`, `npx prettier --check .` and `npm run typecheck`, and after `npm run build` it runs `npm run size` and `npm run compat`, so run them before you push
+2. Install the dependencies of the part you are changing. For the React package, `npm install` in `packages/react` and the browser the tests run in with `npx playwright install chromium`; for the Flutter package, `flutter pub get` in `packages/flutter`
+3. Set up the formatter in your editor. For the React package and the site, CI runs `npm run lint`, `npx prettier --check .` and `npm run typecheck`, and after `npm run build` it runs `npm run size` and `npm run compat`; for the Flutter package and the apps, `flutter analyze`, `dart format --set-exit-if-changed` and `flutter test`. Run them before you push
 4. Write the code that needs to be fixed
 5. Update the documentation under `docs/` in every locale. The English and Korean pages mirror each other, with the same headings, demos and examples, and a changed prop is updated in `docs/.vitepress/data/props.ts` in both languages. A new component also needs its demos under `docs/.vitepress/demos/`, a card in `demos/catalog/all.tsx`, a place on the sample screen in `demos/showcase/app.tsx` and a line in `docs/public/llms.txt`
-6. Add or change the tests under `test/` in the same commit as the code they cover, and run `npm test` to confirm the whole suite passes
+6. Add or change the tests in the same commit as the code they cover, under the package's own `test/`, and run the package's whole suite to confirm it passes
 
 ### Write a commit message
 
@@ -58,6 +78,14 @@ Informal tags:
 
 - `package`: Modifications to package settings, modules, or GitHub projects
 - `typo`: Fix typos
+
+This repository holds two packages, so a tag is preceded by the codebase the change belongs to:
+
+- `[javascript]` for a change to `packages/react` alone, as in `[javascript] fix: keep the focus on the trigger after a picker is cleared`
+- `[dart]` for a change to `packages/flutter` or the Flutter apps alone, as in `[dart] feat: port NebaButton to Flutter, with its tests, demos, docs and props table`
+- No prefix for a change that touches both packages, or neither, as in `docs: say on the tabs page which panels are rendered`
+
+Keep one component to one commit, so that a later reader can find, read or revert the one they care about on its own.
 
 ### Create a pull request
 

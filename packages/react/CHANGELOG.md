@@ -2,6 +2,10 @@
 
 ## vNext (2026--)
 
+### Added
+
+- **Neba UI is coming to Flutter.** The repository now also holds the Flutter package, `neba` on pub.dev, with the same design language computed from the same tokens. Its first release takes this release's version number, and from here the two share version numbers while each keeps its own changelog. This package's releases are tagged `react-vX.Y.Z` from now on; the earlier `vX.Y.Z` tags stay where they are.
+
 ## 1.20.0 (2026-11-10)
 
 ### Breaking changes

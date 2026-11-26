@@ -10,6 +10,13 @@ Live previews and full props for every component. This README is just the quick 
 
 ---
 
+| Package | Registry | Requires | Readme |
+| --- | --- | --- | --- |
+| React | [`neba` on npm](https://www.npmjs.com/package/neba) | React 18 or 19 | [packages/react](packages/react/README.md) |
+| Flutter | [`neba` on pub.dev](https://pub.dev/packages/neba) | Flutter 3.41 or later | [packages/flutter](packages/flutter/README.md) |
+
+The Flutter package carries the same design language, computed from the same tokens, and is being ported component by component: [TODO.md](TODO.md) is the roadmap. Each package is released on its own and keeps its own changelog; they share version numbers from 1.21.0. The rest of this page is about the React package.
+
 **Neba UI is a React component library for building application interfaces.** About 140 components, from buttons and form fields through menus, dialogs, tables and charts. They are styled and accessible out of the box, and they agree with each other because they draw from one set of props.
 
 You install one package, add one line to your CSS, and import components. There is nothing to configure, no theme object to assemble, and no per-component styling decisions to make before you can ship a screen.
@@ -57,7 +64,7 @@ pnpm add neba
 Add one line to your app's CSS entry point:
 
 ```css
-@import 'neba/styles.css';
+@import "neba/styles.css";
 ```
 
 `neba/styles.css` is finished CSS: the design tokens, the compiled rules for every utility class the components use, and a small reset whose rules on elements are all specificity 0, so your own styles win. [Tailwind CSS](https://tailwindcss.com) v4 builds this package; it does not have to be installed in yours.
@@ -67,8 +74,8 @@ That is the whole setup. No provider is required at the root, no theme object, n
 If your project already runs Tailwind v4, import `neba/tailwind.css` instead: the token sheet, which registers the package as a style source so your own build generates the utilities in the same pass as your app's:
 
 ```css
-@import 'tailwindcss';
-@import 'neba/tailwind.css';
+@import "tailwindcss";
+@import "neba/tailwind.css";
 ```
 
 ## Usage
@@ -76,7 +83,7 @@ If your project already runs Tailwind v4, import `neba/tailwind.css` instead: th
 Import components from the package root:
 
 ```tsx
-import { Button, Card, TextField } from 'neba';
+import { Button, Card, TextField } from "neba";
 
 export default function SignIn() {
   return (
@@ -99,8 +106,8 @@ A few components provide context and are mounted once, near the root, only if yo
 Every component is also its own entry point, named after its folder:
 
 ```tsx
-import { Button } from 'neba/button';
-import { TextField } from 'neba/text-field';
+import { Button } from "neba/button";
+import { TextField } from "neba/text-field";
 ```
 
 Both forms produce the same bundle. The root barrel is the one to reach for; the subpath is there for a build that would rather not parse three hundred modules to keep five, and as an escape hatch for a bundler that does not honour `sideEffects`.
@@ -112,9 +119,9 @@ Neba writes very little text of its own (a Button says what you hand it) but a f
 Those ship in English. Eighteen other languages are included in the package and none of them is in your bundle until you say so:
 
 ```tsx
-import { registerMessages, ko } from 'neba/locales';
+import { registerMessages, ko } from "neba/locales";
 
-registerMessages('ko', ko);
+registerMessages("ko", ko);
 ```
 
 Call it once, at module scope, before your first render. Then a `locale` prop translates:
@@ -130,10 +137,10 @@ Anything the platform already knows (month names, weekday names, AM/PM, number a
 ### One place for your defaults
 
 ```tsx
-import { NebaProvider } from 'neba';
+import { NebaProvider } from "neba";
 
 <NebaProvider
-  defaults={{ size: 'sm', density: 'compact', locale: 'ko' }}
+  defaults={{ size: "sm", density: "compact", locale: "ko" }}
   defaultColorScheme="system"
 >
   <App />
@@ -147,12 +154,12 @@ Optional, and every component works without it. It fills in `size`, `density`, `
 The hooks the components already run on, from `neba/hooks` (or from the package root):
 
 ```tsx
-import { useDisclosure, useBreakpoint, useShortcut } from 'neba/hooks';
+import { useDisclosure, useBreakpoint, useShortcut } from "neba/hooks";
 
 const { open, onOpen, setOpen } = useDisclosure();
-const desktop = useBreakpoint('lg');
+const desktop = useBreakpoint("lg");
 
-useShortcut('Mod+K', onOpen);
+useShortcut("Mod+K", onOpen);
 ```
 
 `useDisclosure`, `useMediaQuery`, `useBreakpoint`, `useCurrentBreakpoint`, `useBreakpointValue`, `usePrefersReducedMotion`, `useElementSize`, `useOnScreen`, `useShortcut`. Everything here is machinery the library needed for itself: there is no general-purpose hook collection, and there is not going to be one. Full notes in [the hooks guide](https://neba.cdget.com/guide/hooks).
@@ -202,46 +209,18 @@ Adding a whole new colour family to the library takes an entry in `NebaColor`, f
 
 ## Development
 
-Clone the repository and install dependencies, then:
+The repository holds four projects, each with its own install and its own commands, and no root `package.json`:
 
-| Command | What it does |
-| --- | --- |
-| `npm run docs:dev` | Starts the documentation site (`docs/`) locally: every component, rendered live, with HMR. |
-| `npm test` | Runs the test suite once. |
-| `npm run test:watch` | Runs the test suite in watch mode. |
-| `npm run typecheck` | Type-checks the library, the tests, and the docs. |
-| `npm run build` | Formats, compiles, and minifies the library into `dist/`. |
-| `npm run lint:fix` | Runs ESLint with autofix. |
-| `npm run format:fix` | Runs Prettier over the repository. |
+| Path | What it is | Start with |
+| --- | --- | --- |
+| `packages/react` | The React package | `npm install`, then `npm test` |
+| `packages/flutter` | The Flutter package | `flutter pub get`, then `flutter test` |
+| `docs` | The documentation site, rendering the React package's source with HMR | `npm install`, then `npm run dev` |
+| `examples/flutter` | A sample app for iOS, iPadOS and Android | `flutter test`, or `flutter run` |
 
-All commands are run from the repository root.
+The React tests run with [Vitest](https://vitest.dev) in browser mode, against a real headless browser driven by Playwright, because the components depend on browser APIs (`ResizeObserver`, the popover API, `dialog.showModal()`) that jsdom does not implement. Install the browser once with `npx playwright install chromium` in `packages/react`; `VITEST_BROWSER=firefox npm test` picks another engine. The Flutter tests are widget tests and run headless in the Flutter tester, with no device. CI runs both across Linux, Windows and macOS.
 
-### Project structure
-
-- `src/`: the library source. Each component lives in `src/components/{name}/` and is re-exported from `src/index.ts`.
-- `src/internal/`: what the library shares with itself: the size and spacing tables, the surface and focus-ring generators, the icons more than one component draws. Shipped, but not part of the public API.
-- `test/`: the test suite, mirroring the `src/` tree.
-- `docs/`: the VitePress documentation site, in English and Korean. It renders the real components from `src/`, so it is also where components are developed and eyeballed.
-
-There is no separate demo app: `npm run docs:dev` is the develop-and-eyeball loop.
-
-### Tests
-
-Tests run with [Vitest](https://vitest.dev) in browser mode, against a real headless browser driven by Playwright. The components depend on browser APIs (`ResizeObserver`, the popover API, `dialog.showModal()`) that jsdom does not implement. Install the browser once before your first run:
-
-```bash
-npx playwright install chromium
-```
-
-`npm test` uses Chromium. To run against another engine, set `VITEST_BROWSER` to `chromium`, `firefox`, or `webkit` (or a comma-separated list), having installed those browsers first:
-
-```bash
-VITEST_BROWSER=firefox npm test
-```
-
-CI runs the suite across Linux, Windows, and macOS in all three browser engines.
-
-Tests ship with the component they cover, in the same commit. Add a test at the path mirroring its source: `src/components/button/Button.tsx` is covered by `test/components/button/Button.test.tsx`.
+[CONTRIBUTING.md](CONTRIBUTING.md) has the details, and [examples/README.md](examples/README.md) says how to run the sample app on a simulator, an emulator or a device.
 
 ## Contributing
 
