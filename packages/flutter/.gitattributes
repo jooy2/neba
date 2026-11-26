@@ -1,0 +1,4 @@
+# Every text file is checked out with LF line endings, Windows included. The
+# generator writes LF and `test/package` compares its output with the files on
+# disk, so a CRLF checkout would fail there with nothing wrong in the code.
+* text=auto eol=lf

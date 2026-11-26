@@ -1,0 +1,9 @@
+test/
+tool/
+pubspec.lock
+CLAUDE.md
+
+# The gallery under `example/` is published: pub.dev looks for an example and
+# this is the real one. What it compiles into is not.
+.dart_tool/
+build/

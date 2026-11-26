@@ -1,0 +1,32 @@
+name: neba
+description: >-
+  Neba UI for Flutter: the same components and the same translucent acrylic
+  design language as the React package, one shared prop vocabulary, dark mode
+  built in. No dependencies.
+version: 1.21.0
+repository: https://github.com/jooy2/neba
+homepage: https://neba.cdget.com
+issue_tracker: https://github.com/jooy2/neba/issues
+topics:
+  - ui
+  - widgets
+  - design-system
+  - acrylic
+  - theming
+
+environment:
+  # Flutter 3.41 is where the Dart SDK reached 3.11. Nothing here needs a newer
+  # language feature, and the floor is deliberately below the release that
+  # started moving Material and Cupertino out of the framework: this package
+  # imports neither, so it is unaffected either way.
+  sdk: ^3.11.0
+  flutter: '>=3.41.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: 6.0.0
