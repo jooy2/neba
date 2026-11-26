@@ -46,6 +46,7 @@ html[data-fw='flutter'] .neba-fw[data-fw]:not([data-fw~='flutter']),
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 6px;
   min-height: 28px;
   border-radius: 8px;
   color: var(--vp-c-text-2);
@@ -67,6 +68,12 @@ html[data-fw='flutter'] .neba-fw[data-fw]:not([data-fw~='flutter']),
   margin: 0;
   opacity: 0;
   cursor: pointer;
+}
+
+/* The mark sits on the text's baseline box and keeps its size in a narrow
+   sidebar, where the label would otherwise squeeze it. */
+.neba-framework-mark {
+  flex: none;
 }
 
 /* Drawn from `html[data-fw]` rather than from `:checked`, so the right half is

@@ -1,6 +1,7 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue';
 import { useData } from 'vitepress';
+import FrameworkMark from './FrameworkMark.vue';
 import { framework, setFramework } from '../../data/framework';
 import { DEFAULT_FRAMEWORK, FRAMEWORKS } from '../../data/frameworks';
 import { localeOf, t } from '../../data/i18n';
@@ -14,8 +15,8 @@ import { localeOf, t } from '../../data/i18n';
  *
  * A segmented control of two radios, hidden and labelled, rather than a row of
  * buttons: the radio group gives the arrow keys, the group semantics and the
- * focus behaviour without a roving tab index written by hand. No logos: the
- * names are what identify the two, and a mark would be somebody else's.
+ * focus behaviour without a roving tab index written by hand. Each option
+ * carries its framework's mark beside its name; see `FrameworkMark.vue`.
  */
 const { lang } = useData();
 const locale = computed(() => localeOf(lang.value));
@@ -55,6 +56,7 @@ const checked = computed(() => (hydrated.value ? framework.value : DEFAULT_FRAME
           :checked="checked === item.id"
           @change="setFramework(item.id)"
         />
+        <FrameworkMark :framework="item.id" />
         <span>{{ item.label }}</span>
       </label>
     </div>
