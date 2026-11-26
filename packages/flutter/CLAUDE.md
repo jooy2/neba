@@ -51,7 +51,7 @@ The React guide states each rule of [the design language](../../docs/ko/design/d
 | `color.dart` | `oklch()`, `color-mix()` in sRGB and OKLab, the CSS shadow blur, WCAG contrast |
 | `motion.dart` | `nebaDuration`: zero on a press and for a reader who asked for less motion |
 | `surface.dart` | `NebaSheet`: the blur and saturation behind, the fill, the grain, the 148° sheen, the plate, the edge and the elevation shadow |
-| `interaction.dart` | `NebaInteractive`: hover, press on the pointer going down, keyboard focus, Enter and Space, and the pointer's position as a listenable |
+| `interaction.dart` | `NebaInteractive`: hover, press on the pointer going down, keyboard focus, Enter and Space, and the pointer's position as a listenable. `focusable` keeps a busy or read-only control in the focus order while it takes no input |
 | `glow.dart` | `NebaGlow`: the 88-pixel spotlight and the 72-pixel afterglow, and which colours a variant lights with |
 | `focus_ring.dart` | `NebaFocusRing`: two pixels, two pixels off, eased in colour and never in width |
 | `ink.dart` | `NebaInk`: a label's and an icon's colour, eased with the fill |
@@ -60,7 +60,7 @@ The React guide states each rule of [the design language](../../docs/ko/design/d
 | `ring.dart` | `NebaRingScope` and `NebaRing`: the ring a ringed pile asks for, drawn by the first widget below it that draws a shape, around that shape. Every widget with a shape of its own wraps it in `NebaRing` |
 | `scroll_fade.dart` | `NebaEdgeFade`: a scrolling box's content masked out at each edge that has more beyond it, for ScrollArea and the Tabs bar |
 | `messages.dart` | `NebaLocale`, `registerNebaMessages`, `nebaMessages` and `fillNebaMessage`: the words a widget says on its own behalf, by namespace, in the React package's namespaces |
-| `svg_path.dart`, `glyphs.dart` | The React package's SVG glyphs, read from the same path data: ×, chevron, tick, minus, plus, dot, the turning ring and the severity set |
+| `svg_path.dart`, `glyphs.dart` | The React package's SVG glyphs, read from the same path data: ×, chevron, tick, minus, plus, dot, the turning ring and the severity set, and `NebaSpinner`, the ring turning at 900 milliseconds a turn |
 
 The pointer's position is a `ValueListenable` rather than state, because it changes every frame the pointer moves and only the light needs it, which is why the React package writes it to two custom properties instead of re-rendering. Hover is tracked with a `MouseRegion` of its own, not the focus detector's hover highlight, which only reports while the focus manager is in keyboard mode.
 

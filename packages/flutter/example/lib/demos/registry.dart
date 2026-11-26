@@ -15,6 +15,15 @@ import 'package:neba_example/demos/box/hero.dart';
 import 'package:neba_example/demos/box/sizes.dart';
 import 'package:neba_example/demos/box/unpadded.dart';
 import 'package:neba_example/demos/box/variants.dart';
+import 'package:neba_example/demos/button/colors.dart';
+import 'package:neba_example/demos/button/density.dart';
+import 'package:neba_example/demos/button/elevation.dart';
+import 'package:neba_example/demos/button/full_width.dart';
+import 'package:neba_example/demos/button/hero.dart';
+import 'package:neba_example/demos/button/icons.dart';
+import 'package:neba_example/demos/button/sizes.dart';
+import 'package:neba_example/demos/button/states.dart';
+import 'package:neba_example/demos/button/variants.dart';
 import 'package:neba_example/demos/container/hero.dart';
 import 'package:neba_example/demos/container/max_width.dart';
 import 'package:neba_example/demos/container/plain.dart';
@@ -49,6 +58,15 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'box/sizes': BoxSizes.new,
   'box/unpadded': BoxUnpadded.new,
   'box/variants': BoxVariants.new,
+  'button/colors': ButtonColors.new,
+  'button/density': ButtonDensity.new,
+  'button/elevation': ButtonElevation.new,
+  'button/full-width': ButtonFullWidth.new,
+  'button/hero': ButtonHero.new,
+  'button/icons': PlusIcon.new,
+  'button/sizes': ButtonSizes.new,
+  'button/states': ButtonStates.new,
+  'button/variants': ButtonVariants.new,
   'container/hero': ContainerHero.new,
   'container/max-width': ContainerMaxWidth.new,
   'container/plain': ContainerPlain.new,

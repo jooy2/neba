@@ -16,9 +16,14 @@ void main() {
         await tester.pumpWidget(
           GalleryApp(query: <String, String>{'demo': demo.key, 'theme': scheme.name}),
         );
-        await tester.pumpAndSettle();
+        // A second of frames rather than a settle: a busy button's ring turns
+        // for as long as it is on screen, so some demos never settle.
+        await tester.pump(const Duration(seconds: 1));
 
         expect(tester.takeException(), isNull);
+
+        // Gone, so nothing is left running when the test ends.
+        await tester.pumpWidget(const SizedBox());
       });
     }
   }

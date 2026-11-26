@@ -24,6 +24,7 @@ library;
 
 export 'src/components/aspect_ratio/neba_aspect_ratio.dart';
 export 'src/components/box/neba_box.dart';
+export 'src/components/button/neba_button.dart';
 export 'src/components/container/neba_container.dart';
 export 'src/components/flex/neba_flex.dart';
 export 'src/components/grid/neba_grid.dart';

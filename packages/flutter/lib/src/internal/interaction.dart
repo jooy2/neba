@@ -74,6 +74,7 @@ class NebaInteractive extends StatefulWidget {
     required this.builder,
     this.onTap,
     this.enabled = true,
+    this.focusable,
     this.focusNode,
     this.autofocus = false,
     this.cursor,
@@ -86,8 +87,15 @@ class NebaInteractive extends StatefulWidget {
   /// Called on a tap, and on Enter or Space.
   final VoidCallback? onTap;
 
-  /// Whether the control takes input. A disabled one is not focusable.
+  /// Whether the control takes input: whether it lights up under the pointer,
+  /// is pressed, and activates.
   final bool enabled;
+
+  /// Whether the control is in the focus order. Defaults to [enabled]; a
+  /// control that is busy or read-only keeps the focus while it takes no
+  /// input, because dropping out of the tab order costs a keyboard reader
+  /// their place on the page.
+  final bool? focusable;
 
   /// The control's focus node, when the caller drives the focus.
   final FocusNode? focusNode;
@@ -153,8 +161,12 @@ class _NebaInteractiveState extends State<NebaInteractive> {
     }
   }
 
+  bool get _focusable => widget.focusable ?? widget.enabled;
+
   void _activate() {
-    widget.onTap?.call();
+    if (widget.enabled) {
+      widget.onTap?.call();
+    }
   }
 
   @override
@@ -164,11 +176,11 @@ class _NebaInteractiveState extends State<NebaInteractive> {
       enabled: enabled,
       hovered: enabled && _hovered,
       pressed: enabled && _pointerDown,
-      focusVisible: enabled && _focusVisible,
+      focusVisible: _focusable && _focusVisible,
     );
 
     return FocusableActionDetector(
-      enabled: enabled,
+      enabled: _focusable,
       focusNode: widget.focusNode,
       autofocus: widget.autofocus,
       shortcuts: _shortcuts,

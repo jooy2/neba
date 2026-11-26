@@ -228,3 +228,55 @@ class _GlyphPainter extends CustomPainter {
     return oldDelegate.color != color || !identical(oldDelegate.parts, parts);
   }
 }
+
+/// The turning ring of something in progress: [NebaGlyphs.spinner], one turn
+/// every 900 milliseconds, and one every 2.4 seconds for a reader who asked
+/// for less motion, slowed rather than stopped because a ring that holds still
+/// says nothing is happening.
+///
+/// The one glyph that turns on its own. It carries no text, so the rule
+/// against moving a control does not reach it.
+class NebaSpinner extends StatefulWidget {
+  /// A spinner [size] across, in [color]; both default to the [IconTheme].
+  const NebaSpinner({this.size, this.color, super.key});
+
+  /// The width and height.
+  final double? size;
+
+  /// The ring's colour.
+  final Color? color;
+
+  @override
+  State<NebaSpinner> createState() => _NebaSpinnerState();
+}
+
+class _NebaSpinnerState extends State<NebaSpinner> with SingleTickerProviderStateMixin {
+  late final AnimationController _turn = AnimationController(vsync: this);
+  bool? _reduced;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    final bool reduced = MediaQuery.maybeDisableAnimationsOf(context) ?? false;
+
+    if (reduced != _reduced) {
+      _reduced = reduced;
+      _turn.repeat(period: Duration(milliseconds: reduced ? 2400 : 900));
+    }
+  }
+
+  @override
+  void dispose() {
+    _turn.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return RotationTransition(
+      turns: _turn,
+      child: NebaGlyph(NebaGlyphs.spinner, size: widget.size, color: widget.color),
+    );
+  }
+}
