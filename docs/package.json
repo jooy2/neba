@@ -45,6 +45,7 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "globals": "^17.14.0",
     "jiti": "^2.7.0",
+    "markdown-it-container": "^4.0.0",
     "postcss": "^8.5.32",
     "prettier": "^3.9.10",
     "tailwindcss": "^4.3.5",

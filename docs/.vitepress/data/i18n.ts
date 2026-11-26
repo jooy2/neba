@@ -47,6 +47,16 @@ const strings = {
   sharedTitle: {
     ko: '모든 컴포넌트가 공유하는 축',
     en: 'An axis every component shares'
+  },
+  frameworkLabel: { ko: '프레임워크', en: 'Framework' },
+  flutterPending: {
+    ko: '이 컴포넌트는 아직 Flutter 패키지에 없습니다. 아래 내용은 React 패키지 기준입니다.',
+    en: 'This component is not in the Flutter package yet. What follows describes the React package.'
+  },
+  flutterPendingLink: { ko: '포팅 진행 상황', en: 'Where the port stands' },
+  flutterPropsPending: {
+    ko: 'Flutter 패키지의 props 표는 이 컴포넌트가 포팅되면 추가됩니다.',
+    en: 'The Flutter props table arrives with the component’s port.'
   }
 } satisfies Record<string, Record<Locale, string>>;
 

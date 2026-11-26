@@ -25,6 +25,7 @@
 @import '../../../../packages/react/src/styles.css';
 
 @import './docs.css';
+@import './framework.css';
 
 /* Tailwind only emits classes it can see spelled out. `src/` is not listed:
    `src/styles.css` registers its own directory, exactly as it does for a

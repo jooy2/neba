@@ -7,8 +7,10 @@ import packageJson from '../../packages/react/package.json' with { type: 'json' 
 import { defineConfig, HeadConfig, SiteData, TransformContext, UserConfig } from 'vitepress';
 import { withI18n } from 'vitepress-i18n';
 import ReactPlugin from '@vitejs/plugin-react';
+import container from 'markdown-it-container';
 import type { VitePressI18nOptions } from 'vitepress-i18n/types';
 import type { VitePressSidebarOptions } from 'vitepress-sidebar/types';
+import { DEFAULT_FRAMEWORK, FRAMEWORK_HEAD_SCRIPT, FRAMEWORK_IDS } from './data/frameworks';
 
 const vitePressDir = dirname(fileURLToPath(import.meta.url));
 const rootDir = resolve(vitePressDir, '../..');
@@ -345,6 +347,174 @@ function transformHead({ pageData, siteData, title, description }: TransformCont
   return head;
 }
 
+/* ---------------------------------------------------------------------------
+ * The framework switch, in the Markdown
+ * ------------------------------------------------------------------------- */
+
+/**
+ * The words a heading's `id` is made from.
+ *
+ * `markdown-it-anchor` reads a heading's plain text and inline code and
+ * nothing else, so a heading written as an `<Fw>` phrase, which is inline
+ * HTML, would get an empty `id`: a `#` link to the top of the page and no entry
+ * in the outline. The default framework's variant is read in its place, so
+ * `### <Fw react="onClick" flutter="onPressed" />` is `#onclick` whichever
+ * framework the reader chose, and a link to it holds when they switch.
+ */
+const fwVariant = new RegExp(`<Fw\\b[^>]*\\b${DEFAULT_FRAMEWORK}="([^"]*)"`);
+
+function headingText(tokens: { type: string; content: string }[]): string {
+  return tokens
+    .map((token) => {
+      if (token.type === 'text' || token.type === 'code_inline') {
+        return token.content;
+      }
+
+      return token.type === 'html_inline' ? (fwVariant.exec(token.content)?.[1] ?? '') : '';
+    })
+    .join('');
+}
+
+/**
+ * `::: fw react` … `:::`, a block only one framework sees.
+ *
+ * Both frameworks' blocks are in the page and `theme/styles/framework.css`
+ * displays one, which makes the switch instant and keeps the two halves one
+ * page rather than two that drift apart. Both are in the search index too, so
+ * a reader looking up `onPressed` finds the page whichever framework is on.
+ *
+ * `::: fw react flutter` is a block both see. An id the site does not know is
+ * dropped rather than kept, so a typo hides the block from everyone instead of
+ * showing it to everyone.
+ */
+type MarkdownRenderer = Parameters<NonNullable<NonNullable<UserConfig['markdown']>['config']>>[0];
+
+function frameworkBlocks(md: MarkdownRenderer): void {
+  md.use(container, 'fw', {
+    validate: (params: string) => /^fw(\s+\S+)+$/.test(params.trim()),
+    render(tokens: { nesting: number; info: string }[], index: number) {
+      const token = tokens[index];
+
+      if (token.nesting !== 1) {
+        return '</div>\n';
+      }
+
+      const wanted = token.info
+        .trim()
+        .split(/\s+/)
+        .slice(1)
+        .filter((id) => FRAMEWORK_IDS.includes(id));
+
+      return `<div class="neba-fw" data-fw="${wanted.join(' ')}">\n`;
+    }
+  });
+}
+
+/**
+ * Every `:::` container that will not open or close where the page means it to.
+ *
+ * Three mistakes break a `::: fw` block without failing the build, and each
+ * one swallows the rest of the page into one framework's half or leaves it
+ * open:
+ *
+ * - **A container inside another with as many colons.**
+ *   `markdown-it-container` closes the outer one at the inner one's closing
+ *   fence, because it looks for the first fence long enough rather than the
+ *   matching one. The outer block needs one more colon.
+ * - **A fence on the same line as prose.** Prettier joins a fence to the
+ *   paragraph it touches when no blank line separates them, and
+ *   `text ::: fw react` is text.
+ * - **A page whose containers do not balance**, which either of the two above
+ *   leaves behind.
+ *
+ * Code fences are skipped, so a container shown as an example is not read as
+ * one. The generated changelog is skipped as well.
+ */
+function misplacedContainers(): string[] {
+  const found: string[] = [];
+  const opener = /^(:{3,})\s*(\S.*)?$/;
+  const names = 'fw|tip|warning|info|danger|details|v-pre';
+  const gluedAfter = new RegExp(`\\S\\s+:{3,}\\s*(?:(?:${names})\\b.*)?$`);
+  const gluedBefore = new RegExp(`^:{3,}\\s+(?!(?:${names})\\b)\\S`);
+
+  const walk = (directory: string) => {
+    for (const entry of readdirSync(directory, { withFileTypes: true })) {
+      const path = resolve(directory, entry.name);
+
+      if (entry.isDirectory()) {
+        if (
+          entry.name !== 'node_modules' &&
+          entry.name !== 'public' &&
+          !entry.name.startsWith('.')
+        ) {
+          walk(path);
+        }
+
+        continue;
+      }
+
+      if (!entry.name.endsWith('.md') || entry.name === 'changelog.md') {
+        continue;
+      }
+
+      const where = path.slice(srcDir.length + 1);
+      const open: { colons: number; line: number }[] = [];
+      let fence: string | null = null;
+
+      readFileSync(path, 'utf8')
+        .split('\n')
+        .forEach((line, index) => {
+          const marker = /^\s{0,3}(`{3,}|~{3,})/.exec(line)?.[1]?.[0];
+
+          if (marker) {
+            fence = fence === null ? marker : fence === marker ? null : fence;
+            return;
+          }
+
+          if (fence !== null) {
+            return;
+          }
+
+          if (gluedAfter.test(line) || gluedBefore.test(line)) {
+            found.push(`${where}:${index + 1}  a fence shares its line with prose`);
+            return;
+          }
+
+          const match = opener.exec(line);
+
+          if (!match) {
+            return;
+          }
+
+          const colons = match[1].length;
+
+          if (match[2]) {
+            const outer = open.at(-1);
+
+            if (outer && outer.colons <= colons) {
+              found.push(
+                `${where}:${index + 1}  opens inside the container from line ${outer.line} ` +
+                  'with as many colons; give the outer one more'
+              );
+            }
+
+            open.push({ colons, line: index + 1 });
+          } else if (open.pop() === undefined) {
+            found.push(`${where}:${index + 1}  closes a container that was never opened`);
+          }
+        });
+
+      for (const left of open) {
+        found.push(`${where}:${left.line}  opens a container that is never closed`);
+      }
+    }
+  };
+
+  walk(srcDir);
+
+  return found;
+}
+
 // Ref: https://vitepress.dev/reference/site-config
 const vitePressConfig: UserConfig = {
   title: 'Neba UI',
@@ -373,6 +543,8 @@ const vitePressConfig: UserConfig = {
     [`${defaultLocale}/:rest*`]: ':rest*'
   },
   head: [
+    // Before anything paints: which framework's half of every page is shown.
+    ['script', {}, FRAMEWORK_HEAD_SCRIPT],
     ['link', { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/logo-32.png' }],
     ['link', { rel: 'icon', type: 'image/png', sizes: '16x16', href: '/logo-16.png' }],
     ['link', { rel: 'icon', type: 'image/png', sizes: '256x256', href: '/256x256.png' }],
@@ -398,6 +570,12 @@ const vitePressConfig: UserConfig = {
   sitemap: {
     hostname: packageJson.homepage
   },
+  markdown: {
+    anchor: { getTokensText: headingText },
+    config(md) {
+      frameworkBlocks(md);
+    }
+  },
   /**
    * `robots.txt`, written rather than committed.
    *
@@ -407,6 +585,16 @@ const vitePressConfig: UserConfig = {
    * sitemap that is not there is worse than no robots file.
    */
   async buildEnd({ outDir }) {
+    const containers = misplacedContainers();
+
+    if (containers.length > 0) {
+      throw new Error(
+        'These containers do not open or close where the page means them to, so one ' +
+          "framework's half of the page swallows what follows it or never closes:\n" +
+          containers.map((one) => `  ${one}`).join('\n')
+      );
+    }
+
     await writeFile(
       resolve(outDir, 'robots.txt'),
       `User-agent: *\nAllow: /\n\nSitemap: ${siteUrl}/sitemap.xml\n`

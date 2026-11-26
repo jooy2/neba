@@ -50,7 +50,7 @@ One component is one commit, `[dart] feat: port NebaX to Flutter, with its tests
 2. `dart run tool/generate.dart`, which adds the export to the barrel. `test/package/generated_test.dart` fails until it is run.
 3. `test/components/{name}/neba_{name}_test.dart`, covering what the React test for the same component covers, asked the way Flutter asks it: a laid-out size instead of a class name, the `BoxDecoration` actually built instead of a CSS variable, semantics instead of ARIA. Pump it with `host()` from `test/support/host.dart`, never inside a `MaterialApp`.
 4. Demos under `example/lib/demos/{name}/`, one file per React demo, named after it: `docs/.vitepress/demos/button/variants.tsx` becomes `example/lib/demos/button/variants.dart` declaring `ButtonVariants`, registered as `button/variants`. Then `dart run tool/generate.dart` again.
-5. The component's documentation page in both locales, and its Flutter props table, once the site can switch between the two packages.
+5. The component's documentation page in both locales: what differs between the packages inside `::: fw react` and `::: fw flutter`, the Flutter props table in `../../docs/.vitepress/data/props-flutter/{page}.ts`, and `flutter: true` in the frontmatter, which takes the "not in the Flutter package yet" note off the page. The root guide's Documentation section says how each works.
 6. An entry in `CHANGELOG.md` under `vNext`, and its box ticked in `../../TODO.md`.
 
 ## Tests

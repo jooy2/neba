@@ -5,15 +5,44 @@ order: 1
 
 # 시작하기
 
+::: fw react
+
 Neba는 React 컴포넌트 라이브러리입니다. 동작과 접근성은 [Base UI](https://base-ui.com) 프리미티브가, 스타일은 [Tailwind CSS](https://tailwindcss.com) v4가 담당합니다. Tailwind는 이 패키지를 빌드할 때만 쓰이므로 프로젝트에 따로 설치할 필요는 없습니다.
 
+:::
+
+::: fw flutter
+
+Neba는 Flutter 패키지로도 제공됩니다. 디자인 언어와 prop 이름은 React 패키지와 같습니다. `package:flutter/widgets.dart`만으로 만들고 의존성이 없어서, Material 앱과 Cupertino 앱, `WidgetsApp`만 쓰는 앱 어디에나 넣을 수 있습니다. 컴포넌트는 하나씩 옮기는 중이며, 아직 Flutter 패키지에 없는 컴포넌트는 그 페이지에 표시됩니다.
+
+:::
+
 ## 설치
+
+::: fw react
 
 ```bash
 npm install neba
 ```
 
 `react`와 `react-dom`은 peer dependency이며 **React 18 또는 19**를 받습니다. 프로젝트에 이미 있다면 그 사본을 그대로 쓰고, 없다면 npm 7 이상이 알아서 함께 설치합니다. 그 외의 의존성은 패키지가 직접 가져옵니다.
+
+:::
+
+::: fw flutter
+
+`pubspec.yaml`에 패키지를 추가합니다.
+
+```yaml
+dependencies:
+  neba: ^1.21.0
+```
+
+**Flutter 3.41** 이상이 필요하고, 그 밖의 의존성은 없습니다. 패키지가 쓰는 것은 Flutter SDK뿐입니다.
+
+:::
+
+::: fw react
 
 ## 스타일시트 연결
 
@@ -68,7 +97,11 @@ import 'neba/styles.css';
 
 이 경로에는 reset이 포함되지 않습니다. Tailwind의 Preflight가 이미 그 역할을 하기 때문입니다.
 
+:::
+
 ## 사용
+
+::: fw react
 
 ```tsx
 import { Button } from 'neba';
@@ -77,6 +110,25 @@ export default function App() {
   return <Button onClick={() => console.log('clicked')}>저장</Button>;
 }
 ```
+
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+NebaProvider(
+  defaults: const NebaDefaults(size: NebaSize.md),
+  child: app,
+)
+```
+
+위젯은 따로 설정하지 않아도 동작합니다. 위에 아무것도 없으면 색은 플랫폼의 밝기를 따릅니다. 하위 트리 전체의 기본값, 고정 색 구성, 쓰기 방향, 제품 고유의 색은 `NebaProvider`에서 정합니다.
+
+:::
+
+::: fw react
 
 ## Next.js와 React Server Components
 
@@ -176,7 +228,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
 **`dir`은 HTML에 넣으세요.** `NebaProvider`의 `direction`은 앱이 실행된 뒤에 `<html>`에 `dir`을 씁니다. 오른쪽에서 왼쪽으로 쓰는 페이지라면 서버가 보내는 HTML에 이미 `dir="rtl"`이 있어야 하고, 그렇지 않으면 첫 화면이 왼쪽에서 오른쪽으로 배치됩니다.
 
+:::
+
 ## 다크 모드
+
+::: fw react
 
 기본값은 `prefers-color-scheme`을 따릅니다. 강제로 고정하려면 아무 조상 요소에 클래스나 `data-theme`을 주면 됩니다.
 
@@ -186,9 +242,33 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
 라이트로 고정하려면 `data-theme="light"` 또는 `class="light"`을 씁니다. `.dark`는 Tailwind의 관례를 따르기 위해 함께 지원합니다.
 
-## 브라우저 지원
+:::
+
+::: fw flutter
+
+기본값은 플랫폼의 밝기를 따릅니다. 한쪽으로 고정하려면 `NebaProvider`에 `colorScheme`을 줍니다.
+
+```dart
+NebaProvider(colorScheme: NebaColorScheme.dark, child: app)
+```
+
+색 구성은 앱이 가진 값입니다. 사용자가 고른 값을 기억하는 일은 앱이 이미 쓰는 저장소로 하면 됩니다. 플랫폼의 고대비 설정을 켜면 반투명한 면이 모두 불투명해지며, 웹의 `prefers-reduced-transparency`와 같은 동작입니다.
+
+:::
+
+## <Fw react="브라우저 지원" flutter="플랫폼 지원" />
+
+::: fw react
 
 Chrome과 Edge 111, Firefox 113, Safari 16.4 이상을 지원합니다. 이 범위를 정하는 요소와 범위 안에서 달라지는 세부 표현은 [브라우저 지원](../browser-support)에 정리했습니다.
+
+:::
+
+::: fw flutter
+
+Flutter 패키지는 widgets 계층만으로 그리기 때문에 Flutter 3.41 이상이 도는 곳이면 어디서나 동작합니다. 테스트는 Flutter 테스터에서 화면 없이 돌고, `examples/flutter`의 예시 앱은 iOS와 Android에서 실행합니다.
+
+:::
 
 ## 다음으로
 

@@ -5,15 +5,44 @@ order: 1
 
 # Getting started
 
+::: fw react
+
 Neba is a React component library. Behaviour and accessibility come from [Base UI](https://base-ui.com) primitives; styling comes from [Tailwind CSS](https://tailwindcss.com) v4. Tailwind is used to build this package and does not have to be installed in yours.
 
+:::
+
+::: fw flutter
+
+Neba is also a Flutter package, carrying the same design language and the same prop vocabulary. It is built on `package:flutter/widgets.dart` alone, with no dependencies, so it sits in a Material app, a Cupertino app or a bare `WidgetsApp` alike. The components are being ported one at a time; a component page says when one is not in the Flutter package yet.
+
+:::
+
 ## Install
+
+::: fw react
 
 ```bash
 npm install neba
 ```
 
 `react` and `react-dom` are peer dependencies: **React 18 or 19**. If your project already has one of them, that is the copy Neba uses; if it does not, npm 7 and later install them for you. Everything else the package brings with it.
+
+:::
+
+::: fw flutter
+
+Add the package to `pubspec.yaml`:
+
+```yaml
+dependencies:
+  neba: ^1.21.0
+```
+
+It needs **Flutter 3.41** or later and nothing else: the package depends on the Flutter SDK alone.
+
+:::
+
+::: fw react
 
 ## Wiring up the stylesheet
 
@@ -68,7 +97,11 @@ The upshot is that nothing depends on where your own CSS file sits. If you have 
 
 This path carries no reset, because Preflight already is one.
 
+:::
+
 ## Use
+
+::: fw react
 
 ```tsx
 import { Button } from 'neba';
@@ -77,6 +110,25 @@ export default function App() {
   return <Button onClick={() => console.log('clicked')}>Save</Button>;
 }
 ```
+
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+NebaProvider(
+  defaults: const NebaDefaults(size: NebaSize.md),
+  child: app,
+)
+```
+
+A widget needs no setup: with nothing above it, the colours follow the platform's brightness. `NebaProvider` is where a whole subtree takes its defaults, a pinned colour scheme, a direction or a product's own colours.
+
+:::
+
+::: fw react
 
 ## Next.js and React Server Components
 
@@ -176,7 +228,11 @@ Call it with the same `storageKey` and `defaultColorScheme` you give `NebaProvid
 
 **Put `dir` in the HTML.** `NebaProvider`'s `direction` writes `dir` on `<html>` once the app is running. A right-to-left page should already carry `dir="rtl"` in the HTML the server sends, or the first paint is laid out left to right.
 
+:::
+
 ## Dark mode
+
+::: fw react
 
 The default follows `prefers-color-scheme`. To force it either way, put a class or a `data-theme` on any ancestor.
 
@@ -186,9 +242,33 @@ The default follows `prefers-color-scheme`. To force it either way, put a class 
 
 For light, use `data-theme="light"` or `class="light"`. `.dark` is supported alongside it to match Tailwind's own convention.
 
-## Browser support
+:::
+
+::: fw flutter
+
+The default follows the platform's brightness. To pin it either way, give `NebaProvider` a `colorScheme`:
+
+```dart
+NebaProvider(colorScheme: NebaColorScheme.dark, child: app)
+```
+
+The colour scheme is a value the app owns, so remembering a reader's choice is the app's to do with whatever storage it already uses. A platform high-contrast setting makes every translucent sheet opaque, as `prefers-reduced-transparency` does on the web.
+
+:::
+
+## <Fw react="Browser support" flutter="Platform support" />
+
+::: fw react
 
 Neba supports Chrome and Edge 111, Firefox 113 and Safari 16.4 or later. [Browser support](../browser-support) covers what sets that range and which details differ inside it.
+
+:::
+
+::: fw flutter
+
+The Flutter package runs wherever Flutter 3.41 or later does, because it draws with the widgets layer alone. Its tests run headless in the Flutter tester, and the sample app in `examples/flutter` is run on iOS and Android.
+
+:::
 
 ## Next
 

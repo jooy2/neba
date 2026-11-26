@@ -1,0 +1,110 @@
+/* ---------------------------------------------------------------------------
+ * The framework switch
+ *
+ * Every `::: fw` block and every `<Fw>` variant is in the page, and these
+ * rules display the ones for `html[data-fw]`. Without the attribute, which is
+ * a page with no JavaScript, the default framework's half is the one shown.
+ * ------------------------------------------------------------------------- */
+
+html:not([data-fw='flutter']) .neba-fw[data-fw]:not([data-fw~='react']),
+html[data-fw='flutter'] .neba-fw[data-fw]:not([data-fw~='flutter']),
+.neba-fw-sep {
+  display: none;
+}
+
+/* A block is a plain `<div>` with no padding or border, so the margins of the
+   Markdown inside it collapse through it exactly as they would without it. */
+
+/* The switch ------------------------------------------------------------- */
+
+.neba-framework {
+  padding: 16px 0 12px;
+  border-bottom: 1px solid var(--vp-c-divider);
+  margin-bottom: 8px;
+}
+
+.neba-framework-title {
+  margin: 0 0 8px;
+  color: var(--vp-c-text-2);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 16px;
+}
+
+.neba-framework-track {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  padding: 2px;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 10px;
+  background: var(--vp-c-bg-soft);
+}
+
+.neba-framework-option {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 28px;
+  border-radius: 8px;
+  color: var(--vp-c-text-2);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background-color 160ms,
+    color 160ms;
+}
+
+.neba-framework-option:hover {
+  color: var(--vp-c-text-1);
+}
+
+.neba-framework-option input {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* Drawn from `html[data-fw]` rather than from `:checked`, so the right half is
+   lit from the first paint, before the radios hydrate. */
+html:not([data-fw='flutter']) .neba-framework-option[data-fw='react'],
+html[data-fw='flutter'] .neba-framework-option[data-fw='flutter'] {
+  background: var(--vp-c-bg);
+  color: var(--vp-c-text-1);
+  box-shadow: 0 0 0 1px var(--vp-c-divider);
+}
+
+.neba-framework-option:has(input:focus-visible) {
+  outline: 2px solid var(--vp-c-brand-1);
+  outline-offset: 2px;
+}
+
+/* A component the Flutter package does not have yet -------------------------- */
+
+.neba-flutter-pending {
+  margin: 0 0 24px;
+  padding: 12px 16px;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 12px;
+  background: var(--vp-c-bg-soft);
+  color: var(--vp-c-text-2);
+  font-size: 14px;
+  line-height: 22px;
+}
+
+.neba-flutter-pending a {
+  color: var(--vp-c-brand-1);
+  font-weight: 500;
+}
+
+.vp-doc .neba-props-pending {
+  margin: 0;
+  padding: 12px 16px;
+  color: var(--vp-c-text-2);
+  font-size: 14px;
+  line-height: 22px;
+}

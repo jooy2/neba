@@ -1,16 +1,24 @@
 /**
- * Puts the React package's `CHANGELOG.md` on the docs site.
+ * Puts both packages' changelogs on the docs site, as one page.
  *
- * The changelog lives beside the package, in `packages/react/`, where a reader
- * browsing the repository and every npm tool already expects to find it. Keeping a second
- * copy under `docs/` would be two files that say the same thing until the day
- * one of them does not, so the docs' copy is generated instead — written before
- * VitePress starts and ignored by git.
+ * Each changelog lives beside its package, in `packages/react/` and
+ * `packages/flutter/`, where a reader browsing the repository, npm and pub.dev
+ * already expect to find it. Keeping a second copy under `docs/` would be two
+ * files that say the same thing until the day one of them does not, so the
+ * docs' copy is generated instead — written before VitePress starts and
+ * ignored by git.
  *
- * Two things are added. The frontmatter, because the sidebar reads `title` for
- * the label and `order` for where it sits and the source file cannot carry
- * either without npm and GitHub rendering it as a stray table at the top — and
- * a `v-pre` on the inline code spans that contain a `{{`.
+ * Each package's history goes into a `::: fw` block of its own, so the page
+ * shows the changelog of the framework the reader chose. The React history
+ * comes first, which keeps every anchor it had before the Flutter one joined
+ * it: VitePress numbers a repeated heading's id in order, so the Flutter
+ * history's `#added` is the one that becomes `#added-1`.
+ *
+ * Three things are added. The frontmatter, because the sidebar reads `title`
+ * for the label and `order` for where it sits and the source file cannot carry
+ * either without npm and GitHub rendering it as a stray table at the top; the
+ * page's own heading; and a `v-pre` on the inline code spans that contain a
+ * `{{`.
  */
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
@@ -63,16 +71,32 @@ function guardInterpolation(markdown) {
     .join('\n');
 }
 
-const changelog = guardInterpolation(
-  readFileSync(resolve(repository, 'packages/react/CHANGELOG.md'), 'utf8')
-);
+/**
+ * A changelog's releases, from its first `## ` heading to the end: the file's
+ * own `#` heading and the note under it belong to the file, and the page has
+ * a heading of its own.
+ */
+function historyOf(path) {
+  const text = readFileSync(resolve(repository, path), 'utf8');
+  const start = text.search(/^## /m);
+
+  return guardInterpolation(start === -1 ? '' : text.slice(start)).trim();
+}
+
+const histories = [
+  ['react', historyOf('packages/react/CHANGELOG.md')],
+  ['flutter', historyOf('packages/flutter/CHANGELOG.md')]
+];
+const body = histories
+  .map(([framework, history]) => `::: fw ${framework}\n\n${history}\n\n:::`)
+  .join('\n\n');
 
 for (const [locale, title] of Object.entries(titles)) {
   const target = resolve(site, locale, 'changelog.md');
   mkdirSync(dirname(target), { recursive: true });
   writeFileSync(
     target,
-    `---\ntitle: ${title}\norder: 1\neditLink: false\n---\n\n${changelog}`,
+    `---\ntitle: ${title}\norder: 1\neditLink: false\n---\n\n# ${title}\n\n${body}\n`,
     'utf8'
   );
 }
