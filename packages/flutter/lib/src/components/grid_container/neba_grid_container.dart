@@ -4,6 +4,7 @@ library;
 import 'package:flutter/widgets.dart';
 
 import 'package:neba/src/components/box/neba_box.dart';
+import 'package:neba/src/internal/breakpoint.dart';
 import 'package:neba/src/internal/grid.dart';
 import 'package:neba/src/theme/scale.dart';
 import 'package:neba/src/theme/theme.dart';
@@ -84,6 +85,8 @@ class NebaGridContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // A hidden NebaShow takes no gap and no cell, as `display: none` takes none.
+    final List<Widget> present = nebaPresentChildren(context, children);
     final NebaDefaults defaults = NebaTheme.defaultsOf(context);
     final NebaSize size = this.size ?? defaults.size ?? NebaSize.md;
     final NebaDensity density = this.density ?? defaults.density ?? NebaDensity.standard;
@@ -95,7 +98,7 @@ class NebaGridContainer extends StatelessWidget {
       alignItems: alignItems,
       alignContent: alignContent,
       wrap: wrap,
-      children: children,
+      children: present,
     );
 
     if (!padded) {

@@ -3,6 +3,7 @@ library;
 
 import 'package:flutter/widgets.dart';
 
+import 'package:neba/src/internal/breakpoint.dart';
 import 'package:neba/src/theme/scale.dart';
 import 'package:neba/src/types.dart';
 
@@ -76,6 +77,8 @@ class NebaFlex extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // A hidden NebaShow takes no gap and no cell, as `display: none` takes none.
+    final List<Widget> present = nebaPresentChildren(context, children);
     final bool horizontal = direction == NebaOrientation.horizontal;
     final double rowGap = (rowSpacing ?? spacing) * NebaScale.spacingUnit;
     final double columnGap = (columnSpacing ?? spacing) * NebaScale.spacingUnit;
@@ -103,7 +106,7 @@ class NebaFlex extends StatelessWidget {
         },
         textDirection: runDirection,
         verticalDirection: verticalDirection,
-        children: children,
+        children: present,
       );
     }
 
@@ -132,7 +135,7 @@ class NebaFlex extends StatelessWidget {
       textDirection: runDirection,
       verticalDirection: verticalDirection,
       textBaseline: alignItems == NebaAlignItems.baseline ? TextBaseline.alphabetic : null,
-      children: children,
+      children: present,
     );
 
     if (cross != CrossAxisAlignment.stretch) {

@@ -24,6 +24,7 @@ import 'package:neba_example/demos/grid/offset.dart';
 import 'package:neba_example/demos/grid/padding.dart';
 import 'package:neba_example/demos/grid/spacing.dart';
 import 'package:neba_example/demos/grid/spans.dart';
+import 'package:neba_example/demos/show/transparent.dart';
 import 'package:neba_example/demos/tokens/palette.dart';
 
 /// The demos, by key.
@@ -46,5 +47,6 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'grid/padding': GridPadding.new,
   'grid/spacing': GridSpacing.new,
   'grid/spans': GridSpans.new,
+  'show/transparent': ShowTransparent.new,
   'tokens/palette': TokensPalette.new,
 };

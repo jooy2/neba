@@ -59,7 +59,7 @@ Tailwind는 소스에 문자 그대로 적힌 class name만 봅니다. 그래서
 
 ::: fw flutter
 
-Flutter 패키지의 위젯은 반응형 맵을 받지 않습니다. 너비에 따라 바뀌는 레이아웃은 `MediaQuery.sizeOf(context)`로 너비를 읽어 일반 값을 넘기면 되고, 위의 단계가 비교할 기준 너비입니다. 단위는 논리 픽셀입니다.
+Flutter 패키지의 위젯은 반응형 맵을 받지 않습니다. 너비에 따라 바뀌는 레이아웃은 `MediaQuery.sizeOf(context)`로 너비를 읽어 일반 값을 넘기면 됩니다. 위의 단계는 `NebaBreakpoint`이고, `width`가 각 단계가 시작하는 논리 픽셀입니다. `MediaQuery.sizeOf(context).width >= NebaBreakpoint.md.width`처럼 비교합니다. [Show](../components/layout/show)는 이 비교를 직접 해 줍니다.
 
 :::
 

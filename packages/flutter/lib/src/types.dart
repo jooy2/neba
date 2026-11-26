@@ -184,6 +184,35 @@ const NebaElevation nebaElevationMin = 0;
 /// The highest [NebaElevation] a caller may ask for.
 const NebaElevation nebaElevationMax = 3;
 
+/// The window widths the layout widgets branch on, smallest first.
+///
+/// The same five names as [NebaSize] and not the same idea: a size of `md` is
+/// how big a control is, a breakpoint of `md` is how wide the window is. The
+/// widths are the React package's, which are Tailwind's: `sm` 640, `md` 768,
+/// `lg` 1024 and `xl` 1280 logical pixels, and `xs` 0, the floor every width
+/// is above.
+enum NebaBreakpoint {
+  /// 0, so every width is at or above it.
+  xs(0),
+
+  /// 640 logical pixels.
+  sm(640),
+
+  /// 768 logical pixels.
+  md(768),
+
+  /// 1024 logical pixels.
+  lg(1024),
+
+  /// 1280 logical pixels.
+  xl(1280);
+
+  const NebaBreakpoint(this.width);
+
+  /// Where the step starts, in logical pixels.
+  final double width;
+}
+
 /// How wide something may grow: a step of the measure ladder, a width in
 /// logical pixels, or no limit at all.
 ///

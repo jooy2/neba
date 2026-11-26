@@ -59,7 +59,7 @@ The list on the left is short on purpose. Each slot needs four hand-written medi
 
 ::: fw flutter
 
-The Flutter package's widgets take no responsive maps. A layout that changes with the width reads it with `MediaQuery.sizeOf(context)` and passes plain values, and the ladder above is the widths to compare it against, in logical pixels.
+The Flutter package's widgets take no responsive maps. A layout that changes with the width reads it with `MediaQuery.sizeOf(context)` and passes plain values, and the ladder above is `NebaBreakpoint`, whose `width` is each step's floor in logical pixels: `MediaQuery.sizeOf(context).width >= NebaBreakpoint.md.width`. [Show](../components/layout/show) answers one directly.
 
 :::
 
