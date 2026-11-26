@@ -40,7 +40,7 @@ Port in this order, because each group is built out of the ones before it: `Neba
 
 Some components have no single Flutter equivalent of what they are on the web, and their form is decided when they are reached, then written on their page: `NebaPortal` (an `Overlay` entry), `NebaVisuallyHidden` (a `Semantics` node), `NebaTextLink` (a callback rather than an `href`, since the package opens nothing itself), `NebaImage` and `NebaGallery` (an `ImageProvider` rather than a URL), `NebaCodeBlock` (no highlight.js; a tokenizer of its own or a caller-supplied one), and the page shell (`NebaPageLayout`, `NebaHeader`, `NebaFooter`, `NebaSidebar`) against a phone's safe areas.
 
-Demos that wait on a component not ported yet, to be added with it: `grid/auto-grow` (`NebaAvatar`, `NebaTypography`, `NebaChip`, `NebaButton`), `flex/direction` (`NebaTextField`, `NebaButton`), `flex/spacing` (`NebaChip`) `flex/alignment` (`NebaAvatar`, `NebaTypography`, `NebaButton`), and all four of Stack's: `stack/hero` (`NebaAvatar`), `stack/direction` and `stack/depth` (`NebaCard`, `NebaTypography`), `stack/dealt` (`NebaAvatar`, `NebaButton`, `NebaCard`, `NebaTypography`), `show/hero` (`NebaTypography`), `show/pair` (`NebaButton`, `NebaButtonGroup`) `show/range` (`NebaChip`), and `aspect-ratio/reserving` (`NebaCard`, `NebaButton`, `NebaSkeleton`). A widget that draws a shape reads the ring of a pile it is in through `NebaRing`, as `NebaBox` does, so that `ring` follows it. The React demos of per-breakpoint maps (`container/responsive`, `grid/responsive`) have no Flutter twin, because the Flutter widgets take no such map.
+Demos that wait on a component not ported yet, to be added with it: `grid/auto-grow` (`NebaAvatar`, `NebaTypography`, `NebaChip`, `NebaButton`), `flex/direction` (`NebaTextField`, `NebaButton`), `flex/spacing` (`NebaChip`) `flex/alignment` (`NebaAvatar`, `NebaTypography`, `NebaButton`), and all four of Stack's: `stack/hero` (`NebaAvatar`), `stack/direction` and `stack/depth` (`NebaCard`, `NebaTypography`), `stack/dealt` (`NebaAvatar`, `NebaButton`, `NebaCard`, `NebaTypography`), `show/hero` (`NebaTypography`), `show/pair` (`NebaButton`, `NebaButtonGroup`) `show/range` (`NebaChip`), `aspect-ratio/reserving` (`NebaCard`, `NebaButton`, `NebaSkeleton`), `scroll-area/hero`, `scroll-area/fade` and `scroll-area/sizes` (`NebaTypography`), and `scroll-area/orientation` (`NebaChip`). A widget that draws a shape reads the ring of a pile it is in through `NebaRing`, as `NebaBox` does, so that `ring` follows it. The React demos of per-breakpoint maps (`container/responsive`, `grid/responsive`) have no Flutter twin, because the Flutter widgets take no such map.
 
 ### Layout (15)
 
@@ -51,7 +51,7 @@ Demos that wait on a component not ported yet, to be added with it: `grid/auto-g
 - [x] `NebaStack`
 - [x] `NebaShow`
 - [x] `NebaAspectRatio`
-- [ ] `NebaScrollArea`
+- [x] `NebaScrollArea`
 - [ ] `NebaScrollZone`
 - [ ] `NebaPanes`
 - [ ] `NebaPortal`

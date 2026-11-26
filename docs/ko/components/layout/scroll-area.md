@@ -1,6 +1,7 @@
 ---
 title: ScrollArea
 order: 10
+flutter: true
 ---
 
 # ScrollArea
@@ -8,6 +9,8 @@ order: 10
 <p class="neba-lede">자기 스크롤바를 가진 상자입니다. 브라우저의 스크롤바는 운영체제가 그리므로 기기마다 두께가 다르고, 자기가 파인 시트와 색도 다릅니다. 이쪽은 요소이므로 어디서나 같고 라이브러리의 토큰으로 만들어집니다.</p>
 
 <Demo src="scroll-area/hero" />
+
+::: fw react
 
 ```tsx
 import { ScrollArea } from 'neba';
@@ -17,11 +20,33 @@ import { ScrollArea } from 'neba';
 </ScrollArea>;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+NebaScrollArea(height: 200, fade: true, child: changelog);
+```
+
+:::
+
 ## Props
 
 <PropsTable name="ScrollArea" />
 
+::: fw react
+
 `<div>`의 기본 속성은 `color`를 제외하고 루트로 전달됩니다. 내부는 평범한 스크롤 컨테이너라 휠, 트랙패드, 관성, 키보드는 모두 브라우저의 것 그대로입니다.
+
+:::
+
+::: fw flutter
+
+`className`과 `style`은 받지 않습니다. 내부는 평범한 Flutter 스크롤 뷰라 휠, 트랙패드, 드래그, 관성은 모두 플랫폼의 것 그대로이며, `controller`와 `horizontalController`로 스크롤 위치를 다룰 수 있습니다.
+
+:::
 
 [ScrollZone](./scroll-zone)과는 다릅니다. 그쪽은 *레일*입니다. 한 방향으로 늘어선 항목들과 그것을 넘기는 버튼, 카드 줄이나 칩 줄을 위한 것입니다. 이쪽은 평범한 경우입니다: 안에 든 것에 비해 작은 상자.
 
@@ -29,15 +54,19 @@ import { ScrollArea } from 'neba';
 
 ### height · maxHeight
 
-세로 스크롤 영역은 무언가로 높이가 묶여야 스크롤할 것이 생깁니다. `height`는 고정 높이, `maxHeight`는 상한이며 둘 다 px 숫자나 임의의 CSS 길이를 받습니다. 가로 영역은 이미 컨테이너 너비에 묶여 있습니다.
+세로 스크롤 영역은 무언가로 높이가 묶여야 스크롤할 것이 생깁니다. `height`는 고정 높이, `maxHeight`는 상한이며 둘 다 <Fw react="px 숫자나 임의의 CSS 길이를" flutter="논리 픽셀을" /> 받습니다. 가로 영역은 이미 컨테이너 너비에 묶여 있습니다.
 
 ### orientation
 
-기본값은 `vertical`입니다. `horizontal`은 아래쪽에 레일을 그리고, `both`는 둘 다와 그 사이의 모서리까지 그립니다.
+기본값은 `vertical`입니다. `horizontal`은 아래쪽에 레일을 그리고, `both`는 <Fw react="둘 다와 그 사이의 모서리까지" flutter="둘 다" /> 그립니다.
 
 <Demo src="scroll-area/orientation">
 
+::: fw react
+
 <<< @/.vitepress/demos/scroll-area/orientation.tsx
+
+:::
 
 </Demo>
 
@@ -47,7 +76,11 @@ import { ScrollArea } from 'neba';
 
 <Demo src="scroll-area/fade">
 
+::: fw react
+
 <<< @/.vitepress/demos/scroll-area/fade.tsx
+
+:::
 
 </Demo>
 
@@ -57,12 +90,28 @@ import { ScrollArea } from 'neba';
 
 <Demo src="scroll-area/sizes">
 
+::: fw react
+
 <<< @/.vitepress/demos/scroll-area/sizes.tsx
+
+:::
 
 </Demo>
 
 ## 접근성
 
 - viewport는 내용이 넘칠 때마다 focus를 받으며 방향키, Page Up/Down, Home, End로 스크롤됩니다.
+
+::: fw react
+
 - 무엇이 들어 있는지 `label`로 알려 주세요. 그러면 viewport가 그 이름의 `region`이 되고, 없으면 `locale`의 말로 "스크롤 영역"이라는 이름이 붙은 `group`이 됩니다. 컴포넌트에 준 `aria-label`은 focus를 받지 않는 root의 이름이 됩니다.
+
+:::
+
+::: fw flutter
+
+- 무엇이 들어 있는지 `label`로 알려 주세요. 없으면 화면 낭독기는 `locale`의 말로 "스크롤 영역"이라고 읽습니다.
+
+:::
+
 - 스크롤바는 포인터가 영역 위에 있거나 스크롤 중일 때 나타납니다. 어느 경우에도 내용은 스크롤바 없이 도달할 수 있습니다.

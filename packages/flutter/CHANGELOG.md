@@ -33,3 +33,5 @@ The changes to `neba` on pub.dev, the Flutter package. The React package keeps i
 - **`NebaShow`** and **`NebaBreakpoint`**: a child shown from a floor, below a ceiling, or between the two, on the React package's five breakpoints, read off the window's width. A hidden child is not built, and `NebaFlex` and `NebaGridContainer` leave a hidden `NebaShow` out entirely, gap and all, as CSS leaves out `display: none`.
 
 - **`NebaAspectRatio`**, a box that keeps a proportion whatever width it is given: it reserves the space before its content arrives, clips what runs past it, fits an `Image` child with a `BoxFit`, and rounds its corners to the radius ladder when asked.
+
+- **`NebaScrollArea`**, a box with a scrollbar of its own: a rail on the size ladder in the colour's family that shows while the pointer is over the area or while it scrolls, `vertical`, `horizontal` or `both`, a `height` or a `maxHeight`, a `fade` at each edge with more beyond it, a focus stop with the arrows, the page keys, Home and End while it overflows, and a name in the `locale`'s words.

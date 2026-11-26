@@ -1,6 +1,7 @@
 ---
 title: ScrollArea
 order: 10
+flutter: true
 ---
 
 # ScrollArea
@@ -8,6 +9,8 @@ order: 10
 <p class="neba-lede">A box with a scrollbar of its own. The browser's is drawn by the operating system: a different width on every machine and a different colour from the sheet it is cut into; this one is an element, so it is the same everywhere and made of the library's own tokens.</p>
 
 <Demo src="scroll-area/hero" />
+
+::: fw react
 
 ```tsx
 import { ScrollArea } from 'neba';
@@ -17,11 +20,33 @@ import { ScrollArea } from 'neba';
 </ScrollArea>;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+NebaScrollArea(height: 200, fade: true, child: changelog);
+```
+
+:::
+
 ## Props
 
 <PropsTable name="ScrollArea" />
 
+::: fw react
+
 Every native `<div>` attribute passes through to the root, apart from `color`. Underneath it is an ordinary scroll container, so the wheel, the trackpad, momentum and the keyboard are the browser's own.
+
+:::
+
+::: fw flutter
+
+It takes no `className` or `style`. Underneath it is an ordinary Flutter scroll view, so the wheel, the trackpad, a drag and momentum are the platform's own, and `controller` and `horizontalController` hand you its position.
+
+:::
 
 It is not [ScrollZone](./scroll-zone), which is a _rail_: a strip of items laid out in one direction with buttons that step through them, for a row of cards or a line of chips. This is the plain case: a box too small for what is in it.
 
@@ -29,15 +54,19 @@ It is not [ScrollZone](./scroll-zone), which is a _rail_: a strip of items laid 
 
 ### height · maxHeight
 
-A vertical scroll area has to be bounded by something or there is nothing to scroll. `height` is a fixed one and `maxHeight` a ceiling; both take a number of pixels or any CSS length. A horizontal one is bounded by its container already.
+A vertical scroll area has to be bounded by something or there is nothing to scroll. `height` is a fixed one and `maxHeight` a ceiling; both take <Fw react="a number of pixels or any CSS length" flutter="logical pixels" />. A horizontal one is bounded by its container already.
 
 ### orientation
 
-`vertical` is the default. `horizontal` draws the rail along the bottom instead, and `both` draws both with a corner between them.
+`vertical` is the default. `horizontal` draws the rail along the bottom instead, and `both` draws both<Fw react=" with a corner between them" />.
 
 <Demo src="scroll-area/orientation">
 
+::: fw react
+
 <<< @/.vitepress/demos/scroll-area/orientation.tsx
+
+:::
 
 </Demo>
 
@@ -47,7 +76,11 @@ Fades the content out at each edge that has more beyond it, and only at those ed
 
 <Demo src="scroll-area/fade">
 
+::: fw react
+
 <<< @/.vitepress/demos/scroll-area/fade.tsx
+
+:::
 
 </Demo>
 
@@ -57,12 +90,28 @@ Fades the content out at each edge that has more beyond it, and only at those ed
 
 <Demo src="scroll-area/sizes">
 
+::: fw react
+
 <<< @/.vitepress/demos/scroll-area/sizes.tsx
+
+:::
 
 </Demo>
 
 ## Accessibility
 
 - The viewport is focusable whenever it overflows, and scrolls with the arrow keys, Page Up/Down, Home and End.
+
+::: fw react
+
 - Give it a `label` that says what is in it. The viewport is then a `region` by that name; without one it is a `group` named "Scrollable content" in the `locale`'s words. An `aria-label` on the component names the root, which is not what takes the focus.
+
+:::
+
+::: fw flutter
+
+- Give it a `label` that says what is in it. Without one, a screen reader hears "Scrollable content" in the `locale`'s words.
+
+:::
+
 - The scrollbar appears while the pointer is over the area or while it is scrolling. The content is reachable without it in every case.
