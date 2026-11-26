@@ -45,6 +45,21 @@ final NebaTokens light = NebaTokens.light().withFamily(
 NebaProvider(light: light, child: app)
 ```
 
+### Languages
+
+The few words a widget says on its own behalf, such as the label of a close button, are English unless you register another language. Eighteen come with the package:
+
+```dart
+import 'package:neba/locales.dart';
+
+void main() {
+  registerNebaMessages('ko', ko);
+  runApp(const App());
+}
+```
+
+A widget then speaks its own `locale`, `NebaProvider`'s default, or the app's locale, in that order.
+
 ## Documentation
 
 Every component is documented at **[neba.cdget.com](https://neba.cdget.com)**, with the React and the Flutter API on the same page.

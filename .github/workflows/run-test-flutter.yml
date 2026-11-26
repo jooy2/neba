@@ -7,8 +7,11 @@ on:
     branches: [main]
     paths:
       - packages/flutter/**
-      # The token parity tests read the React package's stylesheet.
+      # The token parity test reads the React package's stylesheet, and the
+      # generator check reads its message tables.
       - packages/react/src/styles.css
+      - packages/react/src/internal/i18n.ts
+      - packages/react/src/locales/**
       - .github/workflows/run-test-flutter.yml
   workflow_dispatch:
 

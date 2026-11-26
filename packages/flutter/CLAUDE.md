@@ -55,9 +55,12 @@ The React guide states each rule of [the design language](../../docs/ko/design/d
 | `glow.dart` | `NebaGlow`: the 88-pixel spotlight and the 72-pixel afterglow, and which colours a variant lights with |
 | `focus_ring.dart` | `NebaFocusRing`: two pixels, two pixels off, eased in colour and never in width |
 | `ink.dart` | `NebaInk`: a label's and an icon's colour, eased with the fill |
+| `messages.dart` | `NebaLocale`, `registerNebaMessages`, `nebaMessages` and `fillNebaMessage`: the words a widget says on its own behalf, by namespace, in the React package's namespaces |
 | `svg_path.dart`, `glyphs.dart` | The React package's SVG glyphs, read from the same path data: ×, chevron, tick, minus, plus, dot, the turning ring and the severity set |
 
 The pointer's position is a `ValueListenable` rather than state, because it changes every frame the pointer moves and only the light needs it, which is why the React package writes it to two custom properties instead of re-rendering. Hover is tracked with a `MouseRegion` of its own, not the focus detector's hover highlight, which only reports while the focus manager is in keyboard mode.
+
+**The message tables are generated, never written.** `messages_en.dart`, `lib/src/locales/*.dart` and `lib/locales.dart` come out of the React package's `src/internal/i18n.ts` and `src/locales/*.ts` through `tool/generate.dart`. A widget that needs a new word gets it added on the React side first, in English and in every language that has it, and then the generator brings it over; `test/internal/messages_test.dart` fails on a key or a placeholder a language has and English does not.
 
 ## Porting a component
 
