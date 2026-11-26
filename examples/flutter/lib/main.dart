@@ -61,7 +61,13 @@ class _Home extends StatelessWidget {
     return ColoredBox(
       color: tokens.surface,
       child: DefaultTextStyle(
-        style: TextStyle(color: tokens.fg, fontSize: NebaScale.controlText[NebaSize.md]),
+        // The gallery's Inter, which a package's font is reached through.
+        style: TextStyle(
+          fontFamily: 'Inter',
+          package: 'neba_example',
+          color: tokens.fg,
+          fontSize: NebaScale.controlText[NebaSize.md],
+        ),
         child: SafeArea(
           child: ListView.separated(
             key: const Key('demos'),

@@ -3,6 +3,10 @@ import 'package:neba/neba.dart';
 import 'package:neba_example/demos/registry.dart';
 import 'package:neba_example/host_bridge.dart';
 
+/// The gallery's font, bundled under `assets/fonts`. An app that shows the
+/// gallery's demos names it with `package: 'neba_example'`.
+const String galleryFont = 'Inter';
+
 /// The gallery: every demo in a list, or one demo on its own.
 ///
 /// `?demo=button/variants` shows that demo alone, which is how the
@@ -95,7 +99,11 @@ class _Page extends StatelessWidget {
     return ColoredBox(
       color: tokens.surface,
       child: DefaultTextStyle(
-        style: TextStyle(color: tokens.fg, fontSize: NebaScale.controlText[NebaSize.md]),
+        style: TextStyle(
+          fontFamily: galleryFont,
+          color: tokens.fg,
+          fontSize: NebaScale.controlText[NebaSize.md],
+        ),
         child: child,
       ),
     );
@@ -167,7 +175,11 @@ class _Embedded extends StatelessWidget {
         : AlignmentDirectional.topStart;
 
     return DefaultTextStyle(
-      style: TextStyle(color: tokens.fg, fontSize: NebaScale.controlText[NebaSize.md]),
+      style: TextStyle(
+        fontFamily: galleryFont,
+        color: tokens.fg,
+        fontSize: NebaScale.controlText[NebaSize.md],
+      ),
       child: CustomPaint(
         painter: _Backdrop(tokens),
         child: OverflowBox(

@@ -19,3 +19,14 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: 6.0.0
+
+flutter:
+  # The gallery's own font: without it a web build fetches Roboto from Google's
+  # servers and fakes every weight but 400. `assets/fonts/README.md` says more.
+  fonts:
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Inter-SemiBold.ttf
+          weight: 600
