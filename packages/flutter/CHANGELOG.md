@@ -31,3 +31,5 @@ The changes to `neba` on pub.dev, the Flutter package. The React package keeps i
 - **`NebaStack`**, things laid over each other so a set reads as a pile: `horizontal`, `vertical` or a fanned `diagonal`, an `overlap` and a `drop` that take exactly the room the pile covers, `front`, a `scaleStep` and an `opacityStep` for depth, `max`, `total` and `overflow` for the ones that did not fit, a `ring` in the page's surface colour that the first sheet in each item draws around its own corners, and a `transition` dealt with `stagger`, `durationStep` and `reverse`.
 
 - **`NebaShow`** and **`NebaBreakpoint`**: a child shown from a floor, below a ceiling, or between the two, on the React package's five breakpoints, read off the window's width. A hidden child is not built, and `NebaFlex` and `NebaGridContainer` leave a hidden `NebaShow` out entirely, gap and all, as CSS leaves out `display: none`.
+
+- **`NebaAspectRatio`**, a box that keeps a proportion whatever width it is given: it reserves the space before its content arrives, clips what runs past it, fits an `Image` child with a `BoxFit`, and rounds its corners to the radius ladder when asked.

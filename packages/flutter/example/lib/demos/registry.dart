@@ -6,6 +6,9 @@ library;
 
 import 'package:flutter/widgets.dart';
 
+import 'package:neba_example/demos/aspect_ratio/fit.dart';
+import 'package:neba_example/demos/aspect_ratio/hero.dart';
+import 'package:neba_example/demos/aspect_ratio/ratios.dart';
 import 'package:neba_example/demos/box/colors.dart';
 import 'package:neba_example/demos/box/elevation.dart';
 import 'package:neba_example/demos/box/hero.dart';
@@ -29,6 +32,9 @@ import 'package:neba_example/demos/tokens/palette.dart';
 
 /// The demos, by key.
 const Map<String, Widget Function()> demos = <String, Widget Function()>{
+  'aspect-ratio/fit': AspectRatioFit.new,
+  'aspect-ratio/hero': AspectRatioHero.new,
+  'aspect-ratio/ratios': AspectRatioRatios.new,
   'box/colors': BoxColors.new,
   'box/elevation': BoxElevation.new,
   'box/hero': BoxHero.new,
