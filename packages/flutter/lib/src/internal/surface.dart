@@ -276,7 +276,7 @@ class _SheetPainter extends CustomPainter {
   }
 }
 
-/// The grain, `--neba-grain`: one 120-pixel tile of greyscale noise at 12%,
+/// The grain, `--neba-grain`: one 120-pixel tile of greyscale noise under 12%,
 /// decoded once and laid over every sheet in `overlay`.
 ///
 /// Frosted, not polished: the grain is what separates sandblasted acrylic from
@@ -311,19 +311,43 @@ abstract final class NebaGrain {
     return _tile;
   }
 
-  /// The tile's RGBA bytes.
+  /// The tile's RGBA bytes, premultiplied, as [ui.PixelFormat.rgba8888]
+  /// reads them.
+  ///
+  /// Each pixel follows what the SVG does to its noise. `feTurbulence` gives
+  /// four channels that sit around the middle of their range, so each is the
+  /// mean of four draws rather than one; the colour is their luminance, as
+  /// `saturate(0)` takes it, turned from the linear light a filter works in to
+  /// sRGB; and the alpha is the noise's own under the rect's 12%. One uniform
+  /// draw per pixel at the full 12% was a grain several times as coarse.
   @visibleForTesting
   static Uint8List pixels() {
     final math.Random random = math.Random(85);
     final Uint8List bytes = Uint8List(size * size * 4);
-    final int alpha = (opacity * 255).round();
+
+    double channel() {
+      return (random.nextDouble() +
+              random.nextDouble() +
+              random.nextDouble() +
+              random.nextDouble()) /
+          4;
+    }
+
+    double toSrgb(double linear) {
+      return linear <= 0.0031308
+          ? linear * 12.92
+          : 1.055 * math.pow(linear, 1 / 2.4).toDouble() - 0.055;
+    }
 
     for (int i = 0; i < size * size; i++) {
-      final int grey = random.nextInt(256);
-      bytes[i * 4] = grey;
-      bytes[i * 4 + 1] = grey;
-      bytes[i * 4 + 2] = grey;
-      bytes[i * 4 + 3] = alpha;
+      final double grey = toSrgb(0.2126 * channel() + 0.7152 * channel() + 0.0722 * channel());
+      final double alpha = opacity * channel();
+      final int premultiplied = (grey * alpha * 255).round();
+
+      bytes[i * 4] = premultiplied;
+      bytes[i * 4 + 1] = premultiplied;
+      bytes[i * 4 + 2] = premultiplied;
+      bytes[i * 4 + 3] = (alpha * 255).round();
     }
 
     return bytes;

@@ -119,12 +119,23 @@ void main() {
     expect(to.dx, greaterThan(from.dx));
   });
 
-  test('draws the same grain every time, at 12%', () {
+  test('draws the same grain every time, at 12% and no more', () {
     final Uint8List first = NebaGrain.pixels();
     final Uint8List second = NebaGrain.pixels();
 
     expect(first, second);
-    expect(first[3], (0.12 * 255).round());
     expect(first.length, NebaGrain.size * NebaGrain.size * 4);
+
+    double alphas = 0;
+
+    for (int i = 0; i < first.length; i += 4) {
+      // Premultiplied, as the engine reads the bytes: no channel above alpha.
+      expect(first[i], lessThanOrEqualTo(first[i + 3]));
+      expect(first[i + 3], lessThanOrEqualTo((0.12 * 255).round()));
+      alphas += first[i + 3];
+    }
+
+    // The noise's own alpha under the rect's opacity: about half of 12%.
+    expect(alphas / (first.length / 4) / 255, closeTo(0.06, 0.005));
   });
 }
