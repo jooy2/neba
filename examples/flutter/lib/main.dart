@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:neba/neba.dart';
 import 'package:neba_example/demos/registry.dart';
@@ -105,7 +106,10 @@ class _Home extends StatelessWidget {
                 children: <Widget>[
                   Text(entry.key, style: TextStyle(color: tokens.mutedFg)),
                   const SizedBox(height: 12),
-                  entry.value(),
+                  DefaultAssetBundle(
+                    bundle: _galleryAssets,
+                    child: Builder(builder: (BuildContext context) => entry.value()),
+                  ),
                 ],
               );
             },
@@ -113,5 +117,25 @@ class _Home extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+/// The gallery's pictures, reached from this app.
+///
+/// A demo loads its photograph as `assets/samples/…`, the key it has inside the
+/// gallery, which is the code the documentation quotes. Here the gallery is a
+/// dependency, and a dependency's assets are bundled under
+/// `packages/neba_example/`, so a key of the gallery's is handed on with that
+/// prefix and everything else is left as it is.
+final AssetBundle _galleryAssets = _GalleryAssets(rootBundle);
+
+class _GalleryAssets extends CachingAssetBundle {
+  _GalleryAssets(this._parent);
+
+  final AssetBundle _parent;
+
+  @override
+  Future<ByteData> load(String key) {
+    return _parent.load(key.startsWith('assets/') ? 'packages/neba_example/$key' : key);
   }
 }

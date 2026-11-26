@@ -1,4 +1,5 @@
-// That every demo builds, in both themes, without an exception or an overflow.
+// That every demo builds, in both themes and at a phone's width, without an
+// exception or an overflow.
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -26,6 +27,22 @@ void main() {
         await tester.pumpWidget(const SizedBox());
       });
     }
+  }
+
+  // And once at a phone's width, where a row that does not give way overflows.
+  for (final MapEntry<String, Widget Function()> demo in demos.entries) {
+    testWidgets('${demo.key} fits a phone', (WidgetTester tester) async {
+      tester.view.physicalSize = const Size(390, 844);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+
+      await tester.pumpWidget(GalleryApp(query: <String, String>{'demo': demo.key}));
+      await tester.pump(const Duration(seconds: 1));
+
+      expect(tester.takeException(), isNull);
+
+      await tester.pumpWidget(const SizedBox());
+    });
   }
 
   testWidgets('lists every demo without a query', (WidgetTester tester) async {

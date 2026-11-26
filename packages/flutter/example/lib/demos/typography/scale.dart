@@ -21,7 +21,8 @@ class TypographyScale extends StatelessWidget {
                 width: 80,
                 child: Text(level.name, style: TextStyle(fontSize: 11, color: tokens.mutedFg)),
               ),
-              NebaTypography('The quick brown fox', level: level),
+              // Gives way on a narrow screen, as a flex item shrinks in CSS.
+              Flexible(child: NebaTypography('The quick brown fox', level: level)),
             ],
           ),
       ],
