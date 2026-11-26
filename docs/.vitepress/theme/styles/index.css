@@ -27,8 +27,14 @@
 @import './docs.css';
 @import './framework.css';
 
-/* Tailwind only emits classes it can see spelled out. `src/` is not listed:
-   `src/styles.css` registers its own directory, exactly as it does for a
-   consumer who installed the package. These two are the docs' own classes. */
+/* Tailwind only emits classes it can see spelled out. The library's own
+   `src/styles.css` registers its directory with `@source '.'`, but that does
+   not reach here: Vite inlines an `@import` before Tailwind reads the file, and
+   the inlined `@source` resolves against this folder instead. The site used to
+   get away with it by running from the repository root, where Tailwind's own
+   detection found `src/` anyway; run from `docs/`, nothing but the demos was
+   scanned and every component's utilities were missing. So `src/` is named
+   here, beside the docs' own two. */
+@source '../../../../packages/react/src';
 @source '../../demos';
 @source '../components';
