@@ -42,6 +42,23 @@ The React guide states each rule of [the design language](../../docs/ko/design/d
 - **The focus ring shows for keyboard focus only**, as `:focus-visible` does, and a ring never changes the widget's size.
 - **Don't express state with opacity.** A disabled control takes `disabledBg`, `disabledFg` and `disabledBorder`.
 
+## Internal modules
+
+`lib/src/internal/` is where a widget gets everything another widget also needs, so that two controls never answer the same question twice. Reach for these before writing a widget's own version:
+
+| Module | What it holds |
+| --- | --- |
+| `color.dart` | `oklch()`, `color-mix()` in sRGB and OKLab, the CSS shadow blur, WCAG contrast |
+| `motion.dart` | `nebaDuration`: zero on a press and for a reader who asked for less motion |
+| `surface.dart` | `NebaSheet`: the blur and saturation behind, the fill, the grain, the 148° sheen, the plate, the edge and the elevation shadow |
+| `interaction.dart` | `NebaInteractive`: hover, press on the pointer going down, keyboard focus, Enter and Space, and the pointer's position as a listenable |
+| `glow.dart` | `NebaGlow`: the 88-pixel spotlight and the 72-pixel afterglow, and which colours a variant lights with |
+| `focus_ring.dart` | `NebaFocusRing`: two pixels, two pixels off, eased in colour and never in width |
+| `ink.dart` | `NebaInk`: a label's and an icon's colour, eased with the fill |
+| `svg_path.dart`, `glyphs.dart` | The React package's SVG glyphs, read from the same path data: ×, chevron, tick, minus, plus, dot, the turning ring and the severity set |
+
+The pointer's position is a `ValueListenable` rather than state, because it changes every frame the pointer moves and only the light needs it, which is why the React package writes it to two custom properties instead of re-rendering. Hover is tracked with a `MouseRegion` of its own, not the focus detector's hover highlight, which only reports while the focus manager is in keyboard mode.
+
 ## Porting a component
 
 One component is one commit, `[dart] feat: port NebaX to Flutter, with its tests, demos, docs and props table`, and it holds all of these:
