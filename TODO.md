@@ -39,11 +39,13 @@ Port in this order, because each group is built out of the ones before it: `Neba
 
 Some components have no single Flutter equivalent of what they are on the web, and their form is decided when they are reached, then written on their page: `NebaPortal` (an `Overlay` entry), `NebaVisuallyHidden` (a `Semantics` node), `NebaTextLink` (a callback rather than an `href`, since the package opens nothing itself), `NebaImage` and `NebaGallery` (an `ImageProvider` rather than a URL), `NebaCodeBlock` (no highlight.js; a tokenizer of its own or a caller-supplied one), and the page shell (`NebaPageLayout`, `NebaHeader`, `NebaFooter`, `NebaSidebar`) against a phone's safe areas.
 
+Demos that wait on a component not ported yet, to be added with it: `grid/auto-grow` (`NebaAvatar`, `NebaTypography`, `NebaChip`, `NebaButton`). The React demos of per-breakpoint maps (`container/responsive`, `grid/responsive`) have no Flutter twin, because the Flutter widgets take no such map.
+
 ### Layout (15)
 
 - [x] `NebaContainer`
-- [ ] `NebaGrid`
-- [ ] `NebaGridContainer`
+- [x] `NebaGrid`
+- [x] `NebaGridContainer`
 - [ ] `NebaFlex`
 - [ ] `NebaStack`
 - [ ] `NebaShow`

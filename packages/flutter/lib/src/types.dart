@@ -233,3 +233,72 @@ class NebaMeasure {
   @override
   int get hashCode => Object.hash(size, width);
 }
+
+/// How a row distributes the space it has left over along its main axis.
+///
+/// The three positional values are [NebaAlign]'s and flip under RTL; the
+/// distribution values are CSS's, spelled the Dart way.
+enum NebaJustifyContent {
+  /// Packed at the start.
+  start,
+
+  /// Packed in the middle.
+  center,
+
+  /// Packed at the end.
+  end,
+
+  /// The first item at the start, the last at the end, the rest evenly
+  /// between.
+  spaceBetween,
+
+  /// Equal space around every item, so the ends get half a share.
+  spaceAround,
+
+  /// Equal space between every item and at both ends.
+  spaceEvenly,
+
+  /// No distribution: the items keep their place at the start.
+  stretch,
+}
+
+/// How items sit across the axis they are laid out on. [stretch] is the
+/// default everywhere it is offered: a row of cards is a row of cards of one
+/// height.
+enum NebaAlignItems {
+  /// Against the start of the cross axis.
+  start,
+
+  /// In the middle of the cross axis.
+  center,
+
+  /// Against the end of the cross axis.
+  end,
+
+  /// As tall as the row.
+  stretch,
+
+  /// On a shared first baseline.
+  baseline,
+}
+
+/// The same, for one item overriding the row around it.
+enum NebaAlignSelf {
+  /// Whatever the row says.
+  auto,
+
+  /// Against the start of the cross axis.
+  start,
+
+  /// In the middle of the cross axis.
+  center,
+
+  /// Against the end of the cross axis.
+  end,
+
+  /// As tall as the row.
+  stretch,
+
+  /// On the row's first baseline.
+  baseline,
+}

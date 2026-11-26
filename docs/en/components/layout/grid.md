@@ -1,6 +1,7 @@
 ---
 title: Grid
 order: 6
+flutter: true
 ---
 
 # Grid
@@ -8,6 +9,8 @@ order: 6
 <p class="neba-lede">A responsive layout on twelve columns. <code>GridContainer</code> sets the column count and the gutters; <code>Grid</code> says how many columns a cell takes.</p>
 
 <Demo src="grid/hero" />
+
+::: fw react
 
 ```tsx
 import { Grid, GridContainer } from 'neba';
@@ -17,6 +20,24 @@ import { Grid, GridContainer } from 'neba';
   <Grid span={{ xs: 12, md: 4 }}>Sidebar</Grid>
 </GridContainer>;
 ```
+
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+NebaGridContainer(
+  spacing: 3,
+  children: <Widget>[
+    NebaGrid(span: NebaGridSpan.columns(8), child: body),
+    NebaGrid(span: NebaGridSpan.columns(4), child: sidebar),
+  ],
+);
+```
+
+:::
 
 `GridContainer` draws no surface, so it has no `variant`, `color` or `elevation`. Wrap it in a [Box](../surfaces/box) or a [Card](../surfaces/card) when the sheet is wanted.
 
@@ -30,23 +51,51 @@ import { Grid, GridContainer } from 'neba';
 
 <PropsTable name="Grid" />
 
+::: fw react
+
 Both pass every native `<div>` attribute straight through.
+
+:::
+
+::: fw flutter
+
+A `NebaGrid` is a direct child of a `NebaGridContainer`: what it carries is read by the container's layout rather than drawn.
+
+:::
 
 ## Examples
 
 ### span
 
-`span` is read against the container's column count. On the default twelve, `span={6}` is a half; with `columns={24}` the same `6` is a quarter.
+`span` is read against the container's column count. On the default twelve, <Fw react="`span={6}`" flutter="`NebaGridSpan.columns(6)`" /> is a half; with <Fw react="`columns={24}`" flutter="`columns: 24`" /> the same `6` is a quarter.
 
 The width is `(100% + gutter) × span / columns − gutter`, so twelve `span={1}` cells and one `span={12}` end on exactly the same pixel.
 
 <Demo src="grid/spans">
 
+::: fw react
+
 <<< @/.vitepress/demos/grid/spans.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/grid/spans.dart
+
+:::
 
 </Demo>
 
 ### auto · grow
+
+::: fw flutter
+
+Two widths are not a share of twelve. `NebaGridSpan.auto` is as wide as what is in the cell — an avatar, a chip, a button at the end of a row — and `NebaGridSpan.grow` is that plus everything the row has left over, which is how a title sits between the two.
+
+:::
+
+::: fw react
 
 Two widths are not a share of twelve. `span="auto"` is as wide as what is in the cell — an avatar, a chip, a button at the end of a row — and `span="grow"` is that plus everything the row has left over, which is how a title sits between the two.
 
@@ -56,13 +105,27 @@ Both mix with numbers in one responsive map — the contents' width on a phone, 
 <Grid span={{ xs: 'auto', md: 4 }}>Reference</Grid>
 ```
 
+:::
+
 <Demo src="grid/auto-grow">
 
+::: fw react
+
 <<< @/.vitepress/demos/grid/auto-grow.tsx
+
+:::
 
 </Demo>
 
 ### breakpoints
+
+::: fw flutter
+
+The Flutter widgets take no per-breakpoint maps. A layout that changes with the width reads it with `MediaQuery.sizeOf(context)` and passes the spans for it.
+
+:::
+
+:::: fw react
 
 Give `span` an object and it uses a different value per width. Every entry applies **from its own breakpoint up** (it is a floor, not a band), which is what makes two of them enough to describe a whole layout.
 
@@ -72,9 +135,15 @@ The widths are Tailwind's own defaults: `sm` 40rem · `md` 48rem · `lg` 64rem �
 
 <Demo src="grid/responsive">
 
+::: fw react
+
 <<< @/.vitepress/demos/grid/responsive.tsx
 
+:::
+
 </Demo>
+
+::::
 
 ### spacing · rowSpacing · columnSpacing
 
@@ -84,7 +153,17 @@ The widths are Tailwind's own defaults: `sm` 40rem · `md` 48rem · `lg` 64rem �
 
 <Demo src="grid/spacing">
 
+::: fw react
+
 <<< @/.vitepress/demos/grid/spacing.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/grid/spacing.dart
+
+:::
 
 </Demo>
 
@@ -94,7 +173,17 @@ The column count. Twelve is the default, but it does not divide by five, so valu
 
 <Demo src="grid/columns">
 
+::: fw react
+
 <<< @/.vitepress/demos/grid/columns.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/grid/columns.dart
+
+:::
 
 </Demo>
 
@@ -104,7 +193,17 @@ Empty columns pushed in **ahead of** the item: space inserted in front of it rat
 
 <Demo src="grid/offset">
 
+::: fw react
+
 <<< @/.vitepress/demos/grid/offset.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/grid/offset.dart
+
+:::
 
 </Demo>
 
@@ -116,7 +215,17 @@ The values are `start` / `center` / `end`, which flip under RTL. Distribution va
 
 <Demo src="grid/alignment">
 
+::: fw react
+
 <<< @/.vitepress/demos/grid/alignment.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/grid/alignment.dart
+
+:::
 
 </Demo>
 
@@ -128,7 +237,17 @@ The values are `start` / `center` / `end`, which flip under RTL. Distribution va
 
 <Demo src="grid/padding">
 
+::: fw react
+
 <<< @/.vitepress/demos/grid/padding.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/grid/padding.dart
+
+:::
 
 </Demo>
 
@@ -138,6 +257,16 @@ A grid inside a grid is a `GridContainer` inside a `Grid`. The inner grid re-div
 
 <Demo src="grid/nested">
 
+::: fw react
+
 <<< @/.vitepress/demos/grid/nested.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/grid/nested.dart
+
+:::
 
 </Demo>

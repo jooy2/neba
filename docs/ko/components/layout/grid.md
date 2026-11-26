@@ -1,6 +1,7 @@
 ---
 title: Grid
 order: 6
+flutter: true
 ---
 
 # Grid
@@ -8,6 +9,8 @@ order: 6
 <p class="neba-lede">12칸을 기준으로 하는 반응형 레이아웃입니다. <code>GridContainer</code>가 칸 수와 gutter를 정하고, <code>Grid</code>가 그중 몇 칸을 차지할지 정합니다.</p>
 
 <Demo src="grid/hero" />
+
+::: fw react
 
 ```tsx
 import { Grid, GridContainer } from 'neba';
@@ -17,6 +20,24 @@ import { Grid, GridContainer } from 'neba';
   <Grid span={{ xs: 12, md: 4 }}>사이드바</Grid>
 </GridContainer>;
 ```
+
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+NebaGridContainer(
+  spacing: 3,
+  children: <Widget>[
+    NebaGrid(span: NebaGridSpan.columns(8), child: body),
+    NebaGrid(span: NebaGridSpan.columns(4), child: sidebar),
+  ],
+);
+```
+
+:::
 
 `GridContainer`는 표면을 그리지 않으므로 `variant` · `color` · `elevation`이 없습니다. sheet가 필요하면 [Box](../surfaces/box)나 [Card](../surfaces/card)로 감싸세요.
 
@@ -30,23 +51,51 @@ import { Grid, GridContainer } from 'neba';
 
 <PropsTable name="Grid" />
 
+::: fw react
+
 두 컴포넌트 모두 `<div>`의 native 속성을 그대로 전달합니다.
+
+:::
+
+::: fw flutter
+
+`NebaGrid`는 `NebaGridContainer`의 직접 자식이어야 합니다. 담긴 값을 그리는 것이 아니라 컨테이너의 레이아웃이 읽기 때문입니다.
+
+:::
 
 ## 예시
 
 ### span
 
-`span`은 컨테이너의 칸 수에 대한 값입니다. 기본 12칸에서 `span={6}`은 절반이고, `columns={24}`라면 같은 `6`이 4분의 1입니다.
+`span`은 컨테이너의 칸 수에 대한 값입니다. 기본 12칸에서 <Fw react="`span={6}`" flutter="`NebaGridSpan.columns(6)`" />은 절반이고, <Fw react="`columns={24}`" flutter="`columns: 24`" />라면 같은 `6`이 4분의 1입니다.
 
 너비는 `(100% + gutter) × span / columns − gutter`로 계산되므로, `span={1}` 열두 개와 `span={12}` 하나가 정확히 같은 지점에서 끝납니다.
 
 <Demo src="grid/spans">
 
+::: fw react
+
 <<< @/.vitepress/demos/grid/spans.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/grid/spans.dart
+
+:::
 
 </Demo>
 
 ### auto · grow
+
+::: fw flutter
+
+12칸으로 나눌 수 없는 너비가 둘 있습니다. `NebaGridSpan.auto`는 칸에 든 내용만큼의 너비이고(줄 끝의 아바타, chip, 버튼), `NebaGridSpan.grow`는 거기에 줄에 남은 공간을 더한 너비입니다. 아이콘과 액션 사이에 놓이는 제목이 후자입니다.
+
+:::
+
+::: fw react
 
 12칸으로 나눌 수 없는 너비가 둘 있습니다. `span="auto"`는 칸에 든 내용만큼의 너비이고(줄 끝의 아바타, chip, 버튼), `span="grow"`는 거기에 줄에 남은 공간을 더한 너비입니다. 아이콘과 액션 사이에 놓이는 제목이 후자입니다.
 
@@ -56,13 +105,27 @@ import { Grid, GridContainer } from 'neba';
 <Grid span={{ xs: 'auto', md: 4 }}>참조</Grid>
 ```
 
+:::
+
 <Demo src="grid/auto-grow">
 
+::: fw react
+
 <<< @/.vitepress/demos/grid/auto-grow.tsx
+
+:::
 
 </Demo>
 
 ### breakpoint
+
+::: fw flutter
+
+Flutter 위젯은 breakpoint별 map을 받지 않습니다. 너비에 따라 바뀌는 레이아웃은 `MediaQuery.sizeOf(context)`로 너비를 읽어 그에 맞는 span을 넘기면 됩니다.
+
+:::
+
+:::: fw react
 
 `span`에 객체를 주면 폭마다 다른 값을 적용합니다. 각 항목은 **그 breakpoint 이상**에 적용되는 하한이므로 두 개만 적어도 레이아웃 하나가 정의됩니다.
 
@@ -72,9 +135,15 @@ import { Grid, GridContainer } from 'neba';
 
 <Demo src="grid/responsive">
 
+::: fw react
+
 <<< @/.vitepress/demos/grid/responsive.tsx
 
+:::
+
 </Demo>
+
+::::
 
 ### spacing · rowSpacing · columnSpacing
 
@@ -84,7 +153,17 @@ import { Grid, GridContainer } from 'neba';
 
 <Demo src="grid/spacing">
 
+::: fw react
+
 <<< @/.vitepress/demos/grid/spacing.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/grid/spacing.dart
+
+:::
 
 </Demo>
 
@@ -94,7 +173,17 @@ import { Grid, GridContainer } from 'neba';
 
 <Demo src="grid/columns">
 
+::: fw react
+
 <<< @/.vitepress/demos/grid/columns.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/grid/columns.dart
+
+:::
 
 </Demo>
 
@@ -104,7 +193,17 @@ import { Grid, GridContainer } from 'neba';
 
 <Demo src="grid/offset">
 
+::: fw react
+
 <<< @/.vitepress/demos/grid/offset.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/grid/offset.dart
+
+:::
 
 </Demo>
 
@@ -116,7 +215,17 @@ import { Grid, GridContainer } from 'neba';
 
 <Demo src="grid/alignment">
 
+::: fw react
+
 <<< @/.vitepress/demos/grid/alignment.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/grid/alignment.dart
+
+:::
 
 </Demo>
 
@@ -128,7 +237,17 @@ import { Grid, GridContainer } from 'neba';
 
 <Demo src="grid/padding">
 
+::: fw react
+
 <<< @/.vitepress/demos/grid/padding.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/grid/padding.dart
+
+:::
 
 </Demo>
 
@@ -138,6 +257,16 @@ grid 안의 grid는 `Grid` 안에 `GridContainer`를 넣는 형태입니다. 안
 
 <Demo src="grid/nested">
 
+::: fw react
+
 <<< @/.vitepress/demos/grid/nested.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/grid/nested.dart
+
+:::
 
 </Demo>

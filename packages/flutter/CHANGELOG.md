@@ -21,3 +21,5 @@ The changes to `neba` on pub.dev, the Flutter package. The React package keeps i
 - **`NebaBox`**, the plainest sheet: `solid`, `outline` and `text`, its corners and padding on the size ladder, a hairline in the colour's family and a sheet that stays undyed, and an elevation from 0 to 3.
 
 - **`NebaContainer`**, the gutters around a page's content: padding on `NebaBox`'s steps, a `maxWidth` held to the measure ladder or a width of your own, centred or at the start. `NebaMeasure` is the shared type for that width, the React package's `NebaMeasure` without the CSS lengths.
+
+- **`NebaGridContainer` and `NebaGrid`**, the twelve-column layout: a row that wraps, items that span a number of columns so the gutters line up from row to row, `NebaGridSpan.auto` and `NebaGridSpan.grow` for the widths a column count cannot reach, offsets of whole columns, and the row's `justifyContent`, `alignItems` and `alignContent` with an item's own `alignSelf`. `NebaJustifyContent`, `NebaAlignItems` and `NebaAlignSelf` join the shared types. A per-breakpoint map is the React package's alone.
