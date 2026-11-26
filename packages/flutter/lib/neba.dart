@@ -23,6 +23,7 @@
 library;
 
 export 'src/components/box/neba_box.dart';
+export 'src/components/container/neba_container.dart';
 export 'src/components/provider/neba_provider.dart';
 export 'src/theme/scale.dart';
 export 'src/theme/theme.dart';

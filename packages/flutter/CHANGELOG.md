@@ -19,3 +19,5 @@ The changes to `neba` on pub.dev, the Flutter package. The React package keeps i
 - **The chart and code palettes.** `NebaTokens.chart` holds the eight series colours in the order they are handed out, the sequential and diverging ramps, and the ink a label wears on each colour as a `NebaInkTone`, so a product that changes `fg` or `surface` carries the labels along. `chartGrid`, `chartAxis`, `chartBaseline` and `chartGap` are a chart's chrome, and `NebaTokens.code` is a code block's `auto` palette. All of them are the React stylesheet's values, held to it by the same test as the rest.
 
 - **`NebaBox`**, the plainest sheet: `solid`, `outline` and `text`, its corners and padding on the size ladder, a hairline in the colour's family and a sheet that stays undyed, and an elevation from 0 to 3.
+
+- **`NebaContainer`**, the gutters around a page's content: padding on `NebaBox`'s steps, a `maxWidth` held to the measure ladder or a width of your own, centred or at the start. `NebaMeasure` is the shared type for that width, the React package's `NebaMeasure` without the CSS lengths.

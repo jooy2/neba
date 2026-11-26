@@ -10,6 +10,8 @@
 /// React's density `'default'` is [NebaDensity.standard] here.
 library;
 
+import 'package:flutter/foundation.dart';
+
 /// Scale of a component. [md] is the desktop default.
 ///
 /// A control's height at each step is 22, 26, 32, 40 and 48 logical pixels;
@@ -180,3 +182,54 @@ const NebaElevation nebaElevationMin = 0;
 
 /// The highest [NebaElevation] a caller may ask for.
 const NebaElevation nebaElevationMax = 3;
+
+/// How wide something may grow: a step of the measure ladder, a width in
+/// logical pixels, or no limit at all.
+///
+/// The React package's `NebaMeasure`, which also takes any CSS length; Dart
+/// has no CSS, so a length of your own is [NebaMeasure.width].
+@immutable
+class NebaMeasure {
+  /// A step of the measure ladder: `xs` 480, `sm` 640, `md` 768, `lg` 1024
+  /// and `xl` 1280 logical pixels. The four upper steps are the breakpoint
+  /// floors.
+  const NebaMeasure.size(NebaSize this.size) : width = null;
+
+  /// A width of your own, in logical pixels.
+  const NebaMeasure.width(double this.width) : size = null;
+
+  const NebaMeasure._none() : size = null, width = null;
+
+  /// No limit.
+  static const NebaMeasure none = NebaMeasure._none();
+
+  /// The step this measure is, if it is one.
+  final NebaSize? size;
+
+  /// The width this measure is, if it is one of your own.
+  final double? width;
+
+  /// The measure ladder, the React package's `measureWidths`.
+  static const Map<NebaSize, double> ladder = <NebaSize, double>{
+    NebaSize.xs: 480,
+    NebaSize.sm: 640,
+    NebaSize.md: 768,
+    NebaSize.lg: 1024,
+    NebaSize.xl: 1280,
+  };
+
+  /// The widest this measure lets something be; infinite for [none].
+  double get maxWidth {
+    final NebaSize? step = size;
+
+    return step != null ? ladder[step]! : width ?? double.infinity;
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is NebaMeasure && other.size == size && other.width == width;
+  }
+
+  @override
+  int get hashCode => Object.hash(size, width);
+}

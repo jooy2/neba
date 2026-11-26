@@ -1,6 +1,7 @@
 ---
 title: Container
 order: 5
+flutter: true
 ---
 
 # Container
@@ -9,17 +10,41 @@ order: 5
 
 <Demo src="container/hero" />
 
+::: fw react
+
 ```tsx
 import { Container } from 'neba';
 
 <Container>내용</Container>;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+const NebaContainer(child: Text('Content'));
+```
+
+:::
+
 ## Props
 
 <PropsTable name="Container" />
 
+::: fw react
+
 `<div>`의 native 속성은 그대로 전달됩니다.
+
+:::
+
+::: fw flutter
+
+`className`과 `style`은 받지 않습니다.
+
+:::
 
 표면을 그리지 않으므로 `variant`나 `color`, `elevation`이 없습니다. sheet가 필요하면 안에 [Box](../surfaces/box)나 [Card](../surfaces/card)를 넣으세요.
 
@@ -35,11 +60,23 @@ import { Container } from 'neba';
 
 <Demo src="container/max-width">
 
+::: fw react
+
 <<< @/.vitepress/demos/container/max-width.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/container/max_width.dart
+
+:::
 
 </Demo>
 
 ### 직접 쓴 길이
+
+::: fw react
 
 사다리의 단계가 아닌 값은 `max-width`에 그대로 전달됩니다. 사다리에 없는 폭이 필요해도 따로 빠져나갈 길이 필요 없다는 뜻입니다. 숫자는 px입니다.
 
@@ -49,23 +86,73 @@ import { Container } from 'neba';
 <Container maxWidth={640}>…</Container>
 ```
 
+:::
+
+::: fw flutter
+
+사다리에 없는 폭은 논리 픽셀 단위의 `NebaMeasure.width`로 줍니다. 사다리의 단계는 `NebaMeasure.size`, 제한 없음은 `NebaMeasure.none`입니다.
+
+```dart
+const NebaContainer(maxWidth: NebaMeasure.width(640), child: page);
+```
+
+:::
+
 ### breakpoint에 따라 바꾸기
+
+::: fw flutter
+
+Flutter 패키지의 위젯은 breakpoint별 map을 받지 않습니다. 너비에 따라 measure가 바뀌는 페이지는 `MediaQuery.sizeOf(context)`로 너비를 읽어 그에 맞는 `maxWidth`를 넘기면 됩니다.
+
+:::
+
+::: fw react
 
 `maxWidth`는 breakpoint별 map을 받고, 각 항목은 자기 breakpoint부터 위로 적용됩니다. 그래서 두 개면 페이지 하나를 다 설명합니다. [Header](./header)와 [Footer](./footer)도 같은 prop을 같은 모양으로 받으며, 바와 그 아래 내용이 같은 가장자리에 서는 것이 그 방식입니다.
 
+:::
+
+:::: fw react
+
 <Demo src="container/responsive">
+
+::: fw react
 
 <<< @/.vitepress/demos/container/responsive.tsx
 
+:::
+
 </Demo>
 
-### padded · centered · render
+::::
+
+### <Fw react="padded · centered · render" flutter="padded · centered" />
+
+::: fw react
 
 세 prop은 서로 독립적입니다. `padded={false}`는 가운데 정렬과 너비 제한을 유지한 채 여백만 끄고, `centered={false}`는 그 반대입니다. `render`로 감싸는 요소를 바꿀 수 있으므로 페이지의 `<main>`으로 렌더링할 수 있습니다.
 
+:::
+
+::: fw flutter
+
+두 인자는 서로 독립적입니다. `padded: false`는 가운데 정렬과 너비 제한을 유지한 채 여백만 끄고, `centered: false`는 그 반대입니다.
+
+:::
+
 <Demo src="container/plain">
 
+::: fw react
+
 <<< @/.vitepress/demos/container/plain.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/container/plain.dart
+
+:::
 
 </Demo>
 
@@ -77,6 +164,8 @@ import { Container } from 'neba';
 
 바깥은 여백과 최대 너비, 안쪽은 칸 나누기를 담당합니다. 안쪽 Grid는 이미 여백이 있는 요소 안에 들어가므로 `padded={false}`로 둡니다.
 
+::: fw react
+
 ```tsx
 <Container maxWidth="lg">
   <GridContainer spacing={3} padded={false}>
@@ -85,3 +174,5 @@ import { Container } from 'neba';
   </GridContainer>
 </Container>
 ```
+
+:::

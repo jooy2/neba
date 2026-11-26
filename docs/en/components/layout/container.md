@@ -1,6 +1,7 @@
 ---
 title: Container
 order: 5
+flutter: true
 ---
 
 # Container
@@ -9,17 +10,41 @@ order: 5
 
 <Demo src="container/hero" />
 
+::: fw react
+
 ```tsx
 import { Container } from 'neba';
 
 <Container>Content</Container>;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+const NebaContainer(child: Text('Content'));
+```
+
+:::
+
 ## Props
 
 <PropsTable name="Container" />
 
+::: fw react
+
 Every native `<div>` attribute passes through.
+
+:::
+
+::: fw flutter
+
+It takes no `className` or `style`.
+
+:::
 
 It draws no surface, so there is no `variant`, `color` or `elevation`. Put a [Box](../surfaces/box) or a [Card](../surfaces/card) inside when a sheet is wanted.
 
@@ -35,11 +60,23 @@ Given a value it takes a step of the measure ladder: `xs` 30rem, `sm` 40rem, `md
 
 <Demo src="container/max-width">
 
+::: fw react
+
 <<< @/.vitepress/demos/container/max-width.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/container/max_width.dart
+
+:::
 
 </Demo>
 
 ### A length of your own
+
+::: fw react
 
 Anything that is not a step of the ladder is passed to `max-width` untouched, so a measure the ladder does not have needs no escape hatch. A number is pixels.
 
@@ -49,23 +86,73 @@ Anything that is not a step of the ladder is passed to `max-width` untouched, so
 <Container maxWidth={640}>…</Container>
 ```
 
+:::
+
+::: fw flutter
+
+A width the ladder does not have is `NebaMeasure.width`, in logical pixels; a step of it is `NebaMeasure.size`, and no limit is `NebaMeasure.none`.
+
+```dart
+const NebaContainer(maxWidth: NebaMeasure.width(640), child: page);
+```
+
+:::
+
 ### Changing at a breakpoint
+
+::: fw flutter
+
+The Flutter package's widgets take no per-breakpoint maps. A page that changes its measure with the width reads the width with `MediaQuery.sizeOf(context)` and passes the `maxWidth` for it.
+
+:::
+
+::: fw react
 
 `maxWidth` takes a per-breakpoint map, and every entry applies from its own breakpoint up, so two of them describe a whole page. [Header](./header) and [Footer](./footer) take the same prop in the same shape, which is how a bar and the content under it stay on one edge.
 
+:::
+
+:::: fw react
+
 <Demo src="container/responsive">
+
+::: fw react
 
 <<< @/.vitepress/demos/container/responsive.tsx
 
+:::
+
 </Demo>
 
-### padded · centered · render
+::::
+
+### <Fw react="padded · centered · render" flutter="padded · centered" />
+
+::: fw react
 
 The three are independent. `padded={false}` keeps the centring and the width limit and drops only the gutters; `centered={false}` does the opposite. `render` changes the element, so a Container can be a page's real `<main>`.
 
+:::
+
+::: fw flutter
+
+The two are independent. `padded: false` keeps the centring and the width limit and drops only the gutters; `centered: false` does the opposite.
+
+:::
+
 <Demo src="container/plain">
 
+::: fw react
+
 <<< @/.vitepress/demos/container/plain.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/container/plain.dart
+
+:::
 
 </Demo>
 
@@ -77,6 +164,8 @@ These set how wide the gutters are. It uses [Box](../surfaces/box)'s steps, and 
 
 The gutters and the width limit outside, the columns inside. The inner grid is `padded={false}`, because it already sits in something that pads.
 
+::: fw react
+
 ```tsx
 <Container maxWidth="lg">
   <GridContainer spacing={3} padded={false}>
@@ -85,3 +174,5 @@ The gutters and the width limit outside, the columns inside. The inner grid is `
   </GridContainer>
 </Container>
 ```
+
+:::

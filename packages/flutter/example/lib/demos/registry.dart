@@ -12,6 +12,9 @@ import 'package:neba_example/demos/box/hero.dart';
 import 'package:neba_example/demos/box/sizes.dart';
 import 'package:neba_example/demos/box/unpadded.dart';
 import 'package:neba_example/demos/box/variants.dart';
+import 'package:neba_example/demos/container/hero.dart';
+import 'package:neba_example/demos/container/max_width.dart';
+import 'package:neba_example/demos/container/plain.dart';
 import 'package:neba_example/demos/tokens/palette.dart';
 
 /// The demos, by key.
@@ -22,5 +25,8 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'box/sizes': BoxSizes.new,
   'box/unpadded': BoxUnpadded.new,
   'box/variants': BoxVariants.new,
+  'container/hero': ContainerHero.new,
+  'container/max-width': ContainerMaxWidth.new,
+  'container/plain': ContainerPlain.new,
   'tokens/palette': TokensPalette.new,
 };
