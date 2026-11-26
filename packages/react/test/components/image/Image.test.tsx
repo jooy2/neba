@@ -13,6 +13,8 @@ import { render } from 'vitest-browser-react';
 import { userEvent } from 'vitest/browser';
 import { Image } from 'neba';
 import { previewChunk } from '../../../src/components/image/Image.js';
+// One of the docs' own photographs, served over the network by the test server.
+import alpineLake from '../../../../../docs/public/samples/photos/alpine-lake-dawn.jpg?url';
 
 const OK = 'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==';
 const BROKEN = 'data:image/gif;base64,not-a-picture';
@@ -166,9 +168,7 @@ describe('Image', () => {
     // already decoded by the time the component looks, and that path never
     // reaches the `load` listener this is about.
     const onLoad = vi.fn();
-    const screen = await render(
-      <Image src="/docs/public/samples/photos/alpine-lake-dawn.jpg" alt="A lake" onLoad={onLoad} />
-    );
+    const screen = await render(<Image src={alpineLake} alt="A lake" onLoad={onLoad} />);
 
     await vi.waitFor(() => expect(onLoad).toHaveBeenCalled());
     await expect.element(screen.getByRole('img', { name: 'A lake' })).toHaveClass('opacity-100');
@@ -180,7 +180,7 @@ describe('Image', () => {
     const onLoadingStatusChange = vi.fn();
     await render(
       <Image
-        src="/docs/public/samples/photos/alpine-lake-dawn.jpg?status"
+        src={`${alpineLake}${alpineLake.includes('?') ? '&' : '?'}status`}
         alt="A lake"
         onLoadingStatusChange={onLoadingStatusChange}
       />

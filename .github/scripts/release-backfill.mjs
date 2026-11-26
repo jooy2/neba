@@ -2,9 +2,9 @@
  * GitHub releases for version tags that were pushed before `release.yml`
  * existed.
  *
- *   node scripts/release-backfill.mjs v1.16.2
- *   node scripts/release-backfill.mjs all
- *   node scripts/release-backfill.mjs all --dry-run
+ *   node .github/scripts/release-backfill.mjs v1.16.2
+ *   node .github/scripts/release-backfill.mjs all
+ *   node .github/scripts/release-backfill.mjs all --dry-run
  *
  * A tag push runs the workflow file of the commit it points at, and the
  * commits of 1.16.2 and every version before it have none — so their tags
@@ -34,7 +34,7 @@ import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const args = process.argv.slice(2);
 const dryRun = args.includes('--dry-run');
 const target = args.find((one) => !one.startsWith('--'));
@@ -43,7 +43,7 @@ if (!target) {
   throw new Error('release-backfill: name a tag such as v1.16.2, or "all"');
 }
 
-const { name } = JSON.parse(readFileSync(resolve(root, 'package.json'), 'utf8'));
+const { name } = JSON.parse(readFileSync(resolve(root, 'packages/react/package.json'), 'utf8'));
 const work = mkdtempSync(join(process.env.RUNNER_TEMP ?? tmpdir(), 'release-backfill-'));
 
 /** A command's result, with its output kept rather than printed. */
@@ -122,7 +122,7 @@ for (const tag of tags) {
       continue;
     }
 
-    const notes = run(process.execPath, [resolve(root, 'scripts/release-notes.mjs'), version]);
+    const notes = run(process.execPath, [resolve(root, '.github/scripts/release-notes.mjs'), `v${version}`]);
 
     if (!notes.ok) {
       throw new Error(

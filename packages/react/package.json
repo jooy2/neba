@@ -12,7 +12,8 @@
   "homepage": "https://neba.cdget.com",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jooy2/neba.git"
+    "url": "git+https://github.com/jooy2/neba.git",
+    "directory": "packages/react"
   },
   "bugs": {
     "url": "https://github.com/jooy2/neba/issues"
@@ -29,14 +30,9 @@
     "prepare": "npm run build",
     "format": "prettier .",
     "format:fix": "prettier . --write",
-    "docs:changelog": "node scripts/copy-changelog.mjs",
-    "docs:dev": "npm run docs:changelog && npm run docs:catalog && vitepress dev docs",
-    "docs:build": "npm run docs:changelog && npm run docs:catalog && node --max-old-space-size=8192 ./node_modules/vitepress/bin/vitepress.js build docs",
-    "docs:serve": "npm run docs:build && vitepress serve docs",
     "test": "node scripts/run-tests.mjs",
     "test:watch": "vitest",
-    "typecheck": "tsc --project tsconfig.prod.json --noEmit && tsc --project test/tsconfig.json && tsc --project docs/tsconfig.json",
-    "docs:catalog": "node scripts/build-catalog.mjs --docs"
+    "typecheck": "tsc --project tsconfig.prod.json --noEmit && tsc --project test/tsconfig.json"
   },
   "engines": {
     "node": ">=18.20.0"
@@ -187,9 +183,6 @@
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.72.2",
     "vite": "^8.3.7",
-    "vitepress": "^1.6.4",
-    "vitepress-i18n": "^1.5.0",
-    "vitepress-sidebar": "^1.41.0",
     "vitest": "^5.1.0",
     "vitest-browser-react": "^2.3.0",
     "zod": "^3.25.76"

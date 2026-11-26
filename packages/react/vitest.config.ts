@@ -63,6 +63,11 @@ export default defineConfig({
   optimizeDeps: {
     include: ['react-dom/client', '@a2ui/react/v0_9', '@a2ui/web_core/v0_9']
   },
+  // A test that needs a real file over the network takes one of the docs'
+  // sample pictures, which live outside this package.
+  server: {
+    fs: { allow: [rootDir, resolve(rootDir, '../../docs/public')] }
+  },
   test: {
     include: ['test/**/*.test.{ts,tsx}'],
     // Gives each file's document the focus before it starts; it says why.

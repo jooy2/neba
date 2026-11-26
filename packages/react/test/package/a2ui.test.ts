@@ -218,10 +218,10 @@ describe('the A2UI catalog', () => {
       expect(keys.indexOf('./a2ui/catalog.json')).toBeLessThan(keys.indexOf('./*'));
     });
 
-    it('is copied into `dist/` by the build, and into the docs site beside it', () => {
+    // The docs site is a project of its own and runs `--docs` from there, so
+    // its half of the wiring is checked by building the site, not here.
+    it('is copied into `dist/` by the build', () => {
       expect(pkg.scripts.build).toContain('node scripts/build-catalog.mjs');
-      expect(pkg.scripts['docs:build']).toContain('npm run docs:catalog');
-      expect(pkg.scripts['docs:dev']).toContain('npm run docs:catalog');
     });
   });
 });

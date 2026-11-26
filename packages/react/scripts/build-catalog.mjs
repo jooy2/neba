@@ -19,7 +19,7 @@
  * The docs copies are generated rather than committed, for `copy-changelog.mjs`'
  * reason: two files that say the same thing say it until the day one of them
  * does not. The exception is a released minor: `--release` writes a snapshot to
- * `docs/a2ui/<major>.<minor>.json`, which is committed with the release, and
+ * `docs/a2ui/<major>.<minor>.json` at the repository root, which is committed with the release, and
  * `--docs` serves every snapshot at its own path, so a minor's URL keeps
  * answering with what that minor shipped after the site has moved on. That
  * includes the minor `package.json` still names: between a release and the
@@ -38,8 +38,12 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+// The documentation site is a project of its own at the repository root, and
+// it is what serves the catalog, so its copies and the released snapshots are
+// written there rather than under this package.
+const site = resolve(root, '../../docs');
 const source = resolve(root, 'src/a2ui/catalog.json');
-const releases = resolve(root, 'docs/a2ui');
+const releases = resolve(site, 'a2ui');
 const docs = process.argv.includes('--docs');
 const release = process.argv.includes('--release');
 
@@ -93,7 +97,7 @@ if (release) {
   write(resolve(releases, `${minor}.json`), stamped, 2);
   console.log(`a2ui: docs/a2ui/${minor}.json — the snapshot to commit with ${version}`);
 } else if (docs) {
-  const served = resolve(root, 'docs/public/a2ui');
+  const served = resolve(site, 'public/a2ui');
 
   write(resolve(served, 'catalog.json'), stamped, 2);
 

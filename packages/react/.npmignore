@@ -11,8 +11,6 @@ Thumbs.db
 # Project files
 src/
 test/
-docs/
-docs-dist/
 CHANGELOG.md
 CLAUDE.md
 CODE_OF_CONDUCT.md

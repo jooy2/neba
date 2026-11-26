@@ -1,7 +1,13 @@
 /**
- * The body of a GitHub release, cut out of `CHANGELOG.md`.
+ * The body of a GitHub release, cut out of a package's `CHANGELOG.md`.
  *
- *   node scripts/release-notes.mjs 1.17.0 > notes.md
+ *   node .github/scripts/release-notes.mjs react-v1.21.0 > notes.md
+ *   node .github/scripts/release-notes.mjs flutter-v1.21.0 > notes.md
+ *
+ * The argument is the tag, and the prefix names the package: `react-v` reads
+ * `packages/react/CHANGELOG.md`, `flutter-v` reads `packages/flutter/CHANGELOG.md`.
+ * A bare `v1.17.0`, or a bare version, is a React release from before the
+ * repository held two packages, which is how those tags are spelled.
  *
  * The version's own section is the body, whole, from the line under its
  * heading to the next `## `, with a pointer to the full history under it. A
@@ -20,7 +26,7 @@ import { readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const LIMIT = 125000;
 
 /**
@@ -30,20 +36,42 @@ const LIMIT = 125000;
  */
 const size = (text) => Buffer.byteLength(text, 'utf8');
 
-const version = (process.argv[2] ?? '').replace(/^v/, '');
+const tag = process.argv[2] ?? '';
+const [, prefix = '', version = ''] = /^(?:(react|flutter)-)?v?(.*)$/.exec(tag) ?? [];
+const flutter = prefix === 'flutter';
 
 if (!/^\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?$/.test(version)) {
-  throw new Error(`release-notes: "${process.argv[2] ?? ''}" is not a version such as 1.17.0`);
+  throw new Error(
+    `release-notes: "${tag}" is not a tag such as react-v1.21.0 or flutter-v1.21.0`
+  );
 }
 
-const changelog = readFileSync(resolve(root, 'CHANGELOG.md'), 'utf8');
-const pkg = JSON.parse(readFileSync(resolve(root, 'package.json'), 'utf8'));
+/**
+ * Where the package keeps its changelog, and the two addresses the pointer
+ * under the body names. A tag from before the split had everything at the
+ * root, so its changelog link points there.
+ */
+const folder = flutter ? 'packages/flutter' : 'packages/react';
+const manifest = flutter
+  ? Object.fromEntries(
+      readFileSync(resolve(root, folder, 'pubspec.yaml'), 'utf8')
+        .split('\n')
+        .map((line) => /^(homepage|repository): *(\S+)/.exec(line))
+        .filter(Boolean)
+        .map(([, key, value]) => [key, value])
+    )
+  : JSON.parse(readFileSync(resolve(root, folder, 'package.json'), 'utf8'));
+const tagName = prefix ? `${prefix}-v${version}` : `v${version}`;
+const tagged = prefix ? `${folder}/CHANGELOG.md` : 'CHANGELOG.md';
+
+const changelog = readFileSync(resolve(root, folder, 'CHANGELOG.md'), 'utf8');
+const pkg = manifest;
 const lines = changelog.split('\n');
 const escaped = version.replace(/[.+-]/g, (char) => `\\${char}`);
 const start = lines.findIndex((line) => new RegExp(`^## ${escaped}( |$)`).test(line));
 
 if (start === -1) {
-  throw new Error(`release-notes: CHANGELOG.md has no "## ${version}" section`);
+  throw new Error(`release-notes: ${folder}/CHANGELOG.md has no "## ${version}" section`);
 }
 
 if (!/^## \S+ \(\d{4}-\d{2}-\d{2}\)$/.test(lines[start])) {
@@ -69,7 +97,7 @@ const where = [
   pkg.homepage
     ? `[the changelog on the docs site](${pkg.homepage.replace(/\/$/, '')}/changelog)`
     : null,
-  repository ? `[\`CHANGELOG.md\` at this tag](${repository}/blob/v${version}/CHANGELOG.md)` : null
+  repository ? `[\`CHANGELOG.md\` at this tag](${repository}/blob/${tagName}/${tagged})` : null
 ].filter(Boolean);
 const pointer = where.length > 0 ? `Every release is in ${where.join(' and in ')}.` : '';
 
