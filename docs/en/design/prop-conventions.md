@@ -85,6 +85,8 @@ Two components place something on a side of a _region_ rather than of an anchor,
 
 ## Motion
 
+::: fw react
+
 Two vocabularies, and which one you want depends on whether the motion needs a trigger.
 
 `transition` is an entrance, run once on mount (`blink` repeats until its `repeat` says otherwise, since a blink that ran once would be a flicker), on the components that **display** something: Box, Card, Statistic, Alert, Chip, Avatar, Icon, Typography, Blockquote, Empty, Mockup and Stack. A bare effect name is the whole of what most callers want, and the object form is there for the rest.
@@ -130,6 +132,45 @@ Five more go on the eleven whose motion is a `@keyframes` on the element or on t
 `timeline="view"` costs `duration`, `delay`, `repeat` and every `trigger`: a scroll-driven animation has no time in it, and the scroll position is what starts it. Where the browser has no `animation-timeline` the effect falls back to running once on mount.
 
 A `visible`, `hover` or `manual` effect waits on its first frame until the page's script lets it go. Content in the first screen of a page should therefore keep `mount` or take `timeline="view"`, which run from the stylesheet alone. With scripting turned off, a waiting effect is drawn as it ends.
+
+:::
+
+::: fw flutter
+
+`transition` is an entrance, run once when the widget is first built, on the widgets that **display** something. A `blink` repeats until its `repeat` says otherwise, since a blink that ran once would be a flicker. It is a `NebaTransition` with a named constructor per effect, so each effect takes only the settings it reads.
+
+```dart
+enum NebaAnimation { fade, grow, slide, zoom, rotate, blink, reveal }
+```
+
+```dart
+NebaBox(transition: const NebaTransition.fade(), child: content);
+NebaBox(
+  transition: const NebaTransition.slide(
+    from: NebaSide.left,
+    duration: Duration(milliseconds: 500),
+    delay: Duration(milliseconds: 100),
+  ),
+  child: content,
+);
+```
+
+| Setting | The rule |
+| --- | --- |
+| `duration` / `delay` | A `Duration`. Left out, the duration is the effect's own and there is no delay |
+| `curve` | A `Curve`. Defaults to the house one, `NebaScale.ease` |
+| `repeat` | A count, or `double.infinity` |
+| `alternate` | Every other pass runs backwards, so a repeat returns instead of jumping |
+| `scale` | Where `grow` (0.8) or `zoom` (0.4) starts, as a multiple of the size |
+| `from` / `distance` | The edge a `slide` comes from, and how far it travels in logical pixels: the widget's own size when left out |
+| `angle` | How far a `rotate` turns from, in degrees: -180 when left out |
+| `side` | The edge a `reveal` is wiped from |
+
+It is offered on no widget that is pressed. A control that moves under the pointer aiming at it is the one thing the [design language](./design-language) rules out, and a `transition` on a button would be exactly that.
+
+React's `timeline` and `range`, which hand an effect to the scrollbar, have no Flutter counterpart, and the `Animate*` widgets, for a replay, a trigger or your own control, are not in the Flutter package yet.
+
+:::
 
 A reduced-motion preference cuts every effect in the library to its last frame, and none of them is ever the only thing carrying a message.
 

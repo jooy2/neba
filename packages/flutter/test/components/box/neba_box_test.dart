@@ -51,6 +51,22 @@ void main() {
         findsNothing,
       );
     });
+
+    testWidgets('arrives by its transition, sheet and all, and holds still after it', (
+      WidgetTester tester,
+    ) async {
+      await pump(
+        tester,
+        const NebaBox(transition: NebaTransition.fade(), elevation: 2, child: Text('Content')),
+      );
+
+      final Finder fade = find.ancestor(of: find.byType(NebaSheet), matching: find.byType(Opacity));
+      expect(tester.widget<Opacity>(fade.first).opacity, 0);
+
+      await tester.pumpAndSettle();
+      expect(tester.widget<Opacity>(fade.first).opacity, 1);
+      expect(find.text('Content'), findsOneWidget);
+    });
   });
 
   group('style props', () {

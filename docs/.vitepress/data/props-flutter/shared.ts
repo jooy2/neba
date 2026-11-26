@@ -70,6 +70,21 @@ export function elevationRow(component: string, fallback = '0'): PropRow {
   return from(component, 'elevation', { type: `${ELEVATION}?`, default: fallback });
 }
 
+/**
+ * The `transition` row, on every widget that displays rather than acts. The
+ * description is Flutter's own, because React's names its string form and the
+ * `Animate*` components.
+ */
+export function transitionRow(component: string, example = 'const NebaTransition.fade()'): PropRow {
+  return from(component, 'transition', {
+    type: 'NebaTransition?',
+    description: {
+      ko: `처음 빌드될 때 한 번 실행되는 등장 애니메이션 (\`${example}\`). blink는 repeat를 주지 않으면 계속 반복합니다`,
+      en: `An entrance animation, run once when the widget is first built (\`${example}\`). blink repeats unless its repeat says otherwise`
+    }
+  });
+}
+
 /** The name a screen reader announces: React's `aria-label`. */
 export const semanticLabelRow: PropRow = {
   name: 'semanticLabel',

@@ -85,6 +85,8 @@ enum NebaVariant { solid, outline, text }
 
 ## 모션
 
+::: fw react
+
 어휘가 둘이고, 어느 쪽이 필요한지는 그 움직임에 trigger가 필요한지로 갈립니다.
 
 `transition`은 mount 시 한 번 실행되는 등장 효과이며(`blink`는 한 번이면 깜빡임에 그치므로 `repeat`로 따로 정하지 않는 한 계속 반복합니다), 무언가를 **표시하는** 컴포넌트들이 받습니다. Box, Card, Statistic, Alert, Chip, Avatar, Icon, Typography, Blockquote, Empty, Mockup, Stack입니다. 대부분은 효과 이름 하나면 충분하고, 객체 형태는 나머지를 위한 것입니다.
@@ -130,6 +132,45 @@ type NebaTransition = NebaAnimation | NebaTransitionOptions;
 `timeline="view"`를 쓰면 `duration`, `delay`, `repeat`, 그리고 모든 `trigger`가 무시됩니다. 스크롤이 재생하는 애니메이션에는 시간이 들어 있지 않고, 시작시키는 것은 스크롤 위치이기 때문입니다. `animation-timeline`이 없는 브라우저에서는 mount에서 한 번 재생되는 것으로 되돌아갑니다.
 
 `visible`, `hover`, `manual` 효과는 페이지 스크립트가 시작시킬 때까지 첫 프레임에서 기다립니다. 그래서 페이지 첫 화면의 콘텐츠에는 스타일시트만으로 재생되는 `mount`나 `timeline="view"`가 맞습니다. 스크립트를 끈 브라우저에서는 기다리던 효과가 끝난 모습으로 그려집니다.
+
+:::
+
+::: fw flutter
+
+`transition`은 위젯이 처음 빌드될 때 한 번 실행되는 등장 효과이며, 무언가를 **표시하는** 위젯들이 받습니다. `blink`는 한 번이면 깜빡임에 그치므로 `repeat`로 따로 정하지 않는 한 계속 반복합니다. 타입은 `NebaTransition`이고 효과마다 named constructor가 있어, 각 효과는 자기가 읽는 설정만 받습니다.
+
+```dart
+enum NebaAnimation { fade, grow, slide, zoom, rotate, blink, reveal }
+```
+
+```dart
+NebaBox(transition: const NebaTransition.fade(), child: content);
+NebaBox(
+  transition: const NebaTransition.slide(
+    from: NebaSide.left,
+    duration: Duration(milliseconds: 500),
+    delay: Duration(milliseconds: 100),
+  ),
+  child: content,
+);
+```
+
+| 설정 | 규칙 |
+| --- | --- |
+| `duration` / `delay` | `Duration`입니다. 생략하면 재생 시간은 효과 자신의 값이고 지연은 없습니다 |
+| `curve` | `Curve`입니다. 기본값은 라이브러리의 곡선인 `NebaScale.ease` |
+| `repeat` | 횟수 또는 `double.infinity` |
+| `alternate` | 한 번 걸러 거꾸로 재생해, 반복이 처음으로 튀지 않고 되돌아옵니다 |
+| `scale` | `grow`(0.8)나 `zoom`(0.4)이 시작하는 크기의 배율 |
+| `from` / `distance` | `slide`가 들어오는 가장자리와 이동 거리(논리 픽셀). 생략하면 위젯 자신의 크기만큼입니다 |
+| `angle` | `rotate`가 시작하는 각도(도). 생략하면 -180입니다 |
+| `side` | `reveal`이 닦아 내듯 드러나기 시작하는 가장자리 |
+
+눌리는 위젯에는 제공하지 않습니다. [디자인 언어](./design-language)가 포인터 아래에서 컨트롤이 움직이는 것을 금지하는데, 버튼의 `transition`이 정확히 그 동작이 되기 때문입니다.
+
+효과를 스크롤에 맡기는 React의 `timeline`과 `range`는 Flutter에 없고, 다시 재생, trigger, 직접 제어를 맡는 `Animate*` 위젯은 아직 Flutter 패키지에 없습니다.
+
+:::
 
 축소된 모션 설정에서는 라이브러리의 모든 효과가 마지막 프레임으로 바로 넘어갑니다. 어느 효과도 그것만으로 정보를 전달하지 않기 때문입니다.
 

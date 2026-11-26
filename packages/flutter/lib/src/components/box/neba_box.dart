@@ -3,6 +3,7 @@ library;
 
 import 'package:flutter/widgets.dart';
 
+import 'package:neba/src/internal/animate.dart';
 import 'package:neba/src/internal/surface.dart';
 import 'package:neba/src/theme/theme.dart';
 import 'package:neba/src/theme/tokens.dart';
@@ -29,6 +30,7 @@ class NebaBox extends StatelessWidget {
     this.density,
     this.elevation = 0,
     this.padded = true,
+    this.transition,
     this.child,
     super.key,
   }) : assert(elevation >= nebaElevationMin && elevation <= nebaElevationMax);
@@ -55,6 +57,11 @@ class NebaBox extends StatelessWidget {
   /// Whether the sheet pads its content. Off for content that runs to the
   /// edges: a picture, a table, a list that draws its own rows.
   final bool padded;
+
+  /// How the box arrives when it is first built: `const
+  /// NebaTransition.fade()`, or any of the others. The whole sheet moves, its
+  /// shadow with it.
+  final NebaTransition? transition;
 
   /// What is on the sheet.
   final Widget? child;
@@ -97,25 +104,25 @@ class NebaBox extends StatelessWidget {
       content = Padding(padding: EdgeInsets.all(padding[density]![size]!), child: content);
     }
 
-    switch (variant) {
-      case NebaVariant.solid:
-        return NebaSheet(
-          fill: tokens.panelHover,
-          elevation: elevation,
-          borderRadius: radius,
-          child: content,
-        );
-      case NebaVariant.outline:
-        return NebaSheet(
-          fill: tokens.panel,
-          edge: tokens.roles(color).line,
-          plate: NebaPlate.glass,
-          elevation: elevation,
-          borderRadius: radius,
-          child: content,
-        );
-      case NebaVariant.text:
-        return content;
-    }
+    final Widget box = switch (variant) {
+      NebaVariant.solid => NebaSheet(
+        fill: tokens.panelHover,
+        elevation: elevation,
+        borderRadius: radius,
+        child: content,
+      ),
+      NebaVariant.outline => NebaSheet(
+        fill: tokens.panel,
+        edge: tokens.roles(color).line,
+        plate: NebaPlate.glass,
+        elevation: elevation,
+        borderRadius: radius,
+        child: content,
+      ),
+      NebaVariant.text => content,
+    };
+    final NebaTransition? transition = this.transition;
+
+    return transition == null ? box : NebaEntrance(transition: transition, child: box);
   }
 }

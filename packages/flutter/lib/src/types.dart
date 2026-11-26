@@ -10,6 +10,7 @@
 /// React's density `'default'` is [NebaDensity.standard] here.
 library;
 
+import 'package:flutter/animation.dart';
 import 'package:flutter/foundation.dart';
 
 /// Scale of a component. [md] is the desktop default.
@@ -301,4 +302,231 @@ enum NebaAlignSelf {
 
   /// On the row's first baseline.
   baseline,
+}
+
+/// An entrance effect, the React package's `NebaAnimation`.
+///
+/// Each one runs from a start state of its own to the widget as it is laid
+/// out, so the last frame of every effect is the widget untouched.
+enum NebaAnimation {
+  /// From transparent.
+  fade,
+
+  /// From smaller and transparent, by a little: 0.8 of the size.
+  grow,
+
+  /// From one edge, by the widget's own size, and transparent.
+  slide,
+
+  /// From smaller and transparent, by a lot: 0.4 of the size.
+  zoom,
+
+  /// From half a turn back, and transparent.
+  rotate,
+
+  /// To transparent and back, over and over until a repeat count says
+  /// otherwise.
+  blink,
+
+  /// Wiped in from one edge, with no fade.
+  reveal,
+}
+
+/// An entrance on a widget that displays something, run once when it is first
+/// built: the React package's `transition` prop.
+///
+/// A named constructor per effect, so an effect takes only the settings it
+/// reads:
+///
+/// ```dart
+/// NebaBox(transition: const NebaTransition.fade(), child: content);
+/// NebaBox(
+///   transition: const NebaTransition.slide(
+///     from: NebaSide.left,
+///     duration: Duration(milliseconds: 500),
+///     delay: Duration(milliseconds: 100),
+///   ),
+///   child: content,
+/// );
+/// ```
+///
+/// It is offered on no widget that is pressed: a control that moves under the
+/// pointer aiming at it is what the design language rules out. A reader who
+/// asked the platform for less motion sees the last frame at once.
+///
+/// React's `timeline` and `range`, which hand the effect to the scrollbar, are
+/// the React package's alone.
+@immutable
+class NebaTransition {
+  /// A fade in.
+  const NebaTransition.fade({
+    this.duration,
+    this.delay = Duration.zero,
+    this.curve,
+    this.repeat,
+    this.alternate = false,
+  }) : type = NebaAnimation.fade,
+       scale = null,
+       from = null,
+       distance = null,
+       angle = null,
+       side = null;
+
+  /// A grow in, from [scale] of the size.
+  const NebaTransition.grow({
+    this.scale = 0.8,
+    this.duration,
+    this.delay = Duration.zero,
+    this.curve,
+    this.repeat,
+    this.alternate = false,
+  }) : type = NebaAnimation.grow,
+       from = null,
+       distance = null,
+       angle = null,
+       side = null;
+
+  /// A slide in from the edge [from], by [distance] logical pixels, or by the
+  /// widget's own size along that axis when [distance] is left out.
+  const NebaTransition.slide({
+    this.from = NebaSide.bottom,
+    this.distance,
+    this.duration,
+    this.delay = Duration.zero,
+    this.curve,
+    this.repeat,
+    this.alternate = false,
+  }) : type = NebaAnimation.slide,
+       scale = null,
+       angle = null,
+       side = null;
+
+  /// A zoom in, from [scale] of the size.
+  const NebaTransition.zoom({
+    this.scale = 0.4,
+    this.duration,
+    this.delay = Duration.zero,
+    this.curve,
+    this.repeat,
+    this.alternate = false,
+  }) : type = NebaAnimation.zoom,
+       from = null,
+       distance = null,
+       angle = null,
+       side = null;
+
+  /// A turn in, from [angle] degrees.
+  const NebaTransition.rotate({
+    this.angle = -180,
+    this.duration,
+    this.delay = Duration.zero,
+    this.curve,
+    this.repeat,
+    this.alternate = false,
+  }) : type = NebaAnimation.rotate,
+       scale = null,
+       from = null,
+       distance = null,
+       side = null;
+
+  /// A blink, which repeats until [repeat] says otherwise: a blink that ran
+  /// once would be a flicker. One blink never takes less than 334
+  /// milliseconds, since more than three flashes a second is what WCAG 2.3.1
+  /// rules out.
+  const NebaTransition.blink({
+    this.duration,
+    this.delay = Duration.zero,
+    this.curve,
+    this.repeat,
+    this.alternate = false,
+  }) : type = NebaAnimation.blink,
+       scale = null,
+       from = null,
+       distance = null,
+       angle = null,
+       side = null;
+
+  /// A wipe in from the edge [side].
+  const NebaTransition.reveal({
+    this.side = NebaSide.left,
+    this.duration,
+    this.delay = Duration.zero,
+    this.curve,
+    this.repeat,
+    this.alternate = false,
+  }) : type = NebaAnimation.reveal,
+       scale = null,
+       from = null,
+       distance = null,
+       angle = null;
+
+  /// Which effect.
+  final NebaAnimation type;
+
+  /// How long one run takes. Left out, it is the effect's own: 320
+  /// milliseconds for a fade, 340 for a grow or a zoom, 380 for a slide, 460
+  /// for a rotate, 900 for one blink and 620 for a reveal.
+  final Duration? duration;
+
+  /// How long the first frame is held before it starts.
+  final Duration delay;
+
+  /// The easing. Left out, it is the house curve, `NebaScale.ease`.
+  final Curve? curve;
+
+  /// How many times it runs; `double.infinity` runs it until the widget goes.
+  /// Left out, it is once, and forever for a blink.
+  final num? repeat;
+
+  /// Runs every other pass backwards, so a repeat returns instead of jumping.
+  final bool alternate;
+
+  /// Where a grow or a zoom starts, as a multiple of the final size.
+  final double? scale;
+
+  /// The edge a slide comes from. Physical, so it does not flip under RTL.
+  final NebaSide? from;
+
+  /// How far a slide travels, in logical pixels; the widget's own size when
+  /// it is `null`.
+  final double? distance;
+
+  /// How far a rotate turns from, in degrees.
+  final double? angle;
+
+  /// The edge a reveal is wiped from. Physical, so it does not flip under RTL.
+  final NebaSide? side;
+
+  @override
+  bool operator ==(Object other) {
+    return other is NebaTransition &&
+        other.type == type &&
+        other.duration == duration &&
+        other.delay == delay &&
+        other.curve == curve &&
+        other.repeat == repeat &&
+        other.alternate == alternate &&
+        other.scale == scale &&
+        other.from == from &&
+        other.distance == distance &&
+        other.angle == angle &&
+        other.side == side;
+  }
+
+  @override
+  int get hashCode {
+    return Object.hash(
+      type,
+      duration,
+      delay,
+      curve,
+      repeat,
+      alternate,
+      scale,
+      from,
+      distance,
+      angle,
+      side,
+    );
+  }
 }

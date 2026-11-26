@@ -4,6 +4,7 @@ import {
   from,
   renamed,
   sizeRow,
+  transitionRow,
   variantRow,
   WIDGET,
   type PropRow
@@ -17,6 +18,7 @@ export default {
     densityRow('Box'),
     elevationRow('Box'),
     from('Box', 'padded', { type: 'bool' }),
+    transitionRow('Box'),
     renamed('Box', 'children', 'child', { type: `${WIDGET}?` })
   ]
 } satisfies Record<string, PropRow[]>;
