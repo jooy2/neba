@@ -24,6 +24,7 @@ library;
 
 export 'src/components/box/neba_box.dart';
 export 'src/components/container/neba_container.dart';
+export 'src/components/flex/neba_flex.dart';
 export 'src/components/grid/neba_grid.dart';
 export 'src/components/grid_container/neba_grid_container.dart';
 export 'src/components/provider/neba_provider.dart';

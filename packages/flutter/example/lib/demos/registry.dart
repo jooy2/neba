@@ -15,6 +15,7 @@ import 'package:neba_example/demos/box/variants.dart';
 import 'package:neba_example/demos/container/hero.dart';
 import 'package:neba_example/demos/container/max_width.dart';
 import 'package:neba_example/demos/container/plain.dart';
+import 'package:neba_example/demos/flex/hero.dart';
 import 'package:neba_example/demos/grid/alignment.dart';
 import 'package:neba_example/demos/grid/columns.dart';
 import 'package:neba_example/demos/grid/hero.dart';
@@ -36,6 +37,7 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'container/hero': ContainerHero.new,
   'container/max-width': ContainerMaxWidth.new,
   'container/plain': ContainerPlain.new,
+  'flex/hero': FlexHero.new,
   'grid/alignment': GridAlignment.new,
   'grid/columns': GridColumns.new,
   'grid/hero': GridHero.new,
