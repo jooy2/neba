@@ -35,3 +35,5 @@ The changes to `neba` on pub.dev, the Flutter package. The React package keeps i
 - **`NebaAspectRatio`**, a box that keeps a proportion whatever width it is given: it reserves the space before its content arrives, clips what runs past it, fits an `Image` child with a `BoxFit`, and rounds its corners to the radius ladder when asked.
 
 - **`NebaScrollArea`**, a box with a scrollbar of its own: a rail on the size ladder in the colour's family that shows while the pointer is over the area or while it scrolls, `vertical`, `horizontal` or `both`, a `height` or a `maxHeight`, a `fade` at each edge with more beyond it, a focus stop with the arrows, the page keys, Home and End while it overflows, and a name in the `locale`'s words.
+
+- **`NebaTypography`**, text on the library's type scale: ten levels from `h1` to `overline` with the React package's sizes, leading ratios, tracking and weights, the heading level a screen reader hears and `headingLevel` to change it, a `color` that inherits when it is left out, `weight`, `align`, `lines` with an ellipsis, a `gutter`, a `style` laid over the level, a `transition`, and `NebaTypography.rich` for text in more than one style.

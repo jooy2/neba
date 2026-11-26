@@ -27,8 +27,16 @@ import 'package:neba_example/demos/grid/offset.dart';
 import 'package:neba_example/demos/grid/padding.dart';
 import 'package:neba_example/demos/grid/spacing.dart';
 import 'package:neba_example/demos/grid/spans.dart';
+import 'package:neba_example/demos/scroll_area/fade.dart';
+import 'package:neba_example/demos/scroll_area/hero.dart';
+import 'package:neba_example/demos/scroll_area/sizes.dart';
+import 'package:neba_example/demos/show/hero.dart';
 import 'package:neba_example/demos/show/transparent.dart';
 import 'package:neba_example/demos/tokens/palette.dart';
+import 'package:neba_example/demos/typography/clamp.dart';
+import 'package:neba_example/demos/typography/colors.dart';
+import 'package:neba_example/demos/typography/hero.dart';
+import 'package:neba_example/demos/typography/scale.dart';
 
 /// The demos, by key.
 const Map<String, Widget Function()> demos = <String, Widget Function()>{
@@ -53,6 +61,14 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'grid/padding': GridPadding.new,
   'grid/spacing': GridSpacing.new,
   'grid/spans': GridSpans.new,
+  'scroll-area/fade': ScrollAreaFade.new,
+  'scroll-area/hero': ScrollAreaHero.new,
+  'scroll-area/sizes': ScrollAreaSizes.new,
+  'show/hero': ShowHero.new,
   'show/transparent': ShowTransparent.new,
   'tokens/palette': TokensPalette.new,
+  'typography/clamp': TypographyClamp.new,
+  'typography/colors': TypographyColors.new,
+  'typography/hero': TypographyHero.new,
+  'typography/scale': TypographyScale.new,
 };

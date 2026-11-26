@@ -82,6 +82,12 @@ Fades the content out at each edge that has more beyond it, and only at those ed
 
 :::
 
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/scroll_area/fade.dart
+
+:::
+
 </Demo>
 
 ### size · color
@@ -93,6 +99,12 @@ Fades the content out at each edge that has more beyond it, and only at those ed
 ::: fw react
 
 <<< @/.vitepress/demos/scroll-area/sizes.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/scroll_area/sizes.dart
 
 :::
 

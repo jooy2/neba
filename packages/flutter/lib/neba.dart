@@ -32,6 +32,7 @@ export 'src/components/provider/neba_provider.dart';
 export 'src/components/scroll_area/neba_scroll_area.dart';
 export 'src/components/show/neba_show.dart';
 export 'src/components/stack/neba_stack.dart';
+export 'src/components/typography/neba_typography.dart';
 export 'src/theme/scale.dart';
 export 'src/theme/theme.dart';
 export 'src/theme/tokens.dart';

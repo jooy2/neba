@@ -1,6 +1,7 @@
 ---
 title: Typography
 order: 1
+flutter: true
 ---
 
 # Typography
@@ -9,6 +10,8 @@ order: 1
 
 <Demo src="typography/hero" />
 
+::: fw react
+
 ```tsx
 import { Typography } from 'neba';
 
@@ -16,23 +19,56 @@ import { Typography } from 'neba';
 <Typography>모든 표면은 같은 재료를, 다른 불투명도로 쓴 것입니다.</Typography>;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+const NebaTypography('A sheet of cut acrylic', level: NebaTypographyLevel.h2);
+const NebaTypography('Every surface is the same material at a different opacity.');
+```
+
+:::
+
 ## Props
 
 <PropsTable name="Typography" />
 
 다른 컴포넌트와 두 가지가 다릅니다. 타입 스케일을 고르는 prop은 `variant`가 아니라 `level`입니다. `variant`는 라이브러리 전체에서 표면의 무게를 뜻하기 때문입니다. 그리고 `color`에 기본값이 없어서, 지정하지 않으면 주변 텍스트 색을 물려받습니다.
 
+::: fw react
+
 루트에는 `neba-typography` 클래스가 붙습니다. React 바깥의 stylesheet가 이 텍스트를 잡는 후크입니다. `.neba-typography { text-wrap: balance }`처럼 씁니다. level이 만들어 내는 유틸리티 클래스 이름은 약속된 API가 아닙니다.
+
+:::
+
+::: fw flutter
+
+텍스트는 `Text`처럼 첫 번째 인자로 받고, 여러 스타일이 섞인 텍스트는 `NebaTypography.rich`에 `InlineSpan`으로 넘깁니다. `align`은 `TextAlign`, `weight`는 `FontWeight`입니다.
+
+:::
 
 ## 예시
 
 ### level
 
-`level`은 타입 스케일과 렌더링할 요소를 함께 정합니다. `body`는 `md` 크기 [Card](../surfaces/card)의 본문과 같은 단계이므로, Card 안팎의 문단이 같은 크기로 보입니다. 제목 단계는 커질수록 행간 비율이 좁아집니다.
+`level`은 타입 스케일과 <Fw react="렌더링할 요소를" flutter="화면 낭독기가 듣는 제목 단계를" /> 함께 정합니다. `body`는 `md` 크기 [Card](../surfaces/card)의 본문과 같은 단계이므로, Card 안팎의 문단이 같은 크기로 보입니다. 제목 단계는 커질수록 행간 비율이 좁아집니다.
 
 <Demo src="typography/scale">
 
+::: fw react
+
 <<< @/.vitepress/demos/typography/scale.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/typography/scale.dart
+
+:::
 
 </Demo>
 
@@ -40,21 +76,43 @@ import { Typography } from 'neba';
 
 <Demo src="typography/colors">
 
+::: fw react
+
 <<< @/.vitepress/demos/typography/colors.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/typography/colors.dart
+
+:::
 
 </Demo>
 
 ### lines
 
-`lines={1}`은 말줄임표를 붙여 한 줄로 자릅니다. `2` 이상은 그 줄 수까지만 보이는 line clamp입니다.
+<Fw react="lines={1}" flutter="lines: 1" code />은 말줄임표를 붙여 한 줄로 자릅니다. `2` 이상은 그 줄 수까지만 보이는 line clamp입니다.
 
 <Demo src="typography/clamp">
 
+::: fw react
+
 <<< @/.vitepress/demos/typography/clamp.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/typography/clamp.dart
+
+:::
 
 </Demo>
 
 ### render
+
+::: fw react
 
 `level`이 정하는 요소와 실제로 필요한 요소가 다를 때 `render`로 요소만 바꿉니다. 문서 개요에 들어가면 안 되는 소제목, 또는 제목처럼 보여야 하는 `<p>`가 그런 경우입니다.
 
@@ -64,11 +122,29 @@ import { Typography } from 'neba';
 </Typography>
 ```
 
+:::
+
+::: fw flutter
+
+바꿀 요소가 없습니다. `headingLevel`은 크기는 그대로 두고 화면 낭독기가 듣는 것만 바꿉니다. `0`이면 제목에서 빠지고, `1`부터 `6`까지는 어느 level이든 그 깊이의 제목이 됩니다.
+
+```dart
+const NebaTypography(
+  '제목처럼 보이지만 제목은 아닙니다',
+  level: NebaTypographyLevel.h3,
+  headingLevel: 0,
+);
+```
+
+:::
+
 ### gutter
 
 `gutter`는 기본적으로 꺼져 있어 위아래 여백이 없습니다. 이어지는 산문에는 켜고, 간격을 이미 관리하는 flex 컨테이너 안에서는 끈 채로 두세요.
 
-### className으로 덮어쓰기
+### <Fw react="className" flutter="style" code />으로 덮어쓰기
+
+::: fw react
 
 `className`에 넣은 Tailwind utility는 variant가 붙든 안 붙든 level의 크기, 행간, 자간, weight, 여백, 글자색보다 우선합니다.
 
@@ -83,3 +159,21 @@ import { Typography } from 'neba';
 variant가 붙은 class는 level을 대신하지 않고 그 위에 얹힙니다. `md:text-5xl`은 `md`부터 크기를 바꾸고, 그보다 좁은 화면에서는 level의 크기가 그대로 쓰입니다.
 
 level은 scale을 class 두 겹의 특정도로 씁니다. `.prose h2`와 VitePress의 `.vp-doc h2`가 태그 이름으로 `font-size`, `line-height`, `letter-spacing`, `font-weight`와 여백을 지정하는데, class 하나로는 그 특정도를 넘지 못하기 때문입니다. `className`이 지정한 속성은 level이 특정도 0으로 물러나므로, 그런 본문 안에서는 그 속성 하나만 내 class와 본문 규칙이 겨루게 됩니다. Tailwind의 utility 이름만 읽으므로, 직접 만든 스타일시트의 class로 level을 이기려면 여전히 class 두 개나 `!important`가 필요합니다. `mb-8!`처럼 `!`를 붙인 utility는 지금까지와 똑같이 동작합니다.
+
+:::
+
+::: fw flutter
+
+`style`은 `Text`의 style이 주변 텍스트 위에 얹히듯 level의 스타일 위에 얹힙니다.
+
+```dart
+const NebaTypography(
+  '42',
+  level: NebaTypographyLevel.h2,
+  style: TextStyle(fontSize: 44, fontWeight: FontWeight.w900),
+);
+```
+
+각 level의 행간은 **비율**이고 자간은 크기에 대한 비율이라, 이렇게 바꾼 크기에도 둘 다 비율대로 따라옵니다. 비율 자체를 바꾸려면 옆에 `height`를 지정하세요.
+
+:::
