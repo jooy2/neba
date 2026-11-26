@@ -12,6 +12,23 @@ body:
         - Please create a separate issue for each type of issue.
         - For modular projects, make sure you're using the latest version of the module.
         - Please be as detailed as possible and write in English so that we can handle your issue quickly.
+  - type: dropdown
+    attributes:
+      label: Which package?
+      description: The repository holds a React package and a Flutter package, released separately.
+      options:
+        - 'React (npm: neba)'
+        - 'Flutter (pub.dev: neba)'
+        - 'Documentation site'
+        - 'Both packages'
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Package version
+      description: The version of the package, and the component the issue is about.
+      placeholder: neba 1.21.0, Select
+    validations:
   - type: textarea
     attributes:
       label: Describe the bug
@@ -32,7 +49,7 @@ body:
     validations:
   - type: input
     attributes:
-      label: Your environment - Web Browser
-      description: If relevant, please describe the web browser you are currently using.
-      placeholder: Google Chrome, Microsoft Edge, Mozilla Firefox...
+      label: Your environment - Web Browser or Flutter version
+      description: If relevant, the web browser and its version for the React package, or the Flutter version and the platform for the Flutter package.
+      placeholder: Google Chrome 142, Flutter 3.50 on Android...
     validations:

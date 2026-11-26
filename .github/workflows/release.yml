@@ -1,7 +1,10 @@
 name: release
 
-# The npm package and a GitHub release for every version tag: the tag is pushed
-# once the "chore: cut X" commit is on `main`, and everything after it is here —
+# A package and a GitHub release for every version tag. The repository holds two
+# packages and each is released from a tag of its own: `react-vX.Y.Z` publishes
+# `packages/react` to npm, `flutter-vX.Y.Z` publishes `packages/flutter` to
+# pub.dev. The tag is pushed once the "chore: cut X" commit is on `main`, and
+# everything after it is here —
 # the checks that the tag names the version that was cut, the package built the
 # way `npm publish` builds it, that package published to npm through trusted
 # publishing, and the release written from that version's changelog section
@@ -9,11 +12,14 @@ name: release
 #
 # Run from the Actions tab instead, it writes the releases a tag push could not:
 # a tag runs the workflow file of its own commit, and the commits of 1.16.2 and
-# every version before it have none. See `scripts/release-backfill.mjs`.
+# every version before it have none. See `.github/scripts/release-backfill.mjs`.
+# Those are the React package's `vX.Y.Z` tags from before the repository held
+# two packages; the Flutter package has none.
 on:
   push:
     tags:
-      - 'v*'
+      - 'react-v*'
+      - 'flutter-v*'
   workflow_dispatch:
     inputs:
       tag:
@@ -30,8 +36,8 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  release:
-    if: github.event_name == 'push'
+  react:
+    if: github.event_name == 'push' && startsWith(github.ref_name, 'react-v')
     runs-on: ubuntu-latest
     name: npm and GitHub release
     # The environment npm's trusted publisher for `neba` names. npm accepts a
@@ -46,6 +52,9 @@ jobs:
     # A build, two checks and two uploads. Well above what that takes, because a
     # job that hangs here holds a runner for nothing.
     timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: ./packages/react
 
     steps:
       - uses: actions/checkout@v5
@@ -56,7 +65,7 @@ jobs:
         with:
           node-version: '26'
           cache: npm
-          cache-dependency-path: '**/package-lock.json'
+          cache-dependency-path: packages/react/package-lock.json
 
       # The tag is typed by hand and the version is in two files; a `v1.17.1`
       # pushed onto the 1.17.0 commit would otherwise publish a release whose
@@ -65,8 +74,8 @@ jobs:
         id: version
         run: |
           version=$(node -p "require('./package.json').version")
-          if [ "${GITHUB_REF_NAME}" != "v${version}" ]; then
-            echo "::error::The tag is ${GITHUB_REF_NAME} and package.json says ${version}. Tag the commit that cut v${version}."
+          if [ "${GITHUB_REF_NAME}" != "react-v${version}" ]; then
+            echo "::error::The tag is ${GITHUB_REF_NAME} and package.json says ${version}. Tag the commit that cut react-v${version}."
             exit 1
           fi
           echo "version=${version}" >> "$GITHUB_OUTPUT"
@@ -74,7 +83,7 @@ jobs:
       # First, so a tag on a commit whose changelog still says `vNext` fails in
       # seconds rather than after the build.
       - name: Write the release notes from CHANGELOG.md
-        run: node scripts/release-notes.mjs "${{ steps.version.outputs.version }}" > "$RUNNER_TEMP/notes.md"
+        run: node ../../.github/scripts/release-notes.mjs "$GITHUB_REF_NAME" > "$RUNNER_TEMP/notes.md"
 
       # Without the scripts: `prepare` is the build, and `npm pack` runs it
       # below, so running it here as well would build twice.
@@ -146,13 +155,147 @@ jobs:
           tarball=$(ls "$RUNNER_TEMP"/*.tgz)
           notes="$RUNNER_TEMP/notes.md"
           if gh release view "$GITHUB_REF_NAME" > /dev/null 2>&1; then
-            gh release edit "$GITHUB_REF_NAME" --title "$VERSION" --notes-file "$notes"
+            gh release edit "$GITHUB_REF_NAME" --title "Neba UI for React ${VERSION}" --notes-file "$notes"
             gh release upload "$GITHUB_REF_NAME" "$tarball" --clobber
           else
             prerelease=""
             case "$VERSION" in *-*) prerelease="--prerelease" ;; esac
             gh release create "$GITHUB_REF_NAME" "$tarball" --verify-tag \
-              --title "$VERSION" --notes-file "$notes" $prerelease
+              --title "Neba UI for React ${VERSION}" --notes-file "$notes" $prerelease
+          fi
+
+  flutter:
+    if: github.event_name == 'push' && startsWith(github.ref_name, 'flutter-v')
+    runs-on: ubuntu-latest
+    name: Check the Flutter release
+    timeout-minutes: 5
+    outputs:
+      name: ${{ steps.version.outputs.name }}
+      version: ${{ steps.version.outputs.version }}
+      published: ${{ steps.published.outputs.published }}
+    defaults:
+      run:
+        working-directory: ./packages/flutter
+
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v6
+        name: Setup Node.js
+        with:
+          node-version: '26'
+          package-manager-cache: false
+
+      - name: Check the tag names the version in pubspec.yaml
+        id: version
+        run: |
+          version=$(sed -n 's/^version:[[:space:]]*//p' pubspec.yaml)
+          if [ "${GITHUB_REF_NAME}" != "flutter-v${version}" ]; then
+            echo "::error::The tag is ${GITHUB_REF_NAME} and pubspec.yaml says ${version}. Tag the commit that cut flutter-v${version}."
+            exit 1
+          fi
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+          echo "name=$(sed -n 's/^name:[[:space:]]*//p' pubspec.yaml)" >> "$GITHUB_OUTPUT"
+
+      - name: Check the changelog has the version
+        run: node ../../.github/scripts/release-notes.mjs "$GITHUB_REF_NAME" > /dev/null
+
+      # pub.dev answers 404 for a version it does not have. The first version of
+      # a package is always one it has, because pub.dev only lets a workflow
+      # publish a package that already exists, and that one is published by
+      # hand.
+      - name: Ask pub.dev whether the version is out
+        id: published
+        env:
+          NAME: ${{ steps.version.outputs.name }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          status=$(curl -s -o /dev/null -w '%{http_code}' "https://pub.dev/api/packages/${NAME}/versions/${VERSION}")
+          case "$status" in
+            200) echo "published=true" >> "$GITHUB_OUTPUT"; echo "${NAME} ${VERSION} is already on pub.dev; not publishing it again." ;;
+            404) echo "published=false" >> "$GITHUB_OUTPUT" ;;
+            *) echo "::error::pub.dev answered ${status} for ${NAME} ${VERSION}."; exit 1 ;;
+          esac
+
+  # One job of the Dart team's, holding the OIDC token: it sets up Flutter,
+  # since the package depends on the Flutter SDK, validates the package with
+  # `dart pub publish --dry-run`, and publishes it. It keeps no copy of the
+  # archive it sends.
+  flutter-publish:
+    needs: flutter
+    if: needs.flutter.outputs.published != 'true'
+    name: Publish the Flutter package
+    permissions:
+      id-token: write
+    uses: dart-lang/setup-dart/.github/workflows/publish.yml@v1
+    with:
+      working-directory: packages/flutter
+      # Named in pub.dev's automated publishing settings, and the place to put
+      # required reviewers in front of a publish.
+      environment: pub.dev
+
+  flutter-release:
+    needs: [flutter, flutter-publish]
+    # After a publish, or when there was nothing to publish because pub.dev
+    # already had the version; never after a publish that failed.
+    if: >-
+      always() && needs.flutter.result == 'success' &&
+      (needs.flutter-publish.result == 'success' || needs.flutter-publish.result == 'skipped')
+    runs-on: ubuntu-latest
+    name: GitHub release of the Flutter package
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    defaults:
+      run:
+        working-directory: ./packages/flutter
+
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v6
+        name: Setup Node.js
+        with:
+          node-version: '26'
+          package-manager-cache: false
+
+      - name: Write the release notes from CHANGELOG.md
+        run: node ../../.github/scripts/release-notes.mjs "$GITHUB_REF_NAME" > "$RUNNER_TEMP/notes.md"
+
+      # The archive pub.dev holds for the version, which is the one every
+      # `flutter pub get` downloads. The publish job keeps no copy, so it is
+      # fetched back and checked against the SHA-256 pub.dev records for it. A
+      # version that was already out gets the same archive, so a re-run
+      # attaches it again. The retries cover the moments after a publish,
+      # before pub.dev answers for the new version.
+      - name: Download the archive from pub.dev
+        env:
+          NAME: ${{ needs.flutter.outputs.name }}
+          VERSION: ${{ needs.flutter.outputs.version }}
+        run: |
+          info=$(curl -sf --retry 10 --retry-delay 15 --retry-all-errors "https://pub.dev/api/packages/${NAME}/versions/${VERSION}")
+          url=$(jq -r '.archive_url' <<< "$info")
+          sha=$(jq -r '.archive_sha256' <<< "$info")
+          archive="$RUNNER_TEMP/${NAME}-${VERSION}.tar.gz"
+          curl -sfL --retry 3 -o "$archive" "$url"
+          echo "${sha}  ${archive}" | sha256sum -c -
+
+      - name: Publish the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          NAME: ${{ needs.flutter.outputs.name }}
+          VERSION: ${{ needs.flutter.outputs.version }}
+        run: |
+          notes="$RUNNER_TEMP/notes.md"
+          archive="$RUNNER_TEMP/${NAME}-${VERSION}.tar.gz"
+          title="Neba UI for Flutter ${VERSION}"
+          if gh release view "$GITHUB_REF_NAME" > /dev/null 2>&1; then
+            gh release edit "$GITHUB_REF_NAME" --title "$title" --notes-file "$notes"
+            gh release upload "$GITHUB_REF_NAME" "$archive" --clobber
+          else
+            prerelease=""
+            case "$VERSION" in *-*) prerelease="--prerelease" ;; esac
+            gh release create "$GITHUB_REF_NAME" "$archive" --verify-tag \
+              --title "$title" --notes-file "$notes" $prerelease
           fi
 
   # The releases for tags pushed before this file existed. The body comes from
@@ -181,4 +324,4 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ inputs.tag }}
-        run: node scripts/release-backfill.mjs "$TAG"
+        run: node .github/scripts/release-backfill.mjs "$TAG"

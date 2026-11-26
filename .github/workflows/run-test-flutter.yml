@@ -1,0 +1,85 @@
+name: run-test-flutter
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+    paths:
+      - packages/flutter/**
+      # The token parity tests read the React package's stylesheet.
+      - packages/react/src/styles.css
+      - .github/workflows/run-test-flutter.yml
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+defaults:
+  run:
+    working-directory: ./packages/flutter
+
+jobs:
+  run-test-flutter:
+    runs-on: ${{ matrix.os }}
+    name: Test Flutter ${{ matrix.flutter_version || 'stable' }} on ${{ matrix.os }}
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        # The floor `pubspec.yaml` declares, and the latest stable release. An
+        # empty version is the channel's newest.
+        flutter_version: ['3.41.0', '']
+
+    steps:
+      - uses: actions/checkout@v5
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ matrix.flutter_version }}
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Check formatting
+        run: dart format --output=none --set-exit-if-changed lib test tool
+
+      # Includes `test/package/generated_test.dart`, which fails when the barrel
+      # or the gallery's demo registry is out of date.
+      - name: Run tests
+        run: flutter test
+
+  analyze-example:
+    runs-on: ubuntu-latest
+    name: Analyze and build the gallery
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: ./packages/flutter/example
+
+    steps:
+      - uses: actions/checkout@v5
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Check formatting
+        run: dart format --output=none --set-exit-if-changed lib
+
+      # The gallery is what the documentation site embeds for every Flutter
+      # preview, so a demo that stops compiling fails here rather than there.
+      - name: Build for the web
+        run: flutter build web --release --no-tree-shake-icons

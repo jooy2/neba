@@ -1,0 +1,48 @@
+name: run-test-examples
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+    paths:
+      - examples/**
+      - packages/flutter/lib/**
+      - packages/flutter/example/lib/**
+      - .github/workflows/run-test-examples.yml
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  flutter:
+    runs-on: ubuntu-latest
+    name: Analyze and test the Flutter example app
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: ./examples/flutter
+
+    steps:
+      - uses: actions/checkout@v5
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Check formatting
+        run: dart format --output=none --set-exit-if-changed lib test integration_test
+
+      # The flows and the demos at phone and tablet sizes, on the host. The same
+      # flows run on a simulator, an emulator or a device with `flutter drive`;
+      # `examples/README.md` says how.
+      - name: Run tests
+        run: flutter test

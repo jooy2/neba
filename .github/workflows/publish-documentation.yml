@@ -6,11 +6,13 @@ on:
     branches: [main]
     paths:
       - docs/**
+      - packages/react/src/**
+      - packages/react/CHANGELOG.md
+      - packages/react/package.json
+      - packages/flutter/lib/**
+      - packages/flutter/example/**
+      - packages/flutter/CHANGELOG.md
       - .github/workflows/publish-documentation.yml
-      - CHANGELOG.md
-      - package.json
-      - package-lock.json
-  # trigger deployment manually
   workflow_dispatch:
 
 jobs:
@@ -27,35 +29,27 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: '26'
+          cache: npm
+          cache-dependency-path: |
+            docs/package-lock.json
+            packages/react/package-lock.json
 
       # cache node_modules
-      - name: Cache dependencies
-        uses: actions/cache@v5
-        id: npm-cache
-        with:
-          path: |
-            **/node_modules
-          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-npm-
+      # The site renders `packages/react/src`, whose own imports resolve from
+      # the package's `node_modules`.
+      - name: Install the React package
+        working-directory: ./packages/react
+        run: npm ci --ignore-scripts
 
-      # copy changelog.md file
-      - name: Copy CHANGELOG.md file
-        run: |
-          cp CHANGELOG.md ./docs/en/changelog.md
-          cp CHANGELOG.md ./docs/ko/changelog.md
-
-      # install dependencies if the cache did not hit
       - name: Install dependencies
-        if: steps.npm-cache.outputs.cache-hit != 'true'
-        run: npm install
+        working-directory: ./docs
+        run: npm ci
 
-      # run build script
+      # Copies both changelogs and the A2UI catalog in, then builds.
       - name: Build VitePress site
-        run: npm run docs:build
+        working-directory: ./docs
+        run: npm run build
 
-      # please check out the docs of the workflow for more details
-      # @see https://github.com/crazy-max/ghaction-github-pages
       - name: Deploy to GitHub Pages
         uses: crazy-max/ghaction-github-pages@v4
         with:

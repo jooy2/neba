@@ -1,4 +1,4 @@
-name: run-test
+name: run-test-react
 
 on:
   pull_request:
@@ -6,23 +6,9 @@ on:
   push:
     branches: [main]
     paths:
-      - src/**
-      - test/**
-      # The lint job type-checks and formats the docs too.
-      - docs/**
-      - package.json
-      - package-lock.json
-      - tsconfig.json
-      - tsconfig.prod.json
-      - terser.config.json
-      - vitest.config.ts
-      - eslint.config.ts
-      - postcss.config.mjs
-      - .prettierrc
-      - .prettierignore
+      - packages/react/**
       - .editorconfig
-      - scripts/**
-      - .github/workflows/run-test.yml
+      - .github/workflows/run-test-react.yml
   workflow_dispatch:
 
 # A superseded pull request run has nothing left to say, and a run that has
@@ -31,6 +17,12 @@ on:
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+# Every step runs in the package. The site and the Flutter package have
+# workflows of their own, so a change to one of them does not run this.
+defaults:
+  run:
+    working-directory: ./packages/react
 
 jobs:
   lint:
@@ -47,7 +39,7 @@ jobs:
         with:
           node-version: '26'
           cache: npm
-          cache-dependency-path: '**/package-lock.json'
+          cache-dependency-path: packages/react/package-lock.json
       # Without the scripts: `npm ci` runs `prepare`, which is the build, and
       # the build starts with `prettier --write` — so the formatting check below
       # read a tree that had just been formatted and could never fail. Nothing
@@ -76,7 +68,7 @@ jobs:
         with:
           node-version: '26'
           cache: npm
-          cache-dependency-path: '**/package-lock.json'
+          cache-dependency-path: packages/react/package-lock.json
       - run: npm ci
       # `prepare` has already built once on `npm ci`, but the check measures
       # `dist/` and should say so itself rather than inherit it.
@@ -101,7 +93,7 @@ jobs:
         with:
           node-version: '26'
           cache: npm
-          cache-dependency-path: '**/package-lock.json'
+          cache-dependency-path: packages/react/package-lock.json
       - run: npm ci
       # The same reason as the bundle job: the check reads `dist/styles.css`,
       # and should build it itself rather than inherit `prepare`'s.
@@ -137,7 +129,7 @@ jobs:
         with:
           node-version: ${{ matrix.node_version }}
           cache: npm
-          cache-dependency-path: '**/package-lock.json'
+          cache-dependency-path: packages/react/package-lock.json
       - run: npm ci
       - name: Install Playwright browser (${{ matrix.browser }})
         run: npx playwright install --with-deps ${{ matrix.browser }}
@@ -176,7 +168,7 @@ jobs:
         with:
           node-version: '26'
           cache: npm
-          cache-dependency-path: '**/package-lock.json'
+          cache-dependency-path: packages/react/package-lock.json
       - run: npm ci
       # `--no-save` leaves the lockfile alone, and `--ignore-scripts` skips the
       # build that `prepare` has already run once on `npm ci`.
@@ -212,7 +204,7 @@ jobs:
         with:
           node-version: '26'
           cache: npm
-          cache-dependency-path: '**/package-lock.json'
+          cache-dependency-path: packages/react/package-lock.json
       - run: npm ci
       - name: Install Zod 4
         run: npm install --no-save --ignore-scripts zod@4

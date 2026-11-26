@@ -1,0 +1,47 @@
+name: run-test-docs
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+defaults:
+  run:
+    working-directory: ./docs
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    name: Lint, typecheck and build the documentation site
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v6
+        name: Setup Node.js
+        with:
+          node-version: '26'
+          cache: npm
+          cache-dependency-path: |
+            docs/package-lock.json
+            packages/react/package-lock.json
+      # The site renders `packages/react/src`, and its type checker resolves
+      # that source's own imports from the package's `node_modules`.
+      - name: Install the React package
+        working-directory: ./packages/react
+        run: npm ci --ignore-scripts
+      - run: npm ci
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Lint
+        run: npm run lint
+      - name: Check formatting
+        run: npx prettier . --check
+      - name: Build
+        run: npm run build
