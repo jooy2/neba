@@ -39,6 +39,8 @@ Tailwind의 기본값을 그대로 씁니다. 그래서 Neba의 레이아웃과 
 
 ## 반응형 prop과 그렇지 않은 prop
 
+::: fw react
+
 > 값이 inline custom property에 들어가면 반응형이 되고, 값이 class name이면 되지 않습니다.
 
 Tailwind는 소스에 문자 그대로 적힌 class name만 봅니다. 그래서 breakpoint별 class map은 그 컴포넌트를 그리는 모든 페이지의 번들에 사다리 다섯 벌을 통째로 넣는 일이 됩니다. `--n-*` 슬롯은 inline 선언 하나와 stylesheet의 cascade 하나면 되고, 그 cascade는 페이지의 모든 인스턴스가 함께 씁니다.
@@ -52,6 +54,16 @@ Tailwind는 소스에 문자 그대로 적힌 class name만 봅니다. 그래서
 | [Gallery](../components/display/gallery)의 `columns` |  |
 
 왼쪽 목록이 짧은 것은 의도한 것입니다. 슬롯 하나마다 손으로 쓴 media block이 네 개 필요하고, 그 네 개는 모든 페이지가 함께 내려받습니다. 그래서 축을 하나 더하는 일은 가볍게 정하지 않습니다.
+
+:::
+
+::: fw flutter
+
+Flutter 패키지의 위젯은 반응형 맵을 받지 않습니다. 너비에 따라 바뀌는 레이아웃은 `MediaQuery.sizeOf(context)`로 너비를 읽어 일반 값을 넘기면 되고, 위의 단계가 비교할 기준 너비입니다. 단위는 논리 픽셀입니다.
+
+:::
+
+::: fw react
 
 ## CSS에서 정할지, JavaScript에서 정할지
 
@@ -75,6 +87,10 @@ return useBreakpoint('md') ? <Map /> : <StaticImage />;
 
 `useBreakpointValue`는 map을 cascade와 같은 방식으로 읽습니다. 위의 바닥 규칙이 CSS와 JavaScript 양쪽에서 똑같이 적용됩니다.
 
+:::
+
+::: fw react
+
 ## 너비 바꾸기
 
 breakpoint는 **빌드 시점의** 결정입니다. `@media`는 custom property를 읽을 수 없으므로, provider prop이든 context든 런타임 설정으로는 breakpoint를 옮길 수 없습니다. 옮기는 것처럼 보이는 무엇이 있다면 그것은 JavaScript만 옮기고 CSS는 그대로 두는 것입니다.
@@ -93,3 +109,5 @@ breakpoint는 **빌드 시점의** 결정입니다. `@media`는 custom property�
 이 방법은 Tailwind 경로에서만 동작합니다. `neba/styles.css`를 쓰는 프로젝트는 이미 컴파일된 stylesheet를 받으므로 다섯 너비가 고정되어 있습니다. 이름은 그대로 쓸 수 있지만 숫자는 위 표의 값입니다. 너비를 옮겨야 한다면 Tailwind를 직접 돌리세요. [시작하기](../guide/getting-started)에 두 설정이 모두 있습니다.
 
 **이름**을 바꾸는 것은 어느 경로에서도 지원하지 않습니다. 다섯 이름은 타입에 적혀 있고, class 표에 문자 그대로 들어가 있으며, stylesheet의 cascade가 그 이름으로 값을 찾기 때문입니다.
+
+:::

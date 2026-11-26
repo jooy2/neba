@@ -7,6 +7,8 @@ order: 3
 
 <p class="neba-lede">아래의 모든 컴포넌트가 무엇에서 출발할지를 한곳에서 정합니다. 제품이 정한 prop 기본값, 사용자가 고른 색 스킴, 문서가 흐르는 방향을 함께 다룹니다. 선택 사항이며, 없어도 모든 컴포넌트가 동작합니다.</p>
 
+::: fw react
+
 ```tsx
 import { NebaProvider } from 'neba';
 
@@ -17,7 +19,30 @@ import { NebaProvider } from 'neba';
 
 자기 element는 그리지 않습니다. 세 가지를 한곳에 둔 것은 셋 다 개별 컨트롤이 아니라 **애플리케이션**의 속성이기 때문입니다.
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+NebaProvider(
+  defaults: const NebaDefaults(
+    size: NebaSize.sm,
+    density: NebaDensity.compact,
+    locale: Locale('ko'),
+  ),
+  child: app,
+)
+```
+
+자기 위젯은 그리지 않습니다. 세 가지를 한곳에 둔 것은 셋 다 개별 위젯이 아니라 **애플리케이션**의 속성이기 때문입니다.
+
+:::
+
 ## defaults
+
+::: fw react
 
 `size`, `density`, `variant`, `locale`, `labelPlacement`, `spacing`의 여섯 축입니다. 호출 지점마다 `size="sm"`을 반복해서 쓰지 않아도 됩니다.
 
@@ -29,18 +54,34 @@ import { NebaProvider } from 'neba';
 
 호출 지점이 여전히 이깁니다. 순서는 **호출자 → provider → 컴포넌트 자신의 기본값**이므로, `size="xs"` provider 안의 `<Button size="xl">`은 `xl`이고, `size` prop이 없는 컴포넌트는 손대지 않습니다. `ButtonGroup`과 `ToggleGroup`은 호출자와 provider 사이에 옵니다. `size: 'sm'` provider 아래 `size="lg"` group 안의 Button은 `lg`입니다.
 
+:::
+
+::: fw flutter
+
+`NebaDefaults`의 필드인 `size`, `density`, `variant`, `locale`, `labelPlacement`, `spacing`의 여섯 축입니다. 호출 지점마다 `size: NebaSize.sm`을 반복해서 쓰지 않아도 됩니다.
+
+위젯에 직접 준 인자가 여전히 이깁니다. 순서는 **위젯의 인자 → 그룹 → provider → 위젯 자신의 기본값**입니다. 그래서 Neba 위젯의 스타일 인자는 모두 nullable이고, 인자를 생략하면 provider의 값을 따릅니다.
+
+:::
+
 ### defaults가 받는 여섯 축
 
 |  |  |
 | --- | --- |
 | `size` `density` `variant` `locale` `labelPlacement` | 어떤 값이 맞는지는 제품이 정합니다. 조밀한 애플리케이션은 어디서나 조밀하고, 한국어 제품은 어디서나 한국어이며, 한 폼의 라벨은 모두 같은 자리에 있습니다. `labelPlacement`는 shell을 그리는 필드 열 개에 닿습니다. TextField, NumberField, Select, Combobox, DatePicker, TimePicker, DateTimePicker, DateRangePicker, ColorPicker, TreeSelect입니다. |
-| `spacing` | field 사이의 간격입니다. Tailwind 간격 스케일이라 `7`은 `1.75rem`입니다. field를 쌓는 두 컴포넌트인 [Form](../components/inputs/form)과 [Fieldset](../components/inputs/fieldset)에 닿고, 둘의 `size`가 고르는 간격 대신 쓰입니다. [RadioGroup](../components/inputs/radio-group)·[CheckboxGroup](../components/inputs/checkbox-group)의 option과 [List](../components/display/list)의 행은 자기 `spacing`을 따로 받고 이 값은 읽지 않습니다. option은 `md`에서 field와 같은 간격으로 시작하지만, field 사이를 넓힌다고 모든 option 목록까지 함께 벌어지면 안 되기 때문입니다. 레이아웃 컴포넌트인 Flex와 GridContainer도 읽지 않습니다. |
+| `spacing` | field 사이의 간격입니다. <Fw react="Tailwind 간격 스케일이라 `7`은 `1.75rem`" flutter="`NebaScale.spacingUnit` 단위로 세므로 `7`은 논리 픽셀 28" />입니다. field를 쌓는 두 컴포넌트인 [Form](../components/inputs/form)과 [Fieldset](../components/inputs/fieldset)에 닿고, 둘의 `size`가 고르는 간격 대신 쓰입니다. [RadioGroup](../components/inputs/radio-group)·[CheckboxGroup](../components/inputs/checkbox-group)의 option과 [List](../components/display/list)의 행은 자기 `spacing`을 따로 받고 이 값은 읽지 않습니다. option은 `md`에서 field와 같은 간격으로 시작하지만, field 사이를 넓힌다고 모든 option 목록까지 함께 벌어지면 안 되기 때문입니다. 레이아웃 컴포넌트인 Flex와 GridContainer도 읽지 않습니다. |
 | `color` | **기본값으로 줄 수 없습니다.** 컴포넌트의 색 기본값이 의미를 나타내는 경우가 많습니다. [Alert](../components/feedback/alert)는 `info`, [Popconfirm](../components/feedback/popconfirm)은 `danger`이며, 전역으로 한 번 덮으면 이 뜻이 모두 바뀝니다. |
 | `elevation` | **기본값으로 줄 수 없습니다.** [디자인 언어](../design/design-language)가 그림자를 표면마다 opt-in으로 정하고 있으며, 전역 그림자는 그 규칙과 어긋납니다. |
 
+::: fw react
+
 각 컴포넌트는 **자기가 실제로 선언한 축만** 채웁니다. 받지 않는 키까지 채우면 props spread를 타고 DOM 노드로 넘어가는데, `<input>`의 `size`는 실제로 존재하는 속성이라 필드 너비가 바뀌어 버립니다. 선언한 축 가운데 일부러 빼는 것이 하나 있습니다. 문장 속 링크는 그 문장의 크기이므로 [TextLink](../components/display/text-link)는 provider의 `size`를 받지 않습니다.
 
+:::
+
 ## 색 스킴
+
+::: fw react
 
 ```tsx
 <NebaProvider defaultColorScheme="system">
@@ -82,7 +123,39 @@ client 모듈이 아닌 일반 함수라서, Server Component인 root layout에�
 
 기본값은 `'neba-color-scheme'`입니다. 직접 정하거나, `false`로 두면 이번 방문에만 적용하고 잊습니다. 저장이 예외를 던지는 일은 없습니다. 쓰기를 거부하는 시크릿 창에서도 스킴은 적용되고, 기억만 안 될 뿐입니다.
 
-## direction
+:::
+
+::: fw flutter
+
+```dart
+NebaProvider(colorScheme: NebaColorScheme.system, child: app)
+```
+
+`colorScheme`은 `system`, `light`, `dark` 중 하나이고, provider가 들고 있는 상태가 아니라 앱이 가진 값입니다. provider는 어디에도 값을 쓰지 않고 기억하지도 않습니다. 사용자가 고를 수 있게 하려면 앱이 이미 쓰는 저장소에 선택을 저장했다가 다시 넘기면 됩니다.
+
+`system`은 플랫폼의 밝기를 따르므로, 앱이 실행되는 동안 기기 설정이 바뀌면 함께 바뀝니다. 실제로 어느 쪽이 적용됐는지는 위젯이 토큰에서 `NebaTheme.of(context).brightness`로 읽습니다.
+
+### 제품 고유의 색
+
+`light`와 `dark`에는 제품이 스킴마다 쓸 토큰을 넘깁니다. 기본 토큰 하나만 바꾸면 됩니다. 채움부터 포커스 링까지 파생 토큰은 모두 바뀐 기본 토큰에서 다시 계산되며, CSS에서 기본 토큰을 덮어쓰면 파생 토큰이 따라오는 것과 같습니다.
+
+```dart
+final NebaTokens base = NebaTokens.light();
+final NebaTokens light = base.withFamily(
+  NebaColor.primary,
+  base.families[NebaColor.primary]!.copyWith(accent: const Color(0xFF00897B)),
+);
+
+NebaProvider(light: light, child: app)
+```
+
+플랫폼의 고대비 설정을 켜면 반투명한 면이 모두 불투명해지며, 웹의 `prefers-reduced-transparency`와 같은 동작입니다.
+
+:::
+
+## <Fw react="direction" flutter="textDirection" />
+
+::: fw react
 
 ```tsx
 <NebaProvider direction="rtl">
@@ -96,9 +169,25 @@ provider는 마운트된 뒤에 `dir`을 씁니다. 첫 페인트가 지난 다�
 
 컴포넌트들은 물리 속성이 아니라 논리 속성(`margin-inline-start` 등)으로 지어져 있어 레이아웃은 알아서 따라갑니다. `dir`이 필요한 곳은 글리프가 돌아야 하는 몇 군데뿐입니다. 달력의 stepper, Breadcrumb의 구분자, Carousel의 화살표, TreeView의 펼침 표시가 그렇습니다.
 
+:::
+
+::: fw flutter
+
+```dart
+NebaProvider(textDirection: TextDirection.rtl, child: app)
+```
+
+하위 트리를 `Directionality`로 감쌉니다. **주지 않으면 건드리지 않으므로** 하위 트리는 위쪽의 방향을 그대로 따릅니다. `WidgetsApp`이 앱의 locale에서 방향을 정하기 때문에, 대부분의 앱은 이 값을 넘길 일이 없습니다.
+
+Neba 위젯은 왼쪽·오른쪽이 아니라 시작·끝을 기준으로 배치되므로, 오른쪽에서 왼쪽으로 쓰는 하위 트리는 방향을 가리키는 글리프까지 저절로 뒤집힙니다.
+
+:::
+
 ## 중첩
 
-provider는 중첩됩니다. 스킴을 미리 보여 주는 설정 패널이나, 여유 있는 페이지 안의 조밀한 툴바는 그 subtree를 감싸는 두 번째 provider입니다. 안쪽 provider의 `defaults`는 바깥 것 위에 합쳐지므로 안쪽에서 `density`만 정해도 바깥의 `size`가 유지되고, `direction`이 없는 안쪽 provider는 바깥과 같은 방향을 따릅니다.
+provider는 중첩됩니다. 스킴을 미리 보여 주는 설정 패널이나, 여유 있는 페이지 안의 조밀한 툴바는 그 subtree를 감싸는 두 번째 provider입니다. 안쪽 provider의 `defaults`는 바깥 것 위에 합쳐지므로 안쪽에서 `density`만 정해도 바깥의 `size`가 유지되고, <Fw react="`direction`" flutter="`textDirection`" />이 없는 안쪽 provider는 바깥과 같은 방향을 따릅니다.
+
+::: fw react
 
 ```tsx
 <NebaProvider defaults={{ size: 'sm' }}>
@@ -111,3 +200,21 @@ provider는 중첩됩니다. 스킴을 미리 보여 주는 설정 패널이나,
 `<html>`의 색 스킴은 가장 바깥 provider의 것이고, 중첩 provider는 이를 쓰지 않습니다. 자기 subtree만 다시 칠하려는 중첩 provider는 `colorSchemeElement`로 대상 element를 지정하면 됩니다. 위 미리보기가 그렇게 동작하며, 그래서 이 prop은 element가 아니라 함수를 받습니다. 중첩 provider가 `direction`을 지정하면 그 값은 여전히 `<html>`에 쓰입니다.
 
 중첩 provider는 따로 지정하지 않으면 바깥 provider와 같은 `storageKey`에 스킴을 기억합니다. 그래서 안쪽에서 고른 스킴이 다음 방문 때 페이지 전체의 스킴이 됩니다. 위 미리보기처럼 `storageKey={false}`를 주거나 따로 키를 주세요.
+
+:::
+
+::: fw flutter
+
+```dart
+NebaProvider(
+  defaults: const NebaDefaults(size: NebaSize.sm),
+  child: NebaProvider(
+    defaults: const NebaDefaults(density: NebaDensity.compact),
+    child: toolbar, // compact, and still small
+  ),
+)
+```
+
+중첩 provider의 `colorScheme`은 자기 하위 트리에만 적용됩니다. 다크 테마를 미리 보여 주는 패널이라면 그 패널을 `NebaProvider(colorScheme: NebaColorScheme.dark)`로 감싸면 됩니다.
+
+:::

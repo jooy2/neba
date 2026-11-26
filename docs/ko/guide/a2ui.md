@@ -5,6 +5,8 @@ order: 4
 
 # A2UI 카탈로그
 
+::: fw react
+
 <p class="neba-lede">패키지에 A2UI 카탈로그와 그것을 그리는 렌더러가 함께 들어 있습니다. 카탈로그는 에이전트가 어떤 Neba 컴포넌트를 쓸 수 있는지 알려 주고, 어댑터는 에이전트가 써 보낸 것을 그 컴포넌트로 바꿉니다. 에이전트가 JSON으로 화면을 쓰면 여러분의 디자인 시스템으로 나옵니다.</p>
 
 ```ts
@@ -138,3 +140,11 @@ v1.0에서 어댑터는 `@a2ui/web_core`의 v1.0 스키마와 함수를 그대�
 
 - 프로토콜 자체는 [a2ui.org](https://a2ui.org)에, 본보기로 삼은 [Basic Catalog](https://github.com/google/A2UI/blob/main/specification/v1_0/catalogs/basic/catalog.json)는 저장소에 있습니다.
 - 컴포넌트 자체의 prop이 무슨 뜻인지는 [컴포넌트](../components/)에 있습니다.
+
+:::
+
+::: fw flutter
+
+A2UI 카탈로그와 그 렌더러는 React 패키지에만 있습니다. Flutter 패키지에는 이 카탈로그를 그리는 렌더러가 없습니다.
+
+:::

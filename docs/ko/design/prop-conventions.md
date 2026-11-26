@@ -5,9 +5,11 @@ order: 3
 
 # Prop 규약
 
-`size="md"`는 Button에서든 TextField에서든 Dialog에서든 같은 것을 뜻해야 합니다. 공용 어휘는 [`src/types.ts`](https://github.com/jooy2/neba/blob/main/src/types.ts)에 모여 있고, 각 컴포넌트는 필요한 것만 가져다 씁니다. **같은 개념에 다른 이름을 새로 만들지 마세요.**
+`size="md"`는 Button에서든 TextField에서든 Dialog에서든 같은 것을 뜻해야 합니다. 공용 어휘는 [`src/types.ts`](https://github.com/jooy2/neba/blob/main/packages/react/src/types.ts)에 모여 있고, 각 컴포넌트는 필요한 것만 가져다 씁니다. **같은 개념에 다른 이름을 새로 만들지 마세요.**
 
 ## 공용 타입
+
+::: fw react
 
 ```ts
 type NebaSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
@@ -38,6 +40,23 @@ export interface ButtonProps
 ```
 
 `Omit<…, 'color'>`가 필요한 이유는 네이티브 `color` 속성과 이름이 겹치기 때문입니다.
+
+:::
+
+::: fw flutter
+
+Dart에서는 같은 타입이 같은 이름의 enum이며, `package:neba/neba.dart`에서 가져옵니다.
+
+```dart
+enum NebaSize { xs, sm, md, lg, xl }
+enum NebaColor { primary, secondary, success, warning, danger, info }
+enum NebaDensity { standard, compact }
+enum NebaVariant { solid, outline, text }
+```
+
+`'md'`는 `NebaSize.md`이고, 값의 이름은 하나만 빼고 모두 같습니다. `density`의 `'default'`는 Dart의 예약어라서 `NebaDensity.standard`입니다. 위젯이 받는 축은 nullable이고, 인자를 생략하면 `NebaProvider`의 기본값을 따릅니다.
+
+:::
 
 ## 각 축의 의미
 
@@ -126,6 +145,8 @@ type NebaTransition = NebaAnimation | NebaTransitionOptions;
 
 ## 스타일 덮어쓰기
 
+::: fw react
+
 세 가지 통로가 있고, 무엇을 바꾸려는지에 따라 고르면 됩니다.
 
 ### `className`: 루트
@@ -179,6 +200,14 @@ inline custom property는 경쟁할 cascade가 없으므로, 색이나 깊이를
 ### 두 개의 stylesheet
 
 class로 덮어쓰는 것은 `neba/tailwind.css` 경로에서만 의미가 있습니다. 그 경로에서만 직접 쓴 class와 컴포넌트의 class가 한 번의 Tailwind pass에서 생성되어 서로 순서를 가릴 수 있기 때문입니다. `neba/styles.css`는 이미 완성된 CSS라 프로젝트의 빌드에 참여하지 않습니다. 그 경로에서는 직접 쓴 CSS나 위의 `--n-*` slot으로 덮어쓰세요. [시작하기](../guide/getting-started)를 보세요.
+
+:::
+
+::: fw flutter
+
+Flutter 위젯은 `className`, `classNames`, `style`을 받지 않습니다. 덧붙일 스타일시트가 없기 때문입니다. React에서 클래스로 하던 일은 Flutter에서 공통 축과 `NebaProvider`가 내려 주는 토큰으로 하고, 위젯 안을 건드리는 대신 `Padding`, `SizedBox`, `DecoratedBox`로 감쌉니다.
+
+:::
 
 ## 이름 규칙
 

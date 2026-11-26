@@ -5,6 +5,8 @@ order: 2
 
 # Hooks
 
+::: fw react
+
 <p class="neba-lede">The hooks the components already run on, offered so an application can use the same ones. They are imported from <code>neba/hooks</code>, or from the package root along with everything else.</p>
 
 ```tsx
@@ -101,3 +103,11 @@ A key that something on its way up already answered with `preventDefault` — a 
 The handler is held in a ref, so the listener is bound once per combination rather than re-bound on every render that closes over new state, and it still sees the newest one.
 
 For a key inside a field rather than on the window, use the `shortcuts` prop on [TextField](../components/inputs/text-field), [NumberField](../components/inputs/number-field) or [Combobox](../components/inputs/combobox). Same spelling, bound to the control.
+
+:::
+
+::: fw flutter
+
+The hooks are part of the React package, and the Flutter package has none. A Flutter widget asks the framework itself: the screen through `MediaQuery`, the tokens through `NebaTheme.of(context)`, and a key combination through `Shortcuts` and `Actions`.
+
+:::

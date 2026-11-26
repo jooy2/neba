@@ -39,6 +39,8 @@ The other half of the rule is that a map **narrows** a prop rather than replacin
 
 ## Which props are responsive
 
+::: fw react
+
 > A prop is responsive when its value fits in an inline custom property. It is not when its value is a class name.
 
 Tailwind only ever sees class names written out literally, so a per-breakpoint class map would mean five complete ladders in the bundle of every page that draws the component. A `--n-*` slot costs one inline declaration and one cascade in the stylesheet, shared by every instance on the page.
@@ -52,6 +54,16 @@ Tailwind only ever sees class names written out literally, so a per-breakpoint c
 | `columns` on [Gallery](../components/display/gallery) |  |
 
 The list on the left is short on purpose. Each slot needs four hand-written media blocks that every page then downloads, so adding an axis is not a decision taken lightly.
+
+:::
+
+::: fw flutter
+
+The Flutter package's widgets take no responsive maps. A layout that changes with the width reads it with `MediaQuery.sizeOf(context)` and passes plain values, and the ladder above is the widths to compare it against, in logical pixels.
+
+:::
+
+::: fw react
 
 ## Deciding in CSS or in JavaScript
 
@@ -75,6 +87,10 @@ return useBreakpoint('md') ? <Map /> : <StaticImage />;
 
 `useBreakpointValue` reads a map exactly as the cascade does, so the floor rule above is the same rule in both places.
 
+:::
+
+::: fw react
+
 ## Changing the widths
 
 A breakpoint is a **build-time** decision. `@media` cannot read a custom property, so no amount of runtime configuration (a provider prop, a context) can move one, and anything that appeared to would move the JavaScript while leaving the CSS where it was.
@@ -93,3 +109,5 @@ What it can be is a decision you take part in. The library's media queries are w
 This needs the Tailwind path. A project on `neba/styles.css` gets a stylesheet that was compiled here, with the five widths already baked into it; the names still work, but the numbers are the ones in the table above. If you need to move them, run Tailwind: [getting started](../guide/getting-started) has both setups.
 
 Changing the _names_ is not supported on either path. The five names are written into the type, into the class tables literally, and into the cascades the stylesheet resolves through.
+
+:::

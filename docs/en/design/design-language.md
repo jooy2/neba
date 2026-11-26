@@ -14,6 +14,12 @@ What that sentence takes, and what it leaves out:
 
 ---
 
+::: fw flutter
+
+The rules here are written in the terms of the React package's stylesheet, because that is where every token is defined. The Flutter package answers to the same rules and computes the same tokens from it. Where a widget has to draw a rule differently from CSS, its component page says so.
+
+:::
+
 ## 1. The surface
 
 Every filled surface is four layers, in this order and at these strengths.

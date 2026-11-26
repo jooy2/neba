@@ -5,6 +5,8 @@ order: 2
 
 # Hooks
 
+::: fw react
+
 <p class="neba-lede">컴포넌트가 이미 쓰고 있는 hook을 애플리케이션에서도 쓸 수 있도록 공개한 것입니다. <code>neba/hooks</code>에서 가져오거나, 나머지와 함께 패키지 루트에서 가져옵니다.</p>
 
 ```tsx
@@ -101,3 +103,11 @@ window에 거는 키 조합이며, 표기는 [Shortcut](../components/display/sh
 핸들러는 ref에 담기므로 listener는 조합당 한 번만 바인딩되고, 렌더마다 다시 걸리지 않습니다. 그러면서도 항상 최신 핸들러를 호출합니다.
 
 window가 아니라 필드 안의 키라면 [TextField](../components/inputs/text-field) · [NumberField](../components/inputs/number-field) · [Combobox](../components/inputs/combobox)의 `shortcuts` prop을 쓰세요. 표기는 같고 control에 붙습니다.
+
+:::
+
+::: fw flutter
+
+hook은 React 패키지에만 있고, Flutter 패키지에는 없습니다. Flutter 위젯은 프레임워크에 직접 묻습니다. 화면은 `MediaQuery`로, 토큰은 `NebaTheme.of(context)`로, 키 조합은 `Shortcuts`와 `Actions`로 다룹니다.
+
+:::

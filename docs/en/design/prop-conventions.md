@@ -5,9 +5,11 @@ order: 3
 
 # Prop conventions
 
-`size="md"` has to mean the same thing on a Button, a TextField and a Dialog. The shared vocabulary lives in [`src/types.ts`](https://github.com/jooy2/neba/blob/main/src/types.ts), and each component takes only the axes it needs. **Do not invent a second spelling for an idea that already has one.**
+`size="md"` has to mean the same thing on a Button, a TextField and a Dialog. The shared vocabulary lives in [`src/types.ts`](https://github.com/jooy2/neba/blob/main/packages/react/src/types.ts), and each component takes only the axes it needs. **Do not invent a second spelling for an idea that already has one.**
 
 ## The shared types
+
+::: fw react
 
 ```ts
 type NebaSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
@@ -38,6 +40,23 @@ export interface ButtonProps
 ```
 
 The `Omit<…, 'color'>` is there because the native `color` attribute collides with the name.
+
+:::
+
+::: fw flutter
+
+In Dart the same types are enums under the same names, exported from `package:neba/neba.dart`:
+
+```dart
+enum NebaSize { xs, sm, md, lg, xl }
+enum NebaColor { primary, secondary, success, warning, danger, info }
+enum NebaDensity { standard, compact }
+enum NebaVariant { solid, outline, text }
+```
+
+`'md'` is `NebaSize.md`, and every value keeps its name with one exception: `density`'s `'default'` is `NebaDensity.standard`, because Dart reserves the word. An axis a widget takes is nullable, and leaving it out is how a widget asks `NebaProvider` for the default.
+
+:::
 
 ## What each axis means
 
@@ -126,6 +145,8 @@ A reduced-motion preference cuts every effect in the library to its last frame, 
 
 ## Overriding the styling
 
+::: fw react
+
 Three channels, and which one you want depends on what you are changing.
 
 ### `className`: the root
@@ -179,6 +200,14 @@ It also beats an inline style, which is what the handful of components that coul
 ### The two stylesheets
 
 Overriding with a class is only meaningful on the `neba/tailwind.css` path, where your classes and the component's are generated in one Tailwind pass and can be ordered against each other at all. `neba/styles.css` is finished CSS and cannot take part in a build you run: on that path, override with your own CSS or with the `--n-*` slots above. See [getting started](../guide/getting-started).
+
+:::
+
+::: fw flutter
+
+A Flutter widget takes no `className`, `classNames` or `style`: there is no stylesheet to add to. What a React caller does with a class, a Flutter caller does with the shared axes, with the tokens a `NebaProvider` hands down, and by wrapping the widget in a `Padding`, a `SizedBox` or a `DecoratedBox` rather than reaching into it.
+
+:::
 
 ## Naming
 

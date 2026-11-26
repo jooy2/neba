@@ -7,6 +7,8 @@ order: 3
 
 <p class="neba-lede">One place to set what every component under it starts from: the prop values a product has decided on, the colour scheme a reader has chosen, and the direction the document runs in. It is optional, and every component works without it.</p>
 
+::: fw react
+
 ```tsx
 import { NebaProvider } from 'neba';
 
@@ -17,7 +19,30 @@ import { NebaProvider } from 'neba';
 
 It renders no element of its own. Three jobs are together here because all three are properties of the **application** rather than of any control in it.
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+NebaProvider(
+  defaults: const NebaDefaults(
+    size: NebaSize.sm,
+    density: NebaDensity.compact,
+    locale: Locale('ko'),
+  ),
+  child: app,
+)
+```
+
+It draws nothing of its own. Three jobs are together here because all three are properties of the **application** rather than of any widget in it.
+
+:::
+
 ## defaults
+
+::: fw react
 
 Six axes: `size`, `density`, `variant`, `locale`, `labelPlacement` and `spacing`. Writing `size="sm"` at four hundred call sites is the problem this exists to end.
 
@@ -29,18 +54,34 @@ Six axes: `size`, `density`, `variant`, `locale`, `labelPlacement` and `spacing`
 
 A call site still wins. The order is **the caller, then the provider, then the component's own default**, so a `<Button size="xl">` inside a `size="xs"` provider is `xl`, and a component with no `size` prop is untouched. A `ButtonGroup` or `ToggleGroup` sits between the caller and the provider: a Button in a `size="lg"` group under a `size: 'sm'` provider is `lg`.
 
+:::
+
+::: fw flutter
+
+Six axes, the fields of `NebaDefaults`: `size`, `density`, `variant`, `locale`, `labelPlacement` and `spacing`. Writing `size: NebaSize.sm` at four hundred call sites is the problem this exists to end.
+
+A widget's own argument still wins. The order is **the widget's argument, then its group, then the provider, then the widget's own default**, which is why every style argument on a Neba widget is nullable: leaving one out is how a widget asks the provider.
+
+:::
+
 ### The six axes
 
 |  |  |
 | --- | --- |
 | `size` `density` `variant` `locale` `labelPlacement` | The right value is a property of the product. A dense application is dense everywhere, a Korean one is Korean everywhere, and a form puts all its labels in one place. `labelPlacement` reaches the ten fields that draw a shell: TextField, NumberField, Select, Combobox, DatePicker, TimePicker, DateTimePicker, DateRangePicker, ColorPicker and TreeSelect. |
-| `spacing` | The gap between fields, on Tailwind's spacing scale: `7` is `1.75rem`. It reaches the two components that stack fields, [Form](../components/inputs/form) and [Fieldset](../components/inputs/fieldset), and takes over from the gap their `size` picks. The options of a [RadioGroup](../components/inputs/radio-group) or a [CheckboxGroup](../components/inputs/checkbox-group) and the rows of a [List](../components/display/list) take a `spacing` of their own and do not read this one. Options start on the same step as fields at `md`, but a product that spreads its fields apart should not spread every set of options with them. Flex and GridContainer are layout, and do not read it either. |
+| `spacing` | The gap between fields, <Fw react="on Tailwind's spacing scale: `7` is `1.75rem`" flutter="on the scale `NebaScale.spacingUnit` counts in: `7` is 28 logical pixels" />. It reaches the two components that stack fields, [Form](../components/inputs/form) and [Fieldset](../components/inputs/fieldset), and takes over from the gap their `size` picks. The options of a [RadioGroup](../components/inputs/radio-group) or a [CheckboxGroup](../components/inputs/checkbox-group) and the rows of a [List](../components/display/list) take a `spacing` of their own and do not read this one. Options start on the same step as fields at `md`, but a product that spreads its fields apart should not spread every set of options with them. Flex and GridContainer are layout, and do not read it either. |
 | `color` | **Not defaultable.** A component's colour default is often semantic. An [Alert](../components/feedback/alert) is `info` and a [Popconfirm](../components/feedback/popconfirm) is `danger` because severity carries meaning, and one global override would silently repaint those into something that means something else. |
 | `elevation` | **Not defaultable.** A shadow is opt-in per surface, which the [design language](../design/design-language) is explicit about. An application-wide one is the moulded-plastic look the whole thing is against. |
 
+::: fw react
+
 Each component is filled only on the axes it actually declares. A key a component does not take would otherwise ride its props spread onto a DOM node, and `size` on an `<input>` is a real attribute that would quietly resize the field. One axis a component declares is left out on purpose: a [TextLink](../components/display/text-link) takes no `size` from the provider, because a link in a sentence is the size of the sentence.
 
+:::
+
 ## Colour scheme
+
+::: fw react
 
 ```tsx
 <NebaProvider defaultColorScheme="system">
@@ -82,7 +123,39 @@ Pass it the same `storageKey` and `defaultColorScheme` as the provider. In devel
 
 `'neba-color-scheme'` by default. Pass your own, or `false` to apply the scheme for this visit and forget it. Storage is never allowed to throw: a private window that denies the write still gets the scheme, it just does not remember it.
 
-## direction
+:::
+
+::: fw flutter
+
+```dart
+NebaProvider(colorScheme: NebaColorScheme.system, child: app)
+```
+
+`colorScheme` is `system`, `light` or `dark`, and it is a value the app owns rather than state the provider keeps: the provider writes nothing anywhere and remembers nothing. An app that lets a reader choose keeps the choice in the storage it already uses and passes it back in.
+
+`system` follows the platform's brightness, so it changes with the device's setting while the app runs. A widget reads what the scheme resolved to from its tokens, as `NebaTheme.of(context).brightness`.
+
+### Your own colours
+
+`light` and `dark` take the tokens a product brings for each scheme. A change to a base token is all it takes: every derived token, from the fills to the focus rings, is computed again from it, as a CSS override of a base token carries its derived ones along.
+
+```dart
+final NebaTokens base = NebaTokens.light();
+final NebaTokens light = base.withFamily(
+  NebaColor.primary,
+  base.families[NebaColor.primary]!.copyWith(accent: const Color(0xFF00897B)),
+);
+
+NebaProvider(light: light, child: app)
+```
+
+A platform's high-contrast setting makes every translucent sheet opaque, as `prefers-reduced-transparency` does on the web.
+
+:::
+
+## <Fw react="direction" flutter="textDirection" />
+
+::: fw react
 
 ```tsx
 <NebaProvider direction="rtl">
@@ -96,9 +169,25 @@ The provider sets `dir` once it has mounted, which is after the first paint. A p
 
 The components are built on logical properties (`margin-inline-start` and the rest) rather than physical ones, so the layout follows on its own. What needs `dir` is the handful of places a glyph has to turn: the calendar's steppers, a Breadcrumb's separators, a Carousel's arrows, a TreeView's disclosure.
 
+:::
+
+::: fw flutter
+
+```dart
+NebaProvider(textDirection: TextDirection.rtl, child: app)
+```
+
+Wraps the subtree in a `Directionality`. It is **left alone when it is not given**, so the subtree keeps the direction above it, which `WidgetsApp` takes from the app's locale; most apps never pass it.
+
+Neba widgets are laid out with start and end rather than left and right, so a right-to-left subtree mirrors on its own, glyphs that point included.
+
+:::
+
 ## Nesting
 
-Providers nest. A settings panel that previews a scheme, or a compact toolbar inside a comfortable page, is a second provider around that subtree. An inner provider's `defaults` are merged over the outer ones, so an inner `density` keeps the outer `size`, and an inner provider with no `direction` runs the way the outer one does.
+Providers nest. A settings panel that previews a scheme, or a compact toolbar inside a comfortable page, is a second provider around that subtree. An inner provider's `defaults` are merged over the outer ones, so an inner `density` keeps the outer `size`, and an inner provider with no <Fw react="`direction`" flutter="`textDirection`" /> runs the way the outer one does.
+
+::: fw react
 
 ```tsx
 <NebaProvider defaults={{ size: 'sm' }}>
@@ -111,3 +200,21 @@ Providers nest. A settings panel that previews a scheme, or a compact toolbar in
 The colour scheme on `<html>` belongs to the outermost provider, and a nested one does not write it. A nested provider that wants to repaint its own subtree points `colorSchemeElement` at an element of its own. The preview above does exactly that, and it is why the prop is a function rather than an element. `direction`, when a nested provider sets one, is still written on `<html>`.
 
 A nested provider remembers its scheme under the same `storageKey` as the outer one unless it is given its own, so a scheme chosen inside it becomes the page's on the next visit. Give it `storageKey={false}`, as the preview above does, or a key of its own.
+
+:::
+
+::: fw flutter
+
+```dart
+NebaProvider(
+  defaults: const NebaDefaults(size: NebaSize.sm),
+  child: NebaProvider(
+    defaults: const NebaDefaults(density: NebaDensity.compact),
+    child: toolbar, // compact, and still small
+  ),
+)
+```
+
+A nested provider's `colorScheme` applies to its own subtree and nothing else, so a panel that previews the dark theme is a `NebaProvider(colorScheme: NebaColorScheme.dark)` around the panel.
+
+:::

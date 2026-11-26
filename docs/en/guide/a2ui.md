@@ -5,6 +5,8 @@ order: 4
 
 # A2UI catalog
 
+::: fw react
+
 <p class="neba-lede">The package ships an A2UI catalog and a renderer to go with it. The catalog tells an agent which Neba components it may describe; the adapter turns what the agent writes back into those components. An agent writes a surface as JSON and it comes out as your design system.</p>
 
 ```ts
@@ -138,3 +140,11 @@ Under v1.0 the adapter uses the schemas and the functions of `@a2ui/web_core`'s 
 
 - The protocol: [a2ui.org](https://a2ui.org), and the [Basic Catalog](https://github.com/google/A2UI/blob/main/specification/v1_0/catalogs/basic/catalog.json) it is modelled on.
 - What the props mean on the components themselves is under [Components](../components/).
+
+:::
+
+::: fw flutter
+
+The A2UI catalog and the renderer that goes with it are part of the React package. The Flutter package has no renderer for it.
+
+:::

@@ -101,6 +101,8 @@ panel은 페이지 위에 흰색을 얹는 값이라, 라이트 테마에서는 
 
 ## 색 바꾸기
 
+::: fw react
+
 다섯 개만 다시 선언하면 계열 전체가 따라옵니다.
 
 ```css
@@ -154,11 +156,48 @@ Neba의 다크 테마는 `prefers-color-scheme`을 따르고, `.dark` / `[data-t
 
 > **파생 토큰은 건드리지 마세요.** `--neba-primary-panel`처럼 파생된 토큰을 직접 덮어쓰면 그 하나만 바뀌고 나머지 열두 개는 원래 계열 색으로 남습니다. 항상 다섯 개의 기준값 쪽을 고치세요.
 
+:::
+
+::: fw flutter
+
+Flutter에서는 다섯 기본값이 `NebaColorFamily`의 필드이고, 제품 고유의 값은 `NebaProvider`에 넘깁니다. 계열은 `withFamily`로, 중립 토큰은 `copyWith`로 바꾸며, 파생 역할은 모두 그 결과에서 다시 계산됩니다.
+
+```dart
+final NebaTokens base = NebaTokens.light();
+final NebaTokens light = base.withFamily(
+  NebaColor.primary,
+  base.families[NebaColor.primary]!.copyWith(
+    solid: const Color(0xFF00796B),
+    solidHover: const Color(0xFF00695C),
+    solidActive: const Color(0xFF004D40),
+    accent: const Color(0xFF00897B),
+  ),
+);
+
+NebaProvider(light: light, child: app)
+```
+
+다크 테마는 별도의 토큰 묶음이므로, 한쪽에서 바꾼 계열은 `dark`로 따로 바꿔야 합니다. 앱의 일부에서만 색을 바꾸려면 그 부분을 해당 토큰을 받은 `NebaProvider`로 감싸면 됩니다. 토큰은 넘겨받은 하위 트리에만 적용됩니다.
+
+파생 역할을 위젯에 직접 넘기는 방법은 없습니다. `NebaTokens`가 파생 역할을 모두 기본값에서 계산하므로, `panel`을 바꾸려면 기본값을 바꿔야 합니다.
+
+:::
+
 ## 계열 추가하기
 
-라이브러리에 새 계열을 넣으려면 네 군데를 고칩니다. [`src/types.ts`](https://github.com/jooy2/neba/blob/main/src/types.ts)의 `NebaColor` 유니언, `styles.css`의 세 테마 블록마다 기준값 다섯 줄, 그 다섯 값을 `color-mix()`로 섞는 파생 블록의 파생 토큰 열세 개, 그리고 타입 검사가 요구하는 `Alert`의 역할 표 항목입니다. 세 테마 블록은 라이트 테마, 시스템 설정을 따르는 다크 테마, 클래스나 속성으로 강제한 다크 테마입니다.
+::: fw react
+
+라이브러리에 새 계열을 넣으려면 네 군데를 고칩니다. [`src/types.ts`](https://github.com/jooy2/neba/blob/main/packages/react/src/types.ts)의 `NebaColor` 유니언, `styles.css`의 세 테마 블록마다 기준값 다섯 줄, 그 다섯 값을 `color-mix()`로 섞는 파생 블록의 파생 토큰 열세 개, 그리고 타입 검사가 요구하는 `Alert`의 역할 표 항목입니다. 세 테마 블록은 라이트 테마, 시스템 설정을 따르는 다크 테마, 클래스나 속성으로 강제한 다크 테마입니다.
 
 소비자 쪽에서는 `NebaColor`가 닫힌 유니언이라 새 이름을 넘길 수 없습니다. 계열이 하나 더 필요하다면 이슈로 올려 주세요.
+
+:::
+
+::: fw flutter
+
+Flutter 패키지의 계열은 enum인 `NebaColor`의 값이므로, 이쪽에서도 바깥에서 새 계열을 더할 수 없습니다. 라이브러리에 계열을 더하려면 enum에 값을 추가하고 `NebaTokens.light()`와 `NebaTokens.dark()`에 각각 `NebaColorFamily`를 넣어야 합니다. 스타일시트에 같은 계열이 생기기 전까지는 패키지의 토큰 일치 테스트가 실패합니다.
+
+:::
 
 ## 색이 아닌 토큰
 

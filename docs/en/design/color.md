@@ -101,6 +101,8 @@ Lightness is not as free as it looks. With a white `on-solid` and a fill at 88%,
 
 ## Changing a colour
 
+::: fw react
+
 Re-declare the five and the whole family follows.
 
 ```css
@@ -154,11 +156,48 @@ The two panels below are exactly the same markup. Only the right one is wrapped 
 
 > **Do not override a derived token.** Overriding something like `--neba-primary-panel` directly changes that one token and leaves the other twelve on the original family colour. Always edit the five base values instead.
 
+:::
+
+::: fw flutter
+
+In Flutter the five base values are the fields of `NebaColorFamily`, and a product hands its own to `NebaProvider`: `withFamily` replaces a family, `copyWith` replaces a neutral, and every derived role is computed again from the result.
+
+```dart
+final NebaTokens base = NebaTokens.light();
+final NebaTokens light = base.withFamily(
+  NebaColor.primary,
+  base.families[NebaColor.primary]!.copyWith(
+    solid: const Color(0xFF00796B),
+    solidHover: const Color(0xFF00695C),
+    solidActive: const Color(0xFF004D40),
+    accent: const Color(0xFF00897B),
+  ),
+);
+
+NebaProvider(light: light, child: app)
+```
+
+The dark theme is a set of tokens of its own, so a family changed in one is changed in the other separately, through `dark`. To change a colour in one part of the app only, put a `NebaProvider` with those tokens around that part: tokens apply to the subtree they are given to.
+
+There is no way to hand a widget a derived role directly. `NebaTokens` derives every one of them from the base values, so the only way to a different `panel` is a different base value.
+
+:::
+
 ## Adding a family
 
-Adding one to the library takes four edits: the `NebaColor` union in [`src/types.ts`](https://github.com/jooy2/neba/blob/main/src/types.ts); the five base values in each of the three theme blocks in `styles.css`, which are the light theme, the dark theme chosen by the system and the dark theme forced with a class or an attribute; the thirteen derived tokens in the derived block, which mix those five with `color-mix()`; and the family's entry in `Alert`'s table of roles, which the type checker asks for.
+::: fw react
+
+Adding one to the library takes four edits: the `NebaColor` union in [`src/types.ts`](https://github.com/jooy2/neba/blob/main/packages/react/src/types.ts); the five base values in each of the three theme blocks in `styles.css`, which are the light theme, the dark theme chosen by the system and the dark theme forced with a class or an attribute; the thirteen derived tokens in the derived block, which mix those five with `color-mix()`; and the family's entry in `Alert`'s table of roles, which the type checker asks for.
 
 From the consuming side, `NebaColor` is a closed union, so a new name cannot be passed in. If you need another family, please open an issue.
+
+:::
+
+::: fw flutter
+
+The Flutter package's families are the values of `NebaColor`, an enum, so a new one cannot be added from outside it either. Adding one to the library is an entry in the enum and a `NebaColorFamily` in each of `NebaTokens.light()` and `NebaTokens.dark()`, and the package's token parity test fails until the stylesheet has the same family.
+
+:::
 
 ## The tokens that are not families
 
