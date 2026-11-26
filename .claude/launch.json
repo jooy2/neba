@@ -25,10 +25,11 @@
         "http.server",
         "5290",
         "--directory",
-        "packages/flutter/example/build/web"
+        "docs/public"
       ],
       "port": 5290,
-      "autoPort": false
+      "autoPort": false,
+      "url": "http://localhost:5290"
     }
   ]
 }

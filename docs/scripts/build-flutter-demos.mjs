@@ -37,7 +37,10 @@ if (!force && existsSync(resolve(out, 'version.json'))) {
    * without it every asset the engine asks for resolves against the page's own
    * path. `--pwa-strategy=none` leaves out the service worker, which would
    * cache the gallery under the site's origin and keep serving a reader the
-   * previous build after a new one is deployed.
+   * previous build after a new one is deployed. `--no-web-resources-cdn`
+   * serves the engine (CanvasKit) from the build itself: by default a Flutter
+   * web app fetches it from Google's CDN, so every Flutter preview made a
+   * reader's browser ask a third party for it.
    */
   const result = spawnSync(
     flutter,
@@ -48,6 +51,7 @@ if (!force && existsSync(resolve(out, 'version.json'))) {
       '--base-href',
       '/flutter/',
       '--pwa-strategy=none',
+      '--no-web-resources-cdn',
       '--no-tree-shake-icons',
       '--output',
       out
