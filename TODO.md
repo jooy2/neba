@@ -35,7 +35,7 @@ What is left, in order:
 
 140 components, grouped as the documentation groups them. One component is one commit holding the widget, its tests, its demos, its documentation page in both locales, its Flutter props table and its changelog entry; `packages/flutter/CLAUDE.md` lists the steps. `NebaProvider` came with the foundation.
 
-Port in this order, because each group is built out of the ones before it: the layout primitives the demos stand on, then `NebaButton` and the rest of the inputs, the display group, feedback, surfaces, charts, the agent group, and the transitions last. Within a group, take the components another component reuses first: `NebaButton` before `NebaIconButton` and `NebaButtonGroup`, `NebaPopover` before `NebaSelect`.
+Port in this order, because each group is built out of the ones before it: `NebaBox` first, since nearly every demo puts its content on one, then the layout primitives the demos stand on, then `NebaButton` and the rest of the inputs, the display group, feedback, surfaces, charts, the agent group, and the transitions last. Within a group, take the components another component reuses first: `NebaButton` before `NebaIconButton` and `NebaButtonGroup`, `NebaPopover` before `NebaSelect`.
 
 Some components have no single Flutter equivalent of what they are on the web, and their form is decided when they are reached, then written on their page: `NebaPortal` (an `Overlay` entry), `NebaVisuallyHidden` (a `Semantics` node), `NebaTextLink` (a callback rather than an `href`, since the package opens nothing itself), `NebaImage` and `NebaGallery` (an `ImageProvider` rather than a URL), `NebaCodeBlock` (no highlight.js; a tokenizer of its own or a caller-supplied one), and the page shell (`NebaPageLayout`, `NebaHeader`, `NebaFooter`, `NebaSidebar`) against a phone's safe areas.
 
@@ -141,7 +141,7 @@ Some components have no single Flutter equivalent of what they are on the web, a
 
 ### Surfaces (16)
 
-- [ ] `NebaBox`
+- [x] `NebaBox`
 - [ ] `NebaCard`
 - [ ] `NebaAccordion`
 - [ ] `NebaCollapsible`

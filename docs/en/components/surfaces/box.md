@@ -1,6 +1,7 @@
 ---
 title: Box
 order: 1
+flutter: true
 ---
 
 # Box
@@ -9,17 +10,41 @@ order: 1
 
 <Demo src="box/hero" />
 
+::: fw react
+
 ```tsx
 import { Box } from 'neba';
 
 <Box>Content</Box>;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+const NebaBox(child: Text('Content'));
+```
+
+:::
+
 ## Props
 
 <PropsTable name="Box" />
 
+::: fw react
+
 Every native `<div>` attribute passes through, `color` excepted.
+
+:::
+
+::: fw flutter
+
+It takes no `className` or `style`: place it by wrapping it, in a `Padding` or a `SizedBox`.
+
+:::
 
 When structure is needed (a title, a footer, dividers), use [Card](./card), which is a Box with those sections laid out on it.
 
@@ -33,7 +58,17 @@ None of the three weights flood the sheet with colour, because what a Box holds 
 
 <Demo src="box/variants">
 
+::: fw react
+
 <<< @/.vitepress/demos/box/variants.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/box/variants.dart
+
+:::
 
 </Demo>
 
@@ -43,7 +78,17 @@ The surface is white, so `color` reaches **the border only**. That is why the ex
 
 <Demo src="box/colors">
 
+::: fw react
+
 <<< @/.vitepress/demos/box/colors.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/box/colors.dart
+
+:::
 
 </Demo>
 
@@ -53,7 +98,17 @@ On a Box, `size` sets neither a height nor a type scale but the size of the **sh
 
 <Demo src="box/sizes">
 
+::: fw react
+
 <<< @/.vitepress/demos/box/sizes.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/box/sizes.dart
+
+:::
 
 </Demo>
 
@@ -61,16 +116,36 @@ On a Box, `size` sets neither a height nor a type scale but the size of the **sh
 
 <Demo src="box/elevation">
 
+::: fw react
+
 <<< @/.vitepress/demos/box/elevation.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/box/elevation.dart
+
+:::
 
 </Demo>
 
-### padded and render
+### <Fw react="padded and render" flutter="padded" />
 
-`padded={false}` is for full-bleed content: an image, a table, a list that draws its own rows. `render` renders the Box as an element other than a `<div>`.
+<Fw react="`padded={false}`" flutter="`padded: false`" /> is for full-bleed content: an image, a table, a list that draws its own rows.<Fw react=" `render` renders the Box as an element other than a `<div>`." />
 
 <Demo src="box/unpadded">
 
+::: fw react
+
 <<< @/.vitepress/demos/box/unpadded.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/box/unpadded.dart
+
+:::
 
 </Demo>

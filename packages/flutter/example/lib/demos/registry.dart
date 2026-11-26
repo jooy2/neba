@@ -6,9 +6,21 @@ library;
 
 import 'package:flutter/widgets.dart';
 
+import 'package:neba_example/demos/box/colors.dart';
+import 'package:neba_example/demos/box/elevation.dart';
+import 'package:neba_example/demos/box/hero.dart';
+import 'package:neba_example/demos/box/sizes.dart';
+import 'package:neba_example/demos/box/unpadded.dart';
+import 'package:neba_example/demos/box/variants.dart';
 import 'package:neba_example/demos/tokens/palette.dart';
 
 /// The demos, by key.
 const Map<String, Widget Function()> demos = <String, Widget Function()>{
+  'box/colors': BoxColors.new,
+  'box/elevation': BoxElevation.new,
+  'box/hero': BoxHero.new,
+  'box/sizes': BoxSizes.new,
+  'box/unpadded': BoxUnpadded.new,
+  'box/variants': BoxVariants.new,
   'tokens/palette': TokensPalette.new,
 };

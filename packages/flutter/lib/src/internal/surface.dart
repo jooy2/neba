@@ -90,6 +90,12 @@ class NebaSheet extends StatelessWidget {
     final NebaTokens tokens = NebaTheme.of(context);
     final Duration edgeDuration = nebaDuration(context, NebaScale.duration, instant: pressed);
     final Duration fillDuration = nebaDuration(context, NebaScale.durationFill, instant: pressed);
+    // An edge is a CSS border, which takes a pixel of the box rather than
+    // lying over what is in it: content that runs to the edges of an outlined
+    // sheet stops inside the hairline.
+    final Widget? content = edge == null || child == null
+        ? child
+        : Padding(padding: const EdgeInsets.all(1), child: child);
 
     Widget sheet = TweenAnimationBuilder<Color?>(
       tween: ColorTween(end: edge ?? edgeless),
@@ -116,7 +122,7 @@ class NebaSheet extends StatelessWidget {
           child: child,
         );
       },
-      child: child,
+      child: content,
     );
 
     if (blur && tokens.blurSigma > 0) {

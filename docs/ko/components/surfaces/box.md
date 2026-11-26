@@ -1,6 +1,7 @@
 ---
 title: Box
 order: 1
+flutter: true
 ---
 
 # Box
@@ -9,17 +10,41 @@ order: 1
 
 <Demo src="box/hero" />
 
+::: fw react
+
 ```tsx
 import { Box } from 'neba';
 
 <Box>내용</Box>;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+const NebaBox(child: Text('Content'));
+```
+
+:::
+
 ## Props
 
 <PropsTable name="Box" />
 
+::: fw react
+
 `color`를 제외한 `<div>`의 native 속성이 그대로 전달됩니다.
+
+:::
+
+::: fw flutter
+
+`className`과 `style`은 받지 않습니다. 위치는 `Padding`이나 `SizedBox`로 감싸서 정합니다.
+
+:::
 
 제목이나 푸터, 구분선처럼 구조가 필요하면 [Card](./card)를 쓰세요. Card는 그 섹션들이 배치된 Box입니다.
 
@@ -33,7 +58,17 @@ import { Box } from 'neba';
 
 <Demo src="box/variants">
 
+::: fw react
+
 <<< @/.vitepress/demos/box/variants.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/box/variants.dart
+
+:::
 
 </Demo>
 
@@ -43,7 +78,17 @@ import { Box } from 'neba';
 
 <Demo src="box/colors">
 
+::: fw react
+
 <<< @/.vitepress/demos/box/colors.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/box/colors.dart
+
+:::
 
 </Demo>
 
@@ -53,7 +98,17 @@ Box의 `size`는 높이나 타입 스케일이 아니라 **sheet의 크기**, �
 
 <Demo src="box/sizes">
 
+::: fw react
+
 <<< @/.vitepress/demos/box/sizes.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/box/sizes.dart
+
+:::
 
 </Demo>
 
@@ -61,16 +116,36 @@ Box의 `size`는 높이나 타입 스케일이 아니라 **sheet의 크기**, �
 
 <Demo src="box/elevation">
 
+::: fw react
+
 <<< @/.vitepress/demos/box/elevation.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/box/elevation.dart
+
+:::
 
 </Demo>
 
-### padded와 render
+### <Fw react="padded와 render" flutter="padded" />
 
-`padded={false}`는 이미지나 표처럼 가장자리까지 채우는 콘텐츠를 위한 것입니다. `render`로 `<div>` 대신 다른 요소로 렌더링할 수 있습니다.
+<Fw react="`padded={false}`" flutter="`padded: false`" />는 이미지나 표처럼 가장자리까지 채우는 콘텐츠를 위한 것입니다.<Fw react=" `render`로 `<div>` 대신 다른 요소로 렌더링할 수 있습니다." />
 
 <Demo src="box/unpadded">
 
+::: fw react
+
 <<< @/.vitepress/demos/box/unpadded.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/box/unpadded.dart
+
+:::
 
 </Demo>
