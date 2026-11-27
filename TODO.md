@@ -38,6 +38,7 @@ The six steps of a port are in `packages/flutter/CLAUDE.md`. What the last sessi
 - **A tile that slides behind the current item** is `NebaTileRun` in `lib/src/internal/tile.dart`, which `NebaSegmentedButton` and `NebaTabs` draw their tile with, in a row, a column, or lines that wrap; `NebaFloatingBottomNavigation` should take the same rather than a second one.
 - **A control drawn smaller than a finger** (the React package's `neba-hit`) is a `NebaHitTarget` inside a `NebaHitArea`, from `lib/src/internal/hit.dart`, as `NebaAlert`'s × is. `NebaChip`'s × came first and takes its press over the chip's height instead; moving it over is open.
 - **A live region** (`role="alert"`, `role="status"`, `aria-live`) is a `NebaLiveRegion`, from `lib/src/internal/live_region.dart`, which writes the role on the web and a live region on Android and iOS. `NebaSkeleton` came first and still writes `liveRegion: true` itself.
+- **A sheet that says what happened** lays its row out with `NebaMessageContent` from `lib/src/internal/message.dart`, as `NebaAlert` and the toasts do: the glyph, the title over the message in a live region, an action and the × each centred on the first line. A toast's stack is drawn through an `OverlayPortal` the provider shows again on every new toast, so it comes over a popup opened before it; `NebaDialog` and `NebaDrawer` should open through the root overlay too, and a toast raised from one is then drawn over it.
 - **A section that folds** is built from `lib/src/internal/disclosure.dart`, as `NebaCollapsible` and `NebaAccordion` are: the panel that opens to its content's height by layout, the header heard as expanded or collapsed, the chevron and the sheet. The agent components that open the same way (`NebaToolCall`, `NebaReasoning`, `NebaSources`) should take the panel rather than a second one.
 - **The wheel over a strip** is `nebaStripWheel` in `lib/src/internal/wheel.dart`, and the arrow keys of a set with one focus stop are `nebaRovingTarget` in `lib/src/internal/button_group.dart`; ScrollZone and Tabs share the first, ToggleGroup and Tabs the second.
 - **A run laid out by a render object of our own does not report an overflow.** `NebaJoinedRun` and `NebaTileRun` keep their children at their natural widths, as CSS keeps a `shrink-0` row, and paint past a width too narrow for them without the stripes a `Row` draws, so the gallery's phone test cannot catch one. The segmented button's hero, `Plan` and `Period` sets are 4 to 37 pixels wider than the 342 pixels a phone leaves in the test font, and fit with room to spare in Inter.
@@ -181,7 +182,7 @@ Demos that wait on a component not ported yet, to be added with it: `meter/thres
 - [ ] `NebaDialog`
 - [ ] `NebaConfirm`
 - [ ] `NebaPopconfirm`
-- [ ] `NebaToast`
+- [x] `NebaToast`
 - [x] `NebaTooltip`
 - [ ] `NebaOverlay`
 - [x] `NebaProgressLinear`

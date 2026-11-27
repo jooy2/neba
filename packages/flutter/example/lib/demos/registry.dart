@@ -241,6 +241,9 @@ import 'package:neba_example/demos/timeline/bullets.dart';
 import 'package:neba_example/demos/timeline/hero.dart';
 import 'package:neba_example/demos/timeline/horizontal.dart';
 import 'package:neba_example/demos/timeline/status.dart';
+import 'package:neba_example/demos/toast/action.dart';
+import 'package:neba_example/demos/toast/hero.dart';
+import 'package:neba_example/demos/toast/positions.dart';
 import 'package:neba_example/demos/toggle/colors.dart';
 import 'package:neba_example/demos/toggle/controlled.dart';
 import 'package:neba_example/demos/toggle/hero.dart';
@@ -500,6 +503,9 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'timeline/hero': TimelineHero.new,
   'timeline/horizontal': TimelineHorizontal.new,
   'timeline/status': TimelineStatus.new,
+  'toast/action': ToastAction.new,
+  'toast/hero': ToastHero.new,
+  'toast/positions': ToastPositions.new,
   'toggle-group/full-width': ToggleGroupFullWidth.new,
   'toggle-group/hero': ToggleGroupHero.new,
   'toggle-group/multiple': ToggleGroupMultiple.new,

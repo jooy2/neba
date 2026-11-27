@@ -1203,7 +1203,7 @@ class _NebaFloatingState extends State<NebaFloating> with SingleTickerProviderSt
       node: _popupScope,
       child: _NebaFloatingScope(
         state: this,
-        child: _PortalText(child: popup),
+        child: NebaPortalText(child: popup),
       ),
     );
 
@@ -1266,10 +1266,12 @@ class _NebaFloatingScope extends InheritedWidget {
 /// The text a popup starts from: the app's family at the body weight in the
 /// page's foreground, left-aligned and wrapping, not the paragraph its
 /// trigger happens to be in. A portalled popup in the browser inherits from
-/// `<body>` for the same reason.
-class _PortalText extends StatelessWidget {
-  const _PortalText({required this.child});
+/// `<body>` for the same reason, and so does a toast's stack.
+class NebaPortalText extends StatelessWidget {
+  /// [child] on the text a portalled surface starts from.
+  const NebaPortalText({required this.child, super.key});
 
+  /// The surface.
   final Widget child;
 
   @override

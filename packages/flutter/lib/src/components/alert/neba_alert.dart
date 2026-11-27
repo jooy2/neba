@@ -2,23 +2,15 @@
 /// is about.
 library;
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 
-import 'package:neba/src/components/box/neba_box.dart';
 import 'package:neba/src/internal/animate.dart';
-import 'package:neba/src/internal/focus_ring.dart';
 import 'package:neba/src/internal/glyphs.dart';
-import 'package:neba/src/internal/hit.dart';
-import 'package:neba/src/internal/ink.dart';
-import 'package:neba/src/internal/interaction.dart';
-import 'package:neba/src/internal/live_region.dart';
+import 'package:neba/src/internal/message.dart';
 import 'package:neba/src/internal/messages.dart';
-import 'package:neba/src/internal/motion.dart';
 import 'package:neba/src/internal/ring.dart';
 import 'package:neba/src/internal/surface.dart';
-import 'package:neba/src/theme/scale.dart';
 import 'package:neba/src/theme/theme.dart';
 import 'package:neba/src/theme/tokens.dart';
 import 'package:neba/src/types.dart';
@@ -159,15 +151,6 @@ class NebaAlert extends StatelessWidget {
     final NebaElevation elevation = this.elevation ?? 0;
     final NebaColorRoles roles = tokens.roles(color);
     final BorderRadius radius = BorderRadius.circular(tokens.radius[size]!);
-    final TextScaler scaler = MediaQuery.textScalerOf(context);
-
-    final double bodySize = NebaScale.sheetBodyText[size]!;
-    final double titleSize = NebaScale.sheetTitleText[size]!;
-    // The React package's `em` and `1lh`: the message's size as it is drawn,
-    // and the height of its first line, which the glyph, the action and the
-    // dismiss button are centred on whatever the type scale turns out to be.
-    final double em = scaler.scale(bodySize);
-    final double line = em * NebaScale.sheetBodyLeading[size]! / bodySize;
 
     // On a filled sheet the family is already the surface, so the glyph and
     // the title ride on it in one ink. On a tinted one the message stays
@@ -175,82 +158,21 @@ class NebaAlert extends StatelessWidget {
     // say which kind of alert this is; under a title the message steps back
     // to the muted ink, which a filled sheet has no room for.
     final bool solid = variant == NebaVariant.solid;
-    final Color ink = solid ? roles.onSolid : tokens.fg;
-    final Color accent = solid ? roles.onSolid : roles.accent;
-    final Color detail = solid ? roles.onSolid : tokens.mutedFg;
 
-    final Widget? glyph = showIcon ? icon ?? NebaGlyph(NebaGlyphs.severity(color)) : null;
-    final Widget? title = this.title;
-    final Widget? message = child;
-    final Widget? action = this.action;
-    final VoidCallback? onClose = this.onClose;
-
-    final Widget row = Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      spacing: NebaScale.sheetSectionGap[size]!,
-      children: <Widget>[
-        if (glyph != null)
-          _FirstLine(
-            height: line,
-            child: NebaInk(color: accent, child: glyph),
-          ),
-        Expanded(
-          child: NebaLiveRegion(
-            role: role ?? rolesFor[color]!,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: NebaScale.sheetHeaderGap[size]!,
-              children: <Widget>[
-                if (title != null)
-                  NebaInk(
-                    color: accent,
-                    child: DefaultTextStyle.merge(
-                      style: TextStyle(
-                        fontSize: titleSize,
-                        height: NebaScale.sheetTitleLeading[size]! / titleSize,
-                        fontWeight: FontWeight.w600,
-                      ),
-                      child: IconTheme.merge(
-                        data: IconThemeData(size: scaler.scale(titleSize) * 1.2),
-                        child: title,
-                      ),
-                    ),
-                  ),
-                if (message != null)
-                  title == null ? message : NebaInk(color: detail, child: message),
-              ],
-            ),
-          ),
-        ),
-        if (action != null) _FirstLine(height: line, child: action),
-        if (onClose != null)
-          _FirstLine(
-            height: line,
-            child: _DismissButton(
-              onPressed: onClose,
-              label: closeLabel ?? nebaMessages(context, 'action', locale: locale)['dismiss']!,
-              ring: roles.ring,
-              extent: em * 1.15,
-              glyph: em * 1.2,
-            ),
-          ),
-      ],
-    );
-
-    final Widget content = NebaInk(
-      color: ink,
-      child: DefaultTextStyle.merge(
-        style: TextStyle(fontSize: bodySize, height: NebaScale.sheetBodyLeading[size]! / bodySize),
-        child: IconTheme.merge(
-          // Icons track the text they sit in, as `1.2em` does.
-          data: IconThemeData(size: em * 1.2),
-          // The dismiss button's target reaches into the padding around it.
-          child: NebaHitArea(
-            child: Padding(padding: EdgeInsets.all(NebaBox.padding[density]![size]!), child: row),
-          ),
-        ),
-      ),
+    final Widget content = NebaMessageContent(
+      size: size,
+      density: density,
+      ink: solid ? roles.onSolid : tokens.fg,
+      accent: solid ? roles.onSolid : roles.accent,
+      detail: solid ? roles.onSolid : tokens.mutedFg,
+      role: role ?? rolesFor[color]!,
+      glyph: showIcon ? icon ?? NebaGlyph(NebaGlyphs.severity(color)) : null,
+      title: title,
+      message: child,
+      action: action,
+      onClose: onClose,
+      closeLabel: closeLabel ?? nebaMessages(context, 'action', locale: locale)['dismiss']!,
+      ring: roles.ring,
     );
 
     final Widget sheet = switch (variant) {
@@ -293,82 +215,5 @@ class NebaAlert extends StatelessWidget {
     }
 
     return alert;
-  }
-}
-
-/// A slot at the end or the start of the row, centred on the message's first
-/// line, the React package's `h-[1lh] items-center`. Something taller than
-/// the line stands out of it above and below rather than pushing the line
-/// down, as it does in CSS.
-class _FirstLine extends StatelessWidget {
-  const _FirstLine({required this.height, required this.child});
-
-  final double height;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: height,
-      child: OverflowBox(
-        minHeight: 0,
-        maxHeight: double.infinity,
-        fit: OverflowBoxFit.deferToChild,
-        child: child,
-      ),
-    );
-  }
-}
-
-/// The ×: drawn at the size of the text beside it, pressed at the size of a
-/// finger.
-class _DismissButton extends StatelessWidget {
-  const _DismissButton({
-    required this.onPressed,
-    required this.label,
-    required this.ring,
-    required this.extent,
-    required this.glyph,
-  });
-
-  final VoidCallback onPressed;
-  final String label;
-  final Color ring;
-  final double extent;
-  final double glyph;
-
-  @override
-  Widget build(BuildContext context) {
-    return Semantics(
-      container: true,
-      button: true,
-      enabled: true,
-      label: label,
-      child: NebaHitTarget(
-        child: NebaInteractive(
-          onTap: onPressed,
-          builder: (BuildContext context, NebaInteraction interaction, ValueListenable<Offset?> _) {
-            return NebaFocusRing(
-              visible: interaction.focusVisible,
-              color: ring,
-              borderRadius: BorderRadius.circular(extent),
-              child: AnimatedOpacity(
-                opacity: interaction.hovered || interaction.focusVisible ? 1 : 0.7,
-                duration: nebaDuration(context, NebaScale.duration),
-                curve: NebaScale.ease,
-                child: SizedBox.square(
-                  dimension: extent,
-                  child: OverflowBox(
-                    maxWidth: glyph,
-                    maxHeight: glyph,
-                    child: NebaGlyph(NebaGlyphs.close, size: glyph),
-                  ),
-                ),
-              ),
-            );
-          },
-        ),
-      ),
-    );
   }
 }
