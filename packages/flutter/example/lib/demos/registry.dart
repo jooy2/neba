@@ -333,6 +333,20 @@ import 'package:neba_example/demos/meter/hero.dart';
 import 'package:neba_example/demos/meter/sizes.dart';
 import 'package:neba_example/demos/meter/thresholds.dart';
 import 'package:neba_example/demos/meter/values.dart';
+import 'package:neba_example/demos/mockup/bezel.dart';
+import 'package:neba_example/demos/mockup/devices.dart';
+import 'package:neba_example/demos/mockup/finish.dart';
+import 'package:neba_example/demos/mockup/handhelds.dart';
+import 'package:neba_example/demos/mockup/hardware.dart';
+import 'package:neba_example/demos/mockup/hero.dart';
+import 'package:neba_example/demos/mockup/notch.dart';
+import 'package:neba_example/demos/mockup/orientation.dart';
+import 'package:neba_example/demos/mockup/os.dart';
+import 'package:neba_example/demos/mockup/resolution.dart';
+import 'package:neba_example/demos/mockup/screen.dart';
+import 'package:neba_example/demos/mockup/scroll.dart';
+import 'package:neba_example/demos/mockup/system_ui.dart';
+import 'package:neba_example/demos/mockup/wallpaper.dart';
 import 'package:neba_example/demos/number_field/format.dart';
 import 'package:neba_example/demos/number_field/hero.dart';
 import 'package:neba_example/demos/number_field/label_placement.dart';
@@ -862,6 +876,20 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'meter/sizes': MeterSizes.new,
   'meter/thresholds': MeterThresholds.new,
   'meter/values': MeterValues.new,
+  'mockup/bezel': MockupBezel.new,
+  'mockup/devices': MockupDevices.new,
+  'mockup/finish': MockupFinish.new,
+  'mockup/handhelds': MockupHandhelds.new,
+  'mockup/hardware': MockupHardware.new,
+  'mockup/hero': MockupHero.new,
+  'mockup/notch': MockupNotch.new,
+  'mockup/orientation': MockupOrientation.new,
+  'mockup/os': MockupOs.new,
+  'mockup/resolution': MockupResolution.new,
+  'mockup/screen': MockupScreen.new,
+  'mockup/scroll': MockupScroll.new,
+  'mockup/system-ui': MockupSystemUi.new,
+  'mockup/wallpaper': MockupWallpaper.new,
   'number-field/format': NumberFieldFormat.new,
   'number-field/hero': NumberFieldHero.new,
   'number-field/label-placement': NumberFieldLabelPlacement.new,

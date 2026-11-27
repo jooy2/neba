@@ -1,6 +1,7 @@
 ---
 title: Mockup
 order: 12
+flutter: true
 ---
 
 # Mockup
@@ -8,6 +9,8 @@ order: 12
 <p class="neba-lede">화면에 무엇이든 올릴 수 있는 기기입니다. 휴대폰, 태블릿, 모니터, 노트북을 그리고 그 위에 시스템의 상태바나 dock, 작업 표시줄을 얹습니다. 화면은 기기의 실제 해상도를 가진 viewport이므로, 안의 내용은 페이지가 아니라 휴대폰을 기준으로 배치됩니다.</p>
 
 <Demo src="mockup/hero" align="center" minHeight="440" />
+
+::: fw react
 
 ```tsx
 import { Mockup } from 'neba';
@@ -17,11 +20,38 @@ import { Mockup } from 'neba';
 </Mockup>;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+const NebaMockup(
+  device: NebaMockupDevice.mobile,
+  os: NebaMockupOs.ios,
+  width: 260,
+  child: YourScreen(),
+);
+```
+
+:::
+
 ## Props
 
 <PropsTable name="Mockup" />
 
+::: fw react
+
 `<div>`의 기본 속성은 그대로 전달되며, `render`로 요소를 바꿀 수 있습니다. 공통 축은 [prop 규칙](../../design/prop-conventions)에서 설명합니다.
+
+:::
+
+::: fw flutter
+
+공통 축은 [prop 규칙](../../design/prop-conventions)에서 설명합니다.
+
+:::
 
 특정 기기에만 해당하는 prop이 셋 있고, 나머지 기기에서는 무시됩니다. `hardware`는 데스크톱의 것, `orientation`은 손에 드는 기기의 것이며, 그 기기가 돌리지 않는 `os`는 해당 기기의 기본값으로 되돌아갑니다.
 
@@ -33,13 +63,25 @@ import { Mockup } from 'neba';
 
 <Demo src="mockup/devices" minHeight="320">
 
+::: fw react
+
 <<< @/.vitepress/demos/mockup/devices.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/mockup/devices.dart
+
+:::
 
 </Demo>
 
 ### 목업 크기 정하기
 
-`width`와 `height`는 기기가 페이지에 그려지는 크기입니다. 픽셀 숫자든 임의의 CSS 길이든 받습니다. 하나만 주면 나머지는 기기의 비율을 따르고, 둘 다 주지 않으면 놓인 자리의 너비를 채웁니다. 어떤 값이 되든 안쪽 화면은 자기 해상도를 유지하며, 기기 전체가 거기에 맞춰 축소됩니다.
+`width`와 `height`는 기기가 페이지에 그려지는 크기입니다. <Fw react="픽셀 숫자든 임의의 CSS 길이든 받습니다." flutter="논리 픽셀로 받습니다." /> 하나만 주면 나머지는 기기의 비율을 따르고, 둘 다 주지 않으면 놓인 자리의 너비를 채웁니다. 어떤 값이 되든 안쪽 화면은 자기 해상도를 유지하며, 기기 전체가 거기에 맞춰 축소됩니다.
+
+::: fw react
 
 ```tsx
 <Mockup device="mobile" width={260} />
@@ -47,15 +89,47 @@ import { Mockup } from 'neba';
 <Mockup device="tablet" width="100%" />
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+const NebaMockup(device: NebaMockupDevice.mobile, width: 260);
+const NebaMockup(device: NebaMockupDevice.desktop, height: 320);
+const NebaMockup(device: NebaMockupDevice.tablet);
+```
+
+:::
+
 ### size와 resolution
 
-`size`는 기기별로 실제 해상도 다섯 단계를 오르내리는 사다리입니다. 휴대폰은 320부터 430 CSS 픽셀까지, 데스크톱은 1024부터 1920까지입니다. `resolution`은 `{ width, height }` 쌍을 받아 이를 덮어씁니다.
+`size`는 기기별로 실제 해상도 다섯 단계를 오르내리는 사다리입니다. 휴대폰은 320부터 430 CSS 픽셀까지, 데스크톱은 1024부터 1920까지입니다. `resolution`은 <Fw react="`{ width, height }` 쌍을" flutter="`Size`를" /> 받아 이를 덮어씁니다.
+
+::: fw react
 
 화면은 `neba-screen`이라는 이름의 container이므로, 안의 내용은 창이 아니라 기기에 container query로 반응할 수 있습니다. 아래 두 목업은 페이지에서 똑같이 300픽셀 너비이고, 다른 것은 그 뒤의 화면뿐입니다.
 
+:::
+
+::: fw flutter
+
+화면 아래의 `MediaQuery`는 페이지의 inset 없이 내용이 쓸 수 있는 화면의 크기를 알려주므로, 안의 내용은 창이 아니라 기기에 반응합니다. 아래 두 목업은 페이지에서 같은 너비로 그려지고, 다른 것은 그 뒤의 화면뿐입니다.
+
+:::
+
 <Demo src="mockup/resolution" minHeight="280">
 
+::: fw react
+
 <<< @/.vitepress/demos/mockup/resolution.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/mockup/resolution.dart
+
+:::
 
 </Demo>
 
@@ -65,7 +139,17 @@ import { Mockup } from 'neba';
 
 <Demo src="mockup/os" minHeight="300">
 
+::: fw react
+
 <<< @/.vitepress/demos/mockup/os.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/mockup/os.dart
+
+:::
 
 </Demo>
 
@@ -73,7 +157,17 @@ import { Mockup } from 'neba';
 
 <Demo src="mockup/handhelds" minHeight="360">
 
+::: fw react
+
 <<< @/.vitepress/demos/mockup/handhelds.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/mockup/handhelds.dart
+
+:::
 
 </Demo>
 
@@ -83,7 +177,17 @@ import { Mockup } from 'neba';
 
 <Demo src="mockup/hardware" minHeight="340">
 
+::: fw react
+
 <<< @/.vitepress/demos/mockup/hardware.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/mockup/hardware.dart
+
+:::
 
 </Demo>
 
@@ -93,7 +197,17 @@ import { Mockup } from 'neba';
 
 <Demo src="mockup/bezel" minHeight="300">
 
+::: fw react
+
 <<< @/.vitepress/demos/mockup/bezel.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/mockup/bezel.dart
+
+:::
 
 </Demo>
 
@@ -103,7 +217,17 @@ import { Mockup } from 'neba';
 
 <Demo src="mockup/finish" minHeight="300">
 
+::: fw react
+
 <<< @/.vitepress/demos/mockup/finish.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/mockup/finish.dart
+
+:::
 
 </Demo>
 
@@ -115,7 +239,17 @@ import { Mockup } from 'neba';
 
 <Demo src="mockup/notch" minHeight="300">
 
+::: fw react
+
 <<< @/.vitepress/demos/mockup/notch.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/mockup/notch.dart
+
+:::
 
 </Demo>
 
@@ -125,37 +259,77 @@ import { Mockup } from 'neba';
 
 <Demo src="mockup/orientation" minHeight="280">
 
+::: fw react
+
 <<< @/.vitepress/demos/mockup/orientation.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/mockup/orientation.dart
+
+:::
 
 </Demo>
 
 ### systemUi
 
-모든 바는 내용을 덮는 대신 자기 자리를 차지합니다. 따라서 `systemUi={false}`는 가려져 있던 무언가를 드러내는 것이 아니라, 화면을 `children`에게 돌려줍니다.
+모든 바는 내용을 덮는 대신 자기 자리를 차지합니다. 따라서 <Fw react="`systemUi={false}`는" flutter="`systemUi: false`는" /> 가려져 있던 무언가를 드러내는 것이 아니라, 화면을 <Fw react="`children`에게" flutter="`child`에게" /> 돌려줍니다.
 
 <Demo src="mockup/system-ui" minHeight="360">
 
+::: fw react
+
 <<< @/.vitepress/demos/mockup/system-ui.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/mockup/system_ui.dart
+
+:::
 
 </Demo>
 
 ### scroll
 
-화면보다 긴 내용은 기본적으로 잘립니다. 기기의 정지된 사진이 원하는 것이 그것이기 때문입니다. `scroll`을 켜면 대신 화면이 스크롤됩니다.
+화면보다 긴 내용은 기본적으로 <Fw react="잘립니다." flutter="화면 크기를 정확히 받고 넘치는 부분은 잘립니다." /> 기기의 정지된 사진이 원하는 것이 그것이기 때문입니다. `scroll`을 켜면 대신 화면이 스크롤됩니다.
 
 <Demo src="mockup/scroll" align="center" minHeight="340">
 
+::: fw react
+
 <<< @/.vitepress/demos/mockup/scroll.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/mockup/scroll.dart
+
+:::
 
 </Demo>
 
 ### wallpaper
 
-`wallpaper`는 내용 뒤에 놓이는 것입니다. 색이든 gradient든 `url()`이든, 임의의 CSS `background` 값을 받습니다. 기본값은 페이지 자신의 surface 색입니다.
+`wallpaper`는 내용 뒤에 놓이는 것입니다. <Fw react="색이든 gradient든 `url()`이든, 임의의 CSS `background` 값을 받습니다." flutter="색이든 gradient든 `DecorationImage`든, `Decoration`을 받습니다." /> 기본값은 페이지 자신의 surface 색입니다.
 
 <Demo src="mockup/wallpaper" minHeight="300">
 
+::: fw react
+
 <<< @/.vitepress/demos/mockup/wallpaper.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/mockup/wallpaper.dart
+
+:::
 
 </Demo>
 
@@ -163,13 +337,38 @@ import { Mockup } from 'neba';
 
 `elevation`은 기기를 페이지에서 띄웁니다. 그림자는 실루엣으로 그려지므로 이를 감싸는 상자가 아니라 뚜껑과 목과 받침을 따라가며, 기기가 축소되어도 함께 줄어들지 않습니다.
 
+::: fw react
+
 ```tsx
 <Mockup device="mobile" elevation={2} width={240} />
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+const NebaMockup(device: NebaMockupDevice.mobile, elevation: 2, width: 240);
+```
+
+:::
+
 ## 접근성
+
+::: fw react
 
 - 기기의 모든 부분(테두리, 바, 구멍)은 `aria-hidden`입니다. screen reader가 닿는 것은 `children`뿐이며, 목업이란 곧 실제 내용을 둘러싼 그림이라는 뜻입니다.
 - 시계는 장식이며 읽히지 않습니다. 크롬이 그리는 유일한 글자입니다.
 - 목업은 스스로 role도 이름도 만들지 않습니다. 그림 자체가 페이지에서 의미를 가진다면 `aria-label`을 주거나, `render`로 캡션이 있는 `<figure>`로 바꾸어 이름을 주십시오.
 - 안의 내용은 그대로 조작할 수 있고 focus도 갑니다. 4분의 1로 축소된 기기는 컨트롤도 4분의 1 크기라는 점은, 그 안에 form을 넣기 전에 알아 둘 만합니다.
+
+:::
+
+::: fw flutter
+
+- 기기의 모든 부분(테두리, 바, 구멍)은 semantics 트리에서 빠집니다. 화면 낭독기가 닿는 것은 `child`뿐이며, 목업이란 곧 실제 내용을 둘러싼 그림이라는 뜻입니다.
+- 시계는 장식이며 읽히지 않습니다. 크롬이 그리는 유일한 글자입니다.
+- 목업은 스스로 role도 이름도 만들지 않습니다. 그림 자체가 페이지에서 의미를 가진다면 label을 단 `Semantics`로 감싸십시오.
+- 안의 내용은 그대로 조작할 수 있고 focus도 갑니다. 4분의 1로 축소된 기기는 컨트롤도 4분의 1 크기라는 점은, 그 안에 form을 넣기 전에 알아 둘 만합니다.
+
+:::

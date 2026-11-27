@@ -259,7 +259,7 @@ Some components have no single Flutter equivalent of what they are on the web, a
 - [x] `NebaPopover`
 - [x] `NebaDrawer`
 - [x] `NebaWindowPane`
-- [ ] `NebaMockup`
+- [x] `NebaMockup`
 
 ### Charts (10)
 

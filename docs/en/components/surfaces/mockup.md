@@ -1,6 +1,7 @@
 ---
 title: Mockup
 order: 12
+flutter: true
 ---
 
 # Mockup
@@ -8,6 +9,8 @@ order: 12
 <p class="neba-lede">A device with a screen you can put anything on: a phone, a tablet, a monitor or a laptop, with the system's own status bar, dock or taskbar drawn on it. The screen is a viewport at the device's real resolution, so the content inside is laid out against a phone rather than against the page.</p>
 
 <Demo src="mockup/hero" align="center" minHeight="440" />
+
+::: fw react
 
 ```tsx
 import { Mockup } from 'neba';
@@ -17,11 +20,38 @@ import { Mockup } from 'neba';
 </Mockup>;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+const NebaMockup(
+  device: NebaMockupDevice.mobile,
+  os: NebaMockupOs.ios,
+  width: 260,
+  child: YourScreen(),
+);
+```
+
+:::
+
 ## Props
 
 <PropsTable name="Mockup" />
 
+::: fw react
+
 Native `<div>` attributes pass through, and `render` swaps the element. The shared axes are described in [prop conventions](../../design/prop-conventions).
+
+:::
+
+::: fw flutter
+
+The shared axes are described in [prop conventions](../../design/prop-conventions).
+
+:::
 
 Three props belong to one device and are ignored on the others: `hardware` is a desktop's, `orientation` is a handheld's, and an `os` a device does not run falls back to that device's default.
 
@@ -33,13 +63,25 @@ Three props belong to one device and are ignored on the others: `hardware` is a 
 
 <Demo src="mockup/devices" minHeight="320">
 
+::: fw react
+
 <<< @/.vitepress/demos/mockup/devices.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/mockup/devices.dart
+
+:::
 
 </Demo>
 
 ### Sizing the mockup
 
-`width` and `height` set how big the device is drawn on the page: a number in pixels, or any CSS length. Given one, the other follows the device's proportion; given neither, it fills the width it is in. Whatever it comes to, the screen inside stays at its own resolution and the whole device is scaled to fit.
+`width` and `height` set how big the device is drawn on the page: <Fw react="a number in pixels, or any CSS length" flutter="in logical pixels" />. Given one, the other follows the device's proportion; given neither, it fills the width it is in. Whatever it comes to, the screen inside stays at its own resolution and the whole device is scaled to fit.
+
+::: fw react
 
 ```tsx
 <Mockup device="mobile" width={260} />
@@ -47,15 +89,47 @@ Three props belong to one device and are ignored on the others: `hardware` is a 
 <Mockup device="tablet" width="100%" />
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+const NebaMockup(device: NebaMockupDevice.mobile, width: 260);
+const NebaMockup(device: NebaMockupDevice.desktop, height: 320);
+const NebaMockup(device: NebaMockupDevice.tablet);
+```
+
+:::
+
 ### size and resolution
 
-`size` is a five-step ladder of real resolutions per device: a phone from 320 to 430 CSS pixels wide, a desktop from 1024 to 1920. `resolution` takes a `{ width, height }` pair and overrides it.
+`size` is a five-step ladder of real resolutions per device: a phone from 320 to 430 CSS pixels wide, a desktop from 1024 to 1920. `resolution` takes <Fw react="a `{ width, height }` pair" flutter="a `Size`" /> and overrides it.
+
+::: fw react
 
 Because the screen is a container named `neba-screen`, content inside can answer to the device with a container query rather than to the window. Both mockups below are 300 pixels wide on the page; only the screens behind them differ.
 
+:::
+
+::: fw flutter
+
+The `MediaQuery` under the screen reports the screen, the room the content has with no insets of the page's, so content inside answers to the device rather than to the window. Both mockups below are drawn at the same width on the page; only the screens behind them differ.
+
+:::
+
 <Demo src="mockup/resolution" minHeight="280">
 
+::: fw react
+
 <<< @/.vitepress/demos/mockup/resolution.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/mockup/resolution.dart
+
+:::
 
 </Demo>
 
@@ -65,7 +139,17 @@ Because the screen is a container named `neba-screen`, content inside can answer
 
 <Demo src="mockup/os" minHeight="300">
 
+::: fw react
+
 <<< @/.vitepress/demos/mockup/os.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/mockup/os.dart
+
+:::
 
 </Demo>
 
@@ -73,7 +157,17 @@ On a handheld the pair is a status bar and the bar at the bottom: a home indicat
 
 <Demo src="mockup/handhelds" minHeight="360">
 
+::: fw react
+
 <<< @/.vitepress/demos/mockup/handhelds.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/mockup/handhelds.dart
+
+:::
 
 </Demo>
 
@@ -83,7 +177,17 @@ On a desktop, `hardware` is what holds the screen up: a stand under it, or a key
 
 <Demo src="mockup/hardware" minHeight="340">
 
+::: fw react
+
 <<< @/.vitepress/demos/mockup/hardware.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/mockup/hardware.dart
+
+:::
 
 </Demo>
 
@@ -93,7 +197,17 @@ On a desktop, `hardware` is what holds the screen up: a stand under it, or a key
 
 <Demo src="mockup/bezel" minHeight="300">
 
+::: fw react
+
 <<< @/.vitepress/demos/mockup/bezel.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/mockup/bezel.dart
+
+:::
 
 </Demo>
 
@@ -103,7 +217,17 @@ On a desktop, `hardware` is what holds the screen up: a stand under it, or a key
 
 <Demo src="mockup/finish" minHeight="300">
 
+::: fw react
+
 <<< @/.vitepress/demos/mockup/finish.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/mockup/finish.dart
+
+:::
 
 </Demo>
 
@@ -115,7 +239,17 @@ It is hardware rather than chrome, so it is drawn whether or not `systemUi` is o
 
 <Demo src="mockup/notch" minHeight="300">
 
+::: fw react
+
 <<< @/.vitepress/demos/mockup/notch.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/mockup/notch.dart
+
+:::
 
 </Demo>
 
@@ -125,37 +259,77 @@ It is hardware rather than chrome, so it is drawn whether or not `systemUi` is o
 
 <Demo src="mockup/orientation" minHeight="280">
 
+::: fw react
+
 <<< @/.vitepress/demos/mockup/orientation.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/mockup/orientation.dart
+
+:::
 
 </Demo>
 
 ### systemUi
 
-Every bar takes its own space rather than covering the content, so `systemUi={false}` gives the screen back to `children` rather than uncovering anything that was hidden.
+Every bar takes its own space rather than covering the content, so <Fw react="`systemUi={false}`" flutter="`systemUi: false`" /> gives the screen back to <Fw react="`children`" flutter="`child`" /> rather than uncovering anything that was hidden.
 
 <Demo src="mockup/system-ui" minHeight="360">
 
+::: fw react
+
 <<< @/.vitepress/demos/mockup/system-ui.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/mockup/system_ui.dart
+
+:::
 
 </Demo>
 
 ### scroll
 
-Content taller than the screen is clipped by default, which is what a still picture of a device wants. `scroll` makes the screen scroll instead.
+Content taller than the screen is <Fw react="clipped" flutter="given the screen exactly and clipped to it" /> by default, which is what a still picture of a device wants. `scroll` makes the screen scroll instead.
 
 <Demo src="mockup/scroll" align="center" minHeight="340">
 
+::: fw react
+
 <<< @/.vitepress/demos/mockup/scroll.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/mockup/scroll.dart
+
+:::
 
 </Demo>
 
 ### wallpaper
 
-`wallpaper` is what sits behind the content: any CSS `background` value. A colour, a gradient, a `url()`. It defaults to the page's own surface colour.
+`wallpaper` is what sits behind the content: <Fw react="any CSS `background` value. A colour, a gradient, a `url()`." flutter="a `Decoration`. A colour, a gradient, a `DecorationImage`." /> It defaults to the page's own surface colour.
 
 <Demo src="mockup/wallpaper" minHeight="300">
 
+::: fw react
+
 <<< @/.vitepress/demos/mockup/wallpaper.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/mockup/wallpaper.dart
+
+:::
 
 </Demo>
 
@@ -163,13 +337,38 @@ Content taller than the screen is clipped by default, which is what a still pict
 
 `elevation` raises the device off the page. The shadow is drawn as a silhouette, so it follows a lid on a neck on a foot rather than the box around them, and it does not shrink when the device is scaled down.
 
+::: fw react
+
 ```tsx
 <Mockup device="mobile" elevation={2} width={240} />
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+const NebaMockup(device: NebaMockupDevice.mobile, elevation: 2, width: 240);
+```
+
+:::
+
 ## Accessibility
+
+::: fw react
 
 - Every part of the device is `aria-hidden`: the frame, the bars and the cut-out. What a screen reader reaches is `children` and nothing else, which is what a mockup is: a picture around real content.
 - The clock is decoration and is not read out. It is the only text the chrome draws.
 - The mockup adds no role and no name of its own. Give it one (`aria-label`, or a `<figure>` with a caption through `render`) when the picture itself carries meaning on the page.
 - Content inside stays interactive and focusable. A device scaled to a quarter of its size has controls a quarter of the size, which is worth knowing before putting a form in one.
+
+:::
+
+::: fw flutter
+
+- Every part of the device is left out of the semantics tree: the frame, the bars and the cut-out. What a screen reader reaches is `child` and nothing else, which is what a mockup is: a picture around real content.
+- The clock is decoration and is not read out. It is the only text the chrome draws.
+- The mockup adds no role and no name of its own. Wrap it in a `Semantics` with a label when the picture itself carries meaning on the page.
+- Content inside stays interactive and focusable. A device scaled to a quarter of its size has controls a quarter of the size, which is worth knowing before putting a form in one.
+
+:::
