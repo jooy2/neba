@@ -10,7 +10,7 @@ The Flutter package's first version is **1.21.0**, the same number as the React 
 
 The port lives on the branch **`flutter-port`**, pushed to GitHub and not merged. `main` on GitHub is still at `4f092a45`, from before the port began. Merging into `main` runs `publish-documentation.yml`, which deploys the site with the React/Flutter switch and the Flutter install instructions, so merge when the Flutter package is ready to be public, ideally together with its first pub.dev release.
 
-The last commit of that session is the `NebaButtonGroup` port, after `NebaChip`, `NebaAvatar` and `NebaCard`. What comes next, in order:
+The boxes below say what is ported; `git log --oneline` on the branch says in which order. A session that ports several components at once runs each port in a worktree of its own and brings the commit over with `git cherry-pick`: `TODO.md`, `CHANGELOG.md` and `packages/flutter/CLAUDE.md` then conflict on neighbouring lines, which is resolved by keeping both, and `lib/neba.dart` and the demo registry are regenerated with `dart run tool/generate.dart` rather than merged. What comes next, in order:
 
 1. The page shell (`NebaPageLayout`, `NebaHeader`, `NebaFooter`, `NebaSidebar`), on the drag scaffold `NebaPanes` brought (`lib/src/internal/drag.dart`).
 2. The inputs, in the order of section 2. `NebaToggle` and `NebaToggleGroup` read the same `NebaButtonGroupScope` and lay out on the same `NebaJoinedRun` that `NebaButtonGroup` does.
