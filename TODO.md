@@ -280,7 +280,7 @@ Some components have no single Flutter equivalent of what they are on the web, a
 ### Agent (9)
 
 - [x] `NebaToolCall`
-- [ ] `NebaApproval`
+- [x] `NebaApproval`
 - [x] `NebaReasoning`
 - [x] `NebaAgentSteps`
 - [ ] `NebaContextWindow`

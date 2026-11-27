@@ -1,6 +1,7 @@
 ---
 title: Approval
 order: 2
+flutter: true
 ---
 
 # Approval
@@ -8,6 +9,8 @@ order: 2
 <p class="neba-lede">에이전트가 권한을 묻고, 무엇으로 답했는지를 그대로 남기는 카드입니다. 한 번만 허용, 항상 허용, 거부 — 실행하려는 명령을 아래에 펼쳐 두고, 제목 옆에 위험 수준을 붙입니다.</p>
 
 <Demo src="approval/hero" />
+
+::: fw react
 
 ```tsx
 import { Approval } from 'neba';
@@ -24,11 +27,43 @@ import { Approval } from 'neba';
 />;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+NebaApproval(
+  risk: NebaApprovalRisk.high,
+  title: const Text('Run a shell command?'),
+  details: const Text('rm -rf ./dist'),
+  options: const <NebaApprovalOption>[
+    NebaApprovalOption(value: 'once', label: Text('Allow once')),
+    NebaApprovalOption(value: 'always', label: Text('Always allow')),
+    NebaApprovalOption(value: 'deny', label: Text('Deny'), color: NebaColor.danger),
+  ],
+  onDecide: (String value) => answer(value),
+);
+```
+
+:::
+
 ## Props
 
 <PropsTable name="Approval" />
 
+::: fw react
+
 `<div>`의 기본 속성은 루트로 전달됩니다. 위 표에서 다르게 정의한 `color`와 `title`만 제외됩니다.
+
+:::
+
+::: fw flutter
+
+`risk`는 `NebaApprovalRisk`이고 option 하나하나는 `NebaApprovalOption`입니다. Dart의 인자는 "주지 않음"과 `null`을 구분하지 못하므로, React의 `decision={null}`이 말하는 것은 `controlled: true`가 말합니다. 호출한 쪽이 답을 넘길 때까지 버튼이 그대로 있습니다. `labels`는 React 패키지가 쓰는 이름을 키로 삼는 맵이고, `showIcon: false`가 React의 `icon={false}`입니다.
+
+:::
 
 묻는 방법은 [Confirm](../feedback/confirm)과 [Popconfirm](../feedback/popconfirm)도 있습니다. 둘은 독자가 열고, 답이 둘이고, 하나를 고르는 순간 사라집니다. 이쪽은 에이전트가 열고, 에이전트가 가진 만큼의 답을 내놓고, 그대로 **남습니다**. 답하고 나면 질문이 사라지는 transcript는 무엇에 동의했는지 되짚어 읽을 수 없습니다.
 
@@ -46,7 +81,17 @@ import { Approval } from 'neba';
 
 <Demo src="approval/risk">
 
+::: fw react
+
 <<< @/.vitepress/demos/approval/risk.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/approval/risk.dart
+
+:::
 
 </Demo>
 
@@ -60,27 +105,71 @@ option의 `description`은 버튼 안이 아니라 버튼 줄 아래에 나열�
 
 `onDecide`는 option의 `value`를 받습니다. 제어하지 않으면 카드가 눌린 버튼을 기억해 두었다가 버튼 줄을 답을 적은 한 줄로 바꿉니다. 서버에서 다시 그리지 않는 transcript에는 이것으로 충분합니다.
 
+::: fw react
+
 `decision`을 넘기면 카드는 들은 것만 보여 줍니다. `null`은 아직 기다리는 중이고, `value`는 답한 상태입니다. 어느 쪽이든 루트에 `data-decided`가 붙습니다.
+
+:::
+
+::: fw flutter
+
+`controlled: true`와 함께 `decision`을 넘기면 카드는 들은 것만 보여 줍니다. `null`은 아직 기다리는 중이고, `value`는 답한 상태입니다. 값이 있는 `decision`은 `controlled` 없이도 그 답을 보여 줍니다.
+
+:::
 
 <Demo src="approval/decision">
 
+::: fw react
+
 <<< @/.vitepress/demos/approval/decision.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/approval/decision.dart
+
+:::
 
 </Demo>
 
 ### details
 
-문자열은 줄바꿈을 그대로 둔 서식 있는 텍스트로 그립니다. 명령이나 payload가 원하는 형태입니다. 노드는 손대지 않고 그리므로, 인자를 고칠 수 있는 폼이 들어가는 자리가 됩니다. 보내기에 동의하기 전에 수신자를 고치는 경우가 그렇습니다.
+<Fw react="문자열은" flutter="평범한 Text는" /> 줄바꿈을 그대로 둔 서식 있는 텍스트로 그립니다. 명령이나 payload가 원하는 형태입니다. <Fw react="노드는" flutter="그 밖의 위젯은" /> 손대지 않고 그리므로, 인자를 고칠 수 있는 폼이 들어가는 자리가 됩니다. 보내기에 동의하기 전에 수신자를 고치는 경우가 그렇습니다.
 
 <Demo src="approval/details">
 
+::: fw react
+
 <<< @/.vitepress/demos/approval/details.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/approval/details.dart
+
+:::
 
 </Demo>
 
 ## 접근성
 
+::: fw react
+
 - 카드는 제목이 이름이 되는 `role="group"`입니다. 스크린 리더의 요소 목록에서 어떤 권한을 묻는 카드인지 알 수 있습니다.
 - 답은 모두 진짜 [Button](../inputs/button)이고 탭 순서 안에 있습니다.
 - 위험 수준은 색이 아니라 단어입니다.
 - Approval이 나타나도 저절로 알려지지는 않습니다. 질문을 들려주려면 앱이 페이지에 두는 live region에 그 내용을 쓰거나, focus를 카드로 옮기세요.
+
+:::
+
+::: fw flutter
+
+- 카드는 제목이 이름이 되는 별도의 semantics 노드입니다. 스크린 리더는 답을 읽기 전에 어떤 권한을 묻는지부터 말합니다.
+- 답은 모두 진짜 [Button](../inputs/button)이고 focus 순서 안에 있습니다.
+- 위험 수준은 색이 아니라 단어입니다.
+- 누른 버튼이 답 줄로 바뀌면, focus가 이미 다른 곳으로 가지 않은 한 그 버튼이 가졌던 focus를 답 줄이 받습니다.
+- Approval이 나타나도 저절로 알려지지는 않습니다. 질문을 들려주려면 앱에서 알리거나, focus를 카드 안으로 옮기세요.
+
+:::

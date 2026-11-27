@@ -36,6 +36,7 @@ export 'src/components/animate_shake/neba_animate_shake.dart';
 export 'src/components/animate_slide/neba_animate_slide.dart';
 export 'src/components/animate_zoom/neba_animate_zoom.dart';
 export 'src/components/app_logo/neba_app_logo.dart';
+export 'src/components/approval/neba_approval.dart';
 export 'src/components/area_chart/neba_area_chart.dart';
 export 'src/components/aspect_ratio/neba_aspect_ratio.dart';
 export 'src/components/avatar/neba_avatar.dart';
