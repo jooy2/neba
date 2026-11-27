@@ -50,6 +50,7 @@ export 'src/components/progress_box/neba_progress_box.dart';
 export 'src/components/progress_circular/neba_progress_circular.dart';
 export 'src/components/progress_linear/neba_progress_linear.dart';
 export 'src/components/provider/neba_provider.dart';
+export 'src/components/radio_group/neba_radio_group.dart';
 export 'src/components/scroll_area/neba_scroll_area.dart';
 export 'src/components/scroll_zone/neba_scroll_zone.dart';
 export 'src/components/segmented_button/neba_segmented_button.dart';
