@@ -234,7 +234,7 @@ Demos that wait on a component not ported yet, to be added with it: `carousel/ph
 ### Charts (10)
 
 - [x] `NebaStatistic`
-- [ ] `NebaSparkline`
+- [x] `NebaSparkline`
 - [ ] `NebaLineChart`
 - [ ] `NebaAreaChart`
 - [ ] `NebaBarChart`

@@ -12,6 +12,7 @@ library;
 
 import 'package:flutter/animation.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart' show BuildContext, Color, Widget;
 
 /// Scale of a component. [md] is the desktop default.
 ///
@@ -623,4 +624,453 @@ class NebaThreshold {
 
   @override
   int get hashCode => Object.hash(from, color);
+}
+
+// ---------------------------------------------------------------------------
+// Charts
+//
+// The vocabulary the chart widgets share, and the reason it is here rather
+// than in one of them: a `series` handed to a line chart has to be the same
+// `series` a bar chart takes, or switching a dashboard tile from one to the
+// other is a rewrite instead of a rename. Everything here describes data; how
+// a chart draws it belongs to the widget.
+// ---------------------------------------------------------------------------
+
+/// One value, with everything a chart might want to know about it: the React
+/// package's `NebaChartPoint`.
+///
+/// A [y] of `null` is a gap and not a zero: a sensor that was offline, a month
+/// that has not closed yet. A line breaks across it and an area breaks with
+/// it, because a chart that draws missing data as zero reports an outage as a
+/// collapse.
+@immutable
+class NebaChartPoint {
+  /// A point at [y].
+  const NebaChartPoint({required this.y, this.x, this.z, this.color, this.label})
+    : assert(x == null || x is String || x is num || x is DateTime),
+      assert(color == null || color is NebaColor || color is Color);
+
+  /// Its place on the category axis: a [String], a [num] or a [DateTime].
+  /// Without it the point is placed by its index, against the chart's
+  /// `categories` if it was given any.
+  final Object? x;
+
+  /// The value. `null` is a gap.
+  final double? y;
+
+  /// A second magnitude, for the marks that have one: the radius of a bubble,
+  /// the weight of a tile. Ignored by the charts that do not.
+  final double? z;
+
+  /// Overrides the series' colour for this one point: a [NebaColor] family or
+  /// a [Color].
+  final Object? color;
+
+  /// What the tooltip, the table and a value label say instead of [y].
+  final String? label;
+
+  @override
+  bool operator ==(Object other) {
+    return other is NebaChartPoint &&
+        other.x == x &&
+        other.y == y &&
+        other.z == z &&
+        other.color == color &&
+        other.label == label;
+  }
+
+  @override
+  int get hashCode => Object.hash(x, y, z, color, label);
+}
+
+/// Which value axis a [NebaChartSeries] is measured against.
+enum NebaChartSeriesAxis {
+  /// The chart's `yAxis`.
+  primary,
+
+  /// The chart's `secondaryAxis`, on the far edge. Read only when the chart
+  /// was given one, and never on a stacked chart.
+  secondary,
+}
+
+/// One line, one band of bars, one ring of slices, and the unit identity is
+/// attached to: the React package's `NebaChartSeries`.
+///
+/// A series' colour follows its place in the list it was passed in, never its
+/// position among the ones currently drawn, so hiding one from the legend
+/// never repaints the others.
+@immutable
+class NebaChartSeries {
+  /// A series of [data].
+  const NebaChartSeries({
+    required this.data,
+    this.name,
+    this.color,
+    this.hidden = false,
+    this.axis = NebaChartSeriesAxis.primary,
+  }) : assert(color == null || color is NebaColor || color is Color);
+
+  /// Its name in the legend, the tooltip and the table. A chart with two or
+  /// more series shows a legend, so a series with no name is one the reader
+  /// cannot tell apart from the others.
+  final String? name;
+
+  /// The values, in category order. Each is a [num], `null` for a gap, or a
+  /// [NebaChartPoint]; anything else is read as a gap.
+  final List<Object?> data;
+
+  /// Overrides the palette slot this series would otherwise take: a
+  /// [NebaColor] family or a [Color].
+  final Object? color;
+
+  /// Starts the series hidden. Only meaningful with an interactive legend,
+  /// which is what turns it back on.
+  final bool hidden;
+
+  /// Which value axis the series is measured against.
+  final NebaChartSeriesAxis axis;
+
+  @override
+  bool operator ==(Object other) {
+    return other is NebaChartSeries &&
+        other.name == name &&
+        listEquals(other.data, data) &&
+        other.color == color &&
+        other.hidden == hidden &&
+        other.axis == axis;
+  }
+
+  @override
+  int get hashCode => Object.hash(name, Object.hashAll(data), color, hidden, axis);
+}
+
+/// How a line gets from one point to the next.
+enum NebaChartCurve {
+  /// Straight segments. The only one that claims nothing the data did not
+  /// say.
+  linear,
+
+  /// A monotone cubic: curved, but it never dips below a value that both of
+  /// its neighbours are above.
+  smooth,
+
+  /// Held at each value until the next one, for a value that was set rather
+  /// than measured.
+  step,
+}
+
+/// What a line or a band does where a value is missing.
+enum NebaChartNulls {
+  /// Breaks at it. The default, and the only one that states no number nobody
+  /// measured.
+  gap,
+
+  /// Joins the two sides with a straight segment, for a gap that came from the
+  /// collection rather than from the world.
+  connect,
+
+  /// Reads it as a nought everywhere: the mark goes to the baseline, the axis
+  /// takes the nought into its range, and the tooltip and the table say `0`.
+  zero,
+}
+
+/// Which values are written onto the marks themselves.
+enum NebaChartValueLabels {
+  /// None. A number beside every point is the most reliable way to make a
+  /// chart unreadable.
+  none,
+
+  /// The last value each series has: where it ended up.
+  last,
+
+  /// Each series' own high and low.
+  extremes,
+
+  /// Every value.
+  all,
+}
+
+/// Whether a point on a line gets a dot on it.
+enum NebaChartMarkers {
+  /// None, except the one the crosshair is on.
+  none,
+
+  /// One on every point while a series has fourteen or fewer of them.
+  auto,
+
+  /// One on every point.
+  all,
+}
+
+/// How a chart stacks its series, where it takes more than on or off.
+enum NebaChartStacking {
+  /// Each series on its own, overlaid: the React package's `false`.
+  off,
+
+  /// Each series riding on the total of the ones before it, so the top edge is
+  /// the sum: `true`.
+  on,
+
+  /// Every category normalised to a hundred, so the chart is about the mix
+  /// rather than the size: `'full'`.
+  full,
+}
+
+/// One axis of a cartesian chart: the React package's `NebaChartAxis`.
+@immutable
+class NebaChartAxis {
+  /// An axis.
+  const NebaChartAxis({
+    this.hidden = false,
+    this.label,
+    this.grid,
+    this.min,
+    this.max,
+    this.tickCount,
+    this.tickFormat,
+    this.tickAngle = 0,
+    this.thickness,
+  });
+
+  /// Leaves the axis undrawn, its rule, its ticks and its labels, and gives
+  /// its band back to the plot.
+  final bool hidden;
+
+  /// A name for what the axis measures, written beside it.
+  final String? label;
+
+  /// The gridlines this axis casts across the plot. On for the value axis and
+  /// off for the category axis when left out.
+  final bool? grid;
+
+  /// Where the scale starts. Taken from the data when left out.
+  final double? min;
+
+  /// Where the scale ends. Taken from the data when left out.
+  final double? max;
+
+  /// Roughly how many ticks. The scale still rounds to clean numbers.
+  final int? tickCount;
+
+  /// How a tick is written, over the chart's own `format`. A value axis hands
+  /// it the tick as a [num], an [int] when it is whole; a category axis hands
+  /// it the category as it was given.
+  final String Function(Object value, int index)? tickFormat;
+
+  /// Turns the category labels by this many degrees, between `-90` and `90`.
+  /// Negative tilts them up to the right.
+  final double tickAngle;
+
+  /// How much room the axis keeps for its ticks, in logical pixels. Measured
+  /// from the ticks when left out.
+  final double? thickness;
+
+  @override
+  bool operator ==(Object other) {
+    return other is NebaChartAxis &&
+        other.hidden == hidden &&
+        other.label == label &&
+        other.grid == grid &&
+        other.min == min &&
+        other.max == max &&
+        other.tickCount == tickCount &&
+        other.tickFormat == tickFormat &&
+        other.tickAngle == tickAngle &&
+        other.thickness == thickness;
+  }
+
+  @override
+  int get hashCode {
+    return Object.hash(hidden, label, grid, min, max, tickCount, tickFormat, tickAngle, thickness);
+  }
+}
+
+/// Where a chart's legend sits, and whether it does anything when pressed:
+/// the React package's `NebaChartLegend`.
+@immutable
+class NebaChartLegend {
+  /// A legend.
+  const NebaChartLegend({
+    this.side = NebaSide.bottom,
+    this.align = NebaAlign.center,
+    this.interactive = true,
+    this.showValue = false,
+  });
+
+  /// Which edge of the plot.
+  final NebaSide side;
+
+  /// Where along that edge.
+  final NebaAlign align;
+
+  /// Pressing an entry hides and shows its series, and pointing at one dims
+  /// the rest.
+  final bool interactive;
+
+  /// Writes each series' value at the active category beside its name.
+  final bool showValue;
+
+  @override
+  bool operator ==(Object other) {
+    return other is NebaChartLegend &&
+        other.side == side &&
+        other.align == align &&
+        other.interactive == interactive &&
+        other.showValue == showValue;
+  }
+
+  @override
+  int get hashCode => Object.hash(side, align, interactive, showValue);
+}
+
+/// What the pointer uncovers on a chart.
+enum NebaChartTooltipMode {
+  /// Every series at the category under the pointer, with a crosshair: the
+  /// React package's `'index'`, which Dart reserves on an enum.
+  category,
+
+  /// The one series whose mark is nearest the pointer.
+  item,
+
+  /// No tooltip.
+  none,
+}
+
+/// One series' answer at the category the pointer is on.
+@immutable
+class NebaChartTooltipItem {
+  /// The reading of series [seriesIndex].
+  const NebaChartTooltipItem({
+    required this.seriesIndex,
+    required this.color,
+    required this.value,
+    required this.formatted,
+    this.name,
+    this.label,
+  });
+
+  /// Its place in the chart's `series`: the same index its colour came from.
+  final int seriesIndex;
+
+  /// The series' name.
+  final String? name;
+
+  /// The colour its mark is drawn in.
+  final Color color;
+
+  /// The value.
+  final double value;
+
+  /// [value] written through the chart's `format`.
+  final String formatted;
+
+  /// What the point called itself, if it said.
+  final String? label;
+}
+
+/// What a tooltip's [NebaChartTooltip.builder] is handed.
+@immutable
+class NebaChartTooltipContext {
+  /// The reading at category [index].
+  const NebaChartTooltipContext({required this.index, required this.category, required this.items});
+
+  /// The category's place along the axis.
+  final int index;
+
+  /// The category as it was given: a [String], a [num] or a [DateTime].
+  final Object category;
+
+  /// Only the series that are shown and have a value here.
+  final List<NebaChartTooltipItem> items;
+}
+
+/// A chart's tooltip, when `true` or `false` is not enough: the React
+/// package's `NebaChartTooltip`.
+@immutable
+class NebaChartTooltip {
+  /// A tooltip.
+  const NebaChartTooltip({this.mode, this.crosshair = true, this.builder});
+
+  /// What the pointer uncovers. [NebaChartTooltipMode.category] when left
+  /// out.
+  final NebaChartTooltipMode? mode;
+
+  /// The line dropped through the plot at the active category, in
+  /// [NebaChartTooltipMode.category] mode.
+  final bool crosshair;
+
+  /// Draws the panel. Without it the chart draws its own.
+  final Widget Function(BuildContext context, NebaChartTooltipContext reading)? builder;
+
+  @override
+  bool operator ==(Object other) {
+    return other is NebaChartTooltip &&
+        other.mode == mode &&
+        other.crosshair == crosshair &&
+        other.builder == builder;
+  }
+
+  @override
+  int get hashCode => Object.hash(mode, crosshair, builder);
+}
+
+/// Which axis a [NebaChartReference]'s numbers are read against.
+enum NebaChartReferenceAxis {
+  /// The one the marks are measured on: a target, a budget, a limit.
+  value,
+
+  /// The one they are placed along, for a rule that says when: on an axis of
+  /// columns, the number is the column's index.
+  category,
+}
+
+/// A line, or a band, drawn across a plot at a value the data has none of: the
+/// React package's `NebaChartReference`.
+///
+/// The scale widens to hold it, so a target above everything measured is still
+/// on the chart.
+@immutable
+class NebaChartReference {
+  /// A rule at [value], or a band from [value] to [to].
+  const NebaChartReference({
+    required this.value,
+    this.to,
+    this.axis = NebaChartReferenceAxis.value,
+    this.label,
+    this.color,
+    this.solid = false,
+  }) : assert(color == null || color is NebaColor || color is Color);
+
+  /// Where it sits, in the units of the axis it is read against.
+  final double value;
+
+  /// Turns the rule into a band from [value] to here.
+  final double? to;
+
+  /// Which axis the numbers are read against.
+  final NebaChartReferenceAxis axis;
+
+  /// What it is called, written at its far end and read out with the data.
+  final String? label;
+
+  /// Its colour: a [NebaColor] family or a [Color]. The muted ink when left
+  /// out.
+  final Object? color;
+
+  /// Draws it as a solid rule rather than a dashed one.
+  final bool solid;
+
+  @override
+  bool operator ==(Object other) {
+    return other is NebaChartReference &&
+        other.value == value &&
+        other.to == to &&
+        other.axis == axis &&
+        other.label == label &&
+        other.color == color &&
+        other.solid == solid;
+  }
+
+  @override
+  int get hashCode => Object.hash(value, to, axis, label, color, solid);
 }

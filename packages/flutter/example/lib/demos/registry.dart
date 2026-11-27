@@ -235,6 +235,8 @@ import 'package:neba_example/demos/skeleton/hero.dart';
 import 'package:neba_example/demos/skeleton/lines.dart';
 import 'package:neba_example/demos/skeleton/shapes.dart';
 import 'package:neba_example/demos/skeleton/swapping.dart';
+import 'package:neba_example/demos/sparkline/hero.dart';
+import 'package:neba_example/demos/sparkline/variants.dart';
 import 'package:neba_example/demos/spoiler/clamped.dart';
 import 'package:neba_example/demos/spoiler/hero.dart';
 import 'package:neba_example/demos/spoiler/inline.dart';
@@ -540,6 +542,8 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'skeleton/lines': SkeletonLines.new,
   'skeleton/shapes': SkeletonShapes.new,
   'skeleton/swapping': SkeletonSwapping.new,
+  'sparkline/hero': SparklineHero.new,
+  'sparkline/variants': SparklineVariants.new,
   'spoiler/clamped': SpoilerClamped.new,
   'spoiler/hero': SpoilerHero.new,
   'spoiler/inline': SpoilerInline.new,

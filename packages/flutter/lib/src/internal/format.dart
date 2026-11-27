@@ -50,3 +50,58 @@ String nebaFormatNumber(num value, {int maxFractionDigits = 3}) {
 String nebaFormatPercent(num ratio, {int maxFractionDigits = 0}) {
   return '${nebaFormatNumber(ratio * 100, maxFractionDigits: maxFractionDigits)}%';
 }
+
+const List<String> _compactUnits = <String>['', 'K', 'M', 'B', 'T'];
+
+/// [value] as an axis writes a number when nobody said how: compacted from ten
+/// thousand up, with one digit after the point (`12.4K`, `3.1M`), and with
+/// its thousands grouped and at most two digits after the point below that.
+/// The React package's `compactNumber`, which is `Intl.NumberFormat`'s
+/// `notation: 'compact'` in English.
+String nebaFormatCompact(num value) {
+  if (!value.isFinite || value.abs() < 10000) {
+    return nebaFormatNumber(value, maxFractionDigits: 2);
+  }
+
+  int unit = 0;
+  double scaled = value.abs().toDouble();
+
+  while (scaled >= 1000 && unit < _compactUnits.length - 1) {
+    scaled /= 1000;
+    unit += 1;
+  }
+
+  // Rounded before the unit is settled, so 999,960 is `1M` rather than
+  // `1000K`, as the platform writes it.
+  double rounded = (scaled * 10).roundToDouble() / 10;
+
+  if (rounded >= 1000 && unit < _compactUnits.length - 1) {
+    rounded = (rounded / 1000 * 10).roundToDouble() / 10;
+    unit += 1;
+  }
+
+  final String digits = nebaFormatNumber(rounded, maxFractionDigits: 1);
+
+  return '${value < 0 ? '-' : ''}$digits${_compactUnits[unit]}';
+}
+
+const List<String> _months = <String>[
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+];
+
+/// [date] as its month's short name and its day, `Jun 1`: how the React
+/// package writes a date on a chart's axis in English when nobody said how.
+String nebaFormatMonthDay(DateTime date) {
+  return '${_months[date.month - 1]} ${date.day}';
+}
