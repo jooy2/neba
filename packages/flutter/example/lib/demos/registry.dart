@@ -6,6 +6,9 @@ library;
 
 import 'package:flutter/widgets.dart';
 
+import 'package:neba_example/demos/accordion/hero.dart';
+import 'package:neba_example/demos/accordion/sizes.dart';
+import 'package:neba_example/demos/accordion/variants.dart';
 import 'package:neba_example/demos/alert/colors.dart';
 import 'package:neba_example/demos/alert/dismissing.dart';
 import 'package:neba_example/demos/alert/hero.dart';
@@ -201,6 +204,9 @@ import 'package:neba_example/demos/visually_hidden/skip_link.dart';
 
 /// The demos, by key.
 const Map<String, Widget Function()> demos = <String, Widget Function()>{
+  'accordion/hero': AccordionHero.new,
+  'accordion/sizes': AccordionSizes.new,
+  'accordion/variants': AccordionVariants.new,
   'alert/colors': AlertColors.new,
   'alert/dismissing': AlertDismissing.new,
   'alert/hero': AlertHero.new,
