@@ -1,12 +1,11 @@
 /// `NebaHighlight`, the words a reader is looking for, marked in a text.
 library;
 
-import 'package:flutter/foundation.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 
 import 'package:neba/src/components/typography/neba_typography.dart';
 import 'package:neba/src/internal/search.dart';
+import 'package:neba/src/internal/text_marks.dart';
 import 'package:neba/src/theme/theme.dart';
 import 'package:neba/src/theme/tokens.dart';
 import 'package:neba/src/types.dart';
@@ -133,8 +132,7 @@ class NebaHighlight extends StatelessWidget {
       style: TextStyle(color: ink, fontWeight: weight),
     );
     final InlineSpan source = switch (child) {
-      Text(:final InlineSpan textSpan) => textSpan,
-      Text(:final String? data) => TextSpan(text: data),
+      Text() => nebaSpanOf(child),
       NebaTypography(:final InlineSpan span) => span,
       // An overline is set in capitals, which the typography does to its
       // string; a span it draws as given.
@@ -149,7 +147,7 @@ class NebaHighlight extends StatelessWidget {
       return child;
     }
 
-    return _Marks(
+    return NebaTextMarks(
       ranges: marker.ranges,
       fill: switch (variant) {
         NebaVariant.solid => roles.fill,
@@ -157,26 +155,12 @@ class NebaHighlight extends StatelessWidget {
         NebaVariant.text => null,
       },
       edge: variant == NebaVariant.outline ? roles.line : null,
+      inset: inset,
+      radius: radius,
       underline: underline ? ink : null,
+      underlineThickness: underlineThickness,
       child: switch (child) {
-        Text() => Text.rich(
-          marked,
-          key: child.key,
-          style: child.style,
-          strutStyle: child.strutStyle,
-          textAlign: child.textAlign,
-          textDirection: child.textDirection,
-          locale: child.locale,
-          softWrap: child.softWrap,
-          overflow: child.overflow,
-          textScaler: child.textScaler,
-          maxLines: child.maxLines,
-          semanticsLabel: child.semanticsLabel,
-          semanticsIdentifier: child.semanticsIdentifier,
-          textWidthBasis: child.textWidthBasis,
-          textHeightBehavior: child.textHeightBehavior,
-          selectionColor: child.selectionColor,
-        ),
+        Text() => nebaRetext(child, marked),
         NebaTypography() => NebaTypography.rich(
           marked,
           key: child.key,
@@ -385,178 +369,5 @@ class _Marker {
     _offset += text.length;
 
     return pieces;
-  }
-}
-
-/// Draws each mark's surface and underline behind the paragraph below it.
-class _Marks extends SingleChildRenderObjectWidget {
-  const _Marks({
-    required this.ranges,
-    required this.fill,
-    required this.edge,
-    required this.underline,
-    required super.child,
-  });
-
-  final List<TextRange> ranges;
-  final Color? fill;
-  final Color? edge;
-  final Color? underline;
-
-  @override
-  _RenderMarks createRenderObject(BuildContext context) {
-    return _RenderMarks(ranges: ranges, fill: fill, edge: edge, underline: underline);
-  }
-
-  @override
-  void updateRenderObject(BuildContext context, _RenderMarks renderObject) {
-    renderObject
-      ..ranges = ranges
-      ..fill = fill
-      ..edge = edge
-      ..underline = underline;
-  }
-}
-
-class _RenderMarks extends RenderProxyBox {
-  _RenderMarks({
-    required List<TextRange> ranges,
-    required Color? fill,
-    required Color? edge,
-    required Color? underline,
-  }) : _ranges = ranges,
-       _fill = fill,
-       _edge = edge,
-       _underline = underline;
-
-  List<TextRange> _ranges;
-  set ranges(List<TextRange> value) {
-    if (!listEquals(value, _ranges)) {
-      _ranges = value;
-      markNeedsPaint();
-    }
-  }
-
-  Color? _fill;
-  set fill(Color? value) {
-    if (value != _fill) {
-      _fill = value;
-      markNeedsPaint();
-    }
-  }
-
-  Color? _edge;
-  set edge(Color? value) {
-    if (value != _edge) {
-      _edge = value;
-      markNeedsPaint();
-    }
-  }
-
-  Color? _underline;
-  set underline(Color? value) {
-    if (value != _underline) {
-      _underline = value;
-      markNeedsPaint();
-    }
-  }
-
-  /// The paragraph the marks are in: the first one down the single-child
-  /// chain a [Text] builds.
-  RenderParagraph? get _paragraph {
-    RenderObject? node = child;
-
-    while (node != null && node is! RenderParagraph) {
-      RenderObject? only;
-      node.visitChildren((RenderObject child) => only ??= child);
-      node = only;
-    }
-
-    return node as RenderParagraph?;
-  }
-
-  /// A mark's rectangles in the paragraph, one per line it runs across, in the
-  /// paragraph's own coordinates.
-  List<Rect> _lines(RenderParagraph paragraph, TextRange range) {
-    final List<Rect> lines = <Rect>[];
-
-    for (final TextBox box in paragraph.getBoxesForSelection(
-      TextSelection(baseOffset: range.start, extentOffset: range.end),
-    )) {
-      final Rect rect = box.toRect();
-
-      if (lines.isNotEmpty) {
-        final Rect last = lines.last;
-        // A run of the same line, split by a fallback font or a bidi level.
-        if (rect.center.dy > last.top &&
-            rect.center.dy < last.bottom &&
-            (rect.left - last.right).abs() < 1) {
-          lines[lines.length - 1] = last.expandToInclude(rect);
-          continue;
-        }
-      }
-
-      lines.add(rect);
-    }
-
-    return lines;
-  }
-
-  @override
-  void paint(PaintingContext context, Offset offset) {
-    final RenderParagraph? paragraph = _paragraph;
-    final Color? fill = _fill;
-    final Color? edge = _edge;
-    final Color? underline = _underline;
-
-    if (paragraph != null && paragraph.hasSize && (fill != null || underline != null)) {
-      final Canvas canvas = context.canvas;
-      final Offset at =
-          offset + MatrixUtils.transformPoint(paragraph.getTransformTo(this), Offset.zero);
-
-      for (final TextRange range in _ranges) {
-        for (final Rect line in _lines(paragraph, range)) {
-          final Rect text = line.shift(at);
-
-          if (fill != null) {
-            // A hair of padding each side, given straight back, so a mark is
-            // a little wider than its word and the line keeps its length; an
-            // outline's hairline is a pixel more each way.
-            final double border = edge == null ? 0 : 1;
-            final RRect surface = RRect.fromRectAndRadius(
-              Rect.fromLTRB(
-                text.left - NebaHighlight.inset - border,
-                text.top - border,
-                text.right + NebaHighlight.inset + border,
-                text.bottom + border,
-              ),
-              const Radius.circular(NebaHighlight.radius),
-            );
-
-            canvas.drawRRect(surface, Paint()..color = fill);
-
-            if (edge != null) {
-              canvas.drawRRect(
-                surface.deflate(0.5),
-                Paint()
-                  ..style = PaintingStyle.stroke
-                  ..strokeWidth = 1
-                  ..color = edge,
-              );
-            }
-          }
-
-          if (underline != null) {
-            // Under the descenders rather than through them.
-            canvas.drawRect(
-              Rect.fromLTWH(text.left, text.bottom, text.width, NebaHighlight.underlineThickness),
-              Paint()..color = underline,
-            );
-          }
-        }
-      }
-    }
-
-    super.paint(context, offset);
   }
 }

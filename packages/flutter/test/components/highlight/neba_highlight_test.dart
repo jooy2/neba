@@ -3,6 +3,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:neba/neba.dart';
+import 'package:neba/src/internal/text_marks.dart';
 
 import '../../support/host.dart';
 
@@ -280,8 +281,7 @@ void main() {
   });
 
   group('look', () {
-    Finder marksPainter() =>
-        find.byWidgetPredicate((Widget widget) => widget.runtimeType.toString() == '_Marks');
+    Finder marksPainter() => find.byType(NebaTextMarks);
 
     testWidgets('fills a solid mark in the family and inks it to read on the fill', (
       WidgetTester tester,

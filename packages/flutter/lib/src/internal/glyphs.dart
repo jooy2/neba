@@ -108,6 +108,31 @@ abstract final class NebaGlyphs {
     const NebaGlyphPart.stroke('M14.5 8A6.5 6.5 0 0 0 8 1.5', width: 2, cap: StrokeCap.round),
   ];
 
+  /// A chain link: a link that stays where it is.
+  static final List<NebaGlyphPart> link = <NebaGlyphPart>[
+    const NebaGlyphPart.stroke(
+      'M6.5 9.5a2.75 2.75 0 0 0 4 .25l1.75-1.75a2.75 2.75 0 0 0-3.9-3.9L7.75 5.2',
+      cap: StrokeCap.round,
+    ),
+    const NebaGlyphPart.stroke(
+      'M9.5 6.5a2.75 2.75 0 0 0-4-.25L3.75 8a2.75 2.75 0 0 0 3.9 3.9l.6-.6',
+      cap: StrokeCap.round,
+    ),
+  ];
+
+  /// A box with an arrow leaving it: a link that opens somewhere else.
+  static final List<NebaGlyphPart> externalLink = <NebaGlyphPart>[
+    const NebaGlyphPart.stroke(
+      'M12.75 9.25v2.5a1.5 1.5 0 0 1-1.5 1.5h-7a1.5 1.5 0 0 1-1.5-1.5v-7a1.5 1.5 0 0 1 1.5-1.5h2.5',
+      cap: StrokeCap.round,
+    ),
+    const NebaGlyphPart.stroke(
+      'M9.5 2.75h3.75V6.5M7.25 8.75l5.75-5.75',
+      cap: StrokeCap.round,
+      join: StrokeJoin.round,
+    ),
+  ];
+
   /// The neutral severity: a note.
   static final List<NebaGlyphPart> note = <NebaGlyphPart>[
     NebaGlyphPart.stroke(_circle(8, 8, 6.25)),

@@ -144,6 +144,11 @@ import 'package:neba_example/demos/text_field/shortcuts.dart';
 import 'package:neba_example/demos/text_field/sizes.dart';
 import 'package:neba_example/demos/text_field/states.dart';
 import 'package:neba_example/demos/text_field/variants.dart';
+import 'package:neba_example/demos/text_link/colors.dart';
+import 'package:neba_example/demos/text_link/external.dart';
+import 'package:neba_example/demos/text_link/hero.dart';
+import 'package:neba_example/demos/text_link/sizes.dart';
+import 'package:neba_example/demos/text_link/underline.dart';
 import 'package:neba_example/demos/toggle/colors.dart';
 import 'package:neba_example/demos/toggle/controlled.dart';
 import 'package:neba_example/demos/toggle/hero.dart';
@@ -303,6 +308,11 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'text-field/sizes': TextFieldSizes.new,
   'text-field/states': TextFieldStates.new,
   'text-field/variants': TextFieldVariants.new,
+  'text-link/colors': TextLinkColors.new,
+  'text-link/external': TextLinkExternal.new,
+  'text-link/hero': TextLinkHero.new,
+  'text-link/sizes': TextLinkSizes.new,
+  'text-link/underline': TextLinkUnderline.new,
   'toggle-group/full-width': ToggleGroupFullWidth.new,
   'toggle-group/hero': ToggleGroupHero.new,
   'toggle-group/multiple': ToggleGroupMultiple.new,

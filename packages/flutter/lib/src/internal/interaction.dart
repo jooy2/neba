@@ -77,6 +77,7 @@ class NebaInteractive extends StatefulWidget {
     this.focusable,
     this.focusNode,
     this.autofocus = false,
+    this.activatesOnSpace = true,
     this.cursor,
     super.key,
   });
@@ -106,6 +107,10 @@ class NebaInteractive extends StatefulWidget {
   /// The pointer's cursor over the control. A click cursor when it is enabled.
   final MouseCursor? cursor;
 
+  /// Whether Space activates the control as Enter does. A button answers both;
+  /// a link answers Enter alone, and Space scrolls the page it is on.
+  final bool activatesOnSpace;
+
   @override
   State<NebaInteractive> createState() => _NebaInteractiveState();
 }
@@ -120,6 +125,11 @@ class _NebaInteractiveState extends State<NebaInteractive> {
     const SingleActivator(LogicalKeyboardKey.enter): const ActivateIntent(),
     const SingleActivator(LogicalKeyboardKey.numpadEnter): const ActivateIntent(),
     const SingleActivator(LogicalKeyboardKey.space): const ActivateIntent(),
+  };
+
+  static final Map<ShortcutActivator, Intent> _enterOnly = <ShortcutActivator, Intent>{
+    const SingleActivator(LogicalKeyboardKey.enter): const ActivateIntent(),
+    const SingleActivator(LogicalKeyboardKey.numpadEnter): const ActivateIntent(),
   };
 
   @override
@@ -189,7 +199,7 @@ class _NebaInteractiveState extends State<NebaInteractive> {
       enabled: _focusable,
       focusNode: widget.focusNode,
       autofocus: widget.autofocus,
-      shortcuts: _shortcuts,
+      shortcuts: widget.activatesOnSpace ? _shortcuts : _enterOnly,
       actions: <Type, Action<Intent>>{
         ActivateIntent: CallbackAction<ActivateIntent>(
           onInvoke: (ActivateIntent intent) {

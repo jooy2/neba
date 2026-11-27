@@ -106,7 +106,7 @@ Demos that wait on a component not ported yet, to be added with it: `skeleton/sw
 ### Display (23)
 
 - [x] `NebaTypography`
-- [ ] `NebaTextLink`
+- [x] `NebaTextLink`
 - [x] `NebaBlockquote`
 - [x] `NebaHighlight`
 - [x] `NebaDivider`
