@@ -112,6 +112,7 @@ import 'package:neba_example/demos/combobox/multiple.dart';
 import 'package:neba_example/demos/combobox/sizes.dart';
 import 'package:neba_example/demos/combobox/states.dart';
 import 'package:neba_example/demos/combobox/variants.dart';
+import 'package:neba_example/demos/confirm/hero.dart';
 import 'package:neba_example/demos/container/hero.dart';
 import 'package:neba_example/demos/container/max_width.dart';
 import 'package:neba_example/demos/container/plain.dart';
@@ -482,6 +483,7 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'combobox/sizes': ComboboxSizes.new,
   'combobox/states': ComboboxStates.new,
   'combobox/variants': ComboboxVariants.new,
+  'confirm/hero': ConfirmHero.new,
   'container/hero': ContainerHero.new,
   'container/max-width': ContainerMaxWidth.new,
   'container/plain': ContainerPlain.new,

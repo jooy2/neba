@@ -208,7 +208,7 @@ Demos that wait on a component not ported yet, to be added with it: `carousel/ph
 
 - [x] `NebaAlert`
 - [x] `NebaDialog`
-- [ ] `NebaConfirm`
+- [x] `NebaConfirm`
 - [ ] `NebaPopconfirm`
 - [x] `NebaToast`
 - [x] `NebaTooltip`
