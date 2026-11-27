@@ -218,7 +218,7 @@ Demos that wait on a component not ported yet, to be added with it: `carousel/ph
 - [x] `NebaCarousel`
 - [x] `NebaToolbar`
 - [x] `NebaPill`
-- [ ] `NebaSpoiler`
+- [x] `NebaSpoiler`
 - [ ] `NebaHowToSteps`
 - [ ] `NebaChatBubble`
 - [x] `NebaHoverCard`

@@ -221,6 +221,12 @@ import 'package:neba_example/demos/skeleton/hero.dart';
 import 'package:neba_example/demos/skeleton/lines.dart';
 import 'package:neba_example/demos/skeleton/shapes.dart';
 import 'package:neba_example/demos/skeleton/swapping.dart';
+import 'package:neba_example/demos/spoiler/clamped.dart';
+import 'package:neba_example/demos/spoiler/hero.dart';
+import 'package:neba_example/demos/spoiler/inline.dart';
+import 'package:neba_example/demos/spoiler/locale.dart';
+import 'package:neba_example/demos/spoiler/media.dart';
+import 'package:neba_example/demos/spoiler/words.dart';
 import 'package:neba_example/demos/stack/dealt.dart';
 import 'package:neba_example/demos/stack/depth.dart';
 import 'package:neba_example/demos/stack/direction.dart';
@@ -506,6 +512,12 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'skeleton/lines': SkeletonLines.new,
   'skeleton/shapes': SkeletonShapes.new,
   'skeleton/swapping': SkeletonSwapping.new,
+  'spoiler/clamped': SpoilerClamped.new,
+  'spoiler/hero': SpoilerHero.new,
+  'spoiler/inline': SpoilerInline.new,
+  'spoiler/locale': SpoilerLocale.new,
+  'spoiler/media': SpoilerMedia.new,
+  'spoiler/words': SpoilerWords.new,
   'stack/dealt': StackDealt.new,
   'stack/depth': StackDepth.new,
   'stack/direction': StackDirection.new,
