@@ -41,6 +41,7 @@ export 'src/components/checkbox/neba_checkbox.dart';
 export 'src/components/checkbox_group/neba_checkbox_group.dart';
 export 'src/components/chip/neba_chip.dart';
 export 'src/components/collapsible/neba_collapsible.dart';
+export 'src/components/combobox/neba_combobox.dart';
 export 'src/components/container/neba_container.dart';
 export 'src/components/data_list/neba_data_list.dart';
 export 'src/components/divider/neba_divider.dart';

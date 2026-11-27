@@ -98,6 +98,13 @@ import 'package:neba_example/demos/collapsible/mounting.dart';
 import 'package:neba_example/demos/collapsible/slots.dart';
 import 'package:neba_example/demos/collapsible/trigger.dart';
 import 'package:neba_example/demos/collapsible/variants.dart';
+import 'package:neba_example/demos/combobox/custom.dart';
+import 'package:neba_example/demos/combobox/hero.dart';
+import 'package:neba_example/demos/combobox/label_placement.dart';
+import 'package:neba_example/demos/combobox/multiple.dart';
+import 'package:neba_example/demos/combobox/sizes.dart';
+import 'package:neba_example/demos/combobox/states.dart';
+import 'package:neba_example/demos/combobox/variants.dart';
 import 'package:neba_example/demos/container/hero.dart';
 import 'package:neba_example/demos/container/max_width.dart';
 import 'package:neba_example/demos/container/plain.dart';
@@ -425,6 +432,13 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'collapsible/slots': CollapsibleSlots.new,
   'collapsible/trigger': CollapsibleTrigger.new,
   'collapsible/variants': CollapsibleVariants.new,
+  'combobox/custom': ComboboxCustom.new,
+  'combobox/hero': ComboboxHero.new,
+  'combobox/label-placement': ComboboxLabelPlacement.new,
+  'combobox/multiple': ComboboxMultiple.new,
+  'combobox/sizes': ComboboxSizes.new,
+  'combobox/states': ComboboxStates.new,
+  'combobox/variants': ComboboxVariants.new,
   'container/hero': ContainerHero.new,
   'container/max-width': ContainerMaxWidth.new,
   'container/plain': ContainerPlain.new,

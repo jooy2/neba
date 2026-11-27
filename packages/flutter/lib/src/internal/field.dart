@@ -348,6 +348,7 @@ class NebaFieldShell extends StatefulWidget {
     this.paddingStart,
     this.paddingEnd,
     this.keyboardRing = false,
+    this.padding,
     super.key,
   });
 
@@ -401,6 +402,12 @@ class NebaFieldShell extends StatefulWidget {
   /// a Select's trigger holds a value rather than a caret, and the focus a
   /// press or a closing list gave it is not one to ring.
   final bool keyboardRing;
+
+  /// The room inside the edge, in place of [density]'s inline padding and a
+  /// multiline field's padding above and below: for a shell whose end holds
+  /// buttons with room of their own, or whose content is a wrapping row of
+  /// chips padded to stand a single row at the control's height.
+  final EdgeInsetsGeometry? padding;
 
   @override
   State<NebaFieldShell> createState() => _NebaFieldShellState();
@@ -529,12 +536,14 @@ class _NebaFieldShellState extends State<NebaFieldShell> {
               // `border-box` is: an outline field is as tall as a solid one.
               constraints: BoxConstraints(minHeight: NebaScale.controlHeight[size]! - 2 * border),
               child: Padding(
-                padding: EdgeInsetsDirectional.only(
-                  start: widget.paddingStart ?? NebaScale.paddingX[widget.density]![size]!,
-                  end: widget.paddingEnd ?? NebaScale.paddingX[widget.density]![size]!,
-                  top: widget.multiline ? nebaFieldMultilinePad[size]! : 0,
-                  bottom: widget.multiline ? nebaFieldMultilinePad[size]! : 0,
-                ),
+                padding:
+                    widget.padding ??
+                    EdgeInsetsDirectional.only(
+                      start: widget.paddingStart ?? NebaScale.paddingX[widget.density]![size]!,
+                      end: widget.paddingEnd ?? NebaScale.paddingX[widget.density]![size]!,
+                      top: widget.multiline ? nebaFieldMultilinePad[size]! : 0,
+                      bottom: widget.multiline ? nebaFieldMultilinePad[size]! : 0,
+                    ),
                 child: Align(
                   alignment: widget.multiline
                       ? AlignmentDirectional.topStart
@@ -1229,7 +1238,8 @@ class NebaFieldEditable extends StatelessWidget {
 }
 
 /// The gestures of a field's [EditableText] in the widgets layer, over its
-/// whole shell, without the selection toolbar.
+/// whole shell, without the selection toolbar: a TextField's, a NumberField's
+/// and a Combobox's.
 ///
 /// Two of the stock gestures show the toolbar, and an editable builds the
 /// overlay it would draw that toolbar in when a selection lands on it before
@@ -1238,7 +1248,11 @@ class NebaFieldEditable extends StatelessWidget {
 /// in the field before they move the selection, and never ask for a toolbar.
 class NebaFieldGestures extends TextSelectionGestureDetectorBuilder {
   /// The gestures of the field [delegate] describes.
-  NebaFieldGestures({required super.delegate});
+  NebaFieldGestures({required super.delegate, this.onTap});
+
+  /// Called after a tap has put the caret in the field: a Combobox opens its
+  /// list on it.
+  final VoidCallback? onTap;
 
   /// [shell] with these gestures over it, or out of the focus order while
   /// [disabled].
@@ -1311,6 +1325,7 @@ class NebaFieldGestures extends TextSelectionGestureDetectorBuilder {
     }
 
     editableText.requestKeyboard();
+    onTap?.call();
   }
 
   @override
