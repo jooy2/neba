@@ -164,6 +164,55 @@ void main() {
     expect(find.bySemanticsLabel('Play slide show'), findsOneWidget);
   });
 
+  testWidgets('holds while it is scrolled out of sight, and turns again in it', (
+    WidgetTester tester,
+  ) async {
+    final List<int> shown = <int>[];
+    final ScrollController page = ScrollController();
+    addTearDown(page.dispose);
+
+    await tester.pumpWidget(
+      host(
+        // Not a ListView, which would drop the carousel once it is far
+        // enough out of sight and build a new one on the way back.
+        SingleChildScrollView(
+          controller: page,
+          child: Column(
+            children: <Widget>[
+              Center(
+                child: SizedBox(
+                  width: 400,
+                  child: NebaCarousel(
+                    autoPlay: true,
+                    interval: const Duration(seconds: 1),
+                    onValueChange: shown.add,
+                    children: <Widget>[slide('A'), slide('B'), slide('C')],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 2000),
+            ],
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    page.jumpTo(1200);
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 3));
+    await tester.pumpAndSettle();
+
+    expect(shown, isEmpty);
+
+    page.jumpTo(0);
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 1));
+    await tester.pumpAndSettle();
+
+    expect(shown, <int>[1]);
+  });
+
   testWidgets('is a named region of named slides that says which one shows', (
     WidgetTester tester,
   ) async {

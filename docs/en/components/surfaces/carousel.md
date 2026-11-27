@@ -132,7 +132,7 @@ The strip opens on `value` or `defaultValue` from its first frame.
 
 ::: fw flutter
 
-`autoPlay` is off by default. With it on, it pauses on hover, on focus anywhere inside and while the app is in the background, and it does not start at all for a reader who asked for less motion. It does not yet pause while the carousel is scrolled out of view. A screen reader is told the current slide whenever the reader moved it, and nothing while it turns on its own.
+`autoPlay` is off by default. With it on, it pauses on hover, on focus anywhere inside, while the app is in the background and while the carousel is scrolled out of the scroll view it is in, and it does not start at all for a reader who asked for less motion. Scrolled back into view, it holds the slide it stopped on for a whole `interval` before moving on. A screen reader is told the current slide whenever the reader moved it, and nothing while it turns on its own.
 
 :::
 

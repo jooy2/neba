@@ -26,8 +26,8 @@ import 'package:neba/src/types.dart';
 ///
 /// It can turn on its own with [autoPlay], which a button beside the dots
 /// stops, and which holds while the pointer is over it, while it holds the
-/// focus, while the app is in the background and for a reader who asked for
-/// less motion. A screen reader hears which slide is showing whenever the
+/// focus, while the app is in the background, while it is scrolled out of the
+/// scroll view it is in and for a reader who asked for less motion. A screen reader hears which slide is showing whenever the
 /// reader moved it, and nothing while it turns on its own.
 ///
 /// ```dart
@@ -161,6 +161,9 @@ class _NebaCarouselState extends State<NebaCarousel> with WidgetsBindingObserver
   bool _stopped = false;
   bool _turning = false;
   bool _resumed = true;
+  bool _onScreen = true;
+  Size _screen = Size.zero;
+  ScrollPosition? _page;
   final FocusNode _track = FocusNode(debugLabel: 'NebaCarousel track');
 
   int get _count => widget.children.length;
@@ -176,6 +179,8 @@ class _NebaCarouselState extends State<NebaCarousel> with WidgetsBindingObserver
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    _screen = MediaQuery.sizeOf(context);
+    _watchPage();
     _schedule();
   }
 
@@ -187,6 +192,7 @@ class _NebaCarouselState extends State<NebaCarousel> with WidgetsBindingObserver
       _show(_index);
     }
 
+    _watchPage();
     _schedule();
   }
 
@@ -199,6 +205,7 @@ class _NebaCarouselState extends State<NebaCarousel> with WidgetsBindingObserver
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    _page?.removeListener(_measure);
     _timer?.cancel();
     _strip.dispose();
     _track.dispose();
@@ -211,7 +218,57 @@ class _NebaCarouselState extends State<NebaCarousel> with WidgetsBindingObserver
   bool get _rotates => widget.autoPlay && !_reduced && _count > 1;
 
   /// Whether they are turning right now.
-  bool get _running => _rotates && !_stopped && !_hovered && !_focused && _resumed;
+  bool get _running => _rotates && !_stopped && !_hovered && !_focused && _resumed && _onScreen;
+
+  /// Listens to the scroll view the carousel is in, while it turns on its own,
+  /// so that it can hold while it is scrolled out of sight, as the React
+  /// package's holds on an `IntersectionObserver`.
+  void _watchPage() {
+    final ScrollPosition? page = widget.autoPlay ? Scrollable.maybeOf(context)?.position : null;
+
+    if (page != _page) {
+      _page?.removeListener(_measure);
+      _page = page;
+      _page?.addListener(_measure);
+    }
+
+    if (widget.autoPlay) {
+      WidgetsBinding.instance.addPostFrameCallback((Duration _) => _measure());
+    } else {
+      _onScreen = true;
+    }
+  }
+
+  /// Whether any of the carousel is inside the screen and inside the scroll
+  /// view it is in, measured after a layout or a scroll.
+  void _measure() {
+    if (!mounted) {
+      return;
+    }
+
+    final RenderObject? box = context.findRenderObject();
+
+    if (box is! RenderBox || !box.attached || !box.hasSize) {
+      return;
+    }
+
+    Rect view = Offset.zero & _screen;
+    final RenderObject? port = Scrollable.maybeOf(context)?.context.findRenderObject();
+
+    if (port is RenderBox && port.attached && port.hasSize) {
+      view = view.intersect(
+        MatrixUtils.transformRect(port.getTransformTo(null), Offset.zero & port.size),
+      );
+    }
+
+    final Rect drawn = MatrixUtils.transformRect(box.getTransformTo(null), Offset.zero & box.size);
+    final bool onScreen = drawn.overlaps(view);
+
+    if (onScreen != _onScreen) {
+      _onScreen = onScreen;
+      _schedule();
+    }
+  }
 
   void _schedule() {
     _timer?.cancel();
