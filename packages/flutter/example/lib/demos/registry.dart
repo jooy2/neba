@@ -100,6 +100,7 @@ import 'package:neba_example/demos/progress_box/counts.dart';
 import 'package:neba_example/demos/progress_box/hero.dart';
 import 'package:neba_example/demos/progress_box/steps.dart';
 import 'package:neba_example/demos/progress_circular/hero.dart';
+import 'package:neba_example/demos/progress_circular/inline.dart';
 import 'package:neba_example/demos/progress_circular/sizes.dart';
 import 'package:neba_example/demos/progress_linear/hero.dart';
 import 'package:neba_example/demos/progress_linear/sizes.dart';
@@ -258,6 +259,7 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'progress-box/hero': ProgressBoxHero.new,
   'progress-box/steps': ProgressBoxSteps.new,
   'progress-circular/hero': ProgressCircularHero.new,
+  'progress-circular/inline': ProgressCircularInline.new,
   'progress-circular/sizes': ProgressCircularSizes.new,
   'progress-linear/hero': ProgressLinearHero.new,
   'progress-linear/sizes': ProgressLinearSizes.new,

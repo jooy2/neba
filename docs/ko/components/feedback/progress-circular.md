@@ -102,6 +102,12 @@ const NebaProgressCircular(value: 62, size: NebaSize.xl, thickness: 6)
 
 :::
 
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/progress_circular/inline.dart
+
+:::
+
 </Demo>
 
 ### showValue와 label

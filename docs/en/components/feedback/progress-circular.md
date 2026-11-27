@@ -102,6 +102,12 @@ The ring sits one step under the control height at every size (an `md` ring is 2
 
 :::
 
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/progress_circular/inline.dart
+
+:::
+
 </Demo>
 
 ### showValue and label
