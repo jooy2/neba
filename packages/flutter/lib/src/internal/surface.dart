@@ -264,10 +264,10 @@ class _SheetPainter extends CustomPainter {
       );
     }
 
-    _paintPlate(canvas, bordered ? shape.deflate(1) : shape, tokens, plate);
+    paintPlate(canvas, bordered ? shape.deflate(1) : shape, tokens, plate);
 
     if (edge.a > 0) {
-      _strokeInside(canvas, shape, edge);
+      strokeInside(canvas, shape, edge);
     }
   }
 
@@ -300,7 +300,7 @@ class _PlatePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final RRect shape = borderRadius.toRRect(Offset.zero & size);
-    _paintPlate(canvas, bordered ? shape.deflate(1) : shape, tokens, plate);
+    paintPlate(canvas, bordered ? shape.deflate(1) : shape, tokens, plate);
   }
 
   @override
@@ -314,8 +314,10 @@ class _PlatePainter extends CustomPainter {
 
 /// The light along the top of [shape] and, on a solid plate, the full white
 /// hairline of the cut edge. [shape] is the CSS padding box: inside the edge
-/// on a sheet that has one, where an inset shadow is drawn.
-void _paintPlate(Canvas canvas, RRect shape, NebaTokens tokens, NebaPlate plate) {
+/// on a sheet that has one, where an inset shadow is drawn. What [NebaSheet]
+/// draws, for a widget that paints a small plate of its own, such as one of a
+/// row of progress plates.
+void paintPlate(Canvas canvas, RRect shape, NebaTokens tokens, NebaPlate plate) {
   if (plate != NebaPlate.none) {
     // `inset 0 1px 0`: the sheet minus itself moved down a pixel, which
     // leaves a 1-pixel band along the top that follows the corners.
@@ -328,13 +330,13 @@ void _paintPlate(Canvas canvas, RRect shape, NebaTokens tokens, NebaPlate plate)
   }
 
   if (plate == NebaPlate.solid) {
-    _strokeInside(canvas, shape, tokens.plateEdge);
+    strokeInside(canvas, shape, tokens.plateEdge);
   }
 }
 
 /// A 1-pixel line just inside [shape], as an inset `0 0 0 1px` shadow or a
 /// border draws it.
-void _strokeInside(Canvas canvas, RRect shape, Color color) {
+void strokeInside(Canvas canvas, RRect shape, Color color) {
   canvas.drawRRect(
     shape.deflate(0.5),
     Paint()

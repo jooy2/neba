@@ -179,7 +179,7 @@ Demos that wait on a component not ported yet, to be added with it: `skeleton/sw
 - [ ] `NebaOverlay`
 - [x] `NebaProgressLinear`
 - [x] `NebaProgressCircular`
-- [ ] `NebaProgressBox`
+- [x] `NebaProgressBox`
 - [ ] `NebaMeter`
 - [x] `NebaSkeleton`
 - [ ] `NebaEmpty`
