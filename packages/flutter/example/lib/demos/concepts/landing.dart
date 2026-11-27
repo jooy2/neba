@@ -1,6 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:neba/neba.dart';
+import 'package:neba_example/demos/concepts/data/glyph.dart';
 
 // A marketing page for a product that does not exist, built out of Neba
 // widgets and nothing else: the Flutter twin of the documentation's landing
@@ -256,9 +257,9 @@ class _ConceptsLandingState extends State<ConceptsLanding> {
             color: NebaColor.primary,
             variant: NebaVariant.text,
             size: NebaSize.sm,
-            startIcon: const _Glyph(_bolt),
+            startIcon: const ConceptGlyph(_bolt),
             title: const Text('Kestrel 2.0: funnels, retention and paths in one query'),
-            endIcon: const _Glyph(_arrow),
+            endIcon: const ConceptGlyph(_arrow),
             onPressed: () {},
           ),
         ),
@@ -310,7 +311,7 @@ class _ConceptsLandingState extends State<ConceptsLanding> {
       density: NebaDensity.compact,
       start: const <Widget>[
         NebaIcon(
-          icon: _Glyph(_logo),
+          icon: ConceptGlyph(_logo),
           size: NebaSize.lg,
           color: NebaColor.primary,
           semanticLabel: 'Kestrel',
@@ -322,7 +323,7 @@ class _ConceptsLandingState extends State<ConceptsLanding> {
             content: const Text('Star us on GitHub'),
             child: NebaIconButton(
               onPressed: () {},
-              icon: const _Glyph(_github, filled: true),
+              icon: const ConceptGlyph(_github, filled: true),
               label: 'GitHub',
               size: NebaSize.sm,
               variant: NebaVariant.text,
@@ -340,7 +341,7 @@ class _ConceptsLandingState extends State<ConceptsLanding> {
         NebaButton(
           onPressed: () {},
           size: NebaSize.sm,
-          endIcon: wide ? const _Glyph(_arrow) : null,
+          endIcon: wide ? const ConceptGlyph(_arrow) : null,
           child: const Text('Start free'),
         ),
       ],
@@ -386,7 +387,7 @@ class _ConceptsLandingState extends State<ConceptsLanding> {
             size: NebaSize.sm,
             variant: NebaVariant.outline,
             color: NebaColor.primary,
-            startIcon: _Glyph(_bolt),
+            startIcon: ConceptGlyph(_bolt),
             child: Text('Now with warehouse sync'),
           ),
           ConstrainedBox(
@@ -419,7 +420,7 @@ class _ConceptsLandingState extends State<ConceptsLanding> {
               NebaButton(
                 onPressed: () {},
                 size: wide ? NebaSize.lg : NebaSize.md,
-                endIcon: const _Glyph(_arrow),
+                endIcon: const ConceptGlyph(_arrow),
                 child: const Text('Start free'),
               ),
               NebaButton(
@@ -527,7 +528,7 @@ class _ConceptsLandingState extends State<ConceptsLanding> {
                   variant: NebaVariant.outline,
                   title: Text(feature.title),
                   headerAction: NebaIcon(
-                    icon: _Glyph(feature.icon),
+                    icon: ConceptGlyph(feature.icon),
                     size: NebaSize.lg,
                     color: feature.color,
                   ),
@@ -649,7 +650,7 @@ class _ConceptsLandingState extends State<ConceptsLanding> {
     Widget cell(_Cell value) {
       return switch (value) {
         true => const NebaIcon(
-          icon: _Glyph(_check, width: 1.75),
+          icon: ConceptGlyph(_check, width: 1.75),
           size: NebaSize.sm,
           color: NebaColor.success,
           semanticLabel: 'Included',
@@ -737,7 +738,7 @@ class _ConceptsLandingState extends State<ConceptsLanding> {
                           for (final String feature in plan.features)
                             NebaListItem(
                               startIcon: NebaIcon(
-                                icon: const _Glyph(_check, width: 1.75),
+                                icon: const ConceptGlyph(_check, width: 1.75),
                                 size: NebaSize.sm,
                                 color: plan.featured ? NebaColor.primary : NebaColor.success,
                               ),
@@ -875,7 +876,7 @@ class _ConceptsLandingState extends State<ConceptsLanding> {
                       ),
                       NebaButton(
                         onPressed: _submit,
-                        endIcon: const _Glyph(_arrow),
+                        endIcon: const ConceptGlyph(_arrow),
                         child: Text(_signedUp ? 'Check your inbox' : 'Start free'),
                       ),
                     ],
@@ -909,7 +910,7 @@ class _ConceptsLandingState extends State<ConceptsLanding> {
                     spacing: 8,
                     children: <Widget>[
                       NebaIcon(
-                        icon: _Glyph(_logo),
+                        icon: ConceptGlyph(_logo),
                         color: NebaColor.primary,
                         semanticLabel: 'Kestrel',
                       ),
@@ -1014,167 +1015,4 @@ class _Faces extends StatelessWidget {
       ),
     );
   }
-}
-
-/// A 16-unit glyph from SVG path data, stroked or filled in the icon colour
-/// at the icon size the widget around it hands down.
-class _Glyph extends StatelessWidget {
-  const _Glyph(this.data, {this.filled = false, this.width = 1.5});
-
-  final String data;
-  final bool filled;
-  final double width;
-
-  @override
-  Widget build(BuildContext context) {
-    final IconThemeData icon = IconTheme.of(context);
-
-    return SizedBox.square(
-      dimension: icon.size ?? 16,
-      child: CustomPaint(
-        painter: _GlyphPainter(
-          path: _parse(data),
-          color: icon.color ?? const Color(0xFF000000),
-          filled: filled,
-          width: width,
-        ),
-      ),
-    );
-  }
-}
-
-class _GlyphPainter extends CustomPainter {
-  _GlyphPainter({
-    required this.path,
-    required this.color,
-    required this.filled,
-    required this.width,
-  });
-
-  final Path path;
-  final Color color;
-  final bool filled;
-  final double width;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    canvas
-      ..save()
-      ..scale(size.shortestSide / 16)
-      ..drawPath(
-        path,
-        Paint()
-          ..color = color
-          ..style = filled ? PaintingStyle.fill : PaintingStyle.stroke
-          ..strokeWidth = width
-          ..strokeCap = StrokeCap.round
-          ..strokeJoin = StrokeJoin.round,
-      )
-      ..restore();
-  }
-
-  @override
-  bool shouldRepaint(_GlyphPainter oldDelegate) {
-    return oldDelegate.color != color || oldDelegate.path != path;
-  }
-}
-
-final Map<String, Path> _parsed = <String, Path>{};
-
-/// The SVG path commands the glyphs above use, absolute and relative: move,
-/// line, horizontal, vertical, cubic, smooth cubic, arc and close.
-Path _parse(String data) {
-  return _parsed.putIfAbsent(data, () {
-    final Path path = Path();
-    final Iterable<RegExpMatch> tokens = RegExp(
-      r'[MmLlHhVvCcSsAaZz]|-?(?:\d*\.\d+|\d+\.?)(?:e-?\d+)?',
-    ).allMatches(data);
-    final List<String> parts = <String>[for (final RegExpMatch token in tokens) token[0]!];
-    int at = 0;
-    String command = 'M';
-    Offset point = Offset.zero;
-    Offset start = Offset.zero;
-    Offset? control;
-
-    bool isCommand(String part) => RegExp(r'^[A-Za-z]$').hasMatch(part);
-    double next() => double.parse(parts[at++]);
-    // An arc's flags may be written run together, as `0 0 1` or `001`.
-    bool flag() {
-      final String part = parts[at];
-
-      if (part.length > 1 && (part.startsWith('0') || part.startsWith('1'))) {
-        parts[at] = part.substring(1);
-        return part.startsWith('1');
-      }
-
-      at++;
-      return part == '1';
-    }
-
-    while (at < parts.length) {
-      if (isCommand(parts[at])) {
-        command = parts[at++];
-      }
-
-      final bool relative = command == command.toLowerCase();
-      final Offset base = relative ? point : Offset.zero;
-
-      switch (command.toUpperCase()) {
-        case 'M':
-          point = base + Offset(next(), next());
-          start = point;
-          path.moveTo(point.dx, point.dy);
-          // Further pairs after a move are lines.
-          command = relative ? 'l' : 'L';
-          control = null;
-        case 'L':
-          point = base + Offset(next(), next());
-          path.lineTo(point.dx, point.dy);
-          control = null;
-        case 'H':
-          point = Offset((relative ? point.dx : 0) + next(), point.dy);
-          path.lineTo(point.dx, point.dy);
-          control = null;
-        case 'V':
-          point = Offset(point.dx, (relative ? point.dy : 0) + next());
-          path.lineTo(point.dx, point.dy);
-          control = null;
-        case 'C':
-          final Offset first = base + Offset(next(), next());
-          final Offset second = base + Offset(next(), next());
-          point = base + Offset(next(), next());
-          path.cubicTo(first.dx, first.dy, second.dx, second.dy, point.dx, point.dy);
-          control = second;
-        case 'S':
-          final Offset reflected = control == null ? point : point * 2 - control;
-          final Offset second = base + Offset(next(), next());
-          point = base + Offset(next(), next());
-          path.cubicTo(reflected.dx, reflected.dy, second.dx, second.dy, point.dx, point.dy);
-          control = second;
-        case 'A':
-          final double rx = next();
-          final double ry = next();
-          final double rotation = next();
-          final bool large = flag();
-          final bool sweep = flag();
-          point = base + Offset(next(), next());
-          path.arcToPoint(
-            point,
-            radius: Radius.elliptical(rx, ry),
-            rotation: rotation,
-            largeArc: large,
-            clockwise: sweep,
-          );
-          control = null;
-        case 'Z':
-          path.close();
-          point = start;
-          control = null;
-        default:
-          at++;
-      }
-    }
-
-    return path;
-  });
 }

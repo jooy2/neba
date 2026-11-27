@@ -10,7 +10,17 @@ aside: false
 
 <Demo src="concepts/signup" min-height="620px" />
 
+::: fw react
+
 The source is one file: `docs/.vitepress/demos/concepts/signup.tsx`. The flow works: fill the first step in and Continue turns on.
+
+:::
+
+::: fw flutter
+
+The source is one file: `packages/flutter/example/lib/demos/concepts/signup.dart`, the same flow built out of Neba widgets, and it works the same way: fill the first step in and Continue turns on. A field counts as touched once the focus leaves it, as `onBlur` does on the React screen. The logo has no file dialog to open, since the package takes no plugin; an app hands the picker its files through `onPick`.
+
+:::
 
 ## Which field asks what
 

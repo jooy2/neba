@@ -10,7 +10,17 @@ aside: false
 
 <Demo src="concepts/signup" min-height="620px" />
 
+::: fw react
+
 소스는 `docs/.vitepress/demos/concepts/signup.tsx` 한 파일입니다. 실제로 동작하니 첫 단계를 채우면 계속하기 버튼이 켜집니다.
+
+:::
+
+::: fw flutter
+
+소스는 `packages/flutter/example/lib/demos/concepts/signup.dart` 한 파일이며, 같은 흐름을 Neba 위젯으로 만들었습니다. 똑같이 동작해서 첫 단계를 채우면 계속하기 버튼이 켜집니다. 필드는 focus가 떠날 때 건드린 것으로 셉니다. React 화면의 `onBlur`와 같습니다. 패키지는 플러그인을 쓰지 않으므로 로고 칸에는 열 파일 대화상자가 없고, 앱이 `onPick`으로 파일을 넘깁니다.
+
+:::
 
 ## 어떤 필드가 무엇을 묻는지
 
