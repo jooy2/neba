@@ -253,6 +253,25 @@ enum NebaDateGranularity {
   year,
 }
 
+/// Which column of a time picker's clock a row belongs to, as a
+/// `shouldDisableTime` check is told it.
+///
+/// A rule can then be as coarse as "no afternoons", asked of the meridiem, or
+/// as fine as one minute.
+enum NebaTimeUnit {
+  /// The column of hours.
+  hour,
+
+  /// The column of minutes.
+  minute,
+
+  /// The column of seconds.
+  second,
+
+  /// The column of AM and PM.
+  meridiem,
+}
+
 /// The window widths the layout widgets branch on, smallest first.
 ///
 /// The same five names as [NebaSize] and not the same idea: a size of `md` is

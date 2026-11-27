@@ -79,6 +79,38 @@ void main() {
       expect(NebaDate.endOfUnit(date, NebaDateGranularity.month), DateTime(2026, 7, 31));
       expect(NebaDate.endOfUnit(date, NebaDateGranularity.year), DateTime(2026, 12, 31));
     });
+
+    test('reads a row of the clock as the span of the day it stands for', () {
+      final DateTime at = DateTime(2026, 7, 27, 9, 45, 12);
+
+      expect(NebaDate.secondsOfDay(at), 9 * 3600 + 45 * 60 + 12);
+      expect(NebaDate.timeUnitSpan(NebaTimeUnit.hour, at), (9 * 3600, 9 * 3600 + 3599));
+      expect(NebaDate.timeUnitSpan(NebaTimeUnit.minute, at), (
+        9 * 3600 + 45 * 60,
+        9 * 3600 + 45 * 60 + 59,
+      ));
+      expect(NebaDate.timeUnitSpan(NebaTimeUnit.second, at), (35112, 35112));
+      expect(NebaDate.timeUnitSpan(NebaTimeUnit.meridiem, at), (0, 12 * 3600 - 1));
+      expect(NebaDate.timeUnitSpan(NebaTimeUnit.meridiem, DateTime(2026, 7, 27, 12)), (
+        12 * 3600,
+        24 * 3600 - 1,
+      ));
+    });
+
+    test('replaces the fields of the clock it is given and holds a moment to its bounds', () {
+      final DateTime at = DateTime(2026, 7, 27, 9, 45, 12, 500);
+
+      expect(NebaDate.withTime(at, minutes: 0), DateTime(2026, 7, 27, 9, 0, 12));
+      expect(NebaDate.withTime(at, hours: 17, seconds: 0), DateTime(2026, 7, 27, 17, 45));
+
+      final DateTime min = DateTime(2026, 7, 27, 9, 30);
+      final DateTime max = DateTime(2026, 7, 27, 17, 30);
+
+      expect(NebaDate.clamp(DateTime(2026, 7, 27, 9, 15), min, max), min);
+      expect(NebaDate.clamp(DateTime(2026, 7, 27, 18), min, max), max);
+      expect(NebaDate.clamp(at, min, max), at);
+      expect(NebaDate.clamp(at, null, null), at);
+    });
   });
 
   group('nebaWeekStart', () {
@@ -126,6 +158,11 @@ void main() {
       expect(english.write(english.mediumDate, date), 'Jul 27, 2026');
       expect(english.write(english.monthYear, date), 'July 2026');
       expect(english.monthBeforeYear, isTrue);
+      expect(english.write(english.time, DateTime(2026, 7, 27, 14, 5)), '2:05 PM');
+      expect(english.write(english.time, DateTime(2026, 7, 27, 0, 30)), '12:30 AM');
+      expect(english.write(english.timeWithSeconds, DateTime(2026, 7, 27, 9, 5, 7)), '9:05:07 AM');
+      expect(english.write('{paddedHour}:{minute} {hour}', DateTime(2026, 7, 27, 9, 5)), '09:05 9');
+      expect(english.hour12, isTrue);
       expect(
         const NebaDateNames(
           months: <String>[],

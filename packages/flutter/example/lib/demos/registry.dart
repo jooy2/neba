@@ -463,6 +463,10 @@ import 'package:neba_example/demos/text_link/external.dart';
 import 'package:neba_example/demos/text_link/hero.dart';
 import 'package:neba_example/demos/text_link/sizes.dart';
 import 'package:neba_example/demos/text_link/underline.dart';
+import 'package:neba_example/demos/time_picker/bounds.dart';
+import 'package:neba_example/demos/time_picker/columns.dart';
+import 'package:neba_example/demos/time_picker/hero.dart';
+import 'package:neba_example/demos/time_picker/label_placement.dart';
 import 'package:neba_example/demos/timeline/bullets.dart';
 import 'package:neba_example/demos/timeline/hero.dart';
 import 'package:neba_example/demos/timeline/horizontal.dart';
@@ -964,6 +968,10 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'text-link/hero': TextLinkHero.new,
   'text-link/sizes': TextLinkSizes.new,
   'text-link/underline': TextLinkUnderline.new,
+  'time-picker/bounds': TimePickerBounds.new,
+  'time-picker/columns': TimePickerColumns.new,
+  'time-picker/hero': TimePickerHero.new,
+  'time-picker/label-placement': TimePickerLabelPlacement.new,
   'timeline/bullets': TimelineBullets.new,
   'timeline/hero': TimelineHero.new,
   'timeline/horizontal': TimelineHorizontal.new,

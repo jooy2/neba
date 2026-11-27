@@ -1073,6 +1073,7 @@ class _CalendarCell extends StatelessWidget {
     this.muted = false,
     this.disabled = false,
     this.extra,
+    this.inTable = true,
   });
 
   final NebaSize size;
@@ -1095,6 +1096,10 @@ class _CalendarCell extends StatelessWidget {
   final VoidCallback onPressed;
   final Widget child;
 
+  /// Whether the cell is a cell of a table to a screen reader, as a day, a
+  /// month and a year are; a row of the clock is a row of a list.
+  final bool inTable;
+
   @override
   Widget build(BuildContext context) {
     final NebaTokens tokens = NebaTheme.of(context);
@@ -1115,8 +1120,8 @@ class _CalendarCell extends StatelessWidget {
     final Widget? extra = this.extra;
 
     return Semantics(
-      container: true,
-      role: SemanticsRole.cell,
+      container: inTable,
+      role: inTable ? SemanticsRole.cell : null,
       child: Semantics(
         container: true,
         button: true,
@@ -1234,6 +1239,421 @@ class _Dot extends StatelessWidget {
         decoration: BoxDecoration(
           color: DefaultTextStyle.of(context).style.color,
           shape: BoxShape.circle,
+        ),
+      ),
+    );
+  }
+}
+
+/// The clock: hours, minutes and, when asked, seconds as columns that scroll,
+/// and a column of AM and PM on a 12-hour dial. The React package's
+/// `TimeGrid`, written beside the calendar because a date and time picker
+/// puts the two side by side: its cells are the calendar's, and its columns
+/// are as tall as seven of them.
+///
+/// Columns rather than a dial, since "half past nine" is two glances and a
+/// dial needs a transform to read. Each column is one tab stop, on its chosen
+/// row or its first, so Tab moves between the hours, the minutes and the
+/// seconds rather than through every row; the arrow keys walk a column and
+/// Home and End reach its ends, and choosing is a press, Enter or Space, so
+/// walking past a row changes nothing. The chosen row of each column is
+/// scrolled into view when the clock is built, which is when the popup opens,
+/// and never again, so a column is not dragged back under a pointer that is
+/// scrolling it.
+class NebaTimeGrid extends StatelessWidget {
+  /// A clock showing [value], or nothing chosen while it is `null`.
+  const NebaTimeGrid({
+    required this.size,
+    required this.density,
+    required this.roles,
+    required this.names,
+    required this.words,
+    required this.value,
+    required this.referenceDate,
+    required this.onChange,
+    required this.hour12,
+    this.showSeconds = false,
+    this.hourStep = 1,
+    this.minuteStep = 1,
+    this.secondStep = 1,
+    this.shouldDisableTime,
+    this.autofocus = false,
+    super.key,
+  }) : assert(hourStep > 0 && minuteStep > 0 && secondStep > 0);
+
+  /// The rows' height and type, and the columns' width: two cells across and
+  /// seven tall.
+  final NebaSize size;
+
+  /// The gap between the columns.
+  final NebaDensity density;
+
+  /// The family the chosen rows are filled in.
+  final NebaColorRoles roles;
+
+  /// What AM and PM are called, and how the time is said aloud.
+  final NebaDateNames names;
+
+  /// The `picker` messages: the columns' names.
+  final Map<String, String> words;
+
+  /// The time on screen, or `null` while nothing has been chosen.
+  final DateTime? value;
+
+  /// The day the columns write onto while [value] is `null`.
+  final DateTime referenceDate;
+
+  /// Called with the instant a row produces when it is chosen.
+  final ValueChanged<DateTime> onChange;
+
+  /// A 12-hour dial with a column of AM and PM, or hours 00 to 23.
+  final bool hour12;
+
+  /// Adds the column of seconds.
+  final bool showSeconds;
+
+  /// How far apart the hours are.
+  final int hourStep;
+
+  /// How far apart the minutes are.
+  final int minuteStep;
+
+  /// How far apart the seconds are.
+  final int secondStep;
+
+  /// Blocks a row, handed the instant it would produce and its column.
+  final bool Function(DateTime value, NebaTimeUnit unit)? shouldDisableTime;
+
+  /// Whether the hours take the focus once they are built: the popup has
+  /// just opened.
+  final bool autofocus;
+
+  @override
+  Widget build(BuildContext context) {
+    final DateTime? value = this.value;
+    final DateTime base = value ?? referenceDate;
+    final int dialHour = base.hour % 12 == 0 ? 12 : base.hour % 12;
+    final List<int> hours = <int>[
+      for (int index = 0; index < ((hour12 ? 12 : 24) / hourStep).ceil(); index++)
+        // 12, 1, 2 … 11: the order a 12-hour dial is read in, not 0 … 11.
+        hour12 && index * hourStep == 0 ? 12 : index * hourStep,
+    ];
+
+    List<int> steps(int step) {
+      return <int>[for (int index = 0; index < (60 / step).ceil(); index++) index * step];
+    }
+
+    // The instant choosing a row produces: one field of the clock replaced,
+    // the hour on a 12-hour dial kept in the half of the day it was in.
+    DateTime candidate(NebaTimeUnit unit, int raw) {
+      return switch (unit) {
+        NebaTimeUnit.hour => NebaDate.withTime(
+          base,
+          hours: hour12 ? raw % 12 + (base.hour >= 12 ? 12 : 0) : raw,
+        ),
+        NebaTimeUnit.minute => NebaDate.withTime(base, minutes: raw),
+        NebaTimeUnit.second => NebaDate.withTime(base, seconds: raw),
+        NebaTimeUnit.meridiem => NebaDate.withTime(base, hours: base.hour % 12 + raw * 12),
+      };
+    }
+
+    String two(int raw) => raw.toString().padLeft(2, '0');
+
+    Widget column(
+      NebaTimeUnit unit,
+      List<int> rows, {
+      required int current,
+      required String Function(int raw) text,
+    }) {
+      final int found = value == null ? -1 : rows.indexOf(current);
+
+      return _TimeColumn(
+        key: ValueKey<NebaTimeUnit>(unit),
+        label: words[unit.name]!,
+        size: size,
+        roles: roles,
+        rows: rows,
+        chosen: found < 0 ? null : found,
+        candidateOf: (int raw) => candidate(unit, raw),
+        disabledOf: (DateTime at) => shouldDisableTime?.call(at, unit) ?? false,
+        textOf: text,
+        onChoose: onChange,
+        autofocus: autofocus && unit == NebaTimeUnit.hour,
+      );
+    }
+
+    return Stack(
+      children: <Widget>[
+        // Tab takes the columns in their order, hours to the meridiem, as the
+        // stops are written rather than by where each one is scrolled to.
+        FocusTraversalGroup(
+          policy: WidgetOrderTraversalPolicy(),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: density == NebaDensity.compact ? 2 : 4,
+            children: <Widget>[
+              column(
+                NebaTimeUnit.hour,
+                hours,
+                current: hour12 ? dialHour : base.hour,
+                text: (int raw) => hour12 ? '$raw' : two(raw),
+              ),
+              column(NebaTimeUnit.minute, steps(minuteStep), current: base.minute, text: two),
+              if (showSeconds)
+                column(NebaTimeUnit.second, steps(secondStep), current: base.second, text: two),
+              if (hour12)
+                column(
+                  NebaTimeUnit.meridiem,
+                  const <int>[0, 1],
+                  current: base.hour >= 12 ? 1 : 0,
+                  text: (int raw) => raw == 0 ? names.am : names.pm,
+                ),
+            ],
+          ),
+        ),
+        // Unnamed lists of numbers, to anyone listening rather than looking:
+        // this is what they add up to, said again whenever it changes.
+        PositionedDirectional(
+          start: 0,
+          top: 0,
+          child: NebaVisuallyHidden(
+            child: NebaLiveRegion(
+              role: SemanticsRole.status,
+              child: Semantics(
+                label: value == null
+                    ? ''
+                    : names.write(showSeconds ? names.timeWithSeconds : names.time, value),
+                child: const SizedBox.square(dimension: 1),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// The gap between two rows of the clock: `gap-0.5`.
+const double _rowGap = 2;
+
+/// One column of the clock: its rows in a box seven cells tall that scrolls,
+/// one of them the tab stop.
+class _TimeColumn extends StatefulWidget {
+  const _TimeColumn({
+    required this.label,
+    required this.size,
+    required this.roles,
+    required this.rows,
+    required this.chosen,
+    required this.candidateOf,
+    required this.disabledOf,
+    required this.textOf,
+    required this.onChoose,
+    required this.autofocus,
+    super.key,
+  });
+
+  /// What a screen reader calls the column.
+  final String label;
+
+  final NebaSize size;
+  final NebaColorRoles roles;
+
+  /// The value each row stands for: an hour, a minute, a second, or `0` and
+  /// `1` for the two halves of the day.
+  final List<int> rows;
+
+  /// Which row the value is on, or `null`.
+  final int? chosen;
+
+  final DateTime Function(int raw) candidateOf;
+  final bool Function(DateTime at) disabledOf;
+  final String Function(int raw) textOf;
+  final ValueChanged<DateTime> onChoose;
+  final bool autofocus;
+
+  @override
+  State<_TimeColumn> createState() => _TimeColumnState();
+}
+
+class _TimeColumnState extends State<_TimeColumn> {
+  // The chosen row in view from the first frame, against the nearest edge.
+  late final ScrollController _scroll = ScrollController(
+    initialScrollOffset: _revealed(widget.chosen, 0),
+  );
+  List<FocusNode> _nodes = <FocusNode>[];
+
+  double get _extent => NebaScale.controlHeight[widget.size]!;
+
+  double get _viewport => nebaCalendarCell(widget.size) * 7;
+
+  int get _stop => widget.chosen ?? 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _syncNodes();
+
+    if (widget.autofocus) {
+      SchedulerBinding.instance.addPostFrameCallback((Duration _) {
+        if (mounted) {
+          _nodes[_stop].requestFocus();
+        }
+      });
+    }
+  }
+
+  @override
+  void didUpdateWidget(_TimeColumn oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _syncNodes();
+  }
+
+  @override
+  void dispose() {
+    for (final FocusNode node in _nodes) {
+      node.dispose();
+    }
+
+    _scroll.dispose();
+    super.dispose();
+  }
+
+  // One node a row, kept as long as the row is, so a step changed under an
+  // open clock leaves the focus where it was.
+  void _syncNodes() {
+    final int count = widget.rows.length;
+
+    if (_nodes.length == count) {
+      return;
+    }
+
+    if (_nodes.length > count) {
+      for (final FocusNode node in _nodes.sublist(count)) {
+        node.dispose();
+      }
+
+      _nodes = _nodes.sublist(0, count);
+    } else {
+      _nodes = <FocusNode>[
+        ..._nodes,
+        for (int index = _nodes.length; index < count; index++)
+          FocusNode(debugLabel: 'NebaTimeGrid ${widget.label} $index'),
+      ];
+    }
+  }
+
+  // Where the column has to be scrolled from [offset] for row [index] to be
+  // in view, against the nearest edge. Worked out in the column alone, so
+  // nothing around the popup scrolls with it.
+  double _revealed(int? index, double offset) {
+    if (index == null) {
+      return offset;
+    }
+
+    final double top = index * (_extent + _rowGap);
+    final double bottom = top + _extent;
+
+    if (top < offset) {
+      return top;
+    }
+
+    if (bottom > offset + _viewport) {
+      return bottom - _viewport;
+    }
+
+    return offset;
+  }
+
+  KeyEventResult _onKey(FocusNode _, KeyEvent event) {
+    if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
+      return KeyEventResult.ignored;
+    }
+
+    final int at = _nodes.indexWhere((FocusNode node) => node.hasPrimaryFocus);
+
+    if (at < 0) {
+      return KeyEventResult.ignored;
+    }
+
+    final int? next = switch (event.logicalKey) {
+      LogicalKeyboardKey.arrowDown => at + 1,
+      LogicalKeyboardKey.arrowUp => at - 1,
+      LogicalKeyboardKey.home => 0,
+      LogicalKeyboardKey.end => _nodes.length - 1,
+      _ => null,
+    };
+
+    if (next == null) {
+      return KeyEventResult.ignored;
+    }
+
+    // The focus moves and the value does not: choosing is still Enter.
+    final int target = next.clamp(0, _nodes.length - 1);
+
+    _nodes[target].requestFocus();
+
+    if (_scroll.hasClients) {
+      _scroll.jumpTo(_revealed(target, _scroll.offset).clamp(0, _scroll.position.maxScrollExtent));
+    }
+
+    return KeyEventResult.handled;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final double cell = nebaCalendarCell(widget.size);
+    final int stop = _stop;
+    final List<Widget> rows = <Widget>[];
+
+    for (int index = 0; index < widget.rows.length; index++) {
+      final int raw = widget.rows[index];
+      final DateTime at = widget.candidateOf(raw);
+      final String text = widget.textOf(raw);
+      final FocusNode node = _nodes[index];
+
+      node.skipTraversal = index != stop;
+      rows.add(
+        SizedBox(
+          height: _extent,
+          child: _CalendarCell(
+            size: widget.size,
+            roles: widget.roles,
+            focusNode: node,
+            label: text,
+            selected: index == widget.chosen,
+            // Still reachable when blocked, so the arrow keys' path through
+            // the column has no holes and a screen reader says why.
+            disabled: widget.disabledOf(at),
+            inTable: false,
+            onPressed: () => widget.onChoose(at),
+            child: Text(text, maxLines: 1, softWrap: false),
+          ),
+        ),
+      );
+    }
+
+    return Semantics(
+      container: true,
+      explicitChildNodes: true,
+      label: widget.label,
+      child: Focus(
+        canRequestFocus: false,
+        skipTraversal: true,
+        includeSemantics: false,
+        onKeyEvent: _onKey,
+        child: SizedBox(
+          width: cell * 2,
+          height: _viewport,
+          child: SingleChildScrollView(
+            controller: _scroll,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              spacing: _rowGap,
+              children: rows,
+            ),
+          ),
         ),
       ),
     );

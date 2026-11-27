@@ -177,6 +177,65 @@ abstract final class NebaDate {
     return DateTime(date.year, date.month, date.day, time.hour, time.minute, time.second);
   }
 
+  /// [date] with the clock fields given replaced, and the rest of a second
+  /// dropped. The fields are set on the wall clock, so the hour a row is
+  /// labelled with is the hour it lands on, a day the clocks change included.
+  static DateTime withTime(DateTime date, {int? hours, int? minutes, int? seconds}) {
+    return DateTime(
+      date.year,
+      date.month,
+      date.day,
+      hours ?? date.hour,
+      minutes ?? date.minute,
+      seconds ?? date.second,
+    );
+  }
+
+  /// [date] held inside [min] and [max], at whatever precision they carry.
+  static DateTime clamp(DateTime date, DateTime? min, DateTime? max) {
+    if (min != null && date.isBefore(min)) {
+      return min;
+    }
+
+    if (max != null && date.isAfter(max)) {
+      return max;
+    }
+
+    return date;
+  }
+
+  /// Seconds since local midnight, on the wall clock.
+  static int secondsOfDay(DateTime date) => date.hour * 3600 + date.minute * 60 + date.second;
+
+  /// The span of the day one row of one column of a clock stands for, in
+  /// seconds since midnight, both ends included.
+  ///
+  /// A bound is checked against the span and never against one instant in
+  /// it: with a minimum of 09:30, the hour `9` covers 09:00:00 to 09:59:59,
+  /// which reaches what is allowed, so it stays open and the minute column
+  /// is where `00` to `29` grey out. Comparing the instant instead hides the
+  /// `9` and makes half past nine unreachable.
+  static (int, int) timeUnitSpan(NebaTimeUnit unit, DateTime at) {
+    final int seconds = secondsOfDay(at);
+
+    switch (unit) {
+      case NebaTimeUnit.hour:
+        final int start = seconds ~/ 3600 * 3600;
+
+        return (start, start + 3599);
+      case NebaTimeUnit.minute:
+        final int start = seconds ~/ 60 * 60;
+
+        return (start, start + 59);
+      case NebaTimeUnit.second:
+        return (seconds, seconds);
+      case NebaTimeUnit.meridiem:
+        final int start = at.hour < 12 ? 0 : 12 * 3600;
+
+        return (start, start + 12 * 3600 - 1);
+    }
+  }
+
   /// [date]'s weekday as the calendar counts columns: [DateTime.weekday]
   /// with Sunday taken round to sit before Monday, so a week starting on any
   /// day is a subtraction away.

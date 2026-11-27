@@ -22,7 +22,9 @@ import 'package:neba/src/theme/theme.dart';
 ///
 /// A pattern is text with placeholders: `{year}`, `{month}` (the long name),
 /// `{shortMonth}`, `{monthNumber}`, `{day}`, `{weekday}` (the long name) and
-/// `{shortWeekday}`.
+/// `{shortWeekday}` for the day; `{hour}` (0 to 23), `{paddedHour}` (00 to
+/// 23), `{dialHour}` (12, 1 to 11), `{minute}`, `{second}` (each two digits)
+/// and `{dayPeriod}` ([am] or [pm]) for the time of day.
 ///
 /// ```dart
 /// registerNebaDateNames(
@@ -37,6 +39,10 @@ import 'package:neba/src/theme/theme.dart';
 ///     monthYear: '{year}년 {month}',
 ///     fullDate: '{year}년 {month} {day}일 {weekday}',
 ///     mediumDate: '{year}. {monthNumber}. {day}.',
+///     am: '오전',
+///     pm: '오후',
+///     time: '{dayPeriod} {dialHour}:{minute}',
+///     timeWithSeconds: '{dayPeriod} {dialHour}:{minute}:{second}',
 ///   ),
 /// );
 /// ```
@@ -51,6 +57,11 @@ class NebaDateNames {
     this.monthYear = '{month} {year}',
     this.fullDate = '{weekday}, {month} {day}, {year}',
     this.mediumDate = '{shortMonth} {day}, {year}',
+    this.am = 'AM',
+    this.pm = 'PM',
+    this.hour12 = true,
+    this.time = '{dialHour}:{minute} {dayPeriod}',
+    this.timeWithSeconds = '{dialHour}:{minute}:{second} {dayPeriod}',
   });
 
   /// The twelve months' names, January first: the header's month button, a
@@ -82,6 +93,25 @@ class NebaDateNames {
 
   /// A date written short: the default format of a date picker.
   final String mediumDate;
+
+  /// What the first half of the day is called: a time picker's meridiem
+  /// column and `{dayPeriod}` before noon.
+  final String am;
+
+  /// What the second half of the day is called.
+  final String pm;
+
+  /// Whether a clock is read on a 12-hour dial here, which is what a time
+  /// picker's columns default to: hours 12, 1 to 11 and a column of [am] and
+  /// [pm], or hours 00 to 23.
+  final bool hour12;
+
+  /// An hour and its minutes: the default format of a time picker, and what
+  /// a screen reader hears its clock say.
+  final String time;
+
+  /// The same with the seconds, for a time picker that shows them.
+  final String timeWithSeconds;
 
   /// The names English is written with, which every language falls back to.
   static const NebaDateNames english = NebaDateNames(
@@ -163,6 +193,8 @@ class NebaDateNames {
 
   /// [pattern] with its placeholders filled from [date].
   String write(String pattern, DateTime date) {
+    String two(int value) => value.toString().padLeft(2, '0');
+
     return pattern.replaceAllMapped(RegExp(r'\{(\w+)\}'), (Match match) {
       return switch (match.group(1)) {
         'year' => '${date.year}',
@@ -172,6 +204,12 @@ class NebaDateNames {
         'day' => '${date.day}',
         'weekday' => weekdays[date.weekday - 1],
         'shortWeekday' => shortWeekdays[date.weekday - 1],
+        'hour' => '${date.hour}',
+        'paddedHour' => two(date.hour),
+        'dialHour' => '${date.hour % 12 == 0 ? 12 : date.hour % 12}',
+        'minute' => two(date.minute),
+        'second' => two(date.second),
+        'dayPeriod' => date.hour < 12 ? am : pm,
         _ => match.group(0)!,
       };
     });
@@ -186,7 +224,12 @@ class NebaDateNames {
         listEquals(other.shortWeekdays, shortWeekdays) &&
         other.monthYear == monthYear &&
         other.fullDate == fullDate &&
-        other.mediumDate == mediumDate;
+        other.mediumDate == mediumDate &&
+        other.am == am &&
+        other.pm == pm &&
+        other.hour12 == hour12 &&
+        other.time == time &&
+        other.timeWithSeconds == timeWithSeconds;
   }
 
   @override
@@ -198,6 +241,11 @@ class NebaDateNames {
     monthYear,
     fullDate,
     mediumDate,
+    am,
+    pm,
+    hour12,
+    time,
+    timeWithSeconds,
   );
 }
 
