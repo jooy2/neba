@@ -509,6 +509,9 @@ import 'package:neba_example/demos/stack/hero.dart';
 import 'package:neba_example/demos/statistic/anatomy.dart';
 import 'package:neba_example/demos/statistic/comparison.dart';
 import 'package:neba_example/demos/statistic/hero.dart';
+import 'package:neba_example/demos/streaming_text/cursor.dart';
+import 'package:neba_example/demos/streaming_text/hero.dart';
+import 'package:neba_example/demos/streaming_text/reserve.dart';
 import 'package:neba_example/demos/switch/hero.dart';
 import 'package:neba_example/demos/switch/placement.dart';
 import 'package:neba_example/demos/switch/sizes.dart';
@@ -1104,6 +1107,9 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'statistic/anatomy': StatisticAnatomy.new,
   'statistic/comparison': StatisticComparison.new,
   'statistic/hero': StatisticHero.new,
+  'streaming-text/cursor': StreamingTextCursor.new,
+  'streaming-text/hero': StreamingTextHero.new,
+  'streaming-text/reserve': StreamingTextReserve.new,
   'switch/hero': SwitchHero.new,
   'switch/placement': SwitchPlacement.new,
   'switch/sizes': SwitchSizes.new,

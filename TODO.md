@@ -286,7 +286,7 @@ Some components have no single Flutter equivalent of what they are on the web, a
 - [x] `NebaContextWindow`
 - [x] `NebaSources`
 - [x] `NebaInlineCitation`
-- [ ] `NebaStreamingText`
+- [x] `NebaStreamingText`
 - [ ] `NebaPromptInput`
 
 ### Transitions (17)

@@ -134,6 +134,7 @@ export 'src/components/sparkline/neba_sparkline.dart';
 export 'src/components/spoiler/neba_spoiler.dart';
 export 'src/components/stack/neba_stack.dart';
 export 'src/components/statistic/neba_statistic.dart';
+export 'src/components/streaming_text/neba_streaming_text.dart';
 export 'src/components/switch/neba_switch.dart';
 export 'src/components/table/neba_table.dart';
 export 'src/components/tabs/neba_tabs.dart';
