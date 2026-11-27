@@ -1,20 +1,18 @@
 /// The sheet a picture is shown full size on: an Image's preview and a
 /// Gallery's viewer.
 ///
-/// The React package opens both in its `Dialog` at `size="xl"`. The Flutter
-/// package has no Dialog yet, so the sheet that Dialog draws is drawn here,
-/// on `NebaModalLayer`, for the two of them, and the Dialog's port should
-/// take this sheet over rather than draw a second one.
+/// The React package opens both in its `Dialog` at `size="xl"`, so the sheet
+/// here is the Dialog's: its frosted panel and `NebaSheetSections`, the same
+/// heading, × and scrolling body a `NebaDialog` draws.
 ///
 /// The library talking to itself: nothing here is exported.
 library;
 
 import 'package:flutter/widgets.dart';
 
-import 'package:neba/src/components/box/neba_box.dart';
-import 'package:neba/src/internal/hit.dart';
 import 'package:neba/src/internal/picture.dart';
 import 'package:neba/src/internal/sheet_close.dart';
+import 'package:neba/src/internal/sheet_sections.dart';
 import 'package:neba/src/internal/surface.dart';
 import 'package:neba/src/theme/scale.dart';
 import 'package:neba/src/theme/theme.dart';
@@ -78,80 +76,29 @@ class NebaViewerSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final NebaTokens tokens = NebaTheme.of(context);
-    final NebaColorRoles roles = tokens.roles(NebaColor.primary);
     const NebaSize size = NebaSize.xl;
-    final double inset = NebaBox.padding[NebaDensity.standard]![size]!;
-    final double titleSize = NebaScale.sheetTitleText[size]!;
-    final double bodySize = NebaScale.sheetBodyText[size]!;
     final String? description = this.description;
-
-    final Widget header = Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      spacing: 12,
-      children: <Widget>[
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: NebaScale.sheetHeaderGap[size]!,
-            children: <Widget>[
-              Semantics(
-                container: true,
-                header: true,
-                headingLevel: 2,
-                namesRoute: true,
-                child: Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: titleSize,
-                    height: NebaScale.sheetTitleLeading[size]! / titleSize,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-              if (description != null)
-                Text(
-                  description,
-                  style: TextStyle(fontSize: NebaScale.metaText[size], color: tokens.mutedFg),
-                ),
-            ],
-          ),
-        ),
-        NebaSheetClose(
-          onPressed: onClose,
-          label: closeLabel,
-          em: MediaQuery.textScalerOf(context).scale(bodySize),
-          color: NebaColor.primary,
-        ),
-      ],
-    );
 
     return NebaSheet(
       fill: tokens.panelPress,
-      edge: roles.line,
+      edge: tokens.roles(NebaColor.primary).line,
       plate: NebaPlate.glass,
       elevation: 3,
       borderRadius: BorderRadius.circular(tokens.radius[size]!),
-      child: DefaultTextStyle.merge(
-        style: TextStyle(
-          color: tokens.fg,
-          fontSize: bodySize,
-          height: NebaScale.sheetBodyLeading[size]! / bodySize,
+      child: NebaSheetSections(
+        size: size,
+        density: NebaDensity.standard,
+        color: NebaColor.primary,
+        title: Text(title),
+        namesRoute: true,
+        description: description == null ? null : Text(description),
+        close: NebaSheetClose(
+          onPressed: onClose,
+          label: closeLabel,
+          em: MediaQuery.textScalerOf(context).scale(NebaScale.sheetBodyText[size]!),
+          color: NebaColor.primary,
         ),
-        child: NebaHitArea(
-          child: Padding(
-            // The hairline takes its pixel, as a CSS border does.
-            padding: EdgeInsets.all(inset + 1),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              spacing: NebaScale.sheetSectionGap[size]!,
-              children: <Widget>[
-                header,
-                Flexible(child: SingleChildScrollView(child: child)),
-              ],
-            ),
-          ),
-        ),
+        child: child,
       ),
     );
   }
