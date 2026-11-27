@@ -103,6 +103,10 @@ import 'package:neba_example/demos/segmented_button/hero.dart';
 import 'package:neba_example/demos/segmented_button/sizes.dart';
 import 'package:neba_example/demos/segmented_button/states.dart';
 import 'package:neba_example/demos/segmented_button/variants.dart';
+import 'package:neba_example/demos/shortcut/hero.dart';
+import 'package:neba_example/demos/shortcut/keys.dart';
+import 'package:neba_example/demos/shortcut/platforms.dart';
+import 'package:neba_example/demos/shortcut/variants.dart';
 import 'package:neba_example/demos/show/hero.dart';
 import 'package:neba_example/demos/show/pair.dart';
 import 'package:neba_example/demos/show/range.dart';
@@ -241,6 +245,10 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'segmented-button/sizes': SegmentedButtonSizes.new,
   'segmented-button/states': SegmentedButtonStates.new,
   'segmented-button/variants': SegmentedButtonVariants.new,
+  'shortcut/hero': ShortcutHero.new,
+  'shortcut/keys': ShortcutKeys.new,
+  'shortcut/platforms': ShortcutPlatforms.new,
+  'shortcut/variants': ShortcutVariants.new,
   'show/hero': ShowHero.new,
   'show/pair': ShowPair.new,
   'show/range': ShowRange.new,

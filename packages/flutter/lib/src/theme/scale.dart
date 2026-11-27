@@ -187,4 +187,20 @@ abstract final class NebaScale {
 
   /// The one easing curve, `cubic-bezier(0.32, 0.72, 0, 1)`.
   static const Curve ease = Cubic(0.32, 0.72, 0, 1);
+
+  /// The monospaced faces a key cap and code are set in, Tailwind's
+  /// `font-mono` stack by the names a platform knows them by: the first is the
+  /// family, the rest its fallbacks, and a platform with none of them uses its
+  /// own default.
+  static const List<String> monoFonts = <String>[
+    'SF Mono',
+    'SFMono-Regular',
+    'Menlo',
+    'Monaco',
+    'Consolas',
+    'Liberation Mono',
+    'Roboto Mono',
+    'Courier New',
+    'monospace',
+  ];
 }

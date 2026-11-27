@@ -1,6 +1,7 @@
 ---
 title: Shortcut
 order: 10
+flutter: true
 ---
 
 # Shortcut
@@ -8,6 +9,8 @@ order: 10
 <p class="neba-lede">키보드 단축키를 키캡 형태로 표시합니다. 플랫폼에 따라 수식 키의 표기가 자동으로 바뀝니다.</p>
 
 <Demo src="shortcut/hero" />
+
+::: fw react
 
 ```tsx
 import { Shortcut } from 'neba';
@@ -17,6 +20,20 @@ import { Shortcut } from 'neba';
 <Shortcut keys={['Mod', '+']} />;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+const NebaShortcut(keys: 'Mod+K');
+const NebaShortcut(keys: 'Ctrl+Alt+Delete', os: NebaShortcutOS.windows);
+const NebaShortcut.split(keys: <String>['Mod', '+']);
+```
+
+:::
+
 ## Props
 
 <PropsTable name="Shortcut" />
@@ -25,17 +42,29 @@ import { Shortcut } from 'neba';
 
 ### keys
 
-문자열은 `+`를 기준으로 나뉩니다. 키 자체가 `+`일 때만 배열 형태가 필요합니다. 한 글자 토큰은 키캡 표기에 맞춰 대문자로 올라가고, 인식하지 못한 토큰은 넘긴 그대로 출력됩니다.
+문자열은 `+`를 기준으로 나뉩니다. 키 자체가 `+`일 때만 <Fw react="배열 형태가" flutter="키를 목록으로 받는 `NebaShortcut.split`이" /> 필요합니다. 한 글자 토큰은 키캡 표기에 맞춰 대문자로 올라가고, 인식하지 못한 토큰은 넘긴 그대로 출력됩니다.
 
 <Demo src="shortcut/keys">
 
+::: fw react
+
 <<< @/.vitepress/demos/shortcut/keys.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/shortcut/keys.dart
+
+:::
 
 </Demo>
 
 ### os와 `Mod`
 
 `Mod`는 "그 플랫폼의 기본 수식 키"를 뜻하는 토큰입니다. macOS에서는 Command(`⌘`), 그 외에서는 Control로 해석됩니다. 표기만 바뀌는 다른 토큰과 달리 `Mod`는 가리키는 키 자체가 달라지는 유일한 토큰입니다.
+
+::: fw react
 
 `os`의 기본값 `auto`는 브라우저에 현재 플랫폼을 물어봅니다. 서버에는 물어볼 브라우저가 없으므로, 서버에서 렌더링한 페이지는 Windows 키로 그렸다가 hydration 때 독자의 플랫폼 표기로 바꿉니다. Mac에서는 `Ctrl+K`가 `⌘K`로 바뀌고, 둘의 폭이 달라서 Shortcut 뒤에 오는 글자가 움직입니다. 이를 피하려면 서버에서 요청의 `User-Agent` 헤더로 플랫폼을 판단해 `os`로 넘기세요. 판단 규칙은 `auto`와 같습니다. Mac, iPhone, iPad는 `mac`, Windows는 `windows`, 그 밖에는 `linux`입니다. 특정 플랫폼을 설명하는 문서에서도 `mac` · `windows` · `linux`를 명시하세요.
 
@@ -50,27 +79,67 @@ const os = /mac|iphone|ipad|ipod/i.test(userAgent)
 <Shortcut keys="Mod+K" os={os} />;
 ```
 
+:::
+
+::: fw flutter
+
+`os`의 기본값 `NebaShortcutOS.auto`는 `defaultTargetPlatform`을 읽습니다. macOS와 iOS는 `mac`, Windows는 `windows`, 그 밖에는 `linux`입니다. 웹에서는 브라우저의 플랫폼이 됩니다. 특정 플랫폼을 설명하는 문서에서는 `mac` · `windows` · `linux`를 명시하세요.
+
+:::
+
+::: fw react
+
 같은 문자열을 라이브러리가 **바인딩**에도 씁니다. [CommandPalette](../inputs/command-palette)의 `shortcut`, [TextField](../inputs/text-field) · [NumberField](../inputs/number-field) · [Combobox](../inputs/combobox)의 `shortcuts`가 모두 이 어휘를 읽습니다. 별칭도 마찬가지입니다. `Cmd` · `Command` · `Meta` · `Win`은 한 키이고, `Esc` · `Return` · `Opt` · `Up`은 각각 `Escape` · `Enter` · `Alt` · `ArrowUp`의 다른 표기입니다. 화면에 그린 키캡과 실제로 발동하는 키가 같은 문자열이며, 예외가 하나 있습니다. Shift를 눌러 입력하는 문장부호는 Shift를 검사하지 않으므로 입력되는 문자 그대로 적습니다. `?`는 발동하고 `Shift+/`는 발동하지 않습니다.
+
+:::
+
+::: fw flutter
+
+별칭은 React 패키지와 같습니다. `Cmd` · `Command` · `Meta` · `Win`은 한 키이고, `Esc` · `Return` · `Opt` · `Up`은 각각 `Escape` · `Enter` · `Alt` · `ArrowUp`의 다른 표기입니다. Flutter의 필드는 이 문자열이 아니라 `ShortcutActivator`로 키를 바인딩하므로, 키캡과 그것이 설명하는 바인딩은 따로 적습니다.
+
+:::
 
 <Demo src="shortcut/platforms">
 
+::: fw react
+
 <<< @/.vitepress/demos/shortcut/platforms.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/shortcut/platforms.dart
+
+:::
 
 </Demo>
 
 ### separator와 variant
 
-`separator`를 생략하면 플랫폼 관례를 따릅니다. macOS는 쓴 순서와 관계없이 수식키를 ⌃⌥⇧⌘ 순서로 붙여 쓰고(`Mod+Shift+P`는 `⇧⌘P`), 나머지 플랫폼은 `+`로 잇습니다. 직접 넘기면 그 문자를 씁니다.
+`separator`를 생략하면 플랫폼 관례를 따릅니다. macOS는 쓴 순서와 관계없이 수식키를 ⌃⌥⇧⌘ 순서로 붙여 쓰고(`Mod+Shift+P`는 `⇧⌘P`), 나머지 플랫폼은 `+`로 잇습니다. 직접 넘기면 그 <Fw react="문자를" flutter="위젯을" /> 씁니다.
 
 키캡은 [Chip](./chip)처럼 컨트롤 높이보다 한 단계 아래이고, 고정폭으로 조판됩니다.
 
 <Demo src="shortcut/variants">
 
+::: fw react
+
 <<< @/.vitepress/demos/shortcut/variants.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/shortcut/variants.dart
+
+:::
 
 </Demo>
 
 ### MenuItem 안에서
+
+::: fw react
 
 [MenuItem](../inputs/menu)의 `shortcut` prop이 Shortcut을 주로 넣는 자리입니다.
 
@@ -78,6 +147,33 @@ const os = /mac|iphone|ipad|ipod/i.test(userAgent)
 <MenuItem shortcut={<Shortcut keys="Mod+E" />}>이름 바꾸기</MenuItem>
 ```
 
+:::
+
+::: fw flutter
+
+Flutter 패키지에는 아직 메뉴가 없습니다. 그전까지는 Shortcut을 행 끝, 해당 라벨 옆에 둡니다.
+
+```dart
+Row(
+  children: <Widget>[
+    const Expanded(child: Text('이름 바꾸기')),
+    const NebaShortcut(keys: 'Mod+E'),
+  ],
+);
+```
+
+:::
+
 ## 접근성
 
+::: fw react
+
 - `⌘` 같은 기호는 screen reader가 키 이름으로 읽지 못합니다. 글리프로 그려지는 키는 시각적으로 숨긴 이름을 함께 담고 있어 "Command K"로 읽힙니다.
+
+:::
+
+::: fw flutter
+
+- `⌘` 같은 기호는 screen reader가 키 이름으로 읽지 못합니다. Shortcut은 모든 키의 이름을 라벨로 가진 하나의 노드라서 "Command K"로 읽히고, 구분자는 읽지 않습니다.
+
+:::
