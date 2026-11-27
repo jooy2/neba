@@ -210,6 +210,10 @@ import 'package:neba_example/demos/floating_bottom_navigation/pinned.dart';
 import 'package:neba_example/demos/footer/hero.dart';
 import 'package:neba_example/demos/footer/measure.dart';
 import 'package:neba_example/demos/footer/variant.dart';
+import 'package:neba_example/demos/form/errors.dart';
+import 'package:neba_example/demos/form/hero.dart';
+import 'package:neba_example/demos/form/spacing.dart';
+import 'package:neba_example/demos/form/validation_mode.dart';
 import 'package:neba_example/demos/gallery/captions.dart';
 import 'package:neba_example/demos/gallery/columns.dart';
 import 'package:neba_example/demos/gallery/fit.dart';
@@ -690,6 +694,10 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'footer/hero': FooterHero.new,
   'footer/measure': FooterMeasure.new,
   'footer/variant': FooterVariant.new,
+  'form/errors': FormErrors.new,
+  'form/hero': FormHero.new,
+  'form/spacing': FormSpacing.new,
+  'form/validation-mode': FormValidationMode.new,
   'gallery/captions': GalleryCaptions.new,
   'gallery/columns': GalleryColumns.new,
   'gallery/fit': GalleryFit.new,
