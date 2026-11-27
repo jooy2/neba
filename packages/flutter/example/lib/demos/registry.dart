@@ -71,7 +71,7 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'button/elevation': ButtonElevation.new,
   'button/full-width': ButtonFullWidth.new,
   'button/hero': ButtonHero.new,
-  'button/icons': PlusIcon.new,
+  'button/icons': ButtonIcons.new,
   'button/sizes': ButtonSizes.new,
   'button/states': ButtonStates.new,
   'button/variants': ButtonVariants.new,

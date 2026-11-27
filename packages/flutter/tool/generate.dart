@@ -132,10 +132,6 @@ ${exports.map((String path) => "export '$path';").join('\n')}
 
 String _registry() {
   final List<_Demo> demos = <_Demo>[];
-  final RegExp declaration = RegExp(
-    r'^class (\w+) extends State(?:less|ful)Widget',
-    multiLine: true,
-  );
 
   for (final FileSystemEntity entity in Directory('example/lib/demos').listSync(recursive: true)) {
     if (entity is! File || !entity.path.endsWith('.dart')) {
@@ -149,15 +145,26 @@ String _registry() {
       continue;
     }
 
-    final RegExpMatch? match = declaration.firstMatch(entity.readAsStringSync());
+    final String file = parts[1].replaceAll('.dart', '');
+    // The demo is the class its path names, `button/icons.dart` declaring
+    // `ButtonIcons`, and not whichever widget the file happens to declare
+    // first: a demo with an icon of its own above it was registered as the
+    // icon, and a gallery test cannot tell, because the icon builds too.
+    final String className = '${parts[0]}_$file'
+        .split('_')
+        .map((String word) => word.isEmpty ? word : word[0].toUpperCase() + word.substring(1))
+        .join();
+    final RegExp declaration = RegExp(
+      '^class $className extends State(?:less|ful)Widget',
+      multiLine: true,
+    );
 
-    if (match == null) {
-      continue;
+    if (!declaration.hasMatch(entity.readAsStringSync())) {
+      throw StateError('example/lib/demos/$path declares no widget named $className');
     }
 
-    final String key =
-        '${parts[0].replaceAll('_', '-')}/${parts[1].replaceAll('.dart', '').replaceAll('_', '-')}';
-    demos.add(_Demo(key: key, path: path, className: match.group(1)!));
+    final String key = '${parts[0].replaceAll('_', '-')}/${file.replaceAll('_', '-')}';
+    demos.add(_Demo(key: key, path: path, className: className));
   }
 
   demos.sort((_Demo a, _Demo b) => a.key.compareTo(b.key));
