@@ -8,7 +8,7 @@ flutter: true
 
 <p class="neba-lede">A card that opens when the pointer rests on something and holds a preview of what is on the other side of it: a person behind a mention, a repository behind a link, a deploy behind an id.</p>
 
-<Demo src="hover-card/hero" />
+<Demo src="hover-card/hero" minHeight="220" />
 
 ::: fw react
 
@@ -66,11 +66,17 @@ There is no `variant` and no `elevation`. The card is drawn in the app's root `O
 
 `delay` is how long the pointer has to rest before the card opens, and `closeDelay` is how long the card stays after the pointer leaves. `closeDelay` is what lets the pointer cross the gap between the trigger and the card.
 
-<Demo src="hover-card/delay">
+<Demo src="hover-card/delay" minHeight="200">
 
 ::: fw react
 
 <<< @/.vitepress/demos/hover-card/delay.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/hover_card/delay.dart
 
 :::
 

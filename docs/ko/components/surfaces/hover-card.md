@@ -8,7 +8,7 @@ flutter: true
 
 <p class="neba-lede">포인터가 어떤 대상 위에 머무를 때 열려, 그 너머에 있는 것을 미리 보여주는 카드입니다. 멘션 뒤의 사람, 링크 뒤의 저장소, id 뒤의 배포 같은 것입니다.</p>
 
-<Demo src="hover-card/hero" />
+<Demo src="hover-card/hero" minHeight="220" />
 
 ::: fw react
 
@@ -66,11 +66,17 @@ NebaHoverCard(
 
 `delay`는 카드가 열리기까지 포인터가 머물러야 하는 시간이고, `closeDelay`는 포인터가 떠난 뒤 카드가 남아 있는 시간입니다. `closeDelay` 덕분에 포인터가 trigger와 카드 사이의 빈틈을 건널 수 있습니다.
 
-<Demo src="hover-card/delay">
+<Demo src="hover-card/delay" minHeight="200">
 
 ::: fw react
 
 <<< @/.vitepress/demos/hover-card/delay.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/hover_card/delay.dart
 
 :::
 

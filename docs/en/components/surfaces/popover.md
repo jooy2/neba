@@ -8,7 +8,7 @@ flutter: true
 
 <p class="neba-lede">A sheet that opens beside the control that opened it. Unlike a tooltip it stays up and can be reached, so what is inside can be clicked and typed into.</p>
 
-<Demo src="popover/hero" align="center" minHeight="80" />
+<Demo src="popover/hero" align="center" minHeight="260" />
 
 ::: fw react
 

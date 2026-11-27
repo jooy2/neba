@@ -109,6 +109,8 @@ import 'package:neba_example/demos/highlight/hero.dart';
 import 'package:neba_example/demos/highlight/matching.dart';
 import 'package:neba_example/demos/highlight/nested.dart';
 import 'package:neba_example/demos/highlight/variants.dart';
+import 'package:neba_example/demos/hover_card/delay.dart';
+import 'package:neba_example/demos/hover_card/hero.dart';
 import 'package:neba_example/demos/hover_card/placement.dart';
 import 'package:neba_example/demos/hover_card/sizes.dart';
 import 'package:neba_example/demos/icon/colors.dart';
@@ -125,6 +127,7 @@ import 'package:neba_example/demos/panes/hero.dart';
 import 'package:neba_example/demos/panes/orientation.dart';
 import 'package:neba_example/demos/panes/sizing.dart';
 import 'package:neba_example/demos/popover/controlled.dart';
+import 'package:neba_example/demos/popover/hero.dart';
 import 'package:neba_example/demos/popover/sides.dart';
 import 'package:neba_example/demos/portal/hero.dart';
 import 'package:neba_example/demos/progress_box/counts.dart';
@@ -327,6 +330,8 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'highlight/matching': HighlightMatching.new,
   'highlight/nested': HighlightNested.new,
   'highlight/variants': HighlightVariants.new,
+  'hover-card/delay': HoverCardDelay.new,
+  'hover-card/hero': HoverCardHero.new,
   'hover-card/placement': HoverCardPlacement.new,
   'hover-card/sizes': HoverCardSizes.new,
   'icon-button/hero': IconButtonHero.new,
@@ -343,6 +348,7 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'panes/orientation': PanesOrientation.new,
   'panes/sizing': PanesSizing.new,
   'popover/controlled': PopoverControlled.new,
+  'popover/hero': PopoverHero.new,
   'popover/sides': PopoverSides.new,
   'portal/hero': PortalHero.new,
   'progress-box/counts': ProgressBoxCounts.new,

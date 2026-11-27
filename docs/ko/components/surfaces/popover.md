@@ -8,7 +8,7 @@ flutter: true
 
 <p class="neba-lede">자신을 연 컨트롤 옆에 열리는 시트입니다. Tooltip과 달리 그대로 떠 있고 포인터와 키보드로 닿을 수 있어서, 안의 내용을 누르고 입력할 수 있습니다.</p>
 
-<Demo src="popover/hero" align="center" minHeight="80" />
+<Demo src="popover/hero" align="center" minHeight="260" />
 
 ::: fw react
 
