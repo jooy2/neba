@@ -322,7 +322,7 @@ Every component arrives with its own widget tests in phase 2. This phase is the 
 - [ ] Reduced motion (`MediaQuery.disableAnimations`) stops every animation that is not the user's own drag.
 - [ ] Every component lays out right to left, and no source file says left or right where it means start or end.
 - [ ] Every component fits a 320-pixel-wide screen without an overflow.
-- [ ] Muted text and every focus ring keep their contrast against the surfaces they sit on, in both themes.
+- [x] Muted text and every focus ring keep their contrast against the surfaces they sit on, in both themes. `packages/flutter/test/theme/contrast_test.dart` checks the tokens rather than the widgets, since every widget draws from them: the ink on each family's solid fill at rest, under the pointer and pressed at 4.5:1, each family's ring at 3:1 against the page, and muted text at 4.5:1 on the page, a panel and a pressed panel, in both themes and under reduced transparency.
 - [ ] A widget's layers keep their child when its state changes, so a press never rebuilds what is inside it.
 - [ ] Focus semantics: every control is reachable by keyboard and announces its role, state and name.
 - [ ] Every controller, listener and ticker a widget creates is disposed with it.
