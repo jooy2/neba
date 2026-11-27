@@ -137,6 +137,7 @@ export 'src/components/toggle/neba_toggle.dart';
 export 'src/components/toggle_group/neba_toggle_group.dart';
 export 'src/components/toolbar/neba_toolbar.dart';
 export 'src/components/tooltip/neba_tooltip.dart';
+export 'src/components/tour/neba_tour.dart';
 export 'src/components/transfer/neba_transfer.dart';
 export 'src/components/tree_select/neba_tree_select.dart';
 export 'src/components/tree_view/neba_tree_view.dart';

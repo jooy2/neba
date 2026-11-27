@@ -529,6 +529,9 @@ import 'package:neba_example/demos/toolbar/sticky.dart';
 import 'package:neba_example/demos/tooltip/grouped.dart';
 import 'package:neba_example/demos/tooltip/hero.dart';
 import 'package:neba_example/demos/tooltip/sides.dart';
+import 'package:neba_example/demos/tour/centred.dart';
+import 'package:neba_example/demos/tour/hero.dart';
+import 'package:neba_example/demos/tour/mask.dart';
 import 'package:neba_example/demos/transfer/hero.dart';
 import 'package:neba_example/demos/transfer/searchable.dart';
 import 'package:neba_example/demos/transfer/states.dart';
@@ -1076,6 +1079,9 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'tooltip/grouped': TooltipGrouped.new,
   'tooltip/hero': TooltipHero.new,
   'tooltip/sides': TooltipSides.new,
+  'tour/centred': TourCentred.new,
+  'tour/hero': TourHero.new,
+  'tour/mask': TourMask.new,
   'transfer/hero': TransferHero.new,
   'transfer/searchable': TransferSearchable.new,
   'transfer/states': TransferStates.new,
