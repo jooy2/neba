@@ -1,6 +1,7 @@
 ---
 title: Portal
 order: 9
+flutter: true
 ---
 
 # Portal
@@ -8,6 +9,8 @@ order: 9
 <p class="neba-lede">children을 DOM의 다른 곳(보통 <code>&lt;body&gt;</code>의 끝)에 그립니다. 제자리에 있으면 갇히게 될 clipping이나 stacking context를 빠져나가야 하는 subtree를 위한 것입니다.</p>
 
 <Demo src="portal/hero" />
+
+::: fw react
 
 ```tsx
 import { Portal } from 'neba';
@@ -17,13 +20,39 @@ import { Portal } from 'neba';
 </Portal>;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+NebaPortal(
+  child: Align(alignment: Alignment.topCenter, child: announcement),
+);
+```
+
+:::
+
 ## Props
 
 <PropsTable name="Portal" />
 
+::: fw react
+
 `<div>`의 native 속성은 wrapper로 전달됩니다.
 
-### `createPortal`과의 차이
+:::
+
+::: fw flutter
+
+child는 overlay 전체를 기준으로 배치되므로 `Positioned`나 `Align`으로 자리를 정합니다. portal을 쓴 자리에는 아무것도 그려지지 않습니다. portal 위쪽에는 `Overlay`가 있어야 하며, `WidgetsApp`, `MaterialApp`, `CupertinoApp`에는 모두 있습니다.
+
+:::
+
+### <Fw react="`createPortal`과의 차이" flutter="child가 유지하는 것" />
+
+::: fw react
 
 두 가지를 더합니다. 첫 번째가 이 컴포넌트를 쓰는 이유입니다.
 
@@ -31,9 +60,19 @@ wrapper가 **`neba-portal`**을 답니다. portal된 subtree는 페이지가 스
 
 두 번째는 서버입니다. 서버에는 `document`가 없으므로 portal은 마운트되기 전까지 아무것도 그리지 않고, 배포되는 마크업에 portal된 subtree는 들어 있지 않습니다. 이것은 우회할 수 있는 한계가 아니라 portal의 정의에서 따라 나오는 결과입니다. 서버 HTML에 반드시 있어야 하는 것은 portal에 넣으면 안 됩니다.
 
+:::
+
+::: fw flutter
+
+child는 쓴 자리에서 빌드되므로 그 자리의 theme, `NebaProvider` 기본값, 그 밖의 inherited 값을 모두 그대로 받습니다. 바뀌는 것은 배치되고 그려지는 위치뿐입니다.
+
+:::
+
 ## 예시
 
-### container
+### <Fw react="container" flutter="rootOverlay" />
+
+::: fw react
 
 children이 갈 곳입니다. 기본값은 `document.body`.
 
@@ -43,14 +82,50 @@ children이 갈 곳입니다. 기본값은 `document.body`.
 <Portal container={() => document.getElementById('overlay-root')}>{children}</Portal>
 ```
 
+:::
+
+::: fw flutter
+
+child를 앱의 root overlay, 즉 모든 route와 중첩된 navigator 위에 그릴지 정합니다. 기본값은 `true`입니다. `false`면 portal 위쪽에서 가장 가까운 `Overlay`에 그리므로, 중첩된 navigator 안의 portal은 그 navigator의 route와 함께 움직입니다.
+
+```dart
+NebaPortal(rootOverlay: false, child: panel)
+```
+
+:::
+
 ### disabled
+
+::: fw react
 
 portal 대신 제자리에 그립니다. 이미 portal 안에 있는 subtree, 마크업이 쓰인 자리에 그대로 있기를 바라는 테스트, 닿을 만한 `document.body`가 없는 임베드를 위한 것입니다.
 
 **마운트 시점에 한 번만 정하세요.** React에게 portal된 subtree와 제자리의 subtree는 서로 다른 child이므로, 이 값을 뒤집으면 안의 모든 것이 remount되고 그 안에 있던 것(반쯤 채운 폼, 스크롤 위치, 재생 중이던 영상)이 사라집니다. 이 컴포넌트가 우회할 수 있는 것이 아니라 React의 reconciliation입니다.
 
+:::
+
+::: fw flutter
+
+overlay 대신 제자리에 그립니다. 이미 overlay 안에 있는 subtree나, child가 쓴 자리에 그대로 있기를 바라는 테스트를 위한 것입니다.
+
+**처음 빌드할 때 한 번만 정하세요.** overlay 안의 child와 제자리의 child는 트리의 서로 다른 위치에 있으므로, 이 값을 바꾸면 안의 모든 것이 다시 빌드되고 그 안의 상태(반쯤 채운 폼, 스크롤 위치)가 사라집니다.
+
+:::
+
 ## 접근성
+
+::: fw react
 
 - portal은 요소를 DOM의 다른 곳으로 옮기고 스크린 리더는 DOM 순서대로 읽으므로, portal된 내용은 쓴 자리가 아니라 옮겨진 자리에서 읽힙니다. 무언가와 **함께** 속하는 내용이라면 `aria-controls` · `aria-describedby`나 focus 이동으로 그렇다고 말해야 합니다.
 - focus는 children을 따라가지 않습니다. portal된 dialog는 자기 focus 관리가 필요하니 이미 그것을 갖춘 [Dialog](../feedback/dialog)나 [Drawer](../surfaces/drawer)를 쓰세요.
 - `Escape`와 바깥 클릭도 여기서 처리하지 않습니다. 이것은 배치일 뿐 그 이상이 아닙니다.
+
+:::
+
+::: fw flutter
+
+- child는 쓴 자리가 아니라 그려진 자리, 즉 overlay에서 읽힙니다. 무언가와 함께 속하는 내용이라면 `Semantics` 라벨이나 focus 이동으로 그렇다고 알려야 합니다.
+- focus는 child를 따라가지 않습니다. dialog에는 자기 focus 관리가 필요하니 이미 그것을 갖춘 [Dialog](../feedback/dialog)나 [Drawer](../surfaces/drawer)를 쓰세요.
+- Escape와 바깥 탭도 여기서 처리하지 않습니다. 이것은 배치일 뿐 그 이상이 아닙니다.
+
+:::

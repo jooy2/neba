@@ -1,6 +1,7 @@
 ---
 title: Portal
 order: 9
+flutter: true
 ---
 
 # Portal
@@ -8,6 +9,8 @@ order: 9
 <p class="neba-lede">Children rendered somewhere else in the DOM, usually the end of <code>&lt;body&gt;</code>. For a subtree that has to escape a clipping or stacking context its own position would trap it in.</p>
 
 <Demo src="portal/hero" />
+
+::: fw react
 
 ```tsx
 import { Portal } from 'neba';
@@ -17,13 +20,39 @@ import { Portal } from 'neba';
 </Portal>;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+NebaPortal(
+  child: Align(alignment: Alignment.topCenter, child: announcement),
+);
+```
+
+:::
+
 ## Props
 
 <PropsTable name="Portal" />
 
+::: fw react
+
 Native `<div>` attributes pass through to the wrapper.
 
-### Differences from `createPortal`
+:::
+
+::: fw flutter
+
+The child is laid out against the whole overlay, so a `Positioned` or an `Align` places it, and nothing is drawn where the portal was written. A portal needs an `Overlay` above it, which every `WidgetsApp`, `MaterialApp` and `CupertinoApp` has.
+
+:::
+
+### <Fw react="Differences from `createPortal`" flutter="What the child keeps" />
+
+::: fw react
 
 Two things this adds, and the first is the reason to reach for it.
 
@@ -31,9 +60,19 @@ The wrapper carries **`neba-portal`**. A portalled subtree leaves whatever eleme
 
 The second is the server. There is no `document` there, so a portal renders nothing at all until it has mounted, and the markup that ships never contains the portalled subtree. That is what a portal _is_ rather than a limitation to route around: anything that has to be in the server's HTML does not belong in one.
 
+:::
+
+::: fw flutter
+
+The child is built where it was written, so it keeps the theme, the `NebaProvider` defaults and every other inherited value from there. Only where it is laid out and painted changes.
+
+:::
+
 ## Examples
 
-### container
+### <Fw react="container" flutter="rootOverlay" />
+
+::: fw react
 
 Where the children go. Defaults to `document.body`.
 
@@ -43,14 +82,50 @@ A function is called after mount, which is how a portal targets something React 
 <Portal container={() => document.getElementById('overlay-root')}>{children}</Portal>
 ```
 
+:::
+
+::: fw flutter
+
+Whether the child goes into the app's root overlay, above every route and every nested navigator. `true` is the default. `false` puts it into the nearest `Overlay` above the portal instead, so a portal inside a nested navigator stays with that navigator's routes.
+
+```dart
+NebaPortal(rootOverlay: false, child: panel)
+```
+
+:::
+
 ### disabled
+
+::: fw react
 
 Renders in place instead of portalling: for a subtree that is already inside a portal, a test that wants the markup where it was written, or an embed with no `document.body` worth reaching.
 
 **Decide it once, at mount.** A portalled subtree and an inline one are different children as far as React is concerned, so flipping this remounts everything inside and throws away what was in it: a half-filled form, a scroll position, a video that was playing. That is React's reconciliation rather than something this component can route around.
 
+:::
+
+::: fw flutter
+
+Draws the child in place instead of in an overlay: for a subtree that is already in one, or a test that wants the child where it was written.
+
+**Decide it once, when the portal is first built.** A child in an overlay and one in place sit at different points in the tree, so changing this builds everything inside again and throws away its state: a half-filled form, a scroll position.
+
+:::
+
 ## Accessibility
+
+::: fw react
 
 - A portal moves the element in the DOM, and a screen reader reads in DOM order, so portalled content is read where it lands rather than where it was written. Content that belongs _with_ something needs `aria-controls`, `aria-describedby` or a focus move to say so.
 - Focus does not follow the children. A portalled dialog needs its own focus management; use [Dialog](../feedback/dialog) or [Drawer](../surfaces/drawer), which already have it.
 - `Escape` and click-outside are not handled here either. This is placement and nothing else.
+
+:::
+
+::: fw flutter
+
+- The child is read where it is drawn, in the overlay, rather than where it was written. Content that belongs with something needs to say so, with a `Semantics` label or a focus move.
+- Focus does not follow the child. A dialog needs its own focus management; use [Dialog](../feedback/dialog) or [Drawer](../surfaces/drawer), which already have it.
+- Escape and taps outside are not handled here either. This is placement and nothing else.
+
+:::
