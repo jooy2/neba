@@ -987,7 +987,18 @@ class NebaChartTooltipPanel extends StatelessWidget {
                               )
                             else
                               const Spacer(),
-                            Text(item.label ?? item.formatted, style: figures),
+                            // As wide as the panel at its widest leaves it,
+                            // its edge, padding, swatch and gaps taken off,
+                            // past which it wraps rather than running out of
+                            // the panel: a span's two dates, or large text.
+                            ConstrainedBox(
+                              constraints: const BoxConstraints(maxWidth: 224 - 2 - 16 - 8 - 12),
+                              child: Text(
+                                item.label ?? item.formatted,
+                                style: figures,
+                                textAlign: TextAlign.end,
+                              ),
+                            ),
                           ],
                         ),
                     ],
@@ -1770,6 +1781,9 @@ class NebaCartesianChart<T> extends StatefulWidget {
     this.markInset = 0,
     this.table,
     this.swatch,
+    this.scale,
+    this.summary,
+    this.markTooltip,
     super.key,
   });
 
@@ -1807,6 +1821,21 @@ class NebaCartesianChart<T> extends StatefulWidget {
 
   /// The legend's swatch, for a chart whose marks are not all one shape.
   final Widget Function(int index, Color color)? swatch;
+
+  /// The value axis' scale, already worked out, for an axis whose arithmetic
+  /// is not 1-2-5: a time axis ticks where a calendar does.
+  final NebaChartScale? scale;
+
+  /// What the plot's one sentence counts, for a chart whose drawn values are
+  /// not its series' values: a timeline's spans. Every shown value and its
+  /// extremes when left out.
+  final ({int count, String min, String max})? summary;
+
+  /// What the tooltip says about a mark, for a chart whose marks are not
+  /// cells of a grid the frame can look the answer up in: a heading and its
+  /// rows, or `null` for nothing.
+  final ({String heading, List<NebaChartTooltipItem> items})? Function(NebaChartMark mark)?
+  markTooltip;
 
   /// The category axis.
   final NebaChartAxis? xAxis;
@@ -2345,6 +2374,8 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
       _visibility.chosen,
       tokens,
       widget.valueCategories,
+      widget.scale,
+      widget.summary,
     );
     final _ChartData? cached = _data;
 
@@ -2402,13 +2433,15 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
           ], stacked: false)
         : null;
     final NebaChartAxis? yAxis = widget.yAxis;
-    final NebaChartScale scale = chartValueScale(
-      extent,
-      min: yAxis?.min,
-      max: yAxis?.max,
-      tickCount: yAxis?.tickCount,
-      includeZero: widget.includeZero,
-    );
+    final NebaChartScale scale =
+        widget.scale ??
+        chartValueScale(
+          extent,
+          min: yAxis?.min,
+          max: yAxis?.max,
+          tickCount: yAxis?.tickCount,
+          includeZero: widget.includeZero,
+        );
     final NebaChartScale? secondScale = secondExtent == null
         ? null
         : secondaryAxis?.tickCount == null
@@ -2495,11 +2528,14 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
       offTheLine: widget.valueCategories && spread == null,
       format: format,
       secondFormat: twoAxes ? secondFormat : null,
-      described: chartSummarise(<List<NebaChartValue>>[
-        for (int index = 0; index < values.length; index++)
-          if (firstOf(index)) values[index],
-      ], format),
-      describedSecond: twoAxes
+      // A summary handed in has said everything already.
+      described:
+          widget.summary ??
+          chartSummarise(<List<NebaChartValue>>[
+            for (int index = 0; index < values.length; index++)
+              if (firstOf(index)) values[index],
+          ], format),
+      describedSecond: twoAxes && widget.summary == null
           ? chartSummarise(<List<NebaChartValue>>[
               for (int index = 0; index < values.length; index++)
                 if (secondOf(index)) values[index],
@@ -3101,7 +3137,11 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
     final bool walksMarks = widget.marks != null;
     final NebaChartMark? activeMark = walksMarks && !nothing ? _activeMark : null;
     final int? column = walksMarks ? activeMark?.index : _column;
-    final int? active = column != null && column < data.count && !nothing ? column : null;
+    // A mark's index is its place in its own series, which on a chart whose
+    // rows are the categories, a timeline's, runs past the count of them.
+    final int? active = column != null && (walksMarks || column < data.count) && !nothing
+        ? column
+        : null;
 
     final List<NebaChartTooltipItem> readings = active == null
         ? const <NebaChartTooltipItem>[]
@@ -3131,9 +3171,12 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
               .where((NebaChartTooltipItem item) => item.seriesIndex == pointerSeries)
               .firstOrNull
         : null;
-    final List<NebaChartTooltipItem> items = picked == null
-        ? readings
-        : <NebaChartTooltipItem>[picked];
+    // A chart whose marks are not cells of a grid answers for its own panel.
+    final ({String heading, List<NebaChartTooltipItem> items})? supplied = activeMark == null
+        ? null
+        : widget.markTooltip?.call(activeMark);
+    final List<NebaChartTooltipItem> items =
+        supplied?.items ?? (picked == null ? readings : <NebaChartTooltipItem>[picked]);
     // A mark is titled with its own x, since on a plot with two value axes the
     // x is data rather than a heading the marks were filed under, and a
     // number on that axis is written whole rather than compacted.
@@ -3149,6 +3192,8 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
                   : activeMark.index);
     final String? heading = active == null
         ? null
+        : supplied != null
+        ? supplied.heading
         : markCategory is num && data.categoryScale != null
         ? nebaFormatNumber(markCategory)
         : chartCategoryText(markCategory ?? data.labels[active]);

@@ -525,6 +525,9 @@ import 'package:neba_example/demos/timeline/bullets.dart';
 import 'package:neba_example/demos/timeline/hero.dart';
 import 'package:neba_example/demos/timeline/horizontal.dart';
 import 'package:neba_example/demos/timeline/status.dart';
+import 'package:neba_example/demos/timeline_chart/bars.dart';
+import 'package:neba_example/demos/timeline_chart/hero.dart';
+import 'package:neba_example/demos/timeline_chart/range.dart';
 import 'package:neba_example/demos/toast/action.dart';
 import 'package:neba_example/demos/toast/hero.dart';
 import 'package:neba_example/demos/toast/positions.dart';
@@ -1088,6 +1091,9 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'time-picker/columns': TimePickerColumns.new,
   'time-picker/hero': TimePickerHero.new,
   'time-picker/label-placement': TimePickerLabelPlacement.new,
+  'timeline-chart/bars': TimelineChartBars.new,
+  'timeline-chart/hero': TimelineChartHero.new,
+  'timeline-chart/range': TimelineChartRange.new,
   'timeline/bullets': TimelineBullets.new,
   'timeline/hero': TimelineHero.new,
   'timeline/horizontal': TimelineHorizontal.new,

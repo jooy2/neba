@@ -908,6 +908,78 @@ class NebaChartSeries {
   int get hashCode => Object.hash(name, Object.hashAll(data), color, hidden, axis);
 }
 
+/// One stretch of time on a row of a `NebaTimelineChart`: the React package's
+/// `NebaTimelinePoint`.
+@immutable
+class NebaTimelinePoint {
+  /// A span from [start] to [end].
+  const NebaTimelinePoint({required this.start, required this.end, this.label, this.color})
+    : assert(start is DateTime || start is num),
+      assert(end is DateTime || end is num),
+      assert(color == null || color is NebaColor || color is Color);
+
+  /// When it begins: a [DateTime], or milliseconds since the epoch.
+  final Object start;
+
+  /// When it is done, as [start]. A span that ends before it starts is drawn
+  /// the right way round.
+  final Object end;
+
+  /// What the span is called, in the tooltip and the table.
+  final String? label;
+
+  /// Overrides its row's colour for this one span: a [NebaColor] family or a
+  /// [Color].
+  final Object? color;
+
+  @override
+  bool operator ==(Object other) {
+    return other is NebaTimelinePoint &&
+        other.start == start &&
+        other.end == end &&
+        other.label == label &&
+        other.color == color;
+  }
+
+  @override
+  int get hashCode => Object.hash(start, end, label, color);
+}
+
+/// One row of a `NebaTimelineChart`, and every span on it: the React
+/// package's `NebaTimelineSeries`.
+///
+/// A row is a series, one thing with one name and one colour, but its data
+/// are spans rather than values, so it is not a [NebaChartSeries]. It has no
+/// `hidden` and no legend to pair one with: a timeline's rows are its
+/// category axis, already named down the side.
+@immutable
+class NebaTimelineSeries {
+  /// A row of [data].
+  const NebaTimelineSeries({required this.data, this.name, this.color})
+    : assert(color == null || color is NebaColor || color is Color);
+
+  /// Its name on the axis, in the tooltip and in the table.
+  final String? name;
+
+  /// The spans on this row. Overlapping ones each take a lane of their own.
+  final List<NebaTimelinePoint> data;
+
+  /// Overrides the palette slot this row would otherwise take: a [NebaColor]
+  /// family or a [Color].
+  final Object? color;
+
+  @override
+  bool operator ==(Object other) {
+    return other is NebaTimelineSeries &&
+        other.name == name &&
+        listEquals(other.data, data) &&
+        other.color == color;
+  }
+
+  @override
+  int get hashCode => Object.hash(name, Object.hashAll(data), color);
+}
+
 /// How a line gets from one point to the next.
 enum NebaChartCurve {
   /// Straight segments. The only one that claims nothing the data did not

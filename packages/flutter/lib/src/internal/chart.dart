@@ -16,6 +16,7 @@ import 'dart:math' as math;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/painting.dart';
 
+import 'package:neba/src/components/calendar/neba_date_names.dart';
 import 'package:neba/src/internal/color.dart';
 import 'package:neba/src/internal/format.dart';
 import 'package:neba/src/theme/scale.dart';
@@ -472,6 +473,309 @@ double chartBubbleRadius(double z, double maxZ, double max, double min) {
   }
 
   return math.max(min, math.sqrt(math.min(z, maxZ) / maxZ) * max);
+}
+
+// ---------------------------------------------------------------------------
+// Time
+// ---------------------------------------------------------------------------
+
+/// The units a time axis steps in.
+enum NebaChartTimeUnit {
+  /// Seconds.
+  second,
+
+  /// Minutes.
+  minute,
+
+  /// Hours.
+  hour,
+
+  /// Days.
+  day,
+
+  /// Weeks, from a Sunday.
+  week,
+
+  /// Months.
+  month,
+
+  /// Quarters of a year.
+  quarter,
+
+  /// Years.
+  year,
+}
+
+const double _second = 1000;
+const double _minute = 60 * _second;
+const double _hour = 60 * _minute;
+const double _day = 24 * _hour;
+
+/// The steps a clock and a calendar actually have, smallest first, with
+/// roughly how long each is, which is only how a step is chosen: months and
+/// years are walked with the calendar.
+const List<({NebaChartTimeUnit unit, int count, double size})> _timeSteps =
+    <({NebaChartTimeUnit unit, int count, double size})>[
+      (unit: NebaChartTimeUnit.second, count: 1, size: _second),
+      (unit: NebaChartTimeUnit.second, count: 5, size: 5 * _second),
+      (unit: NebaChartTimeUnit.second, count: 15, size: 15 * _second),
+      (unit: NebaChartTimeUnit.second, count: 30, size: 30 * _second),
+      (unit: NebaChartTimeUnit.minute, count: 1, size: _minute),
+      (unit: NebaChartTimeUnit.minute, count: 5, size: 5 * _minute),
+      (unit: NebaChartTimeUnit.minute, count: 15, size: 15 * _minute),
+      (unit: NebaChartTimeUnit.minute, count: 30, size: 30 * _minute),
+      (unit: NebaChartTimeUnit.hour, count: 1, size: _hour),
+      (unit: NebaChartTimeUnit.hour, count: 3, size: 3 * _hour),
+      (unit: NebaChartTimeUnit.hour, count: 6, size: 6 * _hour),
+      (unit: NebaChartTimeUnit.hour, count: 12, size: 12 * _hour),
+      (unit: NebaChartTimeUnit.day, count: 1, size: _day),
+      (unit: NebaChartTimeUnit.day, count: 2, size: 2 * _day),
+      (unit: NebaChartTimeUnit.week, count: 1, size: 7 * _day),
+      (unit: NebaChartTimeUnit.week, count: 2, size: 14 * _day),
+      (unit: NebaChartTimeUnit.month, count: 1, size: 30 * _day),
+      (unit: NebaChartTimeUnit.quarter, count: 1, size: 91 * _day),
+      (unit: NebaChartTimeUnit.month, count: 6, size: 182 * _day),
+      (unit: NebaChartTimeUnit.year, count: 1, size: 365 * _day),
+    ];
+
+DateTime _instant(double time) => DateTime.fromMillisecondsSinceEpoch(time.round());
+
+double _millis(DateTime date) => date.millisecondsSinceEpoch.toDouble();
+
+/// The start of the [unit] that [time] falls in, in the local time zone: a
+/// tick labelled `Mar 3` sits at midnight where the reader is.
+double _floorTime(double time, NebaChartTimeUnit unit) {
+  final DateTime at = _instant(time);
+
+  return switch (unit) {
+    NebaChartTimeUnit.year => _millis(DateTime(at.year)),
+    NebaChartTimeUnit.quarter => _millis(DateTime(at.year, (at.month - 1) ~/ 3 * 3 + 1)),
+    NebaChartTimeUnit.month => _millis(DateTime(at.year, at.month)),
+    // A week starts on a Sunday, as the React package's `getDay` counts it.
+    NebaChartTimeUnit.week => _millis(DateTime(at.year, at.month, at.day - at.weekday % 7)),
+    NebaChartTimeUnit.day => _millis(DateTime(at.year, at.month, at.day)),
+    NebaChartTimeUnit.hour => _millis(DateTime(at.year, at.month, at.day, at.hour)),
+    NebaChartTimeUnit.minute => (time / _minute).floorToDouble() * _minute,
+    NebaChartTimeUnit.second => (time / _second).floorToDouble() * _second,
+  };
+}
+
+/// [count] units on from [time], by the calendar: a month is a month and a
+/// day is a day across a change to summer time, not a number of
+/// milliseconds.
+double _addTime(double time, NebaChartTimeUnit unit, int count) {
+  final DateTime at = _instant(time);
+  DateTime moved(int years, int months, int days, int hours) {
+    return DateTime(
+      at.year + years,
+      at.month + months,
+      at.day + days,
+      at.hour + hours,
+      at.minute,
+      at.second,
+      at.millisecond,
+    );
+  }
+
+  return switch (unit) {
+    NebaChartTimeUnit.year => _millis(moved(count, 0, 0, 0)),
+    NebaChartTimeUnit.quarter => _millis(moved(0, 3 * count, 0, 0)),
+    NebaChartTimeUnit.month => _millis(moved(0, count, 0, 0)),
+    NebaChartTimeUnit.week => _millis(moved(0, 0, 7 * count, 0)),
+    NebaChartTimeUnit.day => _millis(moved(0, 0, count, 0)),
+    NebaChartTimeUnit.hour => _millis(moved(0, 0, 0, count)),
+    NebaChartTimeUnit.minute => time + count * _minute,
+    NebaChartTimeUnit.second => time + count * _second,
+  };
+}
+
+/// The container a step of each unit is counted from, so a six-month step
+/// lands on January and July rather than wherever the data starts.
+const Map<NebaChartTimeUnit, NebaChartTimeUnit> _timeContainer =
+    <NebaChartTimeUnit, NebaChartTimeUnit>{
+      NebaChartTimeUnit.second: NebaChartTimeUnit.minute,
+      NebaChartTimeUnit.minute: NebaChartTimeUnit.hour,
+      NebaChartTimeUnit.hour: NebaChartTimeUnit.day,
+      NebaChartTimeUnit.day: NebaChartTimeUnit.month,
+      NebaChartTimeUnit.week: NebaChartTimeUnit.week,
+      NebaChartTimeUnit.month: NebaChartTimeUnit.year,
+      NebaChartTimeUnit.quarter: NebaChartTimeUnit.year,
+      NebaChartTimeUnit.year: NebaChartTimeUnit.year,
+    };
+
+/// The last step boundary at or before [time]: an axis' rounded-out start.
+double _alignTime(double time, NebaChartTimeUnit unit, int count) {
+  double tick = _floorTime(time, _timeContainer[unit]!);
+
+  if (unit == NebaChartTimeUnit.year && count > 1) {
+    // Decades start at 1990 and not at 1993.
+    final int year = _instant(tick).year;
+
+    tick = _millis(DateTime(year - (year % count + count) % count));
+  }
+
+  for (int index = 0; index < 500; index++) {
+    final double next = _addTime(tick, unit, count);
+
+    if (next > time) {
+      return tick;
+    }
+
+    tick = next;
+  }
+
+  return tick;
+}
+
+/// A value scale whose numbers are instants, in milliseconds since the
+/// epoch, and the unit its ticks step in.
+@immutable
+class NebaChartTimeScale extends NebaChartScale {
+  /// A scale from [min] to [max] ticking every [step] [unit]s.
+  const NebaChartTimeScale({
+    required super.min,
+    required super.max,
+    required super.ticks,
+    required this.unit,
+    required this.step,
+  });
+
+  /// The unit its ticks step in.
+  final NebaChartTimeUnit unit;
+
+  /// How many of [unit] each step covers.
+  final int step;
+}
+
+/// The scale a time axis runs on, ticking where a calendar ticks: on a
+/// month's first day, on the hour, at midnight, never on a 1-2-5 step of
+/// milliseconds.
+///
+/// The step is the one whose count of ticks comes closest to [tickCount], and
+/// the ends round outward to it, as a value scale's do. Past a year the 1-2-5
+/// family comes back, counted in years.
+NebaChartTimeScale chartTimeScale(
+  ({double min, double max})? extent, {
+  double? min,
+  double? max,
+  int? tickCount,
+}) {
+  final int count = tickCount ?? 6;
+  double low = min ?? extent?.min ?? _millis(DateTime(2000));
+  double high = max ?? extent?.max ?? low + _day;
+
+  // A single instant is not a range: a day is opened around it.
+  if (high <= low) {
+    low -= _day / 2;
+    high += _day / 2;
+  }
+
+  final double span = high - low;
+  ({NebaChartTimeUnit unit, int count, double size}) chosen = _timeSteps.first;
+  double closest = double.infinity;
+
+  for (final ({NebaChartTimeUnit unit, int count, double size}) candidate in _timeSteps) {
+    final double distance = (span / candidate.size - count).abs();
+
+    if (distance < closest) {
+      closest = distance;
+      chosen = candidate;
+    }
+  }
+
+  final NebaChartTimeUnit unit = chosen.unit;
+  final int step = unit == NebaChartTimeUnit.year
+      ? math.max(1, _niceStep(span / count / (365 * _day)).round())
+      : chosen.count;
+  final double start = min ?? _alignTime(low, unit, step);
+  final List<double> walked = <double>[];
+  // Walked from the calendar even when `min` pins the start elsewhere: walked
+  // from the 31st of January, a month on is the 3rd of March.
+  double tick = _alignTime(low, unit, step);
+
+  for (int index = 0; index < 500; index++) {
+    walked.add(tick);
+
+    if (tick > high) {
+      break;
+    }
+
+    tick = _addTime(tick, unit, step);
+  }
+
+  final double end = max ?? walked.last;
+
+  return NebaChartTimeScale(
+    min: start,
+    max: end,
+    ticks: <double>[
+      for (final double one in walked)
+        if (one >= start && one <= end) one,
+    ],
+    unit: unit,
+    step: step,
+  );
+}
+
+String _twoDigits(int value) => value.toString().padLeft(2, '0');
+
+/// [value] written at [unit], with the year when [withYear], through [names]:
+/// the clock for a unit under a day, the month for a month, and the month
+/// and day otherwise, as the React package's `Intl` options ask for them.
+String _timeText(
+  double value,
+  NebaChartTimeUnit unit,
+  NebaDateNames names, {
+  required bool withYear,
+  bool clock = false,
+}) {
+  final DateTime at = _instant(value);
+  final String time = '${_twoDigits(at.hour)}:${_twoDigits(at.minute)}';
+
+  switch (unit) {
+    case NebaChartTimeUnit.second:
+      return '$time:${_twoDigits(at.second)}';
+    case NebaChartTimeUnit.minute || NebaChartTimeUnit.hour:
+      return time;
+    case NebaChartTimeUnit.year:
+      return '${at.year}';
+    case NebaChartTimeUnit.month || NebaChartTimeUnit.quarter:
+      final String month = withYear
+          ? names.write(names.monthYear.replaceAll('{month}', '{shortMonth}'), at)
+          : names.write('{shortMonth}', at);
+
+      return clock ? '$month, $time' : month;
+    case NebaChartTimeUnit.day || NebaChartTimeUnit.week:
+      final String day = withYear
+          ? names.write(names.mediumDate, at)
+          : names.write('{shortMonth} {day}', at);
+
+      return clock ? '$day, $time' : day;
+  }
+}
+
+/// One instant written unambiguously, with its year, for a tooltip or a
+/// table. [clock] adds the hour and the minute to a unit that has none.
+String chartTimeValue(
+  double value,
+  NebaChartTimeUnit unit,
+  NebaDateNames names, {
+  bool clock = false,
+}) {
+  return _timeText(value, unit, names, withYear: true, clock: clock);
+}
+
+/// A whole axis of [ticks], written the way an axis is read: an axis inside
+/// one year names it once, on the first tick, which no stride ever drops,
+/// and one that crosses a year names it on every tick, so whichever survive
+/// each say which year they are in.
+List<String> chartTimeTicks(List<double> ticks, NebaChartTimeUnit unit, NebaDateNames names) {
+  final bool always = ticks.map((double tick) => _instant(tick).year).toSet().length > 1;
+
+  return <String>[
+    for (int index = 0; index < ticks.length; index++)
+      _timeText(ticks[index], unit, names, withYear: always || index == 0),
+  ];
 }
 
 // ---------------------------------------------------------------------------

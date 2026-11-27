@@ -135,6 +135,7 @@ export 'src/components/text_field/neba_text_field.dart';
 export 'src/components/text_link/neba_text_link.dart';
 export 'src/components/time_picker/neba_time_picker.dart';
 export 'src/components/timeline/neba_timeline.dart';
+export 'src/components/timeline_chart/neba_timeline_chart.dart';
 export 'src/components/toast/neba_toast.dart';
 export 'src/components/toggle/neba_toggle.dart';
 export 'src/components/toggle_group/neba_toggle_group.dart';

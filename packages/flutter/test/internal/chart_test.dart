@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:neba/src/components/calendar/neba_date_names.dart';
 import 'package:neba/src/internal/chart.dart';
 import 'package:neba/src/internal/color.dart';
 import 'package:neba/src/theme/tokens.dart';
@@ -669,6 +670,92 @@ void main() {
       }
 
       expect(chartSquarify(<double>[0, -1], 300, 200), isEmpty);
+    });
+  });
+
+  group('time', () {
+    double at(DateTime date) => date.millisecondsSinceEpoch.toDouble();
+
+    test('ticks on the first of each month across half a year', () {
+      final NebaChartTimeScale scale = chartTimeScale((
+        min: at(DateTime(2026, 1, 9)),
+        max: at(DateTime(2026, 6, 20)),
+      ));
+
+      expect(scale.unit, NebaChartTimeUnit.month);
+      expect(scale.ticks.first, at(DateTime(2026)));
+      // Rounded outward at both ends, as a value scale is.
+      expect(scale.min, at(DateTime(2026)));
+      expect(scale.max, at(DateTime(2026, 7)));
+      expect(
+        scale.ticks.map((double tick) => DateTime.fromMillisecondsSinceEpoch(tick.round()).day),
+        everyElement(1),
+      );
+    });
+
+    test('steps in hours across a day, from the hour', () {
+      final NebaChartTimeScale scale = chartTimeScale((
+        min: at(DateTime(2026, 3, 2, 9, 20)),
+        max: at(DateTime(2026, 3, 2, 17, 40)),
+      ));
+
+      expect(scale.unit, NebaChartTimeUnit.hour);
+      expect(scale.ticks.first, at(DateTime(2026, 3, 2, 9)));
+    });
+
+    test('keeps a pinned start and still ticks on the calendar', () {
+      final NebaChartTimeScale scale = chartTimeScale((
+        min: at(DateTime(2026, 1, 31)),
+        max: at(DateTime(2026, 5, 31)),
+      ), min: at(DateTime(2026, 1, 31)));
+
+      expect(scale.min, at(DateTime(2026, 1, 31)));
+      expect(scale.ticks.first, at(DateTime(2026, 2)));
+    });
+
+    test('opens a day around a single instant', () {
+      final NebaChartTimeScale scale = chartTimeScale((
+        min: at(DateTime(2026, 3, 2, 12)),
+        max: at(DateTime(2026, 3, 2, 12)),
+      ));
+
+      expect(scale.max - scale.min, greaterThanOrEqualTo(24 * 60 * 60 * 1000));
+    });
+
+    test('names the year once inside it, and on every tick across one', () {
+      const NebaDateNames names = NebaDateNames.english;
+
+      expect(
+        chartTimeTicks(
+          <double>[at(DateTime(2026)), at(DateTime(2026, 2)), at(DateTime(2026, 3))],
+          NebaChartTimeUnit.month,
+          names,
+        ),
+        <String>['Jan 2026', 'Feb', 'Mar'],
+      );
+      expect(
+        chartTimeTicks(
+          <double>[at(DateTime(2025, 12)), at(DateTime(2026))],
+          NebaChartTimeUnit.month,
+          names,
+        ),
+        <String>['Dec 2025', 'Jan 2026'],
+      );
+      expect(
+        chartTimeTicks(<double>[at(DateTime(2026, 3, 2))], NebaChartTimeUnit.day, names),
+        <String>['Mar 2, 2026'],
+      );
+    });
+
+    test('writes an instant whole, with its time when asked', () {
+      const NebaDateNames names = NebaDateNames.english;
+      final double nine = at(DateTime(2026, 3, 3, 9, 5));
+
+      expect(chartTimeValue(nine, NebaChartTimeUnit.day, names), 'Mar 3, 2026');
+      expect(chartTimeValue(nine, NebaChartTimeUnit.day, names, clock: true), 'Mar 3, 2026, 09:05');
+      expect(chartTimeValue(nine, NebaChartTimeUnit.minute, names), '09:05');
+      expect(chartTimeValue(nine, NebaChartTimeUnit.second, names), '09:05:00');
+      expect(chartTimeValue(nine, NebaChartTimeUnit.year, names), '2026');
     });
   });
 }

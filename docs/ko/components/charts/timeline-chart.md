@@ -1,6 +1,7 @@
 ---
 title: TimelineChart
 order: 7
+flutter: true
 ---
 
 # TimelineChart
@@ -8,6 +9,8 @@ order: 7
 <p class="neba-lede">일을 시간 축 위에 그립니다. 한 행이 하나를 나타내고, 그 위의 막대 하나가 하나의 기간입니다. 무엇이 어느 갈래에서 얼마나 오래 일어나는지를 보여 주는 Gantt 차트입니다.</p>
 
 <Demo src="timeline-chart/hero" />
+
+::: fw react
 
 ```tsx
 import { TimelineChart } from 'neba';
@@ -23,17 +26,55 @@ import { TimelineChart } from 'neba';
 />;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+NebaTimelineChart(
+  label: '워크스트림별 릴리스 계획',
+  series: <NebaTimelineSeries>[
+    NebaTimelineSeries(
+      name: 'Design',
+      data: <NebaTimelinePoint>[
+        NebaTimelinePoint(
+          start: DateTime(2026, 2, 3),
+          end: DateTime(2026, 3, 3),
+          label: 'Wireframes',
+        ),
+      ],
+    ),
+  ],
+);
+```
+
+:::
+
 [Timeline](../display/timeline)과 다른 컴포넌트입니다. 그쪽은 축 없이 단계를 늘어놓는 목록으로 사건의 순서를 보여 주고, 이쪽은 달력 위에 기간을 그려 각각이 얼마나 걸렸는지를 보여 줍니다.
 
 ## 데이터 형식
 
 행 하나가 series이고 그 안의 datum 하나가 span입니다. 다만 span은 `NebaChartPoint`가 아닙니다. 축 위에 자리가 하나가 아니라 둘이므로 자기 타입을 따로 가집니다.
 
+::: fw react
+
 ```ts
 { start: new Date('2026-03-02'), end: new Date('2026-03-16'), label: 'Wireframes' }
 ```
 
-`start`와 `end`는 `Date` 또는 밀리초 숫자입니다. 앞뒤가 바뀌어 적힌 span도 제대로 그립니다.
+:::
+
+::: fw flutter
+
+```dart
+NebaTimelinePoint(start: DateTime(2026, 3, 2), end: DateTime(2026, 3, 16), label: 'Wireframes')
+```
+
+:::
+
+`start`와 `end`는 <Fw react="`Date`" flutter="`DateTime`" /> 또는 밀리초 숫자입니다. 앞뒤가 바뀌어 적힌 span도 제대로 그립니다.
 
 한 행의 span들은 그 행을 함께 씁니다. 겹치는 것들은 서로 위에 그려지는 대신 각자 lane을 하나씩 받으므로, 두 가지를 동시에 하는 행은 둘 다 보입니다. 겹치지 않는 행은 원래 두께를 그대로 유지합니다.
 
@@ -43,7 +84,19 @@ import { TimelineChart } from 'neba';
 
 <PropsTable name="TimelineChart" />
 
+::: fw react
+
 `<div>`의 native 속성과 [Box](../surfaces/box)의 모든 prop이 그대로 전달됩니다. `legend`는 없습니다. Gantt의 행은 그 자체가 축이고 이미 왼쪽에 이름이 쓰여 있습니다. [`references`](./line-chart#references)와 [`exportable`](./line-chart#exportable)은 LineChart와 같이 동작하며, span 바깥의 reference가 있으면 시간 축이 그것까지 넓어집니다. `value`는 밀리초 단위의 timestamp입니다. `brush`는 없습니다. 행 단위로 자르는데 그 행의 span은 plot 밖까지 그려지기 때문입니다. `secondaryAxis`도 없습니다. 공용 축은 [prop 규약](../../design/prop-conventions)을 참고하세요.
+
+:::
+
+::: fw flutter
+
+차트는 [LineChart](./line-chart#props)처럼 [Box](../surfaces/box) 위에 놓입니다. `legend`는 없습니다. Gantt의 행은 그 자체가 축이고 이미 왼쪽에 이름이 쓰여 있습니다. [`references`](./line-chart#references)는 LineChart와 같이 동작하며, span 바깥의 reference가 있으면 시간 축이 그것까지 넓어집니다. `value`는 밀리초 단위의 timestamp입니다. `exportable`은 Flutter 패키지에 아직 없습니다. `brush`는 없습니다. 행 단위로 자르는데 그 행의 span은 plot 밖까지 그려지기 때문입니다. `secondaryAxis`도 없습니다. Dart에는 union 타입이 없으므로 `min`과 `max`는 `DateTime`이나 `num`을 담는 `Object?`입니다.
+
+축과 tooltip과 표는 날짜를 차트의 `locale`에 맞는 `NebaDateNames`의 달 이름으로 씁니다. widgets 계층에는 `Intl`이 없으므로, 앱이 `registerNebaDateNames`로 다른 언어의 이름을 주지 않았다면 영어입니다. 연월일을 다 쓰는 날짜와 연도가 붙은 달은 그 언어의 순서를 따르고, 눈금을 다르게 쓰려면 `yAxis.tickFormat`을 쓰세요. 공용 축은 [prop 규약](../../design/prop-conventions)을 참고하세요.
+
+:::
 
 ## 예시
 
@@ -55,7 +108,17 @@ import { TimelineChart } from 'neba';
 
 <Demo src="timeline-chart/range">
 
+::: fw react
+
 <<< @/.vitepress/demos/timeline-chart/range.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/timeline_chart/range.dart
+
+:::
 
 </Demo>
 
@@ -65,7 +128,17 @@ import { TimelineChart } from 'neba';
 
 <Demo src="timeline-chart/bars">
 
+::: fw react
+
 <<< @/.vitepress/demos/timeline-chart/bars.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/timeline_chart/bars.dart
+
+:::
 
 </Demo>
 
@@ -75,16 +148,44 @@ import { TimelineChart } from 'neba';
 
 `yAxis.tickFormat`으로 눈금을 쓰고, `yAxis.tickCount`로 대략의 개수를 요청하며, `xAxis.hidden`으로 행 이름을 지웁니다.
 
+::: fw react
+
 ```tsx
 <TimelineChart yAxis={{ tickCount: 4 }} xAxis={{ label: 'Workstream' }} … />
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+NebaTimelineChart(
+  yAxis: const NebaChartAxis(tickCount: 4),
+  xAxis: const NebaChartAxis(label: 'Workstream'),
+  …
+)
+```
+
+:::
+
 ### 색
 
-행의 팔레트 자리는 `series` 배열에서의 위치로 정해집니다. `series.color`는 그 자리를 [색 계열](../../design/color)이나 임의의 CSS 색으로 덮어쓰고, span 자신의 `color`는 그 막대 하나만 덮어씁니다. 일정이 밀린 하나가 스스로 그렇다고 말하는 방법입니다.
+행의 팔레트 자리는 `series` <Fw react="배열에서의" flutter="목록에서의" /> 위치로 정해집니다. `series.color`는 그 자리를 [색 계열](../../design/color)이나 <Fw react="임의의 CSS 색으로" flutter="임의의 `Color`로" /> 덮어쓰고, span 자신의 `color`는 그 막대 하나만 덮어씁니다. 일정이 밀린 하나가 스스로 그렇다고 말하는 방법입니다.
 
 ## 접근성
+
+::: fw react
 
 - 데이터는 `label`을 caption으로 하는 **화면에 보이지 않는 표**로도 렌더링됩니다. span 하나가 한 행이고, 그 행이 속한 행 이름 아래에 놓입니다. span이 500개를 넘으면 caption과 머리글 행은 바로 쓰고, 행은 차트가 처음 그려진 직후에 조금씩 나눠 추가합니다. 그래서 서버에서 렌더링한 HTML에는 행이 들어가지 않습니다.
 - plot에 focus할 수 있습니다. `↑`·`↓`로 데이터 순서대로 span을 옮기고, `Home`·`End`로 양 끝으로, `Escape`로 tooltip을 해제합니다.
 - 포인터는 중심이 가장 가까운 span이 아니라 **안에 들어와 있는** span을 고릅니다. 긴 막대의 hover를 옆의 짧은 막대가 가로채지 않습니다.
+
+:::
+
+::: fw flutter
+
+- plot은 span의 개수와 첫 span이 시작하고 마지막 span이 끝나는 때를 담은 문장 하나로 설명되는 이미지 노드 하나이고, 데이터는 `label`을 caption으로 하는 숨은 표에 있습니다. [LineChart](./line-chart#접근성)와 같으며, Flutter가 그중 무엇을 표현할 수 있고 없는지는 그 문서에 있습니다. 여기서는 span 하나가 한 행이고, 그 행이 속한 행 이름 아래에 놓입니다. span이 500개를 넘으면 행은 첫 프레임 뒤 한가한 틈에 나눠 채웁니다.
+- plot이 focus를 받습니다. `↑`·`↓`로 데이터 순서대로 span을 옮기고, `Home`·`End`로 양 끝으로, `Escape`로 해제하며, 옮길 때마다 읽은 값을 알려 줍니다.
+- 포인터는 중심이 가장 가까운 span이 아니라 **안에 들어와 있는** span을 고릅니다. 긴 막대의 hover를 옆의 짧은 막대가 가로채지 않습니다.
+
+:::

@@ -18,8 +18,11 @@ export function cartesianRows(component: string): PropRow[] {
   ];
 }
 
-/** What every chart takes besides its data, as Dart spells it. */
-export function chartBaseRows(component: string): PropRow[] {
+/**
+ * What every chart takes besides its data, as Dart spells it. `legend: false`
+ * leaves out the legend row, for a chart that has none.
+ */
+export function chartBaseRows(component: string, options: { legend?: boolean } = {}): PropRow[] {
   return [
     variantRow(component, 'NebaVariant.text'),
     sizeRow(component),
@@ -57,13 +60,17 @@ export function chartBaseRows(component: string): PropRow[] {
         en: "The language of the chart's own words: its name, the sentence that describes it, its empty state. Falls back to NebaProvider's, then the app's"
       }
     }),
-    from(component, 'legend', {
-      type: 'Object?',
-      description: {
-        ko: 'true, false, 또는 NebaChartLegend. series가 둘 이상이면 자동으로 나오고 하나면 나오지 않습니다. 색 하나짜리 범례는 제목을 반복할 뿐입니다',
-        en: 'true, false or a NebaChartLegend. Shown automatically from two series up and left off below that: a legend with one swatch restates the title'
-      }
-    }),
+    ...(options.legend === false
+      ? []
+      : [
+          from(component, 'legend', {
+            type: 'Object?',
+            description: {
+              ko: 'true, false, 또는 NebaChartLegend. series가 둘 이상이면 자동으로 나오고 하나면 나오지 않습니다. 색 하나짜리 범례는 제목을 반복할 뿐입니다',
+              en: 'true, false or a NebaChartLegend. Shown automatically from two series up and left off below that: a legend with one swatch restates the title'
+            }
+          })
+        ]),
     from(component, 'tooltip', {
       type: 'Object?',
       description: {
