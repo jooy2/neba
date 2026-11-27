@@ -10,7 +10,17 @@ aside: false
 
 <Demo src="concepts/dashboard" min-height="736px" />
 
+::: fw react
+
 The source is one file: `docs/.vitepress/demos/concepts/dashboard.tsx`. The table is live: search, filter by channel, select rows, and the bulk actions appear.
+
+:::
+
+::: fw flutter
+
+The source is one file: `packages/flutter/example/lib/demos/concepts/dashboard.dart`, the same screen built out of Neba widgets, and the table is just as live: search, filter by channel, select rows, and the bulk actions appear. The application bar is a `PinnedHeaderSliver` at the top of the work area's scroll view, which is what holds a `sticky` toolbar in Flutter, and the shell scrolls sideways on a screen narrower than 960 pixels rather than squeezing its two panes.
+
+:::
 
 ## What it is made of
 

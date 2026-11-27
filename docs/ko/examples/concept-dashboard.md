@@ -10,7 +10,17 @@ aside: false
 
 <Demo src="concepts/dashboard" min-height="736px" />
 
+::: fw react
+
 소스는 `docs/.vitepress/demos/concepts/dashboard.tsx` 한 파일입니다. 표는 실제로 동작하니 검색해 보고, 채널로 거르고, 행을 선택해 보면 일괄 동작이 나타납니다.
+
+:::
+
+::: fw flutter
+
+소스는 `packages/flutter/example/lib/demos/concepts/dashboard.dart` 한 파일이며, 같은 화면을 Neba 위젯으로 만들었습니다. 표도 똑같이 동작해서 검색하고, 채널로 거르고, 행을 선택하면 일괄 동작이 나타납니다. 애플리케이션 바는 작업 영역 스크롤 뷰 맨 위의 `PinnedHeaderSliver`이며, Flutter에서 `sticky` 툴바를 붙잡아 두는 방법이 이것입니다. 화면이 960픽셀보다 좁으면 두 pane을 욱여넣지 않고 셸 전체가 가로로 스크롤됩니다.
+
+:::
 
 ## 무엇으로 만들었는지
 
