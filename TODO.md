@@ -51,6 +51,7 @@ The six steps of a port are in `packages/flutter/CLAUDE.md`. What the last sessi
 - **A bar held against an edge** takes `NebaPosition` through `lib/src/internal/pinned.dart`, as `NebaToolbar` and `NebaPill` do: a widget cannot stick inside a scroll view it is in without painting under every sibling after it, so `sticky` draws the bar as it looks pinned and a `PinnedHeaderSliver` holds it, and `fixed` lifts it into the nearest overlay through `NebaPortal`. `NebaHeader` and `NebaFooter` should take the same rather than a second answer.
 - **A panel that replays its entrance without being built again** is a `NebaEntrance` with `playsOnBuild: false` and a `trigger` that counts its arrivals, as `NebaHowToSteps` does for each step.
 - **A chart** stands on `lib/src/internal/chart.dart`, `chart_frame.dart` and `chart_line.dart`, the React package's three chart files. A cartesian chart is a `NebaCartesianChart<T>` handed a `trace`, which works the marks out once per layout and again only when its `traceKey` changes, and a `painter`, which paints them on every build and repaints on `NebaChartEmphasis` without a rebuild. The axes, the references and the table are the frame's. What the next charts need from it and it does not have yet: `horizontal` for `NebaBarChart`, which today lays out vertical plots only; a value category axis (React's `xScale: 'value'`) and the nearest-mark search for `NebaScatterChart`; and the `brush` and `exportable` of every cartesian chart, which the line chart pages say are React only for now. Text on a chart is measured by `chartTextWidth`'s estimate, as React measures it, so the two packages make the same decisions about which labels fit.
+- **A slider's thumb at either end hangs half past its strip**, as Base UI centres a thumb on its value, and that half takes no press: a Flutter widget is hit only inside its own box and its parents'. `NebaSlider` places its thumbs and its marks at a share of the strip's length with a render object of its own, `_Along` in `neba_slider.dart`; a ColorPicker's rails or a chart brush's handles, which place things the same way, should move it into `lib/src/internal/` rather than write a second one.
 - **Checking it.** `flutter analyze` and `flutter test` in `packages/flutter`, in `packages/flutter/example` (every demo in both themes and at a phone's width) and in `examples/flutter` (the sample app, which shows every demo too), `npm run typecheck`, `npm run lint`, `npx prettier . --check` and `npm run build` in `docs` (the build runs the container check), and `npm run flutter:demos -- --force` before looking at a preview. With the browser pane hidden, a preview below the first screen never mounts; open the gallery directly at `/flutter/index.html?demo={key}&theme=dark` on the dev server to see one.
 
 Still open from that session:
@@ -79,6 +80,8 @@ Still open from that session:
 - [ ] **A chart's `brush` and `exportable`.** Neither is in `NebaCartesianChart` yet. The brush is a strip of the whole series under the plot with a window the reader drags, built on `lib/src/internal/drag.dart`; the export has no download to start in Flutter, so its counterpart is probably `onExport` alone, handed the CSV.
 
 - [ ] **The arrow keys onto a multiple Combobox's chips.** Base UI moves the focus from the field to the last chip on ArrowLeft at the caret's start, walks the chips with the arrows and takes the focused one out with Backspace or Delete. `NebaCombobox.multiple` takes the last chip out with Backspace in the empty field and any chip out with a press on its ×, and its chips are not focus stops yet.
+
+- [ ] **The words a range slider's thumbs add to their values.** `NebaSlider.range` reads "20 start range" and "80 end range" in English, as Base UI writes them on the React side, where they are not in `internal/i18n.ts` either. Both packages should read them from a `slider` namespace once the React side has one; until then `thumbSemanticValue` (`getAriaValueText`) is the way to another language.
 
 - [ ] **Check whether a consumer of `neba/tailwind.css` loses the library's classes.** The docs did: Vite inlined the stylesheet's `@import`, and the `@source '.'` inside it stopped pointing at `src/` (fixed in the docs by naming `packages/react/src`). A consumer who runs Tailwind through `@tailwindcss/postcss` in Vite may meet the same thing; `@tailwindcss/vite` probably does not. Not verified either way.
 
@@ -181,7 +184,7 @@ Demos that wait on a component not ported yet, to be added with it: `carousel/ph
 - [x] `NebaCheckboxGroup`
 - [x] `NebaRadioGroup`
 - [x] `NebaSwitch`
-- [ ] `NebaSlider`
+- [x] `NebaSlider`
 - [ ] `NebaMenu`
 - [ ] `NebaMenubar`
 - [ ] `NebaNavigationMenu`

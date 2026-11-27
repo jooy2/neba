@@ -84,6 +84,7 @@ export 'src/components/show/neba_show.dart';
 export 'src/components/sidebar/neba_sidebar.dart';
 export 'src/components/sidebar/neba_sidebar_trigger.dart';
 export 'src/components/skeleton/neba_skeleton.dart';
+export 'src/components/slider/neba_slider.dart';
 export 'src/components/sparkline/neba_sparkline.dart';
 export 'src/components/spoiler/neba_spoiler.dart';
 export 'src/components/stack/neba_stack.dart';

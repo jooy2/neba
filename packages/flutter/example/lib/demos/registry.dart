@@ -270,6 +270,11 @@ import 'package:neba_example/demos/skeleton/hero.dart';
 import 'package:neba_example/demos/skeleton/lines.dart';
 import 'package:neba_example/demos/skeleton/shapes.dart';
 import 'package:neba_example/demos/skeleton/swapping.dart';
+import 'package:neba_example/demos/slider/hero.dart';
+import 'package:neba_example/demos/slider/marks.dart';
+import 'package:neba_example/demos/slider/range.dart';
+import 'package:neba_example/demos/slider/sizes.dart';
+import 'package:neba_example/demos/slider/vertical.dart';
 import 'package:neba_example/demos/sparkline/gaps.dart';
 import 'package:neba_example/demos/sparkline/hero.dart';
 import 'package:neba_example/demos/sparkline/shapes.dart';
@@ -614,6 +619,11 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'skeleton/lines': SkeletonLines.new,
   'skeleton/shapes': SkeletonShapes.new,
   'skeleton/swapping': SkeletonSwapping.new,
+  'slider/hero': SliderHero.new,
+  'slider/marks': SliderMarks.new,
+  'slider/range': SliderRange.new,
+  'slider/sizes': SliderSizes.new,
+  'slider/vertical': SliderVertical.new,
   'sparkline/gaps': SparklineGaps.new,
   'sparkline/hero': SparklineHero.new,
   'sparkline/shapes': SparklineShapes.new,

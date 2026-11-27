@@ -11,8 +11,9 @@
 /// are three widgets that happen to share a prefix.
 ///
 /// `NebaMeter` reads them too, because it is the same groove with different
-/// semantics: [NebaGroove] is that groove, and [thresholdColor] is here for a
-/// meter and for the gauge that answers the same question about a reading.
+/// semantics: [NebaGroove] is that groove, which a `NebaSlider` cuts its track
+/// in as well, and [thresholdColor] is here for a meter and for the gauge that
+/// answers the same question about a reading.
 ///
 /// The library talking to itself: nothing here is exported.
 library;
@@ -332,12 +333,14 @@ double? progressPhase(Duration elapsed, Duration period, {Duration delay = Durat
   return (span: span, t: NebaScale.ease.transform(local));
 }
 
-/// The groove a bar and a meter cut into the surface they sit on: a rounded
-/// track in the family's wash, with the fill along it from the start, or,
-/// while there is no reading, a segment crossing it on [clock].
+/// The groove a bar, a meter and a slider cut into the surface they sit on: a
+/// rounded track in the family's wash, with the fill along it from the start,
+/// or from [start] for a slider's range, or, while there is no reading, a
+/// segment crossing it on [clock].
 ///
 /// It takes the width it is given, and none where there is no limit, as a
-/// bar a hundred per cent wide does. Nothing in it moves a box: the fill is
+/// bar a hundred per cent wide does; a [vertical] one takes the height it is
+/// given and fills from the bottom. Nothing in it moves a box: the fill is
 /// painted as long as the reading says, and the segment is painted further
 /// along on each frame, so neither runs a layout. A reader who asked for less
 /// motion sees the whole groove pulse between [rest] and [fill] instead,
@@ -351,11 +354,13 @@ class NebaGroove extends StatelessWidget {
     required this.fill,
     required this.rest,
     this.fraction,
+    this.start = 0,
+    this.vertical = false,
     this.clock,
     super.key,
   });
 
-  /// How tall the groove is.
+  /// How thick the groove is: its height, or its width when [vertical].
   final double thickness;
 
   /// The groove itself: the family's wash.
@@ -369,6 +374,14 @@ class NebaGroove extends StatelessWidget {
 
   /// How full, from 0 to 1, or `null` for a groove with no reading.
   final double? fraction;
+
+  /// Where the fill begins, from 0 to 1: the low end of a slider's range, and
+  /// the start of the groove for everything else.
+  final double start;
+
+  /// Whether the groove runs up the page, from the bottom, rather than along
+  /// the line.
+  final bool vertical;
 
   /// What the segment crosses on while there is no reading.
   final ValueListenable<Duration>? clock;
@@ -384,23 +397,30 @@ class NebaGroove extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final Widget painted = CustomPaint(
+      painter: _GroovePainter(
+        track: track,
+        fill: fill,
+        rest: rest,
+        fraction: fraction,
+        start: start,
+        vertical: vertical,
+        clock: clock,
+        reduced: nebaReducedMotion(context),
+        rtl: Directionality.of(context) == TextDirection.rtl,
+      ),
+    );
+
+    if (vertical) {
+      return LimitedBox(
+        maxHeight: 0,
+        child: SizedBox(width: thickness, height: double.infinity, child: painted),
+      );
+    }
+
     return LimitedBox(
       maxWidth: 0,
-      child: SizedBox(
-        width: double.infinity,
-        height: thickness,
-        child: CustomPaint(
-          painter: _GroovePainter(
-            track: track,
-            fill: fill,
-            rest: rest,
-            fraction: fraction,
-            clock: clock,
-            reduced: nebaReducedMotion(context),
-            rtl: Directionality.of(context) == TextDirection.rtl,
-          ),
-        ),
-      ),
+      child: SizedBox(width: double.infinity, height: thickness, child: painted),
     );
   }
 }
@@ -411,6 +431,8 @@ class _GroovePainter extends CustomPainter {
     required this.fill,
     required this.rest,
     required this.fraction,
+    required this.start,
+    required this.vertical,
     required this.clock,
     required this.reduced,
     required this.rtl,
@@ -420,6 +442,8 @@ class _GroovePainter extends CustomPainter {
   final Color fill;
   final Color rest;
   final double? fraction;
+  final double start;
+  final bool vertical;
   final ValueListenable<Duration>? clock;
   final bool reduced;
   final bool rtl;
@@ -427,7 +451,8 @@ class _GroovePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final Rect box = Offset.zero & size;
-    final Radius round = Radius.circular(size.height / 2);
+    final double extent = vertical ? size.height : size.width;
+    final Radius round = Radius.circular((vertical ? size.width : size.height) / 2);
 
     canvas
       ..save()
@@ -438,11 +463,12 @@ class _GroovePainter extends CustomPainter {
     final ValueListenable<Duration>? clock = this.clock;
 
     if (fraction != null) {
-      final double length = size.width * fraction;
+      final double from = extent * start;
+      final double length = extent * fraction - from;
 
       if (length > 0) {
         canvas.drawRRect(
-          RRect.fromRectAndRadius(_fromStart(size, 0, length), round),
+          RRect.fromRectAndRadius(_fromStart(size, from, length), round),
           Paint()..color = fill,
         );
       }
@@ -463,11 +489,11 @@ class _GroovePainter extends CustomPainter {
         final double t = NebaScale.ease.transform(
           progressPhase(clock.value, NebaGroove.sweep) ?? 0,
         );
-        final double length = size.width * NebaGroove.segment;
-        final double start = -length + (size.width + length) * t;
+        final double length = extent * NebaGroove.segment;
+        final double from = -length + (extent + length) * t;
 
         canvas.drawRRect(
-          RRect.fromRectAndRadius(_fromStart(size, start, length), round),
+          RRect.fromRectAndRadius(_fromStart(size, from, length), round),
           Paint()..color = fill,
         );
       }
@@ -476,11 +502,16 @@ class _GroovePainter extends CustomPainter {
     canvas.restore();
   }
 
-  /// A run [length] long, [start] in from the start edge.
-  Rect _fromStart(Size size, double start, double length) {
+  /// A run [length] long, [from] in from the start edge: the bottom of a
+  /// vertical groove, and the inline start of any other.
+  Rect _fromStart(Size size, double from, double length) {
+    if (vertical) {
+      return Rect.fromLTWH(0, size.height - from - length, size.width, length);
+    }
+
     return rtl
-        ? Rect.fromLTWH(size.width - start - length, 0, length, size.height)
-        : Rect.fromLTWH(start, 0, length, size.height);
+        ? Rect.fromLTWH(size.width - from - length, 0, length, size.height)
+        : Rect.fromLTWH(from, 0, length, size.height);
   }
 
   @override
@@ -489,6 +520,8 @@ class _GroovePainter extends CustomPainter {
         oldDelegate.fill != fill ||
         oldDelegate.rest != rest ||
         oldDelegate.fraction != fraction ||
+        oldDelegate.start != start ||
+        oldDelegate.vertical != vertical ||
         oldDelegate.clock != clock ||
         oldDelegate.reduced != reduced ||
         oldDelegate.rtl != rtl;
