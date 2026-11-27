@@ -14,6 +14,7 @@ import 'package:neba/src/internal/button_group.dart';
 import 'package:neba/src/internal/disclosure.dart';
 import 'package:neba/src/internal/field.dart';
 import 'package:neba/src/internal/floating.dart';
+import 'package:neba/src/internal/focus_ring.dart';
 import 'package:neba/src/internal/glyphs.dart';
 import 'package:neba/src/internal/listbox.dart';
 import 'package:neba/src/internal/messages.dart';
@@ -362,6 +363,10 @@ class _NebaComboboxState<T> extends State<NebaCombobox<T>>
   final ValueNotifier<bool> _typing = ValueNotifier<bool>(false);
   late final NebaFieldGestures _gestures = NebaFieldGestures(delegate: this, onTap: _openFromTap);
   late final TextEditingController _controller = TextEditingController();
+
+  /// One focus node per chip of a multiple combobox, by its value: a chip is
+  /// reached with the arrow keys from the field, never with Tab.
+  final Map<T, FocusNode> _chipNodes = <T, FocusNode>{};
   FocusNode? _ownNode;
   late List<T> _selection = <T>[
     if (widget.multiple) ...?widget.defaultValues else ?widget.defaultValue,
@@ -449,6 +454,9 @@ class _NebaComboboxState<T> extends State<NebaCombobox<T>>
     _controller.dispose();
     _node.removeListener(_handleFocus);
     _ownNode?.dispose();
+    for (final FocusNode node in _chipNodes.values) {
+      node.dispose();
+    }
     _typing.dispose();
     super.dispose();
   }
@@ -636,6 +644,131 @@ class _NebaComboboxState<T> extends State<NebaCombobox<T>>
 
     _write(entry.label);
     _setOpen(false);
+  }
+
+  FocusNode _chipNode(T value) {
+    return _chipNodes.putIfAbsent(
+      value,
+      () => FocusNode(debugLabel: 'NebaCombobox chip', skipTraversal: true),
+    );
+  }
+
+  /// Forgets the nodes of chips that are gone, after the frame that stopped
+  /// drawing them.
+  void _pruneChipNodes(List<T> chosen) {
+    final List<T> gone = <T>[
+      for (final T value in _chipNodes.keys)
+        if (!chosen.contains(value)) value,
+    ];
+
+    if (gone.isEmpty) {
+      return;
+    }
+
+    SchedulerBinding.instance.addPostFrameCallback((Duration _) {
+      for (final T value in gone) {
+        if (!_chosen.contains(value)) {
+          _chipNodes.remove(value)?.dispose();
+        }
+      }
+    });
+  }
+
+  /// The keys a chip answers, as Base UI's chips do: the arrows walk the chips
+  /// and step off either end into the field, Backspace and Delete take the
+  /// chip out and move to the one that takes its place, and anything typed,
+  /// Enter, Space and the arrows down the list go back to the field.
+  KeyEventResult _onChipKey(T value, KeyEvent event) {
+    if (event is KeyUpEvent || _locked) {
+      return KeyEventResult.ignored;
+    }
+
+    final List<T> chosen = _chosen;
+    final int index = chosen.indexOf(value);
+
+    if (index < 0) {
+      return KeyEventResult.ignored;
+    }
+
+    final LogicalKeyboardKey key = event.logicalKey;
+    final bool rtl = Directionality.of(context) == TextDirection.rtl;
+    final LogicalKeyboardKey back = rtl
+        ? LogicalKeyboardKey.arrowRight
+        : LogicalKeyboardKey.arrowLeft;
+    final LogicalKeyboardKey on = rtl
+        ? LogicalKeyboardKey.arrowLeft
+        : LogicalKeyboardKey.arrowRight;
+
+    void focusAt(int? at) {
+      if (at == null || at < 0 || at >= _chosen.length) {
+        _node.requestFocus();
+      } else {
+        _chipNode(_chosen[at]).requestFocus();
+      }
+    }
+
+    if (key == back) {
+      focusAt(index > 0 ? index - 1 : null);
+
+      return KeyEventResult.handled;
+    }
+
+    if (key == on) {
+      focusAt(index < chosen.length - 1 ? index + 1 : null);
+
+      return KeyEventResult.handled;
+    }
+
+    if (key == LogicalKeyboardKey.backspace || key == LogicalKeyboardKey.delete) {
+      final int count = chosen.length;
+      final int next = index >= count - 1 ? count - 2 : index;
+
+      _remove(value);
+      // After the frame, when the chip that takes this one's place is drawn.
+      SchedulerBinding.instance.addPostFrameCallback((Duration _) {
+        if (mounted) {
+          focusAt(next >= 0 ? next : null);
+        }
+      });
+
+      return KeyEventResult.handled;
+    }
+
+    if (key == LogicalKeyboardKey.arrowDown || key == LogicalKeyboardKey.arrowUp) {
+      _node.requestFocus();
+      _setOpen(true);
+
+      return KeyEventResult.handled;
+    }
+
+    final String? character = event.character;
+
+    if (key == LogicalKeyboardKey.enter ||
+        key == LogicalKeyboardKey.numpadEnter ||
+        key == LogicalKeyboardKey.space ||
+        (character != null &&
+            character.length == 1 &&
+            character.codeUnitAt(0) >= 0x20 &&
+            !HardwareKeyboard.instance.isControlPressed &&
+            !HardwareKeyboard.instance.isMetaPressed &&
+            !HardwareKeyboard.instance.isAltPressed)) {
+      _node.requestFocus();
+
+      // A character typed at a chip is typed into the field, which only
+      // hears it from here: the keyboard's text goes to whatever held the
+      // focus when the key went down.
+      if (character != null && key != LogicalKeyboardKey.enter && key != LogicalKeyboardKey.space) {
+        final String text = _controller.text + character;
+        _controller.value = TextEditingValue(
+          text: text,
+          selection: TextSelection.collapsed(offset: text.length),
+        );
+      }
+
+      return KeyEventResult.handled;
+    }
+
+    return KeyEventResult.ignored;
   }
 
   void _remove(T value) {
@@ -831,6 +964,20 @@ class _NebaComboboxState<T> extends State<NebaCombobox<T>>
       return KeyEventResult.handled;
     }
 
+    final bool rtl = Directionality.of(context) == TextDirection.rtl;
+    final TextSelection caret = _controller.selection;
+
+    if (key == (rtl ? LogicalKeyboardKey.arrowRight : LogicalKeyboardKey.arrowLeft) &&
+        widget.multiple &&
+        !_locked &&
+        _chosen.isNotEmpty &&
+        caret.isCollapsed &&
+        caret.baseOffset <= 0) {
+      _chipNode(_chosen.last).requestFocus();
+
+      return KeyEventResult.handled;
+    }
+
     if (key == LogicalKeyboardKey.backspace &&
         widget.multiple &&
         _controller.text.isEmpty &&
@@ -985,15 +1132,17 @@ class _NebaComboboxState<T> extends State<NebaCombobox<T>>
     }
 
     // A chip's × is pressed, never tabbed to, as Base UI keeps it out of the
-    // tab order; Backspace in the empty field takes the last chip out.
+    // tab order; Backspace in the empty field takes the last chip out, and
+    // the arrow keys reach the chips themselves from the caret's start.
     //
     // A [sample] is the copy the field is measured with, its words drawn as a
     // `RichText` so a test's `find.text` does not match them twice.
+    final BorderRadius chipRadius = BorderRadius.circular(tokens.radius[NebaChip.step[size]!]!);
+
     Widget chip(T value, {bool sample = false}) {
       final String words = _labelOfValue(value);
 
-      return ExcludeFocus(
-        key: ValueKey<Object?>(value),
+      final Widget drawn = ExcludeFocus(
         child: NebaChip(
           variant: NebaVariant.outline,
           size: size,
@@ -1011,6 +1160,35 @@ class _NebaComboboxState<T> extends State<NebaCombobox<T>>
               : Text(words),
         ),
       );
+
+      if (sample) {
+        return KeyedSubtree(key: ValueKey<Object?>(value), child: drawn);
+      }
+
+      final FocusNode node = _chipNode(value);
+
+      return Focus(
+        key: ValueKey<Object?>(value),
+        focusNode: node,
+        canRequestFocus: !_locked,
+        onKeyEvent: (FocusNode node, KeyEvent event) => _onChipKey(value, event),
+        child: ListenableBuilder(
+          listenable: node,
+          builder: (BuildContext context, Widget? child) {
+            return NebaFocusRing(
+              visible: node.hasFocus,
+              color: roles.ring,
+              borderRadius: chipRadius,
+              child: child!,
+            );
+          },
+          child: drawn,
+        ),
+      );
+    }
+
+    if (multiple) {
+      _pruneChipNodes(chosen);
     }
 
     Widget content(BuildContext context, bool focused) {

@@ -83,8 +83,6 @@ Still open from that session:
 
 - [ ] **A chart's `brush` and `exportable`.** Neither is in `NebaCartesianChart` yet. The brush is a strip of the whole series under the plot with a window the reader drags, built on `lib/src/internal/drag.dart`; the export has no download to start in Flutter, so its counterpart is probably `onExport` alone, handed the CSV.
 
-- [ ] **The arrow keys onto a multiple Combobox's chips.** Base UI moves the focus from the field to the last chip on ArrowLeft at the caret's start, walks the chips with the arrows and takes the focused one out with Backspace or Delete. `NebaCombobox.multiple` takes the last chip out with Backspace in the empty field and any chip out with a press on its ×, and its chips are not focus stops yet.
-
 - [ ] **A menu's sheet and rows beside a list's.** `NebaMenuSheet` and `NebaMenuRow` in `lib/src/internal/menu.dart` were written alongside `NebaListSheet` and `NebaListRow` in `listbox.dart`, and both draw the same frosted panel at elevation 3 with a wash on the row in hand. The menu's highlight is the focus and the list's is an index the keys move, so the two do not fold into one without choosing one model; the typeahead is already shared. Decide which way a Select's list should go before a TreeSelect or a picker takes either.
 
 - [ ] **The words a range slider's thumbs add to their values.** `NebaSlider.range` reads "20 start range" and "80 end range" in English, as Base UI writes them on the React side, where they are not in `internal/i18n.ts` either. Both packages should read them from a `slider` namespace once the React side has one; until then `thumbSemanticValue` (`getAriaValueText`) is the way to another language.

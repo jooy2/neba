@@ -108,7 +108,7 @@ const NebaComboboxOption<String>(
 
 ::: fw flutter
 
-`NebaCombobox.multiple`로 만듭니다. 필드가 비어 있을 때 Backspace를 누르면 마지막 chip이 빠지고, chip의 ×는 그 chip을 뺍니다. ×는 누르는 버튼이고 Tab으로는 닿지 않습니다. 필드는 chip 뒤로 글자 스무 개쯤이 들어가는 너비이며, 그보다 좁아지면 chip이 다음 줄로 넘어갑니다.
+`NebaCombobox.multiple`로 만듭니다. 필드가 비어 있을 때 Backspace를 누르면 마지막 chip이 빠지고, chip의 ×는 그 chip을 뺍니다. ×는 누르는 버튼이고 Tab으로는 닿지 않습니다. 커서가 맨 앞에 있을 때 왼쪽 화살표(오른쪽에서 왼쪽으로 쓰는 필드에서는 오른쪽 화살표)를 누르면 마지막 chip으로 focus가 옮겨 가고, 화살표로 chip 사이를 오가다 양 끝을 넘으면 필드로 돌아옵니다. focus를 가진 chip은 Backspace나 Delete로 뺍니다. 필드는 chip 뒤로 글자 스무 개쯤이 들어가는 너비이며, 그보다 좁아지면 chip이 다음 줄로 넘어갑니다.
 
 :::
 
@@ -352,7 +352,7 @@ slot은 `label`, `shell`, `control`, `description`, `error`, `chip`, `popup`, `i
 - 필드는 화면 낭독기에게 텍스트 필드 하나입니다. `Text` 라벨이 이름이고, 펼쳐졌는지 접혔는지를 알리며, `Text`인 설명과 오류는 이름 뒤에 읽힙니다.
 - 글을 입력하거나 필드나 chevron을 누르거나 화살표 키를 쓰면 목록이 열립니다. 화살표 키는 highlight를 옮기는데, disabled 옵션은 건너뛰고 끝에서는 반대쪽 끝으로 돌아갑니다. 입력하는 동안 첫 번째로 맞는 옵션이 켜지므로 Enter로 바로 고를 수 있습니다. Escape는 목록을 닫고, 한 번 더 누르면 필드를 비웁니다. focus는 내내 필드에 머물고, focus가 떠나면 목록이 닫힙니다.
 - 각 옵션은 선택됐는지를 알리고, `disabled` 옵션은 목록에 남은 채 사용할 수 없다고 읽힙니다.
-- chevron과 ×, 각 chip의 ×는 label, `clearLabel`, `removeLabel`로 이름 붙은 버튼이며, 어느 것도 필드에서 focus를 가져가지 않습니다.
+- chevron과 ×, 각 chip의 ×는 label, `clearLabel`, `removeLabel`로 이름 붙은 버튼이며, 어느 것도 필드에서 focus를 가져가지 않습니다. chip 자체는 화살표 키로만 focus를 받고 Tab으로는 받지 않습니다.
 - 결과 없음 문구, 입력한 값을 더하는 행, 지우기 · 삭제 버튼의 이름을 `locale`이 정합니다. `emptyMessage`, `customLabel`, `clearLabel`, `removeLabel`로 직접 쓸 수도 있습니다.
 
 :::

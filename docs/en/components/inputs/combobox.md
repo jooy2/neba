@@ -108,7 +108,7 @@ Backspace on an empty input moves focus to the last chip.
 
 ::: fw flutter
 
-`NebaCombobox.multiple` makes one. Backspace in an empty field takes the last chip out, and a chip's × takes out its own; the × is pressed, never tabbed to. The field is as wide as twenty characters after its chips, and wraps them onto further lines once it is narrower than that.
+`NebaCombobox.multiple` makes one. Backspace in an empty field takes the last chip out, and a chip's × takes out its own; the × is pressed, never tabbed to. From the caret's start, the left arrow (the right one in a right-to-left field) moves onto the last chip, the arrows walk the chips and step back into the field off either end, and Backspace or Delete takes out the chip that holds the focus. The field is as wide as twenty characters after its chips, and wraps them onto further lines once it is narrower than that.
 
 :::
 
@@ -352,7 +352,7 @@ The slots are `label`, `shell`, `control`, `description`, `error`, `chip`, `popu
 - The field is one text field to a screen reader, named by a `Text` label and heard as collapsed or expanded, with a `Text` description and error read after the name.
 - Typing, a press on the field or the chevron and the arrow keys open the list; the arrow keys move the highlight, past a disabled option and round at the ends, and the first match lights up as you type, so Enter chooses it. Escape closes the list, and Escape again empties the field. The focus stays in the field throughout, and the list closes when it leaves.
 - Each option says whether it is selected, and a `disabled` one stays in the list, heard as unavailable.
-- The chevron, the × and each chip's × are buttons named by the label, `clearLabel` and `removeLabel`, and none of them takes the focus from the field.
+- The chevron, the × and each chip's × are buttons named by the label, `clearLabel` and `removeLabel`, and none of them takes the focus from the field. The chips themselves take it from the arrow keys and never from Tab.
 - `locale` decides the no-matches line, the row that adds what was typed and the names of the clear and remove buttons; `emptyMessage`, `customLabel`, `clearLabel` and `removeLabel` write them out instead.
 
 :::

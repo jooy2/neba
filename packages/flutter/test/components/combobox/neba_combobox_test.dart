@@ -672,6 +672,107 @@ void main() {
       expect(chosen.last, <String>['react']);
     });
 
+    testWidgets('walks its chips with the arrow keys from the caret and back', (
+      WidgetTester tester,
+    ) async {
+      await pump(
+        tester,
+        const NebaCombobox<String>.multiple(
+          items: frameworks,
+          defaultValue: <String>['react', 'vue', 'svelte'],
+        ),
+      );
+      await focus(tester);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowLeft);
+      await tester.pump();
+      expect(_chipHasFocus('Svelte'), isTrue);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowLeft);
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowLeft);
+      await tester.pump();
+      expect(_chipHasFocus('React'), isTrue);
+
+      // Off the start, as off the end, the focus goes back to the field.
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowLeft);
+      await tester.pump();
+      expect(_chipHasFocus('React'), isFalse);
+      expect(FocusManager.instance.primaryFocus?.debugLabel, 'NebaCombobox');
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowLeft);
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+      expect(_chipHasFocus('Svelte'), isFalse);
+      expect(_chipHasFocus('React'), isFalse);
+    });
+
+    testWidgets('takes a chip out on Backspace or Delete and moves to the one in its place', (
+      WidgetTester tester,
+    ) async {
+      final List<List<String>> chosen = <List<String>>[];
+
+      await pump(
+        tester,
+        NebaCombobox<String>.multiple(
+          items: frameworks,
+          defaultValue: const <String>['react', 'vue', 'svelte'],
+          onValueChange: chosen.add,
+        ),
+      );
+      await focus(tester);
+
+      // The last chip goes, and the one before it takes the focus.
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowLeft);
+      await tester.sendKeyEvent(LogicalKeyboardKey.backspace);
+      await settle(tester);
+
+      expect(chosen.last, <String>['react', 'vue']);
+      expect(_chipHasFocus('Vue'), isTrue);
+
+      // A chip in the middle goes, and the one after it slides into its place.
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowLeft);
+      await tester.pump();
+      expect(_chipHasFocus('React'), isTrue);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.delete);
+      await settle(tester);
+
+      expect(chosen.last, <String>['vue']);
+      expect(_chipHasFocus('Vue'), isTrue);
+    });
+
+    testWidgets('types a letter pressed at a chip into the field', (WidgetTester tester) async {
+      await pump(
+        tester,
+        const NebaCombobox<String>.multiple(items: frameworks, defaultValue: <String>['react']),
+      );
+      await focus(tester);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowLeft);
+      await tester.pump();
+      await tester.sendKeyEvent(LogicalKeyboardKey.keyS, character: 's');
+      await settle(tester);
+
+      expect(tester.widget<EditableText>(find.byType(EditableText)).controller.text, 's');
+    });
+
+    testWidgets('keeps its chips out of reach while it is read-only', (WidgetTester tester) async {
+      await pump(
+        tester,
+        const NebaCombobox<String>.multiple(
+          items: frameworks,
+          readOnly: true,
+          defaultValue: <String>['react'],
+        ),
+      );
+      await focus(tester);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowLeft);
+      await tester.pump();
+
+      expect(_chipHasFocus('React'), isFalse);
+    });
+
     testWidgets('stands one row of chips at the height of a field', (WidgetTester tester) async {
       await pump(
         tester,
@@ -949,4 +1050,21 @@ void main() {
       expect(resting(), isFalse);
     });
   });
+}
+
+/// Whether the chip that reads [label] holds the focus.
+bool _chipHasFocus(String label) {
+  final FocusNode? node = FocusManager.instance.primaryFocus;
+
+  if (node?.debugLabel != 'NebaCombobox chip') {
+    return false;
+  }
+
+  return find
+      .descendant(
+        of: find.byWidgetPredicate((Widget widget) => widget is Focus && widget.focusNode == node),
+        matching: find.text(label),
+      )
+      .evaluate()
+      .isNotEmpty;
 }
