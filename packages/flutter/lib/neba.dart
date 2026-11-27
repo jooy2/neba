@@ -45,6 +45,8 @@ export 'src/components/box/neba_box.dart';
 export 'src/components/breadcrumb/neba_breadcrumb.dart';
 export 'src/components/button/neba_button.dart';
 export 'src/components/button_group/neba_button_group.dart';
+export 'src/components/calendar/neba_calendar.dart';
+export 'src/components/calendar/neba_date_names.dart';
 export 'src/components/card/neba_card.dart';
 export 'src/components/carousel/neba_carousel.dart';
 export 'src/components/chat_bubble/neba_chat_bubble.dart';

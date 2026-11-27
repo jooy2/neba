@@ -101,6 +101,9 @@ import 'package:neba_example/demos/button_group/full_width.dart';
 import 'package:neba_example/demos/button_group/hero.dart';
 import 'package:neba_example/demos/button_group/orientation.dart';
 import 'package:neba_example/demos/button_group/shared.dart';
+import 'package:neba_example/demos/calendar/hero.dart';
+import 'package:neba_example/demos/calendar/marks.dart';
+import 'package:neba_example/demos/calendar/modes.dart';
 import 'package:neba_example/demos/card/dividers.dart';
 import 'package:neba_example/demos/card/form.dart';
 import 'package:neba_example/demos/card/hero.dart';
@@ -526,6 +529,9 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'button/sizes': ButtonSizes.new,
   'button/states': ButtonStates.new,
   'button/variants': ButtonVariants.new,
+  'calendar/hero': CalendarHero.new,
+  'calendar/marks': CalendarMarks.new,
+  'calendar/modes': CalendarModes.new,
   'card/dividers': CardDividers.new,
   'card/form': CardForm.new,
   'card/hero': CardHero.new,

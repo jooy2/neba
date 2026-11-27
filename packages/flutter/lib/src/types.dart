@@ -224,6 +224,35 @@ const NebaElevation nebaElevationMin = 0;
 /// The highest [NebaElevation] a caller may ask for.
 const NebaElevation nebaElevationMax = 3;
 
+/// Which day a week starts on, counted the way [DateTime.weekday] counts it:
+/// [DateTime.monday] is `1` and [DateTime.sunday] is `7`.
+///
+/// The React package counts the way JavaScript's `getDay` does, Sunday `0`,
+/// and for the reason it gives: every date API on the platform already speaks
+/// that encoding, so a value computed from a setting or a database row has
+/// nothing to translate. Dart's platform speaks this one, so this is the one
+/// a Dart caller already has. The pickers default it from the locale, so it
+/// is rarely written down at all.
+typedef NebaWeekday = int;
+
+/// Which unit a date picker is asking for: one day, one whole month or one
+/// whole year.
+///
+/// A calendar draws three grids, days, months and years, and this says which
+/// one the reader may stop on. A coarser unit is not a different value type:
+/// the value stays a [DateTime], the first day of what was chosen, because a
+/// month picker that reported the 15th would be reporting a day nobody chose.
+enum NebaDateGranularity {
+  /// A day, from the grid of days.
+  day,
+
+  /// A whole month, from the grid of twelve months: the 1st of it.
+  month,
+
+  /// A whole year, from the grid of years: the 1st of January.
+  year,
+}
+
 /// The window widths the layout widgets branch on, smallest first.
 ///
 /// The same five names as [NebaSize] and not the same idea: a size of `md` is
