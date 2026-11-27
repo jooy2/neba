@@ -394,5 +394,30 @@ void main() {
       expect(find.bySemanticsLabel('Add'), findsOneWidget);
       semantics.dispose();
     });
+
+    testWidgets('can still be pressed and focused from a screen reader with a semanticLabel', (
+      WidgetTester tester,
+    ) async {
+      final SemanticsHandle semantics = tester.ensureSemantics();
+
+      await pump(
+        tester,
+        NebaButton(onPressed: noop, semanticLabel: 'Save the draft', child: const Text('Save')),
+      );
+
+      expect(
+        tester.getSemantics(find.byType(NebaButton)),
+        matchesSemantics(
+          label: 'Save the draft',
+          isButton: true,
+          isEnabled: true,
+          hasEnabledState: true,
+          isFocusable: true,
+          hasTapAction: true,
+          hasFocusAction: true,
+        ),
+      );
+      semantics.dispose();
+    });
   });
 }

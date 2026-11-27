@@ -134,6 +134,7 @@ class NebaButton extends StatelessWidget {
     final bool inert = loading || readOnly;
     final bool active = !isDisabled && !inert;
     final bool iconOnly = child == null;
+    final String? semanticLabel = this.semanticLabel;
 
     final double height = NebaScale.controlHeight[size]!;
     final double text = NebaScale.controlText[size]!;
@@ -214,7 +215,12 @@ class NebaButton extends StatelessWidget {
                         padding: EdgeInsets.symmetric(
                           horizontal: iconOnly ? 0 : NebaScale.paddingX[density]![size]!,
                         ),
-                        child: Center(widthFactor: fullWidth ? null : 1, child: label),
+                        child: Center(
+                          widthFactor: fullWidth ? null : 1,
+                          // A semantic label stands in for what is drawn, and
+                          // only for that: the node keeps its tap and focus.
+                          child: ExcludeSemantics(excluding: semanticLabel != null, child: label),
+                        ),
                       ),
                       if (active)
                         Positioned.fill(
@@ -244,14 +250,11 @@ class NebaButton extends StatelessWidget {
       button = SizedBox(width: double.infinity, child: button);
     }
 
-    final String? semanticLabel = this.semanticLabel;
-
     return Semantics(
       container: true,
       button: true,
       enabled: active,
       label: semanticLabel,
-      excludeSemantics: semanticLabel != null,
       child: button,
     );
   }
