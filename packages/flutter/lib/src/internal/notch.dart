@@ -30,6 +30,7 @@ import 'package:flutter/widgets.dart';
 import 'package:neba/src/internal/color.dart';
 import 'package:neba/src/internal/focus_ring.dart';
 import 'package:neba/src/internal/motion.dart';
+import 'package:neba/src/internal/sizer.dart';
 import 'package:neba/src/theme/scale.dart';
 import 'package:neba/src/theme/theme.dart';
 import 'package:neba/src/theme/tokens.dart';
@@ -374,32 +375,13 @@ class NebaNotchSizer extends StatelessWidget {
     final Widget label = this.label;
 
     Widget copy(double fontSize, double start, double end) {
-      final TextStyle size = TextStyle(fontSize: fontSize, fontWeight: FontWeight.w500);
-      final Widget sample;
-
-      if (label is Text) {
-        // The same words drawn as a `RichText`, which reserves the same width
-        // and leaves nothing for a `find.text` to match twice in a caller's
-        // tests. Only a label that is not a `Text` is built a second time.
-        final TextStyle style = DefaultTextStyle.of(context).style.merge(label.style).merge(size);
-
-        sample = RichText(
-          maxLines: 1,
-          softWrap: false,
-          textScaler: label.textScaler ?? MediaQuery.textScalerOf(context),
-          text: TextSpan(
-            style: style,
-            text: label.data,
-            children: label.textSpan == null ? null : <InlineSpan>[label.textSpan!],
-          ),
-        );
-      } else {
-        sample = DefaultTextStyle.merge(style: size, maxLines: 1, softWrap: false, child: label);
-      }
-
       return Padding(
         padding: EdgeInsetsDirectional.only(start: math.max(0, start), end: math.max(0, end)),
-        child: sample,
+        child: nebaSizerSample(
+          context,
+          label,
+          style: TextStyle(fontSize: fontSize, fontWeight: FontWeight.w500),
+        ),
       );
     }
 

@@ -76,6 +76,7 @@ export 'src/components/rating/neba_rating.dart';
 export 'src/components/scroll_area/neba_scroll_area.dart';
 export 'src/components/scroll_zone/neba_scroll_zone.dart';
 export 'src/components/segmented_button/neba_segmented_button.dart';
+export 'src/components/select/neba_select.dart';
 export 'src/components/shortcut/neba_shortcut.dart';
 export 'src/components/show/neba_show.dart';
 export 'src/components/sidebar/neba_sidebar.dart';

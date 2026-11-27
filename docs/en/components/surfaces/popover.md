@@ -91,11 +91,17 @@ The shared axes are described in [prop conventions](../../design/prop-convention
 
 The popup holds focusable content, so a filter panel, a small form or a colour picker all belong here rather than in a [Dialog](../feedback/dialog): the page behind stays readable while the form is filled in. `width` caps the popup when its content should decide the measure.
 
-<Demo src="popover/form">
+<Demo src="popover/form" minHeight="400">
 
 ::: fw react
 
 <<< @/.vitepress/demos/popover/form.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/popover/form.dart
 
 :::
 

@@ -198,6 +198,7 @@ import 'package:neba_example/demos/pill/slots.dart';
 import 'package:neba_example/demos/pill/text.dart';
 import 'package:neba_example/demos/pill/variants.dart';
 import 'package:neba_example/demos/popover/controlled.dart';
+import 'package:neba_example/demos/popover/form.dart';
 import 'package:neba_example/demos/popover/hero.dart';
 import 'package:neba_example/demos/popover/sides.dart';
 import 'package:neba_example/demos/portal/hero.dart';
@@ -236,6 +237,12 @@ import 'package:neba_example/demos/segmented_button/hero.dart';
 import 'package:neba_example/demos/segmented_button/sizes.dart';
 import 'package:neba_example/demos/segmented_button/states.dart';
 import 'package:neba_example/demos/segmented_button/variants.dart';
+import 'package:neba_example/demos/select/groups.dart';
+import 'package:neba_example/demos/select/hero.dart';
+import 'package:neba_example/demos/select/label_placement.dart';
+import 'package:neba_example/demos/select/sizes.dart';
+import 'package:neba_example/demos/select/states.dart';
+import 'package:neba_example/demos/select/variants.dart';
 import 'package:neba_example/demos/shortcut/hero.dart';
 import 'package:neba_example/demos/shortcut/keys.dart';
 import 'package:neba_example/demos/shortcut/platforms.dart';
@@ -518,6 +525,7 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'pill/text': PillText.new,
   'pill/variants': PillVariants.new,
   'popover/controlled': PopoverControlled.new,
+  'popover/form': PopoverForm.new,
   'popover/hero': PopoverHero.new,
   'popover/sides': PopoverSides.new,
   'portal/hero': PortalHero.new,
@@ -556,6 +564,12 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'segmented-button/sizes': SegmentedButtonSizes.new,
   'segmented-button/states': SegmentedButtonStates.new,
   'segmented-button/variants': SegmentedButtonVariants.new,
+  'select/groups': SelectGroups.new,
+  'select/hero': SelectHero.new,
+  'select/label-placement': SelectLabelPlacement.new,
+  'select/sizes': SelectSizes.new,
+  'select/states': SelectStates.new,
+  'select/variants': SelectVariants.new,
   'shortcut/hero': ShortcutHero.new,
   'shortcut/keys': ShortcutKeys.new,
   'shortcut/platforms': ShortcutPlatforms.new,

@@ -326,9 +326,10 @@ typedef NebaFieldContentBuilder = Widget Function(BuildContext context, bool foc
 /// hairline the ring's colour and draws the ring, flush with the edge because
 /// the hairline under it is already the ring's colour. A read-only shell
 /// keeps the ring for keyboard focus only, as a browser keeps `:focus-visible`
-/// off a read-only input a pointer clicked into. The pointer lights the shell
-/// at half a control's strength, and the light goes out while [typing] is set
-/// and comes back when the pointer moves.
+/// off a read-only input a pointer clicked into, and so does a shell whose
+/// control is a button rather than a caret ([keyboardRing]). The pointer
+/// lights the shell at half a control's strength, and the light goes out
+/// while [typing] is set and comes back when the pointer moves.
 class NebaFieldShell extends StatefulWidget {
   /// A shell around what [builder] builds.
   const NebaFieldShell({
@@ -346,6 +347,7 @@ class NebaFieldShell extends StatefulWidget {
     this.cursor = MouseCursor.defer,
     this.paddingStart,
     this.paddingEnd,
+    this.keyboardRing = false,
     super.key,
   });
 
@@ -394,6 +396,11 @@ class NebaFieldShell extends StatefulWidget {
 
   /// The inline padding after the control, [density]'s when left out.
   final double? paddingEnd;
+
+  /// Whether the ring waits for a key, as a button's `:focus-visible` does:
+  /// a Select's trigger holds a value rather than a caret, and the focus a
+  /// press or a closing list gave it is not one to ring.
+  final bool keyboardRing;
 
   @override
   State<NebaFieldShell> createState() => _NebaFieldShellState();
@@ -444,8 +451,9 @@ class _NebaFieldShellState extends State<NebaFieldShell> {
   }
 
   void _handleModality() {
-    // Only a read-only shell's ring depends on how the focus arrived.
-    if (widget.readOnly && _focused) {
+    // Only a read-only shell's ring, and a button's, depend on how the focus
+    // arrived.
+    if ((widget.readOnly || widget.keyboardRing) && _focused) {
       _later(() {});
     }
   }
@@ -494,9 +502,12 @@ class _NebaFieldShellState extends State<NebaFieldShell> {
       notched: notch != null,
     );
     // A caret is a focus, however it got there, as `:focus-within` rings a
-    // field; a read-only field has none, so its ring waits for a key, as
-    // `:focus-visible` waits.
-    final bool ring = _focused && !disabled && (!readOnly || !NebaInputModality.pointer.value);
+    // field; a read-only field and a button have none, so their ring waits
+    // for a key, as `:focus-visible` waits.
+    final bool ring =
+        _focused &&
+        !disabled &&
+        (!(readOnly || widget.keyboardRing) || !NebaInputModality.pointer.value);
     final double border = look.edge == null ? 0 : 1;
 
     Widget shell = NebaSheet(

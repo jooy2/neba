@@ -132,6 +132,43 @@ void main() {
     });
   });
 
+  group('the height there is', () {
+    test('is the room on the larger of the two sides along the axis', () {
+      // 400 tall, the anchor from 100 to 120: 400 - 5 - 120 - 6 below, and
+      // 100 - 6 - 5 above.
+      expect(
+        nebaFloatingAvailableHeight(anchor: anchor, bounds: bounds, sideOffset: 6),
+        400 - 5 - 120 - 6,
+      );
+      expect(
+        nebaFloatingAvailableHeight(
+          anchor: const Rect.fromLTWH(100, 300, 40, 20),
+          bounds: bounds,
+          sideOffset: 6,
+        ),
+        300 - 6 - 5,
+      );
+    });
+
+    test('is the whole height less the padding beside the anchor', () {
+      expect(
+        nebaFloatingAvailableHeight(anchor: anchor, bounds: bounds, side: NebaSide.right),
+        400 - 2 * nebaCollisionPadding,
+      );
+    });
+
+    test('is never less than nothing', () {
+      expect(
+        nebaFloatingAvailableHeight(
+          anchor: const Rect.fromLTWH(0, 0, 40, 400),
+          bounds: bounds,
+          sideOffset: 6,
+        ),
+        0,
+      );
+    });
+  });
+
   group('the wedge', () {
     test('sits against the facing edge of the padding box, over the anchor', () {
       final NebaFloatingPlacement placement = place(

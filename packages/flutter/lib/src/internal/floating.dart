@@ -441,6 +441,47 @@ NebaFloatingPlacement nebaPlaceFloating({
   );
 }
 
+/// How a popup's width answers its trigger's: Base UI's `--anchor-width`.
+enum NebaFloatingWidth {
+  /// As wide as its content, whatever the trigger is.
+  content,
+
+  /// As wide as its content and never narrower than the trigger: a Select's
+  /// list, `min-width: var(--anchor-width)`.
+  atLeastAnchor,
+
+  /// Exactly as wide as the trigger: a Combobox's list, `width:
+  /// var(--anchor-width)`.
+  anchor,
+}
+
+/// The height a popup on [side] of [anchor] has to grow into inside [bounds]:
+/// Base UI's `--available-height`, the room between the anchor's edge,
+/// [sideOffset] off it, and the overlay's, [padding] in from it.
+///
+/// It is measured on the side with more room as well as on [side], because
+/// the popup flips there when it does not fit, and a list cut to the room on
+/// the asked-for side would then be shorter than the room it flipped into.
+double nebaFloatingAvailableHeight({
+  required Rect anchor,
+  required Size bounds,
+  NebaSide side = NebaSide.bottom,
+  double sideOffset = 0,
+  double padding = nebaCollisionPadding,
+}) {
+  final double below = bounds.height - padding - anchor.bottom - sideOffset;
+  final double above = anchor.top - sideOffset - padding;
+
+  final double room = switch (side) {
+    NebaSide.top || NebaSide.bottom => math.max(below, above),
+    // A popup beside its trigger slides along the edge, so it has the whole
+    // height to grow into.
+    NebaSide.left || NebaSide.right => bounds.height - 2 * padding,
+  };
+
+  return math.max(0, room);
+}
+
 /// When the pointer resting on a trigger opens its surface, and how long the
 /// surface stays once it has left.
 @immutable
@@ -505,6 +546,8 @@ class NebaFloating extends StatefulWidget {
     this.intentionalOutsidePress = false,
     this.instant = false,
     this.enabled = true,
+    this.width = NebaFloatingWidth.content,
+    this.maxHeight,
     super.key,
   });
 
@@ -574,6 +617,14 @@ class NebaFloating extends StatefulWidget {
 
   /// Whether hovering, focusing or pressing the trigger opens the surface.
   final bool enabled;
+
+  /// How the popup's width answers the trigger's.
+  final NebaFloatingWidth width;
+
+  /// The tallest the popup gets, held to the room [nebaFloatingAvailableHeight]
+  /// says there is beside the trigger, so a long list scrolls inside the
+  /// overlay rather than running off it. `null` lets it be as tall as it needs.
+  final double? maxHeight;
 
   @override
   State<NebaFloating> createState() => _NebaFloatingState();
@@ -669,6 +720,7 @@ class _NebaFloatingState extends State<NebaFloating> with SingleTickerProviderSt
 
   void _opened() {
     _cancelTimers();
+    _traversable(true);
     _hovered = _overTrigger || _overPopup;
     _syncPortal();
     _attach();
@@ -694,6 +746,8 @@ class _NebaFloatingState extends State<NebaFloating> with SingleTickerProviderSt
       _giveFocusBack();
     }
 
+    _traversable(false);
+
     _openedBy = null;
 
     if (widget.instant || _duration == Duration.zero) {
@@ -701,6 +755,15 @@ class _NebaFloatingState extends State<NebaFloating> with SingleTickerProviderSt
     } else {
       _fade.reverse();
     }
+  }
+
+  // A closing popup is still there while it fades, and Tab from the trigger
+  // passes it by. Only the traversal is changed, which takes the focus from
+  // nothing, so the focus given back to the trigger is not disturbed.
+  void _traversable(bool value) {
+    _popupScope
+      ..skipTraversal = !value
+      ..descendantsAreTraversable = value;
   }
 
   void _onFadeStatus(AnimationStatus status) {
@@ -1215,6 +1278,8 @@ class _NebaFloatingState extends State<NebaFloating> with SingleTickerProviderSt
       alignOffset: widget.alignOffset,
       textDirection: Directionality.of(context),
       arrow: widget.arrow,
+      width: widget.width,
+      maxHeight: widget.maxHeight,
       child: popup,
     );
 
@@ -1304,6 +1369,8 @@ class _FloatingLayout extends SingleChildRenderObjectWidget {
     required this.alignOffset,
     required this.textDirection,
     required this.arrow,
+    required this.width,
+    required this.maxHeight,
     required Widget super.child,
   });
 
@@ -1314,6 +1381,8 @@ class _FloatingLayout extends SingleChildRenderObjectWidget {
   final double alignOffset;
   final TextDirection textDirection;
   final NebaFloatingArrow? arrow;
+  final NebaFloatingWidth width;
+  final double? maxHeight;
 
   @override
   _RenderFloatingLayout createRenderObject(BuildContext context) {
@@ -1325,6 +1394,8 @@ class _FloatingLayout extends SingleChildRenderObjectWidget {
       alignOffset: alignOffset,
       textDirection: textDirection,
       arrow: arrow,
+      width: width,
+      maxHeight: maxHeight,
     );
   }
 
@@ -1337,7 +1408,9 @@ class _FloatingLayout extends SingleChildRenderObjectWidget {
       ..sideOffset = sideOffset
       ..alignOffset = alignOffset
       ..textDirection = textDirection
-      ..arrow = arrow;
+      ..arrow = arrow
+      ..width = width
+      ..maxHeight = maxHeight;
   }
 }
 
@@ -1350,6 +1423,8 @@ class _RenderFloatingLayout extends RenderShiftedBox {
     required double alignOffset,
     required TextDirection textDirection,
     required NebaFloatingArrow? arrow,
+    required NebaFloatingWidth width,
+    required double? maxHeight,
   }) : _anchor = anchor,
        _side = side,
        _align = align,
@@ -1357,6 +1432,8 @@ class _RenderFloatingLayout extends RenderShiftedBox {
        _alignOffset = alignOffset,
        _textDirection = textDirection,
        _arrow = arrow,
+       _width = width,
+       _maxHeight = maxHeight,
        super(null);
 
   Rect _anchor;
@@ -1415,6 +1492,22 @@ class _RenderFloatingLayout extends RenderShiftedBox {
     }
   }
 
+  NebaFloatingWidth _width;
+  set width(NebaFloatingWidth value) {
+    if (value != _width) {
+      _width = value;
+      markNeedsLayout();
+    }
+  }
+
+  double? _maxHeight;
+  set maxHeight(double? value) {
+    if (value != _maxHeight) {
+      _maxHeight = value;
+      markNeedsLayout();
+    }
+  }
+
   List<Offset>? _wedge;
 
   @override
@@ -1431,8 +1524,29 @@ class _RenderFloatingLayout extends RenderShiftedBox {
       return;
     }
 
+    final double widest = math.max(0, size.width - 2 * nebaCollisionPadding);
+    final double anchorWidth = math.min(_anchor.width, widest);
+    final double? tallest = _maxHeight == null
+        ? null
+        : math.min(
+            _maxHeight!,
+            nebaFloatingAvailableHeight(
+              anchor: _anchor,
+              bounds: size,
+              side: _side,
+              sideOffset: _sideOffset,
+            ),
+          );
+
     child.layout(
-      BoxConstraints(maxWidth: math.max(0, size.width - 2 * nebaCollisionPadding)),
+      BoxConstraints(
+        minWidth: switch (_width) {
+          NebaFloatingWidth.content => 0,
+          NebaFloatingWidth.atLeastAnchor || NebaFloatingWidth.anchor => anchorWidth,
+        },
+        maxWidth: _width == NebaFloatingWidth.anchor ? anchorWidth : widest,
+        maxHeight: tallest ?? double.infinity,
+      ),
       parentUsesSize: true,
     );
 
