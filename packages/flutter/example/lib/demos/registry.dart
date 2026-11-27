@@ -93,6 +93,8 @@ import 'package:neba_example/demos/panes/hero.dart';
 import 'package:neba_example/demos/panes/orientation.dart';
 import 'package:neba_example/demos/panes/sizing.dart';
 import 'package:neba_example/demos/portal/hero.dart';
+import 'package:neba_example/demos/progress_circular/hero.dart';
+import 'package:neba_example/demos/progress_circular/sizes.dart';
 import 'package:neba_example/demos/progress_linear/hero.dart';
 import 'package:neba_example/demos/progress_linear/sizes.dart';
 import 'package:neba_example/demos/progress_linear/values.dart';
@@ -243,6 +245,8 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'panes/orientation': PanesOrientation.new,
   'panes/sizing': PanesSizing.new,
   'portal/hero': PortalHero.new,
+  'progress-circular/hero': ProgressCircularHero.new,
+  'progress-circular/sizes': ProgressCircularSizes.new,
   'progress-linear/hero': ProgressLinearHero.new,
   'progress-linear/sizes': ProgressLinearSizes.new,
   'progress-linear/values': ProgressLinearValues.new,

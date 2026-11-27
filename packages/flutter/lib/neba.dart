@@ -41,6 +41,7 @@ export 'src/components/highlight/neba_highlight.dart';
 export 'src/components/icon_button/neba_icon_button.dart';
 export 'src/components/panes/neba_panes.dart';
 export 'src/components/portal/neba_portal.dart';
+export 'src/components/progress_circular/neba_progress_circular.dart';
 export 'src/components/progress_linear/neba_progress_linear.dart';
 export 'src/components/provider/neba_provider.dart';
 export 'src/components/scroll_area/neba_scroll_area.dart';
