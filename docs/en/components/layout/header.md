@@ -70,7 +70,17 @@ Where the middle slot sits. `start` (the default) packs it against the brand. `c
 
 <Demo src="header/align" minHeight="180">
 
+::: fw react
+
 <<< @/.vitepress/demos/header/align.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/header/align.dart
+
+:::
 
 </Demo>
 
@@ -94,7 +104,17 @@ The three weights say what they say everywhere: filled, hairline, none. `color` 
 
 <Demo src="header/variant" minHeight="220">
 
+::: fw react
+
 <<< @/.vitepress/demos/header/variant.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/header/variant.dart
+
+:::
 
 </Demo>
 
@@ -104,7 +124,17 @@ Holds the row of slots to a measure and centres it while the sheet still spans t
 
 <Demo src="header/measure">
 
+::: fw react
+
 <<< @/.vitepress/demos/header/measure.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/header/measure.dart
+
+:::
 
 </Demo>
 

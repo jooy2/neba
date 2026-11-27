@@ -22,8 +22,10 @@ dev_dependencies:
 
 flutter:
   # The photographs the demos hold, copies of the docs' own samples.
-  # `assets/samples/README.md` says where they come from.
+  # `assets/samples/README.md` says where they come from. `128x128.png` is the
+  # Neba mark, a copy of the docs' own `docs/public/128x128.png`.
   assets:
+    - assets/128x128.png
     - assets/samples/logos/
     - assets/samples/people/
     - assets/samples/photos/

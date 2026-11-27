@@ -70,7 +70,17 @@ NebaHeader(
 
 <Demo src="header/align" minHeight="180">
 
+::: fw react
+
 <<< @/.vitepress/demos/header/align.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/header/align.dart
+
+:::
 
 </Demo>
 
@@ -94,7 +104,17 @@ Flutter에는 `position`이 없으므로, 바를 넘겨받은 [PageLayout](./pag
 
 <Demo src="header/variant" minHeight="220">
 
+::: fw react
+
 <<< @/.vitepress/demos/header/variant.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/header/variant.dart
+
+:::
 
 </Demo>
 
@@ -104,7 +124,17 @@ Flutter에는 `position`이 없으므로, 바를 넘겨받은 [PageLayout](./pag
 
 <Demo src="header/measure">
 
+::: fw react
+
 <<< @/.vitepress/demos/header/measure.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/header/measure.dart
+
+:::
 
 </Demo>
 

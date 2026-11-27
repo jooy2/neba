@@ -153,6 +153,10 @@ import 'package:neba_example/demos/grid/offset.dart';
 import 'package:neba_example/demos/grid/padding.dart';
 import 'package:neba_example/demos/grid/spacing.dart';
 import 'package:neba_example/demos/grid/spans.dart';
+import 'package:neba_example/demos/header/align.dart';
+import 'package:neba_example/demos/header/hero.dart';
+import 'package:neba_example/demos/header/measure.dart';
+import 'package:neba_example/demos/header/variant.dart';
 import 'package:neba_example/demos/highlight/hero.dart';
 import 'package:neba_example/demos/highlight/matching.dart';
 import 'package:neba_example/demos/highlight/nested.dart';
@@ -509,6 +513,10 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'grid/padding': GridPadding.new,
   'grid/spacing': GridSpacing.new,
   'grid/spans': GridSpans.new,
+  'header/align': HeaderAlign.new,
+  'header/hero': HeaderHero.new,
+  'header/measure': HeaderMeasure.new,
+  'header/variant': HeaderVariant.new,
   'highlight/hero': HighlightHero.new,
   'highlight/matching': HighlightMatching.new,
   'highlight/nested': HighlightNested.new,
