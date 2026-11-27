@@ -240,7 +240,17 @@ NebaChatBubble(
 
 <Demo src="chat-bubble/actions">
 
+::: fw react
+
 <<< @/.vitepress/demos/chat-bubble/actions.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/chat_bubble/actions.dart
+
+:::
 
 </Demo>
 
