@@ -83,7 +83,17 @@ header와 사이드바 중 어느 쪽이 위쪽 모서리를 차지하는지 정
 
 <Demo src="page-layout/span" minHeight="380">
 
+::: fw react
+
 <<< @/.vitepress/demos/page-layout/span.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/page_layout/span.dart
+
+:::
 
 </Demo>
 
@@ -93,7 +103,17 @@ header와 사이드바 중 어느 쪽이 위쪽 모서리를 차지하는지 정
 
 <Demo src="page-layout/collapse" minHeight="360">
 
+::: fw react
+
 <<< @/.vitepress/demos/page-layout/collapse.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/page_layout/collapse.dart
+
+:::
 
 </Demo>
 
@@ -103,7 +123,17 @@ header와 사이드바 중 어느 쪽이 위쪽 모서리를 차지하는지 정
 
 <Demo src="page-layout/two-sidebars" minHeight="320">
 
+::: fw react
+
 <<< @/.vitepress/demos/page-layout/two-sidebars.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/page_layout/two_sidebars.dart
+
+:::
 
 </Demo>
 

@@ -83,7 +83,17 @@ Which of the header and the sidebars takes the top corner. `full` (the default) 
 
 <Demo src="page-layout/span" minHeight="380">
 
+::: fw react
+
 <<< @/.vitepress/demos/page-layout/span.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/page_layout/span.dart
+
+:::
 
 </Demo>
 
@@ -93,7 +103,17 @@ Below this width both sidebars stop being columns and become drawers. A [Sidebar
 
 <Demo src="page-layout/collapse" minHeight="360">
 
+::: fw react
+
 <<< @/.vitepress/demos/page-layout/collapse.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/page_layout/collapse.dart
+
+:::
 
 </Demo>
 
@@ -103,7 +123,17 @@ Below this width both sidebars stop being columns and become drawers. A [Sidebar
 
 <Demo src="page-layout/two-sidebars" minHeight="320">
 
+::: fw react
+
 <<< @/.vitepress/demos/page-layout/two-sidebars.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/page_layout/two_sidebars.dart
+
+:::
 
 </Demo>
 
