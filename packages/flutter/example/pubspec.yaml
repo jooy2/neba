@@ -24,6 +24,7 @@ flutter:
   # The photographs the demos hold, copies of the docs' own samples.
   # `assets/samples/README.md` says where they come from.
   assets:
+    - assets/samples/logos/
     - assets/samples/people/
     - assets/samples/photos/
 

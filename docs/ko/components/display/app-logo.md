@@ -1,6 +1,7 @@
 ---
 title: AppLogo
 order: 20
+flutter: true
 ---
 
 # AppLogo
@@ -9,31 +10,77 @@ order: 20
 
 <Demo src="app-logo/hero" />
 
+::: fw react
+
 ```tsx
 import { AppLogo } from 'neba';
 
 <AppLogo name="Neba" src="/logo.svg" />;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+const NebaAppLogo(name: 'Neba', image: AssetImage('assets/logo.png'));
+```
+
+:::
+
 ## Props
 
 <PropsTable name="AppLogo" />
+
+::: fw react
 
 `<a>`의 native 속성은 그대로 전달됩니다. 다만 `color`는 예외입니다. 공통 축은 [prop 규칙](../../design/prop-conventions)에서 설명합니다.
 
 마크는 `children`이 있으면 그것, 없으면 `src`, 그것도 없으면 이름입니다. `href`가 없으면 `<span>`으로 렌더링됩니다.
 
+:::
+
+::: fw flutter
+
+마크는 `child`가 있으면 그것, 없으면 `image`, 그것도 없으면 이름입니다. 로고 전체가 screen reader에게는 이름을 한 번만 가진 하나의 노드이고, `onPressed`가 있으면 링크가 됩니다.
+
+:::
+
 ## 예시
 
-### src · children
+### <Fw react="src · children" flutter="image · child" />
+
+::: fw react
 
 마크를 어디서 가져올지 정합니다. `src`는 PNG든 SVG든 브랜드가 배포하는 파일을 연결하고, `children`은 대신 마크업을 받습니다. 주변 색을 물려받아야 하는 인라인 `<svg>`가 필요로 하는 쪽이 후자입니다. 둘 다 주면 `children`이 이깁니다. 둘 다 없으면 타일에 `name`의 이니셜을 대신 그립니다.
 
+:::
+
+::: fw flutter
+
+마크를 어디서 가져올지 정합니다. `image`는 마크의 그림을 `ImageProvider`(asset, 파일, 네트워크)로 받고, `child`는 대신 그림 위젯을 받습니다. 그림 위젯은 주변 색을 물려받습니다. 그림은 마크의 높이에 맞춰 놓이므로, 스스로 폭이 없는 그림은 `AspectRatio`로 폭을 줍니다. 둘 다 주면 `child`가 이깁니다. 둘 다 없으면 타일에 `name`의 이니셜을 대신 그립니다.
+
+:::
+
 <Demo src="app-logo/artwork" minHeight="120">
+
+::: fw react
 
 <<< @/.vitepress/demos/app-logo/artwork.tsx
 
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/app_logo/artwork.dart
+
+:::
+
 </Demo>
+
+::: fw react
 
 파일은 페이지보다 늦게 도착하고, 그때까지 `bare` 마크는 너비가 없어서 파일이 도착하는 순간 옆의 이름이 밀립니다. `imageProps`에 파일 자체의 `width`와 `height`를 주면 마크가 처음부터 제 너비를 차지합니다. 두 값은 비율만 정하고, 그려지는 높이는 여전히 `size`나 `height`가 정합니다.
 
@@ -41,13 +88,31 @@ import { AppLogo } from 'neba';
 <AppLogo name="Neba" src="/wordmark.png" imageProps={{ width: 480, height: 128 }} />
 ```
 
+:::
+
+::: fw flutter
+
+네트워크에서 불러오는 그림은 로고가 그려진 뒤에 도착하고, 그때까지 `bare` 마크는 너비가 없어서 그림이 도착하는 순간 옆의 이름이 밀립니다. asset은 첫 프레임부터 있습니다. 네트워크의 그림이라면 로고 옆에 자기 폭을 가진 상자를 따로 둘 수 있습니다.
+
+:::
+
 ### shape
 
-마크를 두르는 방식입니다. 기본값 `bare`는 준 그대로(`size`가 정한 높이와 그에 따른 너비로) 그리며 배경도 자르기도 여백도 없습니다. `app`은 모서리를 깎은 채워진 타일 안으로 들여넣고, `circle`은 같은 타일을 둥글게 만듭니다. `padded={false}`는 마크가 타일 가장자리까지 닿게 합니다.
+마크를 두르는 방식입니다. 기본값 `bare`는 준 그대로(`size`가 정한 높이와 그에 따른 너비로) 그리며 배경도 자르기도 여백도 없습니다. `app`은 모서리를 깎은 채워진 타일 안으로 들여넣고, `circle`은 같은 타일을 둥글게 만듭니다. <Fw react="`padded={false}`는" flutter="`padded: false`는" /> 마크가 타일 가장자리까지 닿게 합니다.
 
 <Demo src="app-logo/shape" minHeight="120">
 
+::: fw react
+
 <<< @/.vitepress/demos/app-logo/shape.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/app_logo/shape.dart
+
+:::
 
 </Demo>
 
@@ -57,13 +122,23 @@ import { AppLogo } from 'neba';
 
 <Demo src="app-logo/name" minHeight="220">
 
+::: fw react
+
 <<< @/.vitepress/demos/app-logo/name.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/app_logo/name.dart
+
+:::
 
 </Demo>
 
 ### showName
 
-마크 옆에 이름을 그려 lockup을 만듭니다. 기본값은 꺼짐입니다. 그린 순간부터 그 글자가 접근성 이름이 되므로 이름이 두 번 읽히지 않습니다.
+마크 옆에 이름을 그려 lockup을 만듭니다. 기본값은 꺼짐입니다. 그린 순간부터 그 글자가 <Fw react="접근성 이름이" flutter="semantics label이" /> 되므로 이름이 두 번 읽히지 않습니다.
 
 ### variant · color
 
@@ -71,22 +146,64 @@ import { AppLogo } from 'neba';
 
 <Demo src="app-logo/variant" minHeight="120">
 
+::: fw react
+
 <<< @/.vitepress/demos/app-logo/variant.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/app_logo/variant.dart
+
+:::
 
 </Demo>
 
-### href · height · render
+### <Fw react="href · height · render" flutter="onPressed · height" />
+
+::: fw react
 
 `href`는 전체를 링크로 만듭니다. [Header](../layout/header)의 로고는 거의 언제나 그렇습니다. 이 탭을 벗어나는 `target`을 주면 직접 쓴 `rel`에 `rel="noopener noreferrer"`가 합쳐집니다. `height`는 `size` 대신 정확한 픽셀 값이나 CSS 길이를 씁니다. `render`는 요소를 바꿉니다. 제품 이름이 곧 페이지 제목인 페이지라면 `render={<h1 />}`을, 라우터를 쓴다면 그 링크 컴포넌트를 넘기면 됩니다.
 
+:::
+
+::: fw flutter
+
+`onPressed`는 전체를 링크로 만듭니다. [Header](../layout/header)의 로고는 거의 언제나 그렇습니다. `href`는 링크가 가는 곳을 screen reader와, 웹에서는 브라우저에 알립니다. `height`는 `size` 대신 정확한 논리 픽셀 값을 씁니다. 제품 이름이 곧 페이지 제목인 페이지라면 로고를 `Semantics(header: true, …)`로 감쌉니다.
+
+:::
+
 <Demo src="app-logo/link" minHeight="120">
 
+::: fw react
+
 <<< @/.vitepress/demos/app-logo/link.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/app_logo/link.dart
+
+:::
 
 </Demo>
 
 ## 접근성
 
+::: fw react
+
 - 이름은 문서에 정확히 한 번만 놓입니다. 그려진 이름이 곧 접근성 이름이고, 이미지는 `alt`로 그것을 나르며, 마크업이나 이니셜로 된 마크는 장식으로 표시되고 이름은 옆의 잘린 span에 남습니다.
 - `alt`는 마크가 말하는 내용을 덮어씁니다. 제품이 아닌 다른 것을 뜻하는 드문 로고를 위한 것입니다.
 - `href`가 있으면 링크의 접근성 이름이 제품 이름이 됩니다. 첫 페이지로 돌아가는 로고에 다른 글자를 더 쓸 필요가 없습니다.
+
+:::
+
+::: fw flutter
+
+- 로고는 이름을 정확히 한 번 가진 하나의 노드입니다. 그려진 이름이 있으면 그것이고, 없으면 마크가 뜻하는 것, 즉 `semanticLabel`, 그다음 `name`입니다. 그려진 이름 없이 그림만 있으면 그 이름을 가진 이미지가 됩니다.
+- `semanticLabel`은 마크가 말하는 내용을 덮어씁니다. 제품이 아닌 다른 것을 뜻하는 드문 로고를 위한 것입니다.
+- `onPressed`가 있으면 링크의 이름이 제품 이름이 됩니다. 첫 페이지로 돌아가는 로고에 다른 글자를 더 쓸 필요가 없습니다.
+
+:::

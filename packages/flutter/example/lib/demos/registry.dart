@@ -11,6 +11,12 @@ import 'package:neba_example/demos/alert/dismissing.dart';
 import 'package:neba_example/demos/alert/hero.dart';
 import 'package:neba_example/demos/alert/shapes.dart';
 import 'package:neba_example/demos/alert/variants.dart';
+import 'package:neba_example/demos/app_logo/artwork.dart';
+import 'package:neba_example/demos/app_logo/hero.dart';
+import 'package:neba_example/demos/app_logo/link.dart';
+import 'package:neba_example/demos/app_logo/name.dart';
+import 'package:neba_example/demos/app_logo/shape.dart';
+import 'package:neba_example/demos/app_logo/variant.dart';
 import 'package:neba_example/demos/aspect_ratio/fit.dart';
 import 'package:neba_example/demos/aspect_ratio/hero.dart';
 import 'package:neba_example/demos/aspect_ratio/ratios.dart';
@@ -178,6 +184,12 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'alert/hero': AlertHero.new,
   'alert/shapes': AlertShapes.new,
   'alert/variants': AlertVariants.new,
+  'app-logo/artwork': AppLogoArtwork.new,
+  'app-logo/hero': AppLogoHero.new,
+  'app-logo/link': AppLogoLink.new,
+  'app-logo/name': AppLogoName.new,
+  'app-logo/shape': AppLogoShape.new,
+  'app-logo/variant': AppLogoVariant.new,
   'aspect-ratio/fit': AspectRatioFit.new,
   'aspect-ratio/hero': AspectRatioHero.new,
   'aspect-ratio/ratios': AspectRatioRatios.new,
