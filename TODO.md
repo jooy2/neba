@@ -35,6 +35,8 @@ The six steps of a port are in `packages/flutter/CLAUDE.md`. What the last sessi
 - **Dart demos** are quoted inside the `<Demo>` slot with `<<< @/../packages/flutter/example/lib/demos/{folder}/{case}.dart`, folder and file with underscores, and the gallery registers them under the React key with hyphens. A button in a demo takes `onPressed: () {}`: with no `onPressed` a Flutter button is disabled. `ConstrainedBox` is not a `const` constructor, so the `const` goes on its child.
 - **The props table** is `docs/.vitepress/data/props-flutter/{page}.ts`, rows built with `from()`, `renamed()` and the row helpers in `shared.ts`; `transitionRow()` is the Flutter description of `transition`. Override a description wherever the React one speaks of CSS, an element or an event.
 - **Pictures** are copied from `docs/public/samples/` into `packages/flutter/example/assets/samples/` at the same path and loaded as `Image.asset('assets/samples/…')`; `example/test/samples_test.dart` holds the copies to the originals, and the sample app maps those keys to `packages/neba_example/` itself. A row that holds text wraps it in `Flexible`, as a CSS flex item shrinks, or it overflows at a phone's width.
+- **Emoji draw nothing in a web preview.** The gallery ships Inter and no emoji font, so a Dart demo uses a character Inter has where the React demo has an emoji; on a device the system font draws one.
+- **A hidden browser pane holds the frames back.** With the pane hidden the page runs as a background page and its animation frames are throttled to a handful a second or none, so a picture that fades up looks like it never arrived. Wake the page (any `requestAnimationFrame` from the JavaScript tool will do) before reading a screenshot as a failure.
 - **Checking it.** `flutter analyze` and `flutter test` in `packages/flutter`, in `packages/flutter/example` (every demo in both themes and at a phone's width) and in `examples/flutter` (the sample app, which shows every demo too), `npm run typecheck`, `npm run lint`, `npx prettier . --check` and `npm run build` in `docs` (the build runs the container check), and `npm run flutter:demos -- --force` before looking at a preview. With the browser pane hidden, a preview below the first screen never mounts; open the gallery directly at `/flutter/index.html?demo={key}&theme=dark` on the dev server to see one.
 
 Still open from that session:
@@ -75,7 +77,7 @@ Port in this order, because each group is built out of the ones before it: `Neba
 
 Some components have no single Flutter equivalent of what they are on the web, and their form is decided when they are reached, then written on their page: `NebaPortal` (an `Overlay` entry), `NebaVisuallyHidden` (a `Semantics` node), `NebaTextLink` (a callback rather than an `href`, since the package opens nothing itself), `NebaImage` and `NebaGallery` (an `ImageProvider` rather than a URL), `NebaCodeBlock` (no highlight.js; a tokenizer of its own or a caller-supplied one), and the page shell (`NebaPageLayout`, `NebaHeader`, `NebaFooter`, `NebaSidebar`) against a phone's safe areas.
 
-Demos that wait on a component not ported yet, to be added with it: `grid/auto-grow` (`NebaAvatar`), `flex/direction` (`NebaTextField`), `flex/alignment` (`NebaAvatar`), `stack/hero` (`NebaAvatar`), `stack/direction` and `stack/depth` (`NebaCard`), `stack/dealt` (`NebaAvatar`, `NebaCard`), `show/pair` (`NebaButtonGroup`) and `aspect-ratio/reserving` (`NebaCard`, `NebaSkeleton`). `chip/links` has no Flutter twin: the package opens nothing itself, so a chip has no `href`. The React demos of per-breakpoint maps (`container/responsive`, `grid/responsive`) have no Flutter twin, because the Flutter widgets take no such map. A widget that draws a shape reads the ring of a pile it is in through `NebaRing`, as `NebaBox` does, so that `ring` follows it. `button/render` has no Flutter twin: a Flutter button has no element to swap.
+Demos that wait on a component not ported yet, to be added with it: `flex/direction` (`NebaTextField`), `stack/direction`, `stack/depth` and `stack/dealt` (`NebaCard`), `show/pair` (`NebaButtonGroup`), `aspect-ratio/reserving` (`NebaCard`, `NebaSkeleton`), and `avatar/hero` and `avatar/status` (`NebaBadge`). `chip/links` has no Flutter twin: the package opens nothing itself, so a chip has no `href`. The React demos of per-breakpoint maps (`container/responsive`, `grid/responsive`) have no Flutter twin, because the Flutter widgets take no such map. A widget that draws a shape reads the ring of a pile it is in through `NebaRing`, as `NebaBox` does, so that `ring` follows it. `button/render` has no Flutter twin: a Flutter button has no element to swap.
 
 ### Layout (15)
 
@@ -104,7 +106,7 @@ Demos that wait on a component not ported yet, to be added with it: `grid/auto-g
 - [ ] `NebaDivider`
 - [x] `NebaChip`
 - [ ] `NebaBadge`
-- [ ] `NebaAvatar`
+- [x] `NebaAvatar`
 - [ ] `NebaAppLogo`
 - [ ] `NebaIcon`
 - [ ] `NebaImage`

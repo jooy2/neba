@@ -24,6 +24,7 @@ flutter:
   # The photographs the demos hold, copies of the docs' own samples.
   # `assets/samples/README.md` says where they come from.
   assets:
+    - assets/samples/people/
     - assets/samples/photos/
 
   # The gallery's own font: without it a web build fetches Roboto from Google's

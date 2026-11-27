@@ -52,6 +52,7 @@ class NebaSheet extends StatelessWidget {
     this.pressed = false,
     this.blur = true,
     this.texture = true,
+    this.plateOnTop = false,
     this.child,
     super.key,
   });
@@ -81,6 +82,11 @@ class NebaSheet extends StatelessWidget {
   /// Whether the grain and the sheen are laid over the fill. A wash or a
   /// groove has neither.
   final bool texture;
+
+  /// Whether the plate is drawn over [child] rather than under it: for a
+  /// sheet whose content reaches its edge, such as a picture, which would
+  /// otherwise cover the light along the top and the hairline with it.
+  final bool plateOnTop;
 
   /// What is on the sheet.
   final Widget? child;
@@ -112,10 +118,13 @@ class NebaSheet extends StatelessWidget {
                 fill: fillColor ?? fill,
                 edge: edgeColor ?? edgeless,
                 tokens: tokens,
-                plate: plate,
+                plate: plateOnTop ? NebaPlate.none : plate,
                 texture: texture,
                 borderRadius: borderRadius,
               ),
+              foregroundPainter: plateOnTop && plate != NebaPlate.none
+                  ? _PlatePainter(tokens: tokens, plate: plate, borderRadius: borderRadius)
+                  : null,
               child: child,
             );
           },
@@ -233,36 +242,11 @@ class _SheetPainter extends CustomPainter {
       );
     }
 
-    if (plate != NebaPlate.none) {
-      // `inset 0 1px 0`: the sheet minus itself moved down a pixel, which
-      // leaves a 1-pixel band along the top that follows the corners.
-      final Path top = Path.combine(
-        PathOperation.difference,
-        Path()..addRRect(shape),
-        Path()..addRRect(shape.shift(const Offset(0, 1))),
-      );
-      canvas.drawPath(top, Paint()..color = tokens.plateTop);
-    }
-
-    if (plate == NebaPlate.solid) {
-      _strokeInside(canvas, shape, tokens.plateEdge);
-    }
+    _paintPlate(canvas, shape, tokens, plate);
 
     if (edge.a > 0) {
       _strokeInside(canvas, shape, edge);
     }
-  }
-
-  /// A 1-pixel line just inside [shape], as an inset `0 0 0 1px` shadow or a
-  /// border draws it.
-  void _strokeInside(Canvas canvas, RRect shape, Color color) {
-    canvas.drawRRect(
-      shape.deflate(0.5),
-      Paint()
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 1
-        ..color = color,
-    );
   }
 
   @override
@@ -274,6 +258,66 @@ class _SheetPainter extends CustomPainter {
         oldDelegate.texture != texture ||
         oldDelegate.borderRadius != borderRadius;
   }
+}
+
+/// The plate on its own, over a sheet's content.
+class _PlatePainter extends CustomPainter {
+  _PlatePainter({required this.tokens, required this.plate, required this.borderRadius});
+
+  final NebaTokens tokens;
+  final NebaPlate plate;
+  final BorderRadius borderRadius;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    _paintPlate(canvas, borderRadius.toRRect(Offset.zero & size), tokens, plate);
+  }
+
+  @override
+  bool shouldRepaint(_PlatePainter oldDelegate) {
+    return oldDelegate.tokens != tokens ||
+        oldDelegate.plate != plate ||
+        oldDelegate.borderRadius != borderRadius;
+  }
+}
+
+/// The light along the top of [shape] and, on a solid plate, the full white
+/// hairline of the cut edge.
+void _paintPlate(Canvas canvas, RRect shape, NebaTokens tokens, NebaPlate plate) {
+  if (plate != NebaPlate.none) {
+    // `inset 0 1px 0`: the sheet minus itself moved down a pixel, which
+    // leaves a 1-pixel band along the top that follows the corners.
+    final Path top = Path.combine(
+      PathOperation.difference,
+      Path()..addRRect(shape),
+      Path()..addRRect(shape.shift(const Offset(0, 1))),
+    );
+    canvas.drawPath(top, Paint()..color = tokens.plateTop);
+  }
+
+  if (plate == NebaPlate.solid) {
+    _strokeInside(canvas, shape, tokens.plateEdge);
+  }
+}
+
+/// A 1-pixel line just inside [shape], as an inset `0 0 0 1px` shadow or a
+/// border draws it.
+void _strokeInside(Canvas canvas, RRect shape, Color color) {
+  canvas.drawRRect(
+    shape.deflate(0.5),
+    Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1
+      ..color = color,
+  );
+}
+
+/// A `text` mark's own bed, the React package's `.neba-tint-plate`: the
+/// family's wash laid over the page's surface rather than over whatever the
+/// mark was dropped on, so its ink reads the same on every sheet. For a
+/// Badge, an Avatar and an AppLogo, which a caller puts inside other things.
+Color tintPlate(NebaTokens tokens, NebaColorRoles roles) {
+  return Color.alphaBlend(roles.softHover, tokens.surface);
 }
 
 /// The grain, `--neba-grain`: one 120-pixel tile of greyscale noise under 12%,

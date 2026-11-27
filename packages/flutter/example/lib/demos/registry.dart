@@ -9,6 +9,11 @@ import 'package:flutter/widgets.dart';
 import 'package:neba_example/demos/aspect_ratio/fit.dart';
 import 'package:neba_example/demos/aspect_ratio/hero.dart';
 import 'package:neba_example/demos/aspect_ratio/ratios.dart';
+import 'package:neba_example/demos/avatar/fallback.dart';
+import 'package:neba_example/demos/avatar/initials.dart';
+import 'package:neba_example/demos/avatar/shape.dart';
+import 'package:neba_example/demos/avatar/sizes.dart';
+import 'package:neba_example/demos/avatar/variants.dart';
 import 'package:neba_example/demos/box/colors.dart';
 import 'package:neba_example/demos/box/elevation.dart';
 import 'package:neba_example/demos/box/hero.dart';
@@ -32,9 +37,11 @@ import 'package:neba_example/demos/chip/variants.dart';
 import 'package:neba_example/demos/container/hero.dart';
 import 'package:neba_example/demos/container/max_width.dart';
 import 'package:neba_example/demos/container/plain.dart';
+import 'package:neba_example/demos/flex/alignment.dart';
 import 'package:neba_example/demos/flex/hero.dart';
 import 'package:neba_example/demos/flex/spacing.dart';
 import 'package:neba_example/demos/grid/alignment.dart';
+import 'package:neba_example/demos/grid/auto_grow.dart';
 import 'package:neba_example/demos/grid/columns.dart';
 import 'package:neba_example/demos/grid/hero.dart';
 import 'package:neba_example/demos/grid/nested.dart';
@@ -49,6 +56,7 @@ import 'package:neba_example/demos/scroll_area/sizes.dart';
 import 'package:neba_example/demos/show/hero.dart';
 import 'package:neba_example/demos/show/range.dart';
 import 'package:neba_example/demos/show/transparent.dart';
+import 'package:neba_example/demos/stack/hero.dart';
 import 'package:neba_example/demos/tokens/palette.dart';
 import 'package:neba_example/demos/typography/clamp.dart';
 import 'package:neba_example/demos/typography/colors.dart';
@@ -60,6 +68,11 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'aspect-ratio/fit': AspectRatioFit.new,
   'aspect-ratio/hero': AspectRatioHero.new,
   'aspect-ratio/ratios': AspectRatioRatios.new,
+  'avatar/fallback': AvatarFallback.new,
+  'avatar/initials': AvatarInitials.new,
+  'avatar/shape': AvatarShape.new,
+  'avatar/sizes': AvatarSizes.new,
+  'avatar/variants': AvatarVariants.new,
   'box/colors': BoxColors.new,
   'box/elevation': BoxElevation.new,
   'box/hero': BoxHero.new,
@@ -83,9 +96,11 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'container/hero': ContainerHero.new,
   'container/max-width': ContainerMaxWidth.new,
   'container/plain': ContainerPlain.new,
+  'flex/alignment': FlexAlignment.new,
   'flex/hero': FlexHero.new,
   'flex/spacing': FlexSpacing.new,
   'grid/alignment': GridAlignment.new,
+  'grid/auto-grow': GridAutoGrow.new,
   'grid/columns': GridColumns.new,
   'grid/hero': GridHero.new,
   'grid/nested': GridNested.new,
@@ -100,6 +115,7 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'show/hero': ShowHero.new,
   'show/range': ShowRange.new,
   'show/transparent': ShowTransparent.new,
+  'stack/hero': StackHero.new,
   'tokens/palette': TokensPalette.new,
   'typography/clamp': TypographyClamp.new,
   'typography/colors': TypographyColors.new,

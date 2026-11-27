@@ -115,6 +115,12 @@ Both mix with numbers in one responsive map — the contents' width on a phone, 
 
 :::
 
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/grid/auto_grow.dart
+
+:::
+
 </Demo>
 
 ### breakpoints

@@ -115,6 +115,12 @@ NebaGridContainer(
 
 :::
 
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/grid/auto_grow.dart
+
+:::
+
 </Demo>
 
 ### breakpoint

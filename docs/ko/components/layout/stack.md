@@ -28,9 +28,12 @@ import { Avatar, Stack } from 'neba';
 ```dart
 import 'package:neba/neba.dart';
 
-NebaStack(
+const NebaStack(
   ring: true,
-  children: <Widget>[jane, minji],
+  children: <Widget>[
+    NebaAvatar(name: 'Jane Doe'),
+    NebaAvatar(name: 'Kim Minji'),
+  ],
 );
 ```
 

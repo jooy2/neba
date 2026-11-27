@@ -1,6 +1,7 @@
 ---
 title: Avatar
 order: 15
+flutter: true
 ---
 
 # Avatar
@@ -8,6 +9,8 @@ order: 15
 <p class="neba-lede">A picture of a person or a thing, at a known size. It draws the picture when there is one and stands in for it with initials, a glyph or a silhouette when there is not, so it is never an empty box.</p>
 
 <Demo src="avatar/hero" />
+
+::: fw react
 
 ```tsx
 import { Avatar } from 'neba';
@@ -17,11 +20,40 @@ import { Avatar } from 'neba';
 <Avatar shape="square" variant="solid" color="info">N</Avatar>;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+const NebaAvatar(image: AssetImage('assets/people/jane.jpg'), name: 'Jane Doe');
+const NebaAvatar(name: 'Jane Doe');
+const NebaAvatar(
+  shape: NebaAvatarShape.square,
+  variant: NebaVariant.solid,
+  color: NebaColor.info,
+  child: Text('N'),
+);
+```
+
+:::
+
 ## Props
 
 <PropsTable name="Avatar" />
 
+::: fw react
+
 Every other `<span>` attribute passes through to the root. The `<img>` takes `src`, `srcSet` and `alt` directly; anything else it needs goes in `imageProps`.
+
+:::
+
+::: fw flutter
+
+The picture is `image`, any `ImageProvider`, and `semanticLabel` is what React calls `alt`. There is no `srcSet` or `imageProps`: an `AssetImage` picks the resolution variant itself, and a `NetworkImage` takes its own headers.
+
+:::
 
 The shared axes (`variant` `size` `color` `elevation`) are defined in [prop conventions](../../design/prop-conventions). `density` is not offered: an avatar has no padding to change.
 
@@ -33,7 +65,17 @@ The shared axes (`variant` `size` `color` `elevation`) are defined in [prop conv
 
 <Demo src="avatar/variants">
 
+::: fw react
+
 <<< @/.vitepress/demos/avatar/variants.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/avatar/variants.dart
+
+:::
 
 </Demo>
 
@@ -43,7 +85,17 @@ The control height ladder, so an avatar and the [Button](../inputs/button) besid
 
 <Demo src="avatar/sizes">
 
+::: fw react
+
 <<< @/.vitepress/demos/avatar/sizes.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/avatar/sizes.dart
+
+:::
 
 </Demo>
 
@@ -53,31 +105,73 @@ The control height ladder, so an avatar and the [Button](../inputs/button) besid
 
 <Demo src="avatar/shape">
 
+::: fw react
+
 <<< @/.vitepress/demos/avatar/shape.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/avatar/shape.dart
+
+:::
 
 </Demo>
 
 ### name and initials
 
-`name` does three things: it becomes the picture's `alt`, the initials are derived from it, and a screen reader hears it instead of them.
+`name` does three things: it becomes the picture's <Fw react="`alt`" flutter="`semanticLabel`" />, the initials are derived from it, and a screen reader hears it instead of them.
 
 The rule is the first character of the first word plus the first character of the last: `Jane Doe` is `JD`, `jane miriam van doe` is `JD`, `홍길동` is `홍`. Decomposed accents are recomposed first, so `Ängela` is `Ä` and not `A`. When the rule picks the wrong letters, write them out in `initials`.
 
 <Demo src="avatar/initials">
 
+::: fw react
+
 <<< @/.vitepress/demos/avatar/initials.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/avatar/initials.dart
+
+:::
 
 </Demo>
 
-### children
+### <Fw react="children" flutter="child" />
 
-`children` is the fallback, drawn instead of the initials: an icon, a logo, a single emoji. An `<svg>` inside it is sized to 55% of the box. With no `children`, no `initials` and no `name`, the avatar draws a silhouette.
+<Fw react="`children`" flutter="`child`" /> is the fallback, drawn instead of the initials: an icon, a logo, a single emoji. <Fw react="An `<svg>` inside it is sized to 55% of the box." flutter="An icon is drawn at 55% of the box through the `IconTheme` the avatar hands down." /> With no <Fw react="`children`" flutter="`child`" />, no `initials` and no `name`, the avatar draws a silhouette.
 
-Which of the three is showing is decided by the picture's loading state. Set `delay` to hold the fallback back for a moment so the initials do not flash up in front of a cached image, and read the state itself with `onLoadingStatusChange`. The `<img>` is in the markup from the first render, server HTML included, so a `loading: 'lazy'` in `imageProps` defers it as it would any image; until it has loaded it is kept out of sight and out of the accessibility tree.
+Which of the three is showing is decided by the picture's loading state. Set `delay` to hold the fallback back for a moment so the initials do not flash up in front of a cached image, and read the state itself with `onLoadingStatusChange`.
+
+::: fw react
+
+The `<img>` is in the markup from the first render, server HTML included, so a `loading: 'lazy'` in `imageProps` defers it as it would any image; until it has loaded it is kept out of sight and out of the accessibility tree.
+
+:::
+
+::: fw flutter
+
+The picture fades up over the fallback once it has decoded. One that fails to load is not reported as an error: the fallback stays, and `onLoadingStatusChange` hears `error`.
+
+:::
 
 <Demo src="avatar/fallback">
 
+::: fw react
+
 <<< @/.vitepress/demos/avatar/fallback.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/avatar/fallback.dart
+
+:::
 
 </Demo>
 
@@ -87,12 +181,28 @@ An avatar carries no status dot of its own. Wrap it in a [Badge](./badge) with `
 
 <Demo src="avatar/status">
 
+::: fw react
+
 <<< @/.vitepress/demos/avatar/status.tsx
+
+:::
 
 </Demo>
 
 ## Accessibility
 
+::: fw react
+
 - `JD` read out loud is two letters, not a person. Given a `name`, the initials are hidden from the accessibility tree and the name becomes the fallback's accessible name instead.
 - With neither `name` nor `alt` the `<img>` gets an empty `alt`, so it is skipped rather than read out as a file name. That is the right default for an avatar sitting next to the person's own name; pass `alt` when the picture is the only thing identifying them.
 - A `children` glyph with no `name` says nothing. Give the avatar a `name` (or an `aria-label` on whatever wraps it) when the glyph is carrying the meaning on its own.
+
+:::
+
+::: fw flutter
+
+- `JD` read out loud is two letters, not a person. Given a `name`, the avatar is read as the name and never as its initials, and as an image once the picture has arrived.
+- An empty `semanticLabel` makes the avatar silent, which is the right choice for one sitting next to the person's own name.
+- With neither `name` nor `semanticLabel`, a picture and a `child` glyph say nothing, and only `initials` written out are read. Give the avatar a `name` when what it shows is the only thing identifying someone.
+
+:::

@@ -111,6 +111,12 @@ NebaFlex(
 
 :::
 
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/flex/alignment.dart
+
+:::
+
 </Demo>
 
 ### wrap

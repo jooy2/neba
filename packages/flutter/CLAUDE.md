@@ -50,7 +50,7 @@ The React guide states each rule of [the design language](../../docs/ko/design/d
 | --- | --- |
 | `color.dart` | `oklch()`, `color-mix()` in sRGB and OKLab, the CSS shadow blur, WCAG contrast |
 | `motion.dart` | `nebaDuration`: zero on a press and for a reader who asked for less motion |
-| `surface.dart` | `NebaSheet`: the blur and saturation behind, the fill, the grain, the 148° sheen, the plate, the edge and the elevation shadow |
+| `surface.dart` | `NebaSheet`: the blur and saturation behind, the fill, the grain, the 148° sheen, the plate, the edge and the elevation shadow, with the plate drawn over the content for a sheet a picture fills (`plateOnTop`); and `tintPlate`, the opaque bed of a `text` mark that may land on any sheet |
 | `interaction.dart` | `NebaInteractive`: hover, press on the pointer going down, keyboard focus, Enter and Space, and the pointer's position as a listenable. `focusable` keeps a busy or read-only control in the focus order while it takes no input |
 | `glow.dart` | `NebaGlow`: the 88-pixel spotlight and the 72-pixel afterglow, and which colours a variant lights with |
 | `focus_ring.dart` | `NebaFocusRing`: two pixels, two pixels off, eased in colour and never in width |
@@ -59,6 +59,7 @@ The React guide states each rule of [the design language](../../docs/ko/design/d
 | `breakpoint.dart` | `nebaShownAt` and `NebaWidthGate`: whether a window width is in a range of breakpoints, and the children a container leaves out because a `NebaShow` among them is hidden. A container that lays out a list of children passes it through `nebaPresentChildren` |
 | `ring.dart` | `NebaRingScope` and `NebaRing`: the ring a ringed pile asks for, drawn by the first widget below it that draws a shape, around that shape. Every widget with a shape of its own wraps it in `NebaRing` |
 | `scroll_fade.dart` | `NebaEdgeFade`: a scrolling box's content masked out at each edge that has more beyond it, for ScrollArea and the Tabs bar |
+| `initials.dart` | `initialsOf`: the first character of a name's first word and of its last, for Avatar and AppLogo |
 | `messages.dart` | `NebaLocale`, `registerNebaMessages`, `nebaMessages` and `fillNebaMessage`: the words a widget says on its own behalf, by namespace, in the React package's namespaces |
 | `svg_path.dart`, `glyphs.dart` | The React package's SVG glyphs, read from the same path data: ×, chevron, tick, minus, plus, dot, the turning ring and the severity set, and `NebaSpinner`, the ring turning at 900 milliseconds a turn |
 

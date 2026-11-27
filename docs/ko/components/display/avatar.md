@@ -1,6 +1,7 @@
 ---
 title: Avatar
 order: 15
+flutter: true
 ---
 
 # Avatar
@@ -8,6 +9,8 @@ order: 15
 <p class="neba-lede">사람이나 사물의 그림을 정해진 크기로 그립니다. 그림이 있으면 그림을, 없으면 이니셜이나 글리프, 실루엣을 대신 그리기 때문에 빈 상자가 되는 일이 없습니다.</p>
 
 <Demo src="avatar/hero" />
+
+::: fw react
 
 ```tsx
 import { Avatar } from 'neba';
@@ -17,11 +20,40 @@ import { Avatar } from 'neba';
 <Avatar shape="square" variant="solid" color="info">N</Avatar>;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+const NebaAvatar(image: AssetImage('assets/people/jane.jpg'), name: '홍길동');
+const NebaAvatar(name: '홍길동');
+const NebaAvatar(
+  shape: NebaAvatarShape.square,
+  variant: NebaVariant.solid,
+  color: NebaColor.info,
+  child: Text('N'),
+);
+```
+
+:::
+
 ## Props
 
 <PropsTable name="Avatar" />
 
+::: fw react
+
 나머지 `<span>` 속성은 모두 루트로 전달됩니다. `<img>`는 `src`, `srcSet`, `alt`를 직접 받고, 그 밖에 필요한 속성은 `imageProps`에 넣습니다.
+
+:::
+
+::: fw flutter
+
+그림은 `image`로 받으며 어떤 `ImageProvider`든 됩니다. React의 `alt`는 `semanticLabel`입니다. `srcSet`과 `imageProps`는 없습니다. `AssetImage`는 해상도 변형을 스스로 고르고, `NetworkImage`는 헤더를 직접 받습니다.
+
+:::
 
 공통 축(`variant` `size` `color` `elevation`)의 의미는 [Prop 규약](../../design/prop-conventions)에 있습니다. `density`는 없습니다. 아바타에는 바꿀 여백이 없기 때문입니다.
 
@@ -33,7 +65,17 @@ import { Avatar } from 'neba';
 
 <Demo src="avatar/variants">
 
+::: fw react
+
 <<< @/.vitepress/demos/avatar/variants.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/avatar/variants.dart
+
+:::
 
 </Demo>
 
@@ -43,7 +85,17 @@ import { Avatar } from 'neba';
 
 <Demo src="avatar/sizes">
 
+::: fw react
+
 <<< @/.vitepress/demos/avatar/sizes.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/avatar/sizes.dart
+
+:::
 
 </Demo>
 
@@ -53,31 +105,73 @@ import { Avatar } from 'neba';
 
 <Demo src="avatar/shape">
 
+::: fw react
+
 <<< @/.vitepress/demos/avatar/shape.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/avatar/shape.dart
+
+:::
 
 </Demo>
 
 ### name과 initials
 
-`name`은 세 가지 일을 합니다. 그림의 `alt`가 되고, 이니셜이 여기서 파생되며, screen reader는 이니셜 대신 이 문장을 읽습니다.
+`name`은 세 가지 일을 합니다. 그림의 <Fw react="`alt`가" flutter="`semanticLabel`이" /> 되고, 이니셜이 여기서 파생되며, screen reader는 이니셜 대신 이 문장을 읽습니다.
 
 규칙은 첫 단어의 첫 글자와 마지막 단어의 첫 글자입니다. `Jane Doe`는 `JD`, `jane miriam van doe`도 `JD`, `홍길동`은 `홍`이 됩니다. 분해된 악센트는 먼저 결합하므로 `Ängela`는 `A`가 아니라 `Ä`입니다. 규칙이 엉뚱한 글자를 고른다면 `initials`에 직접 씁니다.
 
 <Demo src="avatar/initials">
 
+::: fw react
+
 <<< @/.vitepress/demos/avatar/initials.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/avatar/initials.dart
+
+:::
 
 </Demo>
 
-### children
+### <Fw react="children" flutter="child" />
 
-`children`은 이니셜 대신 그릴 fallback입니다. 아이콘, 로고, 이모지 하나가 여기에 들어갑니다. 안에 있는 `<svg>`는 상자의 55% 크기로 맞춰집니다. `children`도 `initials`도 `name`도 없으면 실루엣을 그립니다.
+<Fw react="`children`은" flutter="`child`는" /> 이니셜 대신 그릴 fallback입니다. 아이콘, 로고, 이모지 하나가 여기에 들어갑니다. <Fw react="안에 있는 `<svg>`는 상자의 55% 크기로 맞춰집니다." flutter="아이콘은 아바타가 내려주는 `IconTheme`으로 상자의 55% 크기가 됩니다." /> <Fw react="`children`도" flutter="`child`도" /> `initials`도 `name`도 없으면 실루엣을 그립니다.
 
-셋 중 무엇이 보이는지는 그림의 로딩 상태가 정합니다. `delay`를 주면 fallback을 잠시 미룰 수 있어서 캐시된 그림 앞에서 이니셜이 번쩍이지 않고, 상태 자체는 `onLoadingStatusChange`로 읽습니다. `<img>`는 서버 HTML을 포함해 첫 렌더부터 마크업에 있으므로, `imageProps`에 준 `loading: 'lazy'`는 다른 이미지에서처럼 로딩을 미룹니다. 로드가 끝나기 전에는 화면에서도, 접근성 트리에서도 가려집니다.
+셋 중 무엇이 보이는지는 그림의 로딩 상태가 정합니다. `delay`를 주면 fallback을 잠시 미룰 수 있어서 캐시된 그림 앞에서 이니셜이 번쩍이지 않고, 상태 자체는 `onLoadingStatusChange`로 읽습니다.
+
+::: fw react
+
+`<img>`는 서버 HTML을 포함해 첫 렌더부터 마크업에 있으므로, `imageProps`에 준 `loading: 'lazy'`는 다른 이미지에서처럼 로딩을 미룹니다. 로드가 끝나기 전에는 화면에서도, 접근성 트리에서도 가려집니다.
+
+:::
+
+::: fw flutter
+
+그림은 디코딩이 끝나면 fallback 위로 서서히 나타납니다. 로딩에 실패한 그림은 오류로 보고되지 않습니다. fallback이 그대로 남고 `onLoadingStatusChange`가 `error`를 받습니다.
+
+:::
 
 <Demo src="avatar/fallback">
 
+::: fw react
+
 <<< @/.vitepress/demos/avatar/fallback.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/avatar/fallback.dart
+
+:::
 
 </Demo>
 
@@ -87,12 +181,28 @@ Avatar에는 상태 점이 없습니다. `overlap="circle"`을 준 [Badge](./bad
 
 <Demo src="avatar/status">
 
+::: fw react
+
 <<< @/.vitepress/demos/avatar/status.tsx
+
+:::
 
 </Demo>
 
 ## 접근성
 
+::: fw react
+
 - `JD`는 소리 내어 읽으면 사람이 아니라 글자 두 개입니다. `name`을 주면 이니셜은 accessibility tree에서 빠지고 그 이름이 fallback의 accessible name이 됩니다.
 - `name`도 `alt`도 없으면 `<img>`의 `alt`는 빈 문자열이 되어 파일 이름이 읽히는 대신 건너뛰어집니다. 사람 이름 옆에 놓인 아바타에는 이쪽이 맞습니다. 그림이 그 사람을 가리키는 유일한 단서일 때만 `alt`를 넘기세요.
 - `name` 없이 `children` 글리프만 있으면 accessible name이 생기지 않습니다. 글리프만으로 뜻이 전달되어야 한다면 `name`을 주거나 감싼 요소에 `aria-label`을 붙이세요.
+
+:::
+
+::: fw flutter
+
+- `JD`는 소리 내어 읽으면 사람이 아니라 글자 두 개입니다. `name`을 주면 아바타는 이니셜이 아니라 그 이름으로 읽히고, 그림이 로드된 뒤에는 이미지로 읽힙니다.
+- `semanticLabel`을 빈 문자열로 주면 아바타 전체가 읽히지 않습니다. 사람 이름 옆에 놓인 아바타에는 이쪽이 맞습니다.
+- `name`도 `semanticLabel`도 없으면 그림과 `child` 글리프는 읽히지 않고, 직접 넘긴 `initials`만 읽힙니다. 아바타만으로 누구인지 알아봐야 한다면 `name`을 주세요.
+
+:::
