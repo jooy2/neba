@@ -158,6 +158,10 @@ import 'package:neba_example/demos/stack/dealt.dart';
 import 'package:neba_example/demos/stack/depth.dart';
 import 'package:neba_example/demos/stack/direction.dart';
 import 'package:neba_example/demos/stack/hero.dart';
+import 'package:neba_example/demos/switch/hero.dart';
+import 'package:neba_example/demos/switch/placement.dart';
+import 'package:neba_example/demos/switch/sizes.dart';
+import 'package:neba_example/demos/switch/states.dart';
 import 'package:neba_example/demos/text_field/controlled.dart';
 import 'package:neba_example/demos/text_field/hero.dart';
 import 'package:neba_example/demos/text_field/icons.dart';
@@ -345,6 +349,10 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'stack/depth': StackDepth.new,
   'stack/direction': StackDirection.new,
   'stack/hero': StackHero.new,
+  'switch/hero': SwitchHero.new,
+  'switch/placement': SwitchPlacement.new,
+  'switch/sizes': SwitchSizes.new,
+  'switch/states': SwitchStates.new,
   'text-field/controlled': TextFieldControlled.new,
   'text-field/hero': TextFieldHero.new,
   'text-field/icons': TextFieldIcons.new,

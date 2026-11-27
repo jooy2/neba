@@ -41,6 +41,7 @@ The six steps of a port are in `packages/flutter/CLAUDE.md`. What the last sessi
 - **A live region** (`role="alert"`, `role="status"`, `aria-live`) is a `NebaLiveRegion`, from `lib/src/internal/live_region.dart`, which writes the role on the web and a live region on Android and iOS. `NebaSkeleton` came first and still writes `liveRegion: true` itself.
 - **A run laid out by a render object of our own does not report an overflow.** `NebaJoinedRun` and `NebaTileRun` keep their children at their natural widths, as CSS keeps a `shrink-0` row, and paint past a width too narrow for them without the stripes a `Row` draws, so the gallery's phone test cannot catch one. The segmented button's hero, `Plan` and `Period` sets are 4 to 37 pixels wider than the 342 pixels a phone leaves in the test font, and fit with room to spare in Inter.
 - **A field-shaped widget** is built from `lib/src/internal/field.dart` and `notch.dart`, as `NebaTextField` is: `NebaFieldColumn` for the label, the description and the error, `NebaFieldShell` for the box with its looks, ring, light and notch, `NebaFieldWidth` for the width and `NebaFieldSemantics` for what a screen reader hears. A label that is a `Text` is drawn a second time by the notch's sizer as a `RichText`, so a test's `find.text` still finds it once. A Fieldset's `disabled` has no counterpart yet: `NebaFieldset` should put a scope above its fields that each field ORs into its own `disabled`, as `internal/fieldset.ts` does.
+- **A press target larger than the control** is the React package's `neba-hit`, which grows a tick's, a track's or a ×'s pressable box to 24 pixels past its drawn edge. A Flutter widget cannot take a press outside its own box, and growing the box would change the layout, so `NebaCheckbox`, `NebaRadio` and `NebaSwitch` take the press on the label and on the gap beside the control instead (`NebaChoiceField` in `lib/src/internal/choice.dart`); a checkbox with no label is pressed on its 18 pixels alone. A Fieldset's `disabled` should reach the three the same way it reaches a field.
 - **Checking it.** `flutter analyze` and `flutter test` in `packages/flutter`, in `packages/flutter/example` (every demo in both themes and at a phone's width) and in `examples/flutter` (the sample app, which shows every demo too), `npm run typecheck`, `npm run lint`, `npx prettier . --check` and `npm run build` in `docs` (the build runs the container check), and `npm run flutter:demos -- --force` before looking at a preview. With the browser pane hidden, a preview below the first screen never mounts; open the gallery directly at `/flutter/index.html?demo={key}&theme=dark` on the dev server to see one.
 
 Still open from that session:
@@ -147,7 +148,7 @@ Demos that wait on a component not ported yet, to be added with it: `skeleton/sw
 - [x] `NebaCheckbox`
 - [x] `NebaCheckboxGroup`
 - [x] `NebaRadioGroup`
-- [ ] `NebaSwitch`
+- [x] `NebaSwitch`
 - [ ] `NebaSlider`
 - [ ] `NebaMenu`
 - [ ] `NebaMenubar`
