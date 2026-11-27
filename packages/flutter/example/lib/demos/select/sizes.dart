@@ -18,7 +18,12 @@ class SelectSizes extends StatelessWidget {
       alignItems: NebaAlignItems.end,
       children: <Widget>[
         for (final NebaSize size in NebaSize.values)
-          NebaSelect<String>(items: _periods, size: size, defaultValue: 'week'),
+          NebaSelect<String>(
+            items: _periods,
+            size: size,
+            defaultValue: 'week',
+            semanticLabel: 'Period, ${size.name}',
+          ),
       ],
     );
   }

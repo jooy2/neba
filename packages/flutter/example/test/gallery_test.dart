@@ -63,15 +63,22 @@ void main() {
 
   // And once right to left, where a widget that places something by left and
   // right rather than by start and end is laid out against the wrong edge, and
-  // one that does its own arithmetic along a row may overflow or throw.
+  // one that does its own arithmetic along a row may overflow or throw; with
+  // semantics on, where everything a reader can press has to say what it is.
   for (final MapEntry<String, Widget Function()> demo in demos.entries) {
-    testWidgets('${demo.key} builds right to left', (WidgetTester tester) async {
+    testWidgets('${demo.key} builds right to left, with a name on everything pressable', (
+      WidgetTester tester,
+    ) async {
+      final SemanticsHandle semantics = tester.ensureSemantics();
+
       await tester.pumpWidget(GalleryApp(query: <String, String>{'demo': demo.key, 'dir': 'rtl'}));
       await tester.pump(const Duration(seconds: 1));
 
       expect(tester.takeException(), isNull);
+      await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
 
       await tester.pumpWidget(const SizedBox());
+      semantics.dispose();
     });
   }
 

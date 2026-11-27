@@ -23,7 +23,12 @@ class ComboboxSizes extends StatelessWidget {
           alignItems: NebaAlignItems.end,
           children: <Widget>[
             for (final NebaSize size in NebaSize.values)
-              NebaCombobox<String>(items: _periods, size: size, defaultValue: 'week'),
+              NebaCombobox<String>(
+                items: _periods,
+                size: size,
+                defaultValue: 'week',
+                semanticLabel: 'Period, ${size.name}',
+              ),
           ],
         ),
         NebaFlex(
@@ -36,6 +41,7 @@ class ComboboxSizes extends StatelessWidget {
                 items: _periods,
                 size: size,
                 defaultValue: const <String>['week'],
+                semanticLabel: 'Periods, ${size.name}',
               ),
           ],
         ),
