@@ -1,6 +1,7 @@
 ---
 title: Badge
 order: 6
+flutter: true
 ---
 
 # Badge
@@ -8,6 +9,8 @@ order: 6
 <p class="neba-lede">다른 요소의 모서리에 겹쳐 놓는 작은 표식입니다. 읽지 않은 개수나 현재 상태를 원래 요소를 가리지 않고 알릴 때 씁니다.</p>
 
 <Demo src="badge/hero" />
+
+::: fw react
 
 ```tsx
 import { Badge, Button } from 'neba';
@@ -21,11 +24,43 @@ import { Badge, Button } from 'neba';
 </Badge>;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+NebaBadge.count(
+  count: 4,
+  semanticLabel: '읽지 않은 알림 4개',
+  child: NebaButton(onPressed: open, semanticLabel: '알림', startIcon: bell),
+);
+
+const NebaBadge(
+  color: NebaColor.success,
+  overlap: NebaBadgeOverlap.circle,
+  child: NebaAvatar(name: '홍길동'),
+);
+```
+
+:::
+
 ## Props
 
 <PropsTable name="Badge" />
 
+::: fw react
+
 `children`을 주면 그것을 감싸는 `<span>`이 positioning context가 되고 표식은 그 모서리에 붙습니다. `children` 없이 쓰면 표식 자체가 inline 요소로 놓이므로, 표 안의 상태 표시처럼 단독으로도 쓸 수 있습니다.
+
+:::
+
+::: fw flutter
+
+`child`를 주면 표식이 그 모서리에 붙고, child는 표식이 없을 때와 똑같이 배치됩니다. `child` 없이 쓰면 표식 자체가 행 안에 놓이므로, 표 안의 상태 표시처럼 단독으로도 쓸 수 있습니다. 숫자는 `NebaBadge.count` 생성자로 넘기며, 이 생성자가 상한을 적용하고 0을 감춥니다. 기본 생성자는 `content`로 widget을 받고, 없으면 점을 그립니다.
+
+:::
 
 공통 축(`variant` `size` `color` `density` `elevation`)의 의미는 [Prop 규약](../../design/prop-conventions)에 있습니다.
 
@@ -37,19 +72,39 @@ import { Badge, Button } from 'neba';
 
 <Demo src="badge/variants">
 
+::: fw react
+
 <<< @/.vitepress/demos/badge/variants.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/badge/variants.dart
+
+:::
 
 </Demo>
 
 ### content와 max
 
-`content`가 표식에 들어갈 내용입니다. 숫자가 `max`(기본 `99`)를 넘으면 `99+`로 표시되고, 문자열은 자르지 않습니다.
+<Fw react="`content`가" flutter="`content`, 또는 `NebaBadge.count`의 `count`가" /> 표식에 들어갈 내용입니다. 숫자가 `max`(기본 `99`)를 넘으면 `99+`로 표시되고, <Fw react="문자열은" flutter="그 밖의 내용은" /> 자르지 않습니다.
 
 `content`가 `0`이면 기본적으로 그리지 않습니다. `showZero`로 켤 수 있습니다. 셀 것은 없지만 알릴 것이 있을 때는 `dot`으로 점만 찍고, `invisible`은 레이아웃을 유지한 채 표식만 감춥니다. `content`를 생략하면 표식은 점으로 그려집니다.
 
 <Demo src="badge/content">
 
+::: fw react
+
 <<< @/.vitepress/demos/badge/content.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/badge/content.dart
+
+:::
 
 </Demo>
 
@@ -61,7 +116,17 @@ import { Badge, Button } from 'neba';
 
 <Demo src="badge/placement">
 
+::: fw react
+
 <<< @/.vitepress/demos/badge/placement.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/badge/placement.dart
+
+:::
 
 </Demo>
 
@@ -71,13 +136,26 @@ Badge는 컨트롤 높이 단계를 쓰지 않고 자체 단계를 씁니다. `m
 
 <Demo src="badge/sizes">
 
+::: fw react
+
 <<< @/.vitepress/demos/badge/sizes.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/badge/sizes.dart
+
+:::
 
 </Demo>
 
 ## 접근성
 
-- `content={3}`만 있으면 screen reader에는 "3"으로 읽힙니다. `label`에 문장을 주면 그 문장이 표식의 accessible name이 됩니다.
+- <Fw react="`content={3}`만" flutter="`count: 3`만" /> 있으면 screen reader에는 "3"으로 읽힙니다. <Fw react="`label`에" flutter="`semanticLabel`에" /> 문장을 주면 그 문장이 표식의 accessible name이 됩니다.
+
+::: fw react
+
 - 표식은 대상 안이 아니라 옆에 그려지므로, Tab으로 배지가 붙은 버튼에 가면 버튼 이름만 들리고 개수는 들리지 않습니다. 배지에 `id`를 주고 컨트롤의 `aria-describedby`로 가리키면 버튼과 함께 문장이 읽힙니다.
 
 ```tsx
@@ -90,3 +168,13 @@ const unread = React.useId();
 
 - `dot`일 때도 `content`는 DOM에 남아 시각적으로만 가려지므로, 점이 무엇을 뜻하는지 읽을 수 있습니다.
 - `invisible`이거나 표시할 내용이 없으면 DOM에서도 제거됩니다. 화면에 없는 표식의 글자가 find-on-page에 잡히지 않습니다.
+
+:::
+
+::: fw flutter
+
+- 표식은 대상 옆의 독립된 노드이므로, 배지가 붙은 버튼으로 이동하면 버튼 이름과 표식의 문장이 차례로 들립니다.
+- `dot`일 때도 내용은 읽히므로 점이 무엇을 뜻하는지 잃지 않습니다.
+- `invisible`이거나 표시할 내용이 없는 배지는 아무것도 알리지 않고 자리만 유지합니다.
+
+:::

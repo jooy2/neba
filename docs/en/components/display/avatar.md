@@ -177,13 +177,19 @@ The picture fades up over the fallback once it has decoded. One that fails to lo
 
 ### Status marks
 
-An avatar carries no status dot of its own. Wrap it in a [Badge](./badge) with `overlap="circle"`, which tucks the marker in by the amount a circle's corner sits inside its bounding box.
+An avatar carries no status dot of its own. Wrap it in a [Badge](./badge) with <Fw react="`overlap=&quot;circle&quot;`" flutter="`overlap: NebaBadgeOverlap.circle`" />, which tucks the marker in by the amount a circle's corner sits inside its bounding box.
 
 <Demo src="avatar/status">
 
 ::: fw react
 
 <<< @/.vitepress/demos/avatar/status.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/avatar/status.dart
 
 :::
 

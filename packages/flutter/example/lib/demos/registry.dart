@@ -10,10 +10,17 @@ import 'package:neba_example/demos/aspect_ratio/fit.dart';
 import 'package:neba_example/demos/aspect_ratio/hero.dart';
 import 'package:neba_example/demos/aspect_ratio/ratios.dart';
 import 'package:neba_example/demos/avatar/fallback.dart';
+import 'package:neba_example/demos/avatar/hero.dart';
 import 'package:neba_example/demos/avatar/initials.dart';
 import 'package:neba_example/demos/avatar/shape.dart';
 import 'package:neba_example/demos/avatar/sizes.dart';
+import 'package:neba_example/demos/avatar/status.dart';
 import 'package:neba_example/demos/avatar/variants.dart';
+import 'package:neba_example/demos/badge/content.dart';
+import 'package:neba_example/demos/badge/hero.dart';
+import 'package:neba_example/demos/badge/placement.dart';
+import 'package:neba_example/demos/badge/sizes.dart';
+import 'package:neba_example/demos/badge/variants.dart';
 import 'package:neba_example/demos/box/colors.dart';
 import 'package:neba_example/demos/box/elevation.dart';
 import 'package:neba_example/demos/box/hero.dart';
@@ -101,10 +108,17 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'aspect-ratio/hero': AspectRatioHero.new,
   'aspect-ratio/ratios': AspectRatioRatios.new,
   'avatar/fallback': AvatarFallback.new,
+  'avatar/hero': AvatarHero.new,
   'avatar/initials': AvatarInitials.new,
   'avatar/shape': AvatarShape.new,
   'avatar/sizes': AvatarSizes.new,
+  'avatar/status': AvatarStatus.new,
   'avatar/variants': AvatarVariants.new,
+  'badge/content': BadgeContent.new,
+  'badge/hero': BadgeHero.new,
+  'badge/placement': BadgePlacement.new,
+  'badge/sizes': BadgeSizes.new,
+  'badge/variants': BadgeVariants.new,
   'box/colors': BoxColors.new,
   'box/elevation': BoxElevation.new,
   'box/hero': BoxHero.new,

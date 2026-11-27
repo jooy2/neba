@@ -177,13 +177,19 @@ const NebaAvatar(
 
 ### 상태 표시
 
-Avatar에는 상태 점이 없습니다. `overlap="circle"`을 준 [Badge](./badge)로 감싸면 됩니다. 원의 모서리가 bounding box보다 안쪽에 있는 만큼 표식을 더 당겨 줍니다.
+Avatar에는 상태 점이 없습니다. <Fw react="`overlap=&quot;circle&quot;`을" flutter="`overlap: NebaBadgeOverlap.circle`을" /> 준 [Badge](./badge)로 감싸면 됩니다. 원의 모서리가 bounding box보다 안쪽에 있는 만큼 표식을 더 당겨 줍니다.
 
 <Demo src="avatar/status">
 
 ::: fw react
 
 <<< @/.vitepress/demos/avatar/status.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/avatar/status.dart
 
 :::
 
