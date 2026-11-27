@@ -173,13 +173,20 @@ class _NebaAnimateMarqueeState extends State<NebaAnimateMarquee> {
 
     if (nebaReducedMotion(context)) {
       // A strip that cannot move is a row of content, so it is laid down
-      // once and wraps.
+      // once and wraps. A column in a box of a fixed height runs on past its
+      // foot rather than being cut off or overflowing, as the React package's
+      // strip stops clipping; with no height given, it is as tall as it is.
       return _vertical
-          ? Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              spacing: widget.gap,
-              children: children,
+          ? OverflowBox(
+              alignment: Alignment.topCenter,
+              maxHeight: double.infinity,
+              fit: OverflowBoxFit.deferToChild,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                spacing: widget.gap,
+                children: children,
+              ),
             )
           : Wrap(
               spacing: widget.gap,

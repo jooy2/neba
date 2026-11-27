@@ -135,6 +135,49 @@ void main() {
       expect(tester.getTopLeft(find.text('B')).dy, 30);
       expect(tester.hasRunningAnimations, isFalse);
     });
+
+    testWidgets('runs a vertical one past the foot of a box too short for it, under less motion', (
+      WidgetTester tester,
+    ) async {
+      await _pump(
+        tester,
+        const SizedBox(
+          height: 30,
+          child: NebaAnimateMarquee(
+            orientation: NebaOrientation.vertical,
+            gap: 10,
+            children: <Widget>[
+              SizedBox(height: 20, child: Text('A')),
+              SizedBox(height: 20, child: Text('B')),
+            ],
+          ),
+        ),
+        disableAnimations: true,
+      );
+
+      expect(tester.takeException(), isNull);
+      expect(tester.getSize(find.byType(NebaAnimateMarquee)).height, 30);
+      expect(tester.getTopLeft(find.text('B')).dy, 30);
+    });
+
+    testWidgets('is as tall as a vertical one laid down, with no height given', (
+      WidgetTester tester,
+    ) async {
+      await _pump(
+        tester,
+        const NebaAnimateMarquee(
+          orientation: NebaOrientation.vertical,
+          gap: 10,
+          children: <Widget>[
+            SizedBox(height: 20, child: Text('A')),
+            SizedBox(height: 20, child: Text('B')),
+          ],
+        ),
+        disableAnimations: true,
+      );
+
+      expect(tester.getSize(find.byType(NebaAnimateMarquee)).height, 50);
+    });
   });
 
   group('settings', () {
