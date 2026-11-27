@@ -128,8 +128,8 @@ Demos that wait on a component not ported yet, to be added with it: `flex/direct
 - [x] `NebaIconButton`
 - [x] `NebaButtonGroup`
 - [ ] `NebaSegmentedButton`
-- [ ] `NebaToggle`
-- [ ] `NebaToggleGroup`
+- [x] `NebaToggle`
+- [x] `NebaToggleGroup`
 - [ ] `NebaForm`
 - [ ] `NebaFieldset`
 - [ ] `NebaTextField`

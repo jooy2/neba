@@ -73,6 +73,17 @@ import 'package:neba_example/demos/stack/dealt.dart';
 import 'package:neba_example/demos/stack/depth.dart';
 import 'package:neba_example/demos/stack/direction.dart';
 import 'package:neba_example/demos/stack/hero.dart';
+import 'package:neba_example/demos/toggle/colors.dart';
+import 'package:neba_example/demos/toggle/controlled.dart';
+import 'package:neba_example/demos/toggle/hero.dart';
+import 'package:neba_example/demos/toggle/icons.dart';
+import 'package:neba_example/demos/toggle/sizes.dart';
+import 'package:neba_example/demos/toggle/variants.dart';
+import 'package:neba_example/demos/toggle_group/full_width.dart';
+import 'package:neba_example/demos/toggle_group/hero.dart';
+import 'package:neba_example/demos/toggle_group/multiple.dart';
+import 'package:neba_example/demos/toggle_group/orientation.dart';
+import 'package:neba_example/demos/toggle_group/variants.dart';
 import 'package:neba_example/demos/tokens/palette.dart';
 import 'package:neba_example/demos/typography/clamp.dart';
 import 'package:neba_example/demos/typography/colors.dart';
@@ -148,6 +159,17 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'stack/depth': StackDepth.new,
   'stack/direction': StackDirection.new,
   'stack/hero': StackHero.new,
+  'toggle-group/full-width': ToggleGroupFullWidth.new,
+  'toggle-group/hero': ToggleGroupHero.new,
+  'toggle-group/multiple': ToggleGroupMultiple.new,
+  'toggle-group/orientation': ToggleGroupOrientation.new,
+  'toggle-group/variants': ToggleGroupVariants.new,
+  'toggle/colors': ToggleColors.new,
+  'toggle/controlled': ToggleControlled.new,
+  'toggle/hero': ToggleHero.new,
+  'toggle/icons': ToggleIcons.new,
+  'toggle/sizes': ToggleSizes.new,
+  'toggle/variants': ToggleVariants.new,
   'tokens/palette': TokensPalette.new,
   'typography/clamp': TypographyClamp.new,
   'typography/colors': TypographyColors.new,

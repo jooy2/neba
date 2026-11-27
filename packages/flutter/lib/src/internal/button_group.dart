@@ -9,6 +9,7 @@
 /// The library talking to itself: nothing here is exported.
 library;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -131,11 +132,78 @@ class NebaJoinScope extends InheritedWidget {
   bool updateShouldNotify(NebaJoinScope oldWidget) => join != oldWidget.join;
 }
 
+/// A control's place in a [NebaJoinedRun]: its index and how many there are.
+class NebaRunIndex extends InheritedWidget {
+  /// The [index]-th of [count] controls.
+  const NebaRunIndex({required this.index, required this.count, required super.child, super.key});
+
+  /// Where the control is in the run, from the start.
+  final int index;
+
+  /// How many controls the run holds.
+  final int count;
+
+  /// The place of the control at [context], or `null` outside a run.
+  static NebaRunIndex? maybeOf(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<NebaRunIndex>();
+  }
+
+  @override
+  bool updateShouldNotify(NebaRunIndex oldWidget) {
+    return index != oldWidget.index || count != oldWidget.count;
+  }
+}
+
+/// What a toggle group tells the toggles in it: which values are on, what to
+/// call when one is pressed, and which toggle is the set's one stop in the
+/// focus order.
+class NebaToggleGroupScope extends InheritedWidget {
+  /// The group's state for [child].
+  const NebaToggleGroupScope({
+    required this.selected,
+    required this.onToggle,
+    required this.tabStop,
+    required this.register,
+    required this.unregister,
+    required super.child,
+    super.key,
+  });
+
+  /// The values that are on.
+  final Set<String> selected;
+
+  /// Turns the toggle with [value] on or off.
+  final void Function(String value, bool pressed) onToggle;
+
+  /// The index of the toggle the focus order stops at; the arrow keys reach
+  /// the others.
+  final int tabStop;
+
+  /// Hands the group the focus node of the toggle at an index, and whether
+  /// it can take the focus.
+  final void Function(int index, FocusNode node, {required bool enabled}) register;
+
+  /// Takes a toggle's focus node back.
+  final void Function(int index, FocusNode node) unregister;
+
+  /// The group around [context], or `null` when there is none.
+  static NebaToggleGroupScope? maybeOf(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<NebaToggleGroupScope>();
+  }
+
+  @override
+  bool updateShouldNotify(NebaToggleGroupScope oldWidget) {
+    return !setEquals(selected, oldWidget.selected) ||
+        tabStop != oldWidget.tabStop ||
+        onToggle != oldWidget.onToggle;
+  }
+}
+
 /// A run of controls that read as one cut piece: each is told which of its
 /// sides face a neighbour, [overlap] pulls each one back over the one before
-/// so two hairlines share a single line, every control is as thick across the
-/// run as the thickest, and the one under the pointer or holding the focus is
-/// painted over its neighbours, so nothing covers its focus ring.
+/// so two hairlines share a single line, a column is as wide as its widest
+/// control, and the one under the pointer or holding the focus is painted over
+/// its neighbours, so nothing covers its focus ring.
 class NebaJoinedRun extends StatelessWidget {
   /// A run of [children] along [axis].
   const NebaJoinedRun({
@@ -172,14 +240,18 @@ class NebaJoinedRun extends StatelessWidget {
       children: <Widget>[
         for (int i = 0; i <= last; i++)
           _Item(
-            child: NebaJoinScope(
-              join: NebaJoin(
-                start: horizontal && i > 0,
-                end: horizontal && i < last,
-                top: !horizontal && i > 0,
-                bottom: !horizontal && i < last,
+            child: NebaRunIndex(
+              index: i,
+              count: children.length,
+              child: NebaJoinScope(
+                join: NebaJoin(
+                  start: horizontal && i > 0,
+                  end: horizontal && i < last,
+                  top: !horizontal && i > 0,
+                  bottom: !horizontal && i < last,
+                ),
+                child: children[i],
               ),
-              child: children[i],
             ),
           ),
       ],
@@ -330,7 +402,7 @@ class _RenderRun extends RenderBox
   }
 
   /// Each child's size: its own along the run, unless the run fills a bounded
-  /// width, and the thickest child's across it.
+  /// width, and down a column the widest child's across it.
   ///
   /// A child is measured by its dry layout and then laid out once, tightly.
   /// Measuring it by laying it out loosely first would not do: laid out tight,
@@ -374,12 +446,15 @@ class _RenderRun extends RenderBox
           : (size.width > widest ? size.width : widest),
     );
 
+    // Across a row each control keeps its own height, as a CSS stretch leaves
+    // an explicit height alone; down a column each takes the widest width, as
+    // a stretch gives an automatic width.
     return <Size>[
       for (int i = 0; i < count; i++)
         measure(
           children[i],
           _horizontal
-              ? BoxConstraints.tightFor(width: loose[i].width, height: thickest)
+              ? BoxConstraints.tightFor(width: loose[i].width, height: loose[i].height)
               : BoxConstraints.tightFor(width: thickest, height: loose[i].height),
         ),
     ];

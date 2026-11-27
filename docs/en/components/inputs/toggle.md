@@ -1,6 +1,7 @@
 ---
 title: Toggle
 order: 25
+flutter: true
 ---
 
 # Toggle
@@ -9,17 +10,41 @@ order: 25
 
 <Demo src="toggle/hero" />
 
+::: fw react
+
 ```tsx
 import { Toggle } from 'neba';
 
 <Toggle defaultPressed>Bold</Toggle>;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+const NebaToggle(defaultPressed: true, child: Text('Bold'));
+```
+
+:::
+
 ## Props
 
 <PropsTable name="Toggle" />
 
+::: fw react
+
 Every `<button>` attribute passes through except `value`, which identifies the toggle inside a [ToggleGroup](./toggle-group), and `color`, which is the semantic family. The shared axes are described in [prop conventions](../../design/prop-conventions).
+
+:::
+
+::: fw flutter
+
+The label is `child`. `value` identifies the toggle inside a [ToggleGroup](./toggle-group), and the shared axes are described in [prop conventions](../../design/prop-conventions). A toggle reads its own argument first, then its group's, then `NebaProvider`'s, so `disabled` is `bool?`.
+
+:::
 
 A [Switch](./switch) changes a setting and the change itself is the point; a [Checkbox](./checkbox) is an answer that goes in a form. This is neither: it is a control that acts on whatever is beside it.
 
@@ -31,7 +56,17 @@ A [Switch](./switch) changes a setting and the change itself is the point; a [Ch
 
 <Demo src="toggle/controlled">
 
+::: fw react
+
 <<< @/.vitepress/demos/toggle/controlled.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/toggle/controlled.dart
+
+:::
 
 </Demo>
 
@@ -43,17 +78,37 @@ An off toggle carries no colour family in any of the three: the plate is neutral
 
 <Demo src="toggle/variants">
 
+::: fw react
+
 <<< @/.vitepress/demos/toggle/variants.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/toggle/variants.dart
+
+:::
 
 </Demo>
 
 ### Icon-only
 
-With no `children` the toggle goes square around whatever `startIcon` it was given, which is the shape a toolbar wants. An icon carries no accessible name, so give it an `aria-label`.
+With no <Fw react="`children`" flutter="`child`" /> the toggle goes square around whatever `startIcon` it was given, which is the shape a toolbar wants. An icon carries no accessible name, so give it <Fw react="an `aria-label`" flutter="a `semanticLabel`" />.
 
 <Demo src="toggle/icons">
 
+::: fw react
+
 <<< @/.vitepress/demos/toggle/icons.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/toggle/icons.dart
+
+:::
 
 </Demo>
 
@@ -63,7 +118,17 @@ With no `children` the toggle goes square around whatever `startIcon` it was giv
 
 <Demo src="toggle/sizes">
 
+::: fw react
+
 <<< @/.vitepress/demos/toggle/sizes.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/toggle/sizes.dart
+
+:::
 
 </Demo>
 
@@ -73,12 +138,34 @@ With no `children` the toggle goes square around whatever `startIcon` it was giv
 
 <Demo src="toggle/colors">
 
+::: fw react
+
 <<< @/.vitepress/demos/toggle/colors.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/toggle/colors.dart
+
+:::
 
 </Demo>
 
 ## Accessibility
 
+::: fw react
+
 - Renders a `<button>` carrying `aria-pressed`.
 - An icon-only toggle needs an `aria-label`; there is no text to take a name from.
+
+:::
+
+::: fw flutter
+
+- It is a button to a screen reader, which also hears whether it is on.
+- An icon-only toggle needs a `semanticLabel`; there is no text to take a name from.
+
+:::
+
 - Inside a [ToggleGroup](./toggle-group) the set is one tab stop and the arrow keys move between the members.

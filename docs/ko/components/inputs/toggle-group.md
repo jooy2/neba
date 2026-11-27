@@ -1,6 +1,7 @@
 ---
 title: ToggleGroup
 order: 26
+flutter: true
 ---
 
 # ToggleGroup
@@ -8,6 +9,8 @@ order: 26
 <p class="neba-lede">하나의 상태를 공유하는 토글 묶음입니다. 이웃과 맞닿는 모서리는 각지고, 값은 세트가 소유하며, 공통 prop은 구성원 전체에 한 번만 지정합니다.</p>
 
 <Demo src="toggle-group/hero" />
+
+::: fw react
 
 ```tsx
 import { Toggle, ToggleGroup } from 'neba';
@@ -19,11 +22,41 @@ import { Toggle, ToggleGroup } from 'neba';
 </ToggleGroup>;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+const NebaToggleGroup(
+  semanticLabel: 'Text alignment',
+  defaultValue: <String>['left'],
+  children: <Widget>[
+    NebaToggle(value: 'left', child: Text('Left')),
+    NebaToggle(value: 'center', child: Text('Center')),
+    NebaToggle(value: 'right', child: Text('Right')),
+  ],
+);
+```
+
+:::
+
 ## Props
 
 <PropsTable name="ToggleGroup" />
 
+::: fw react
+
 `<div>`의 모든 속성이 그대로 전달됩니다. `variant`, `size`, `color`, `density`, `elevation`, `disabled`는 세트 안의 모든 [Toggle](./toggle)에 전달되며, 토글 자신의 prop이 우선합니다. 중립적인 세트 안에 danger 토글 하나를 두는 것은 흔한 구성입니다.
+
+:::
+
+::: fw flutter
+
+토글은 `children`으로 받으며, 각 토글은 `value`로 이름을 갖습니다. `variant`, `size`, `color`, `density`, `elevation`, `disabled`는 세트 안의 모든 [Toggle](./toggle)에 전달되며, 토글 자신의 인자가 우선합니다. 중립적인 세트 안에 danger 토글 하나를 두는 것은 흔한 구성입니다.
+
+:::
 
 ## 예시
 
@@ -37,7 +70,17 @@ import { Toggle, ToggleGroup } from 'neba';
 
 <Demo src="toggle-group/multiple">
 
+::: fw react
+
 <<< @/.vitepress/demos/toggle-group/multiple.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/toggle_group/multiple.dart
+
+:::
 
 </Demo>
 
@@ -47,7 +90,17 @@ import { Toggle, ToggleGroup } from 'neba';
 
 <Demo src="toggle-group/variants">
 
+::: fw react
+
 <<< @/.vitepress/demos/toggle-group/variants.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/toggle_group/variants.dart
+
+:::
 
 </Demo>
 
@@ -57,7 +110,17 @@ import { Toggle, ToggleGroup } from 'neba';
 
 <Demo src="toggle-group/orientation">
 
+::: fw react
+
 <<< @/.vitepress/demos/toggle-group/orientation.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/toggle_group/orientation.dart
+
+:::
 
 </Demo>
 
@@ -67,11 +130,21 @@ import { Toggle, ToggleGroup } from 'neba';
 
 <Demo src="toggle-group/full-width">
 
+::: fw react
+
 <<< @/.vitepress/demos/toggle-group/full-width.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/toggle_group/full_width.dart
+
+:::
 
 </Demo>
 
 ## 접근성
 
 - 세트 전체가 하나의 tab stop입니다. 방향키로 토글 사이를 이동하고, 끝에서 순환할지는 `loopFocus`가 정합니다.
-- 그룹 자체에는 이름이 없으므로 `aria-label`을 주세요.
+- 그룹 자체에는 이름이 없으므로 <Fw react="`aria-label`을" flutter="`semanticLabel`을" /> 주세요.
