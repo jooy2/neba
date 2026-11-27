@@ -427,7 +427,7 @@ class _RenderRun extends RenderBox
     ];
 
     if (share) {
-      final List<double> widths = _shareWidth(
+      final List<double> widths = nebaShareWidth(
         constraints.maxWidth + _overlap * (count - 1),
         <double>[for (final Size size in loose) size.width],
       );
@@ -458,39 +458,6 @@ class _RenderRun extends RenderBox
               : BoxConstraints.tightFor(width: thickest, height: loose[i].height),
         ),
     ];
-  }
-
-  /// [available] shared evenly, the way CSS shares a row of `flex: 1` items:
-  /// an item whose content needs more than an even share keeps its own width,
-  /// as `min-width: auto` keeps it, and the others share what is left.
-  static List<double> _shareWidth(double available, List<double> naturals) {
-    final List<double?> fixed = List<double?>.filled(naturals.length, null);
-    double remaining = available;
-    bool changed = true;
-
-    while (changed) {
-      changed = false;
-      final int open = fixed.where((double? width) => width == null).length;
-
-      if (open == 0) {
-        break;
-      }
-
-      final double even = remaining / open;
-
-      for (int i = 0; i < naturals.length; i++) {
-        if (fixed[i] == null && naturals[i] > even) {
-          fixed[i] = naturals[i];
-          remaining -= naturals[i];
-          changed = true;
-        }
-      }
-    }
-
-    final int open = fixed.where((double? width) => width == null).length;
-    final double even = open == 0 ? 0 : remaining / open;
-
-    return <double>[for (final double? width in fixed) width ?? even];
   }
 
   Size _total(List<Size> sizes) {
@@ -624,4 +591,40 @@ class _RenderRun extends RenderBox
 
     return false;
   }
+}
+
+/// [available] shared evenly, the way CSS shares a row of `flex: 1` items:
+/// an item whose content needs more than an even share keeps its own width,
+/// as `min-width: auto` keeps it, and the others share what is left.
+///
+/// What a [NebaJoinedRun] and a `NebaTileRun` both do with `fullWidth`, so
+/// that a toggle group and a segmented button divide a width the same way.
+List<double> nebaShareWidth(double available, List<double> naturals) {
+  final List<double?> fixed = List<double?>.filled(naturals.length, null);
+  double remaining = available;
+  bool changed = true;
+
+  while (changed) {
+    changed = false;
+    final int open = fixed.where((double? width) => width == null).length;
+
+    if (open == 0) {
+      break;
+    }
+
+    final double even = remaining / open;
+
+    for (int i = 0; i < naturals.length; i++) {
+      if (fixed[i] == null && naturals[i] > even) {
+        fixed[i] = naturals[i];
+        remaining -= naturals[i];
+        changed = true;
+      }
+    }
+  }
+
+  final int open = fixed.where((double? width) => width == null).length;
+  final double even = open == 0 ? 0 : remaining / open;
+
+  return <double>[for (final double? width in fixed) width ?? even];
 }

@@ -36,6 +36,8 @@ The six steps of a port are in `packages/flutter/CLAUDE.md`. What the last sessi
 - **Pictures** are copied from `docs/public/samples/` into `packages/flutter/example/assets/samples/` at the same path and loaded as `Image.asset('assets/samples/…')`; `example/test/samples_test.dart` holds the copies to the originals, and the sample app maps those keys to `packages/neba_example/` itself. A row that holds text wraps it in `Flexible`, as a CSS flex item shrinks, or it overflows at a phone's width.
 - **Emoji draw nothing in a web preview.** The gallery ships Inter and no emoji font, so a Dart demo uses a character Inter has where the React demo has an emoji; on a device the system font draws one.
 - **A hidden browser pane holds the frames back.** With the pane hidden the page runs as a background page and its animation frames are throttled to a handful a second or none, so a picture that fades up looks like it never arrived. Wake the page (any `requestAnimationFrame` from the JavaScript tool will do) before reading a screenshot as a failure.
+- **A tile that slides behind the current item** is `NebaTileRun` in `lib/src/internal/tile.dart`, which `NebaSegmentedButton` draws its tile with; `NebaFloatingBottomNavigation` should take the same rather than a second one.
+- **A run laid out by a render object of our own does not report an overflow.** `NebaJoinedRun` and `NebaTileRun` keep their children at their natural widths, as CSS keeps a `shrink-0` row, and paint past a width too narrow for them without the stripes a `Row` draws, so the gallery's phone test cannot catch one. The segmented button's hero, `Plan` and `Period` sets are 4 to 37 pixels wider than the 342 pixels a phone leaves in the test font, and fit with room to spare in Inter.
 - **Checking it.** `flutter analyze` and `flutter test` in `packages/flutter`, in `packages/flutter/example` (every demo in both themes and at a phone's width) and in `examples/flutter` (the sample app, which shows every demo too), `npm run typecheck`, `npm run lint`, `npx prettier . --check` and `npm run build` in `docs` (the build runs the container check), and `npm run flutter:demos -- --force` before looking at a preview. With the browser pane hidden, a preview below the first screen never mounts; open the gallery directly at `/flutter/index.html?demo={key}&theme=dark` on the dev server to see one.
 
 Still open from that session:
@@ -127,7 +129,7 @@ Demos that wait on a component not ported yet, to be added with it: `flex/direct
 - [x] `NebaButton`
 - [x] `NebaIconButton`
 - [x] `NebaButtonGroup`
-- [ ] `NebaSegmentedButton`
+- [x] `NebaSegmentedButton`
 - [x] `NebaToggle`
 - [x] `NebaToggleGroup`
 - [ ] `NebaForm`

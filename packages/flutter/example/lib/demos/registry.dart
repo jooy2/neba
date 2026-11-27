@@ -89,6 +89,10 @@ import 'package:neba_example/demos/scroll_zone/modes.dart';
 import 'package:neba_example/demos/scroll_zone/placement.dart';
 import 'package:neba_example/demos/scroll_zone/vertical.dart';
 import 'package:neba_example/demos/scroll_zone/wheel.dart';
+import 'package:neba_example/demos/segmented_button/hero.dart';
+import 'package:neba_example/demos/segmented_button/sizes.dart';
+import 'package:neba_example/demos/segmented_button/states.dart';
+import 'package:neba_example/demos/segmented_button/variants.dart';
 import 'package:neba_example/demos/show/hero.dart';
 import 'package:neba_example/demos/show/pair.dart';
 import 'package:neba_example/demos/show/range.dart';
@@ -204,6 +208,10 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'scroll-zone/placement': ScrollZonePlacement.new,
   'scroll-zone/vertical': ScrollZoneVertical.new,
   'scroll-zone/wheel': ScrollZoneWheel.new,
+  'segmented-button/hero': SegmentedButtonHero.new,
+  'segmented-button/sizes': SegmentedButtonSizes.new,
+  'segmented-button/states': SegmentedButtonStates.new,
+  'segmented-button/variants': SegmentedButtonVariants.new,
   'show/hero': ShowHero.new,
   'show/pair': ShowPair.new,
   'show/range': ShowRange.new,

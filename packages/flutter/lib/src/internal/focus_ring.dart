@@ -43,7 +43,9 @@ class NebaFocusRing extends StatelessWidget {
   /// The control's corners. The ring's follow them, grown by the offset.
   final BorderRadius borderRadius;
 
-  /// How far outside the control the ring stands.
+  /// How far outside the control the ring stands. A negative offset draws it
+  /// inside, as CSS `outline-offset: -2px` does, for a control whose
+  /// neighbours an outer ring would be drawn over.
   final double offset;
 
   /// The control.
