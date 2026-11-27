@@ -63,6 +63,7 @@ export 'src/components/combobox/neba_combobox.dart';
 export 'src/components/command_palette/neba_command_palette.dart';
 export 'src/components/confirm/neba_confirm.dart';
 export 'src/components/container/neba_container.dart';
+export 'src/components/context_window/neba_context_window.dart';
 export 'src/components/data_list/neba_data_list.dart';
 export 'src/components/data_table/neba_data_table.dart';
 export 'src/components/date_picker/neba_date_picker.dart';

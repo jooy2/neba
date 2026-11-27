@@ -58,9 +58,14 @@ const List<String> _compactUnits = <String>['', 'K', 'M', 'B', 'T'];
 /// its thousands grouped and at most two digits after the point below that.
 /// The React package's `compactNumber`, which is `Intl.NumberFormat`'s
 /// `notation: 'compact'` in English.
-String nebaFormatCompact(num value) {
-  if (!value.isFinite || value.abs() < 10000) {
-    return nebaFormatNumber(value, maxFractionDigits: 2);
+///
+/// [from] is where compacting starts and [maxFractionDigits] how many digits
+/// a number below it keeps after the point: a ContextWindow's token counts
+/// are the compact notation itself, from a thousand up with one digit after
+/// the point (`8.1K`).
+String nebaFormatCompact(num value, {num from = 10000, int maxFractionDigits = 2}) {
+  if (!value.isFinite || value.abs() < from) {
+    return nebaFormatNumber(value, maxFractionDigits: maxFractionDigits);
   }
 
   int unit = 0;

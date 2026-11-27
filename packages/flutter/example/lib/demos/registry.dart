@@ -186,6 +186,10 @@ import 'package:neba_example/demos/confirm/hero.dart';
 import 'package:neba_example/demos/container/hero.dart';
 import 'package:neba_example/demos/container/max_width.dart';
 import 'package:neba_example/demos/container/plain.dart';
+import 'package:neba_example/demos/context_window/compact.dart';
+import 'package:neba_example/demos/context_window/filling.dart';
+import 'package:neba_example/demos/context_window/hero.dart';
+import 'package:neba_example/demos/context_window/locale.dart';
 import 'package:neba_example/demos/data_list/dividers.dart';
 import 'package:neba_example/demos/data_list/hero.dart';
 import 'package:neba_example/demos/data_list/label_width.dart';
@@ -771,6 +775,10 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'container/hero': ContainerHero.new,
   'container/max-width': ContainerMaxWidth.new,
   'container/plain': ContainerPlain.new,
+  'context-window/compact': ContextWindowCompact.new,
+  'context-window/filling': ContextWindowFilling.new,
+  'context-window/hero': ContextWindowHero.new,
+  'context-window/locale': ContextWindowLocale.new,
   'data-list/dividers': DataListDividers.new,
   'data-list/hero': DataListHero.new,
   'data-list/label-width': DataListLabelWidth.new,

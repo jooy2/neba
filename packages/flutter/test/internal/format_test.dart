@@ -30,6 +30,10 @@ void main() {
     expect(nebaFormatCompact(1250000), '1.3M');
     expect(nebaFormatCompact(999960), '1M');
     expect(nebaFormatCompact(3e9), '3B');
+    // From a thousand up, as `notation: 'compact'` writes it on its own.
+    expect(nebaFormatCompact(8100, from: 1000, maxFractionDigits: 1), '8.1K');
+    expect(nebaFormatCompact(999.5, from: 1000, maxFractionDigits: 1), '999.5');
+    expect(nebaFormatCompact(124000, from: 1000, maxFractionDigits: 1), '124K');
   });
 
   test('writes a date as its month and its day', () {
