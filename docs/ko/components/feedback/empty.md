@@ -238,6 +238,12 @@ NebaEmpty(
 
 :::
 
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/empty/table.dart
+
+:::
+
 </Demo>
 
 ## 접근성

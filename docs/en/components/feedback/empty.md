@@ -238,6 +238,12 @@ The sheet is never dyed: `color` reaches the hairline and the focus ring and sto
 
 :::
 
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/empty/table.dart
+
+:::
+
 </Demo>
 
 ## Accessibility

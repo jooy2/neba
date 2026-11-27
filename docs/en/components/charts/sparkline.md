@@ -94,7 +94,17 @@ What the strip does where a value is missing: `gap` breaks at it, `connect` brid
 
 <Demo src="sparkline/gaps">
 
+::: fw react
+
 <<< @/.vitepress/demos/sparkline/gaps.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/sparkline/gaps.dart
+
+:::
 
 </Demo>
 
@@ -104,7 +114,17 @@ A sparkline fills itself with its own range, which is what makes it legible at t
 
 <Demo src="sparkline/shapes">
 
+::: fw react
+
 <<< @/.vitepress/demos/sparkline/shapes.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/sparkline/shapes.dart
+
+:::
 
 </Demo>
 

@@ -125,6 +125,7 @@ import 'package:neba_example/demos/empty/hero.dart';
 import 'package:neba_example/demos/empty/icon.dart';
 import 'package:neba_example/demos/empty/locale.dart';
 import 'package:neba_example/demos/empty/size.dart';
+import 'package:neba_example/demos/empty/table.dart';
 import 'package:neba_example/demos/empty/title.dart';
 import 'package:neba_example/demos/empty/variants.dart';
 import 'package:neba_example/demos/flex/alignment.dart';
@@ -262,7 +263,9 @@ import 'package:neba_example/demos/skeleton/hero.dart';
 import 'package:neba_example/demos/skeleton/lines.dart';
 import 'package:neba_example/demos/skeleton/shapes.dart';
 import 'package:neba_example/demos/skeleton/swapping.dart';
+import 'package:neba_example/demos/sparkline/gaps.dart';
 import 'package:neba_example/demos/sparkline/hero.dart';
+import 'package:neba_example/demos/sparkline/shapes.dart';
 import 'package:neba_example/demos/sparkline/variants.dart';
 import 'package:neba_example/demos/spoiler/clamped.dart';
 import 'package:neba_example/demos/spoiler/hero.dart';
@@ -459,6 +462,7 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'empty/icon': EmptyIcon.new,
   'empty/locale': EmptyLocale.new,
   'empty/size': EmptySize.new,
+  'empty/table': EmptyTable.new,
   'empty/title': EmptyTitle.new,
   'empty/variants': EmptyVariants.new,
   'flex/alignment': FlexAlignment.new,
@@ -596,7 +600,9 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'skeleton/lines': SkeletonLines.new,
   'skeleton/shapes': SkeletonShapes.new,
   'skeleton/swapping': SkeletonSwapping.new,
+  'sparkline/gaps': SparklineGaps.new,
   'sparkline/hero': SparklineHero.new,
+  'sparkline/shapes': SparklineShapes.new,
   'sparkline/variants': SparklineVariants.new,
   'spoiler/clamped': SpoilerClamped.new,
   'spoiler/hero': SpoilerHero.new,

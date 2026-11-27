@@ -94,7 +94,17 @@ const NebaSparkline(
 
 <Demo src="sparkline/gaps">
 
+::: fw react
+
 <<< @/.vitepress/demos/sparkline/gaps.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/sparkline/gaps.dart
+
+:::
 
 </Demo>
 
@@ -104,7 +114,17 @@ Sparkline은 자기 데이터의 범위로 스스로를 채웁니다. 20px 높�
 
 <Demo src="sparkline/shapes">
 
+::: fw react
+
 <<< @/.vitepress/demos/sparkline/shapes.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/sparkline/shapes.dart
+
+:::
 
 </Demo>
 
