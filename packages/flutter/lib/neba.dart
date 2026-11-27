@@ -68,6 +68,7 @@ export 'src/components/text_field/neba_text_field.dart';
 export 'src/components/text_link/neba_text_link.dart';
 export 'src/components/toggle/neba_toggle.dart';
 export 'src/components/toggle_group/neba_toggle_group.dart';
+export 'src/components/tooltip/neba_tooltip.dart';
 export 'src/components/typography/neba_typography.dart';
 export 'src/components/visually_hidden/neba_visually_hidden.dart';
 export 'src/theme/scale.dart';
