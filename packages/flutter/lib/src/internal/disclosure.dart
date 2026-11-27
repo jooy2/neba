@@ -52,6 +52,7 @@ class NebaDisclosurePanel extends StatefulWidget {
     required this.open,
     required this.child,
     this.keepMounted = true,
+    this.keepWidth = false,
     this.bottomRadius = 0,
     super.key,
   });
@@ -62,6 +63,12 @@ class NebaDisclosurePanel extends StatefulWidget {
   /// Whether a closed panel keeps [child] built, so what it holds keeps its
   /// state through being folded away.
   final bool keepMounted;
+
+  /// Whether a closed panel still lays [child] out and reports its width, as
+  /// a CSS box of no height is still as wide as what it holds: for a panel in
+  /// something as wide as its widest part, such as a Pill, which would
+  /// otherwise widen at the moment it opens. Keeps [child] built.
+  final bool keepWidth;
 
   /// The radius of the panel's bottom corners, for a panel that ends a sheet
   /// which does not clip it.
@@ -140,7 +147,9 @@ class _NebaDisclosurePanelState extends State<NebaDisclosurePanel>
         heightFactor: _shown,
         child: Visibility(
           visible: drawn,
-          maintainState: widget.keepMounted,
+          maintainState: widget.keepMounted || widget.keepWidth,
+          maintainAnimation: widget.keepWidth,
+          maintainSize: widget.keepWidth,
           child: IgnorePointer(
             ignoring: !open,
             child: ExcludeFocus(

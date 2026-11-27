@@ -60,6 +60,7 @@ export 'src/components/otp_field/neba_otp_field.dart';
 export 'src/components/page_layout/neba_page_layout.dart';
 export 'src/components/pagination/neba_pagination.dart';
 export 'src/components/panes/neba_panes.dart';
+export 'src/components/pill/neba_pill.dart';
 export 'src/components/popover/neba_popover.dart';
 export 'src/components/portal/neba_portal.dart';
 export 'src/components/progress_box/neba_progress_box.dart';

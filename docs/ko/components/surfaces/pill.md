@@ -1,6 +1,7 @@
 ---
 title: Pill
 order: 6
+flutter: true
 ---
 
 # Pill
@@ -9,19 +10,43 @@ order: 6
 
 <Demo src="pill/hero" />
 
+::: fw react
+
 ```tsx
 import { Pill } from 'neba';
 
 <Pill startIcon={<DotIcon />} color="danger" title="녹음 중" />;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+const NebaPill(startIcon: DotIcon(), color: NebaColor.danger, title: Text('녹음 중'));
+```
+
+:::
+
 ## Props
 
 <PropsTable name="Pill" />
 
+::: fw react
+
 `<div>`의 native 속성은 그대로 전달됩니다. 예외는 `title` 하나로, 여기서는 브라우저의 tooltip이 아니라 pill의 제목입니다.
 
-줄은 세 부분으로 나뉩니다. 앞쪽 가장자리의 `startIcon`, 뒤쪽의 `endIcon`, 그리고 그 사이의 가운데 영역입니다. 가운데에는 `title`, `description`, `children`이 들어가며 좌우로 넉넉한 여백을 두고 가운데 정렬됩니다.
+:::
+
+::: fw flutter
+
+슬롯은 모두 위젯이고, `child`는 가운데 열의 제목과 설명 아래에 놓입니다. 제목과 설명은 각각 한 줄을 지키며, 받은 폭이 모자라면 말줄임표로 잘립니다.
+
+:::
+
+줄은 세 부분으로 나뉩니다. 앞쪽 가장자리의 `startIcon`, 뒤쪽의 `endIcon`, 그리고 그 사이의 가운데 영역입니다. 가운데에는 `title`, `description`, <Fw react="`children`이" flutter="`child`가" /> 들어가며 좌우로 넉넉한 여백을 두고 가운데 정렬됩니다.
 
 `color`의 기본값은 `secondary`이고 `elevation`의 기본값은 `2`입니다. 화면 위에 떠 있는 것이 전제이므로 그림자가 기본으로 붙습니다.
 
@@ -33,31 +58,71 @@ import { Pill } from 'neba';
 
 <Demo src="pill/text">
 
+::: fw react
+
 <<< @/.vitepress/demos/pill/text.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/pill/text.dart
+
+:::
 
 </Demo>
 
 ### startIcon과 endIcon
 
-앞자리는 원형으로 잘린 정사각형 상자입니다. `<img>`를 넣으면 아바타처럼 상자를 채우고 잘립니다. 뒷자리는 눌리는 영역 바깥에 있으므로 수치 표시나 컨트롤 자체를 넣을 수 있습니다.
+앞자리는 원형으로 잘린 정사각형 상자입니다. <Fw react="`<img>`를" flutter="`Image`를" /> 넣으면 아바타처럼 상자를 채우고 잘립니다. 뒷자리는 눌리는 영역 바깥에 있으므로 수치 표시나 컨트롤 자체를 넣을 수 있습니다.
 
 <Demo src="pill/slots">
 
+::: fw react
+
 <<< @/.vitepress/demos/pill/slots.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/pill/slots.dart
+
+:::
 
 </Demo>
 
 ### details와 expanded
 
-`details`를 주면 알약 아래로 두 번째 영역이 자랍니다. `expanded`로 controlled, `onClick`으로 토글 동작을 붙일 수 있습니다. 펼침은 [Accordion](./accordion)의 패널과 같은 방식으로 높이를 애니메이션합니다.
+`details`를 주면 알약 아래로 두 번째 영역이 자랍니다. `expanded`로 controlled, <Fw react="`onClick`으로" flutter="`onPressed`로" /> 토글 동작을 붙일 수 있습니다. 펼침은 [Accordion](./accordion)의 패널과 같은 방식으로 높이를 애니메이션합니다.
 
 <Demo src="pill/expandable">
 
+::: fw react
+
 <<< @/.vitepress/demos/pill/expandable.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/pill/expandable.dart
+
+:::
 
 </Demo>
 
+::: fw react
+
 접혀 있는 동안 상세 영역은 `inert`입니다. 높이가 0인 요소에도 focus는 들어갈 수 있으므로, `aria-hidden`만으로는 키보드 사용자가 보이지 않는 영역으로 tab해 들어가게 됩니다. `details`와 `onClick`이 함께 있으면 버튼에 `aria-expanded`와 `aria-controls`가 붙어, 누르면 상세가 열린다는 것이 읽힙니다.
+
+:::
+
+::: fw flutter
+
+접혀 있는 동안 상세 영역은 focus 순서와 semantics 트리에서 빠지고 포인터도 닿지 않습니다. 다만 pill의 폭에는 계속 들어가므로 열리는 순간 pill이 넓어지지 않습니다. `details`와 `onPressed`가 함께 있으면 펼쳐짐이나 접힘 상태를 가진 버튼으로 읽혀, 누르면 상세가 열린다는 것이 전달됩니다.
+
+:::
 
 ### variant와 size
 
@@ -65,11 +130,23 @@ import { Pill } from 'neba';
 
 <Demo src="pill/variants">
 
+::: fw react
+
 <<< @/.vitepress/demos/pill/variants.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/pill/variants.dart
+
+:::
 
 </Demo>
 
 ### position과 side
+
+::: fw react
 
 [Toolbar](./toolbar)와 같은 어휘를 씁니다. `fixed`는 viewport에 고정하고 가로로 가운데 정렬합니다. auto margin으로 정렬하므로 RTL에서도 가운데에 놓입니다.
 
@@ -82,6 +159,24 @@ import { Pill } from 'neba';
   title="빌드 중 — 7개 중 2개"
 />
 ```
+
+:::
+
+::: fw flutter
+
+[Toolbar](./toolbar)와 같은 어휘를 씁니다. 가장자리에 붙은 pill은 가장자리에서 12픽셀과 safe area만큼 떨어져 매달립니다. `fixed`는 가장 가까운 `Overlay`로 올라가 가로로 가운데에 놓이고 원래 자리는 비워 둡니다. `sticky`는 제자리를 지키며, 가장자리에 붙들어 두는 일은 스크롤 뷰가 맡습니다.
+
+```dart
+const NebaPill(
+  position: NebaPosition.fixed,
+  side: NebaSide.top,
+  startIcon: BuildIcon(),
+  color: NebaColor.info,
+  title: Text('빌드 중 — 7개 중 2개'),
+);
+```
+
+:::
 
 ## 이럴 때는 다른 컴포넌트를
 

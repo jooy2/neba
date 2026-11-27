@@ -165,6 +165,11 @@ import 'package:neba_example/demos/panes/fixed.dart';
 import 'package:neba_example/demos/panes/hero.dart';
 import 'package:neba_example/demos/panes/orientation.dart';
 import 'package:neba_example/demos/panes/sizing.dart';
+import 'package:neba_example/demos/pill/expandable.dart';
+import 'package:neba_example/demos/pill/hero.dart';
+import 'package:neba_example/demos/pill/slots.dart';
+import 'package:neba_example/demos/pill/text.dart';
+import 'package:neba_example/demos/pill/variants.dart';
 import 'package:neba_example/demos/popover/controlled.dart';
 import 'package:neba_example/demos/popover/hero.dart';
 import 'package:neba_example/demos/popover/sides.dart';
@@ -445,6 +450,11 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'panes/hero': PanesHero.new,
   'panes/orientation': PanesOrientation.new,
   'panes/sizing': PanesSizing.new,
+  'pill/expandable': PillExpandable.new,
+  'pill/hero': PillHero.new,
+  'pill/slots': PillSlots.new,
+  'pill/text': PillText.new,
+  'pill/variants': PillVariants.new,
   'popover/controlled': PopoverControlled.new,
   'popover/hero': PopoverHero.new,
   'popover/sides': PopoverSides.new,

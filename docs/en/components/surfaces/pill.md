@@ -1,6 +1,7 @@
 ---
 title: Pill
 order: 6
+flutter: true
 ---
 
 # Pill
@@ -9,19 +10,43 @@ order: 6
 
 <Demo src="pill/hero" />
 
+::: fw react
+
 ```tsx
 import { Pill } from 'neba';
 
 <Pill startIcon={<DotIcon />} color="danger" title="Recording" />;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+const NebaPill(startIcon: DotIcon(), color: NebaColor.danger, title: Text('Recording'));
+```
+
+:::
+
 ## Props
 
 <PropsTable name="Pill" />
 
+::: fw react
+
 Every native `<div>` attribute passes through except `title`, which here is the pill's headline rather than the browser's tooltip.
 
-The row has three parts: `startIcon` on the leading edge, `endIcon` on the trailing one, and the middle (`title`, `description` and anything in `children`) centred between them with generous padding either side.
+:::
+
+::: fw flutter
+
+Every slot is a widget, and `child` goes under the title and the description in the middle column. The title and the description keep to one line each and are cut short with an ellipsis when the pill is given less room than it needs.
+
+:::
+
+The row has three parts: `startIcon` on the leading edge, `endIcon` on the trailing one, and the middle (`title`, `description` and anything in <Fw react="children" flutter="child" code />) centred between them with generous padding either side.
 
 `color` defaults to `secondary` and `elevation` to `2`: it is meant to float, so the shadow is on by default.
 
@@ -33,31 +58,71 @@ The row has three parts: `startIcon` on the leading edge, `endIcon` on the trail
 
 <Demo src="pill/text">
 
+::: fw react
+
 <<< @/.vitepress/demos/pill/text.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/pill/text.dart
+
+:::
 
 </Demo>
 
 ### startIcon and endIcon
 
-The leading slot is a square box clipped to a circle, so an `<img>` fills and crops it the way an avatar should. The trailing slot sits outside the pressable area, so it can hold a readout or a control of its own.
+The leading slot is a square box clipped to a circle, so <Fw react="an `<img>`" flutter="an `Image`" /> fills and crops it the way an avatar should. The trailing slot sits outside the pressable area, so it can hold a readout or a control of its own.
 
 <Demo src="pill/slots">
 
+::: fw react
+
 <<< @/.vitepress/demos/pill/slots.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/pill/slots.dart
+
+:::
 
 </Demo>
 
 ### details and expanded
 
-`details` grows a second area beneath the pill. `expanded` makes that controlled, and `onClick` attaches the toggle. It expands by animating its height, the same way an [Accordion](./accordion) panel does.
+`details` grows a second area beneath the pill. `expanded` makes that controlled, and <Fw react="onClick" flutter="onPressed" code /> attaches the toggle. It expands by animating its height, the same way an [Accordion](./accordion) panel does.
 
 <Demo src="pill/expandable">
 
+::: fw react
+
 <<< @/.vitepress/demos/pill/expandable.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/pill/expandable.dart
+
+:::
 
 </Demo>
 
+::: fw react
+
 The details area is `inert` while closed. Focus can still enter a zero-height element, so `aria-hidden` alone would leave a keyboard user tabbing into something invisible. A pill with both `details` and `onClick` carries `aria-expanded` and `aria-controls` on its button, so pressing it is announced as opening the details.
+
+:::
+
+::: fw flutter
+
+The details area is out of the focus order, the semantics tree and the pointer's reach while closed, though it still counts toward the pill's width, so the pill does not widen as it opens. A pill with both `details` and `onPressed` is heard as a button that is expanded or collapsed, so pressing it is announced as opening the details.
+
+:::
 
 ### variant and size
 
@@ -65,11 +130,23 @@ As far as colour goes a Pill is a control rather than a container: like a [Butto
 
 <Demo src="pill/variants">
 
+::: fw react
+
 <<< @/.vitepress/demos/pill/variants.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/pill/variants.dart
+
+:::
 
 </Demo>
 
 ### position and side
+
+::: fw react
 
 The same vocabulary [Toolbar](./toolbar) uses. `fixed` pins it against the viewport and centres it horizontally with auto margins, so it stays centred under RTL.
 
@@ -82,6 +159,24 @@ The same vocabulary [Toolbar](./toolbar) uses. `fixed` pins it against the viewp
   title="Building — 2 of 7"
 />
 ```
+
+:::
+
+::: fw flutter
+
+The same vocabulary [Toolbar](./toolbar) uses. A pinned pill hangs 12 pixels and the safe area clear of its edge. `fixed` lifts it into the nearest `Overlay`, centred across it, and leaves no room where it was written; `sticky` keeps its place, for a scroll view to hold it at the edge.
+
+```dart
+const NebaPill(
+  position: NebaPosition.fixed,
+  side: NebaSide.top,
+  startIcon: BuildIcon(),
+  color: NebaColor.info,
+  title: Text('Building — 2 of 7'),
+);
+```
+
+:::
 
 ## When to use something else
 
