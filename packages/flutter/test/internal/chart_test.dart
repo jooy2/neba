@@ -542,6 +542,18 @@ void main() {
       expect(ring.contains(centre + const Offset(0, 65)), isTrue);
     });
 
+    test('strokes a gauge along one open arc, a full turn included', () {
+      final Path half = chartRingPath(centre, 50, -90, 90);
+      final Path whole = chartRingPath(centre, 50, 0, 360);
+
+      expect(half.computeMetrics().length, 1);
+      expect(_length(half), closeTo(50 * math.pi, 0.5));
+      // From nine o'clock over the top to three, never below the centre.
+      expect(half.getBounds().bottom, closeTo(100, 0.01));
+      expect(whole.computeMetrics().length, 1);
+      expect(_length(whole), closeTo(100 * math.pi, 1));
+    });
+
     test('writes a label on a slot in its own ink, and on a colour of its own by contrast', () {
       final NebaTokens tokens = NebaTokens.light();
 

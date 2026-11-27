@@ -1,6 +1,7 @@
 ---
 title: GaugeChart
 order: 9
+flutter: true
 ---
 
 # GaugeChart
@@ -9,21 +10,45 @@ order: 9
 
 <Demo src="gauge-chart/hero" />
 
+::: fw react
+
 ```tsx
 import { GaugeChart } from 'neba';
 
 <GaugeChart label="Memory" caption="Memory" value={82} />;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+const NebaGaugeChart(label: 'Memory', caption: Text('Memory'), value: 82);
+```
+
+:::
+
 ## Props
 
 <PropsTable name="GaugeChart" />
 
+::: fw react
+
 Every [Box](../surfaces/box) prop passes through, so the dial can be a card of its own. There is no `legend` and no `tooltip`: one value has nothing to distinguish and nothing to uncover. The number is written in the middle.
+
+:::
+
+::: fw flutter
+
+The dial sits on a [Box](../surfaces/box), and its `variant`, `size`, `color`, `density`, `elevation`, `padded` and `transition` are passed to it, so the dial can be a card of its own. There is no `legend` and no `tooltip`: one value has nothing to distinguish and nothing to uncover. The number is written in the middle. `center` and `caption` take a `Widget`, and `ticks` is an `int?` whose `null` draws no marks, where React takes `false`.
+
+:::
 
 It is a [Meter](../feedback/meter) bent into an arc, and deliberately the same component in two shapes: `value`, `min`, `max` and `thresholds` mean what they mean there, so a reading can move from a bar to a dial without changing what it says.
 
-It is not a [PieChart](./pie-chart) with `shape="semi"`. A pie is parts of a whole and every slice is a category; this is one value against a scale, and the unfilled part of the arc is not a second category: it is the rest of the dial.
+It is not a [PieChart](./pie-chart) with <Fw react='`shape="semi"`' flutter="`NebaPieShape.semi`" />. A pie is parts of a whole and every slice is a category; this is one value against a scale, and the unfilled part of the arc is not a second category: it is the rest of the dial.
 
 ## Examples
 
@@ -37,7 +62,11 @@ Where the arc changes colour. The last entry the value has reached wins; below a
 
 <Demo src="gauge-chart/thresholds">
 
+::: fw react
+
 <<< @/.vitepress/demos/gauge-chart/thresholds.tsx
+
+:::
 
 </Demo>
 
@@ -47,7 +76,17 @@ How far round the dial goes, opened symmetrically about twelve o'clock. `180` is
 
 <Demo src="gauge-chart/sweep">
 
+::: fw react
+
 <<< @/.vitepress/demos/gauge-chart/sweep.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/gauge_chart/sweep.dart
+
+:::
 
 </Demo>
 
@@ -57,7 +96,17 @@ How far round the dial goes, opened symmetrically about twelve o'clock. `180` is
 
 <Demo src="gauge-chart/ticks">
 
+::: fw react
+
 <<< @/.vitepress/demos/gauge-chart/ticks.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/gauge_chart/ticks.dart
+
+:::
 
 </Demo>
 
@@ -67,5 +116,16 @@ The value in the middle is real text: selectable, findable, and in the accessibi
 
 ## Accessibility
 
+::: fw react
+
 - Given a `label`, the dial is a `role="meter"` named by it, with `aria-valuenow`, `aria-valuemin` and `aria-valuemax` from `value`, `min` and `max`. Its `aria-valuetext` is the reading followed by `caption` when the caption is text, so pass the unit there. With `value={null}` it is a `role="img"` named by the label. Without a `label` it is a plain box, and the number in the middle is read as the text it already is.
+
+:::
+
+::: fw flutter
+
+- Given a `label`, the dial is one node named by it whose value is the reading followed by `caption` when the caption is a `Text`, so pass the unit there. Flutter has no meter role and no minimum or maximum to state, so a screen reader hears the reading as the value, as on a [Meter](../feedback/meter). With `value: null` it is an image named by the label. Without a `label` it is a plain box, and the number in the middle is read as the text it already is.
+
+:::
+
 - Colour is never the only carrier: a reading that has crossed a threshold has also filled more of the arc, and the number is written out.

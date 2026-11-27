@@ -1059,6 +1059,25 @@ Path chartArcPath(Offset centre, double outer, double inner, double from, double
     ..close();
 }
 
+/// The open arc of [radius] about [centre] from [from] to [to] degrees
+/// clockwise from twelve o'clock: the line through the middle of a band that a
+/// gauge strokes, so its reading travels along the arc by how much of the
+/// stroke is drawn rather than by a shape drawn again. A full turn is one
+/// contour of two half turns, so how much of it is drawn still runs from
+/// [from].
+Path chartRingPath(Offset centre, double radius, double from, double to) {
+  final Rect circle = Rect.fromCircle(center: centre, radius: radius);
+  final double start = _radians(from);
+
+  if ((to - from).abs() >= 360) {
+    return Path()
+      ..arcTo(circle, start, math.pi, true)
+      ..arcTo(circle, start + math.pi, math.pi, false);
+  }
+
+  return Path()..arcTo(circle, start, (to - from) * math.pi / 180, true);
+}
+
 /// The ink a label wears inside a mark filled with the colour of slot
 /// [index], or with [explicit], a mark's own colour.
 ///

@@ -259,7 +259,7 @@ Demos that wait on a component not ported yet, to be added with it: `carousel/ph
 - [x] `NebaAreaChart`
 - [x] `NebaBarChart`
 - [x] `NebaPieChart`
-- [ ] `NebaGaugeChart`
+- [x] `NebaGaugeChart`
 - [ ] `NebaScatterChart`
 - [ ] `NebaHeatmapChart`
 - [ ] `NebaTimelineChart`
