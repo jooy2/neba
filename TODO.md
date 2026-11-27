@@ -77,7 +77,7 @@ Port in this order, because each group is built out of the ones before it: `Neba
 
 Some components have no single Flutter equivalent of what they are on the web, and their form is decided when they are reached, then written on their page: `NebaPortal` (an `Overlay` entry), `NebaVisuallyHidden` (a `Semantics` node), `NebaTextLink` (a callback rather than an `href`, since the package opens nothing itself), `NebaImage` and `NebaGallery` (an `ImageProvider` rather than a URL), `NebaCodeBlock` (no highlight.js; a tokenizer of its own or a caller-supplied one), and the page shell (`NebaPageLayout`, `NebaHeader`, `NebaFooter`, `NebaSidebar`) against a phone's safe areas.
 
-Demos that wait on a component not ported yet, to be added with it: `flex/direction` (`NebaTextField`), `stack/direction`, `stack/depth` and `stack/dealt` (`NebaCard`), `show/pair` (`NebaButtonGroup`), `aspect-ratio/reserving` (`NebaCard`, `NebaSkeleton`), and `avatar/hero` and `avatar/status` (`NebaBadge`). `chip/links` has no Flutter twin: the package opens nothing itself, so a chip has no `href`. The React demos of per-breakpoint maps (`container/responsive`, `grid/responsive`) have no Flutter twin, because the Flutter widgets take no such map. A widget that draws a shape reads the ring of a pile it is in through `NebaRing`, as `NebaBox` does, so that `ring` follows it. `button/render` has no Flutter twin: a Flutter button has no element to swap.
+Demos that wait on a component not ported yet, to be added with it: `flex/direction` and `card/form` (`NebaTextField`), `show/pair` (`NebaButtonGroup`), `aspect-ratio/reserving` (`NebaSkeleton`), and `avatar/hero` and `avatar/status` (`NebaBadge`). `chip/links` has no Flutter twin: the package opens nothing itself, so a chip has no `href`. The React demos of per-breakpoint maps (`container/responsive`, `grid/responsive`) have no Flutter twin, because the Flutter widgets take no such map. A widget that draws a shape reads the ring of a pile it is in through `NebaRing`, as `NebaBox` does, so that `ring` follows it. `button/render` has no Flutter twin: a Flutter button has no element to swap.
 
 ### Layout (15)
 
@@ -182,7 +182,7 @@ Demos that wait on a component not ported yet, to be added with it: `flex/direct
 ### Surfaces (16)
 
 - [x] `NebaBox`
-- [ ] `NebaCard`
+- [x] `NebaCard`
 - [ ] `NebaAccordion`
 - [ ] `NebaCollapsible`
 - [ ] `NebaTabs`

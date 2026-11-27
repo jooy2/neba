@@ -11,7 +11,7 @@ The package is a port of the React package in `../react`, not a second design. W
 | `lib/neba.dart` | The barrel. **Generated** by `tool/generate.dart`; never edit it by hand. |
 | `lib/src/types.dart` | The shared prop vocabulary: `NebaSize`, `NebaColor`, `NebaDensity` and the rest, the React package's `src/types.ts` value for value. |
 | `lib/src/theme/tokens.dart` | `NebaTokens`, `NebaColorFamily`, `NebaColorRoles`: the React stylesheet's tokens, computed rather than copied. |
-| `lib/src/theme/scale.dart` | `NebaScale`: control heights, type sizes, icon sizes, padding, gaps and motion, from the React package's `src/internal/styles.ts`. |
+| `lib/src/theme/scale.dart` | `NebaScale`: control heights, type sizes, icon sizes, padding, gaps, the sheet type ladder a card, an alert and a dialog share, and motion, from the React package's `src/internal/styles.ts`. |
 | `lib/src/theme/theme.dart` | `NebaTheme` and `NebaDefaults`: how a widget finds its tokens and its defaults. |
 | `lib/src/components/{name}/neba_{name}.dart` | One folder per component, named like the React folder with underscores (`text_field` for `text-field`). A sibling widget may share the folder. |
 | `lib/src/internal/` | The library talking to itself. Never exported, and every module exists because two widgets would otherwise answer the same question twice. |

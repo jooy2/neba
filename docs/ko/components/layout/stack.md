@@ -85,6 +85,12 @@ const NebaStack(
 
 :::
 
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/stack/direction.dart
+
+:::
+
 </Demo>
 
 ### overlap과 drop
@@ -100,6 +106,12 @@ const NebaStack(
 ::: fw react
 
 <<< @/.vitepress/demos/stack/depth.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/stack/depth.dart
 
 :::
 
@@ -149,6 +161,12 @@ NebaStack(
 ::: fw react
 
 <<< @/.vitepress/demos/stack/dealt.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/stack/dealt.dart
 
 :::
 

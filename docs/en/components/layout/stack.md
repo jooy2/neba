@@ -85,6 +85,12 @@ See [prop conventions](../../design/prop-conventions) for the shared axes.
 
 :::
 
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/stack/direction.dart
+
+:::
+
 </Demo>
 
 ### overlap and drop
@@ -100,6 +106,12 @@ See [prop conventions](../../design/prop-conventions) for the shared axes.
 ::: fw react
 
 <<< @/.vitepress/demos/stack/depth.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/stack/depth.dart
 
 :::
 
@@ -149,6 +161,12 @@ NebaStack(
 ::: fw react
 
 <<< @/.vitepress/demos/stack/dealt.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/stack/dealt.dart
 
 :::
 

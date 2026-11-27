@@ -29,6 +29,10 @@ import 'package:neba_example/demos/button/icons.dart';
 import 'package:neba_example/demos/button/sizes.dart';
 import 'package:neba_example/demos/button/states.dart';
 import 'package:neba_example/demos/button/variants.dart';
+import 'package:neba_example/demos/card/dividers.dart';
+import 'package:neba_example/demos/card/hero.dart';
+import 'package:neba_example/demos/card/sections.dart';
+import 'package:neba_example/demos/card/sizes.dart';
 import 'package:neba_example/demos/chip/content.dart';
 import 'package:neba_example/demos/chip/hero.dart';
 import 'package:neba_example/demos/chip/interactive.dart';
@@ -56,6 +60,9 @@ import 'package:neba_example/demos/scroll_area/sizes.dart';
 import 'package:neba_example/demos/show/hero.dart';
 import 'package:neba_example/demos/show/range.dart';
 import 'package:neba_example/demos/show/transparent.dart';
+import 'package:neba_example/demos/stack/dealt.dart';
+import 'package:neba_example/demos/stack/depth.dart';
+import 'package:neba_example/demos/stack/direction.dart';
 import 'package:neba_example/demos/stack/hero.dart';
 import 'package:neba_example/demos/tokens/palette.dart';
 import 'package:neba_example/demos/typography/clamp.dart';
@@ -88,6 +95,10 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'button/sizes': ButtonSizes.new,
   'button/states': ButtonStates.new,
   'button/variants': ButtonVariants.new,
+  'card/dividers': CardDividers.new,
+  'card/hero': CardHero.new,
+  'card/sections': CardSections.new,
+  'card/sizes': CardSizes.new,
   'chip/content': ChipContent.new,
   'chip/hero': ChipHero.new,
   'chip/interactive': ChipInteractive.new,
@@ -115,6 +126,9 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'show/hero': ShowHero.new,
   'show/range': ShowRange.new,
   'show/transparent': ShowTransparent.new,
+  'stack/dealt': StackDealt.new,
+  'stack/depth': StackDepth.new,
+  'stack/direction': StackDirection.new,
   'stack/hero': StackHero.new,
   'tokens/palette': TokensPalette.new,
   'typography/clamp': TypographyClamp.new,

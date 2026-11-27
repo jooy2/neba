@@ -100,6 +100,63 @@ abstract final class NebaScale {
     NebaSize.xl: 16,
   };
 
+  /// A sheet's heading: a card's, an alert's, a dialog's. One step above the
+  /// body, so a title lines up with the buttons that end up inside the sheet.
+  static const Map<NebaSize, double> sheetTitleText = <NebaSize, double>{
+    NebaSize.xs: 12,
+    NebaSize.sm: 13,
+    NebaSize.md: 15,
+    NebaSize.lg: 17,
+    NebaSize.xl: 20,
+  };
+
+  /// The line height of [sheetTitleText].
+  static const Map<NebaSize, double> sheetTitleLeading = <NebaSize, double>{
+    NebaSize.xs: 16,
+    NebaSize.sm: 18,
+    NebaSize.md: 20,
+    NebaSize.lg: 24,
+    NebaSize.xl: 28,
+  };
+
+  /// A sheet's body copy: the control type scale with the leading opened up,
+  /// because a label is one line and a body is a paragraph.
+  static const Map<NebaSize, double> sheetBodyText = <NebaSize, double>{
+    NebaSize.xs: 11,
+    NebaSize.sm: 12,
+    NebaSize.md: 13,
+    NebaSize.lg: 15,
+    NebaSize.xl: 17,
+  };
+
+  /// The line height of [sheetBodyText].
+  static const Map<NebaSize, double> sheetBodyLeading = <NebaSize, double>{
+    NebaSize.xs: 16,
+    NebaSize.sm: 18,
+    NebaSize.md: 22,
+    NebaSize.lg: 24,
+    NebaSize.xl: 28,
+  };
+
+  /// From a sheet's title to its subtitle: tight, because they are one block
+  /// of text rather than two sections.
+  static const Map<NebaSize, double> sheetHeaderGap = <NebaSize, double>{
+    NebaSize.xs: 2,
+    NebaSize.sm: 2,
+    NebaSize.md: 4,
+    NebaSize.lg: 4,
+    NebaSize.xl: 6,
+  };
+
+  /// Between a sheet's sections, when there are no dividers to separate them.
+  static const Map<NebaSize, double> sheetSectionGap = <NebaSize, double>{
+    NebaSize.xs: 6,
+    NebaSize.sm: 8,
+    NebaSize.md: 12,
+    NebaSize.lg: 14,
+    NebaSize.xl: 16,
+  };
+
   /// One step of the spacing scale a `spacing` prop counts in, as Tailwind's
   /// does: `spacing: 4` is 16 logical pixels.
   static const double spacingUnit = 4;
