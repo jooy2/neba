@@ -208,6 +208,21 @@ abstract final class NebaGlyphs {
     ),
   ];
 
+  /// A page of a calendar: what a date picker's trigger wears.
+  static final List<NebaGlyphPart> calendar = <NebaGlyphPart>[
+    const NebaGlyphPart.stroke(
+      'M4 3.25h8a2 2 0 0 1 2 2v6.75a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5.25a2 2 0 0 1 2-2Z',
+    ),
+    const NebaGlyphPart.stroke('M2 6.75h12'),
+    const NebaGlyphPart.stroke('M5.25 1.75v2.5M10.75 1.75v2.5', cap: StrokeCap.round),
+  ];
+
+  /// A clock face: what a time picker's trigger wears.
+  static final List<NebaGlyphPart> clock = <NebaGlyphPart>[
+    NebaGlyphPart.stroke(_circle(8, 8, 6.25)),
+    const NebaGlyphPart.stroke('M8 4.5V8l2.4 1.6', cap: StrokeCap.round, join: StrokeJoin.round),
+  ];
+
   /// Two chevrons pointing to the end: the last page.
   static final List<NebaGlyphPart> doubleChevron = <NebaGlyphPart>[
     const NebaGlyphPart.stroke(
@@ -232,12 +247,6 @@ abstract final class NebaGlyphs {
     const NebaGlyphPart.fill(
       'M5.5 3.6a1 1 0 0 1 1.53-.85l6.1 3.9a1.2 1.2 0 0 1 0 2.02l-6.1 3.9a1 1 0 0 1-1.53-.85V3.6Z',
     ),
-  ];
-
-  /// A clock face: something still on its way.
-  static final List<NebaGlyphPart> clock = <NebaGlyphPart>[
-    NebaGlyphPart.stroke(_circle(8, 8, 6.25)),
-    const NebaGlyphPart.stroke('M8 4.5V8l2.4 1.6', cap: StrokeCap.round, join: StrokeJoin.round),
   ];
 
   /// Two ticks, the second overlapping the first: delivered.

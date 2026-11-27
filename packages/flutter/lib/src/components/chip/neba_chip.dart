@@ -7,11 +7,10 @@ import 'package:flutter/widgets.dart';
 
 import 'package:neba/src/internal/animate.dart';
 import 'package:neba/src/internal/focus_ring.dart';
-import 'package:neba/src/internal/glyphs.dart';
 import 'package:neba/src/internal/ink.dart';
 import 'package:neba/src/internal/interaction.dart';
 import 'package:neba/src/internal/messages.dart';
-import 'package:neba/src/internal/motion.dart';
+import 'package:neba/src/internal/remove.dart';
 import 'package:neba/src/internal/ring.dart';
 import 'package:neba/src/internal/surface.dart';
 import 'package:neba/src/theme/scale.dart';
@@ -272,12 +271,14 @@ class _NebaChipState extends State<NebaChip> {
             children: <Widget>[
               Flexible(child: body),
               if (deletable)
-                _DeleteButton(
+                NebaRemoveButton(
                   onPressed: disabled ? null : widget.onDelete,
                   label: _deleteLabel(context),
                   ring: roles.ring,
                   extent: text * 1.15,
                   glyph: text * 1.2,
+                  // The chip's own end padding is the far side of this target.
+                  padding: const EdgeInsetsDirectional.only(start: 2, end: 4),
                 ),
             ],
           ),
@@ -416,68 +417,6 @@ class _CountPlate extends StatelessWidget {
           ),
           child: child,
         ),
-      ),
-    );
-  }
-}
-
-/// The × after the label: drawn at the size of the words beside it, and
-/// pressed over the chip's whole height and the room on either side of it.
-class _DeleteButton extends StatelessWidget {
-  const _DeleteButton({
-    required this.onPressed,
-    required this.label,
-    required this.ring,
-    required this.extent,
-    required this.glyph,
-  });
-
-  final VoidCallback? onPressed;
-  final String label;
-  final Color ring;
-  final double extent;
-  final double glyph;
-
-  @override
-  Widget build(BuildContext context) {
-    final bool enabled = onPressed != null;
-
-    return Semantics(
-      container: true,
-      button: true,
-      enabled: enabled,
-      label: label,
-      child: NebaInteractive(
-        onTap: onPressed,
-        enabled: enabled,
-        cursor: enabled ? SystemMouseCursors.click : SystemMouseCursors.forbidden,
-        builder: (BuildContext context, NebaInteraction interaction, ValueListenable<Offset?> _) {
-          return Padding(
-            // The chip's own end padding is the far side of this target.
-            padding: const EdgeInsetsDirectional.only(start: 2, end: 4),
-            child: Center(
-              child: NebaFocusRing(
-                visible: interaction.focusVisible,
-                color: ring,
-                borderRadius: BorderRadius.circular(extent),
-                offset: 1,
-                child: AnimatedOpacity(
-                  opacity: interaction.hovered || interaction.focusVisible ? 1 : 0.7,
-                  duration: nebaDuration(context, NebaScale.duration),
-                  curve: NebaScale.ease,
-                  child: SizedBox.square(
-                    dimension: extent,
-                    child: OverflowBox(
-                      maxWidth: glyph,
-                      maxHeight: glyph,
-                      child: NebaGlyph(NebaGlyphs.close, size: glyph),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          );
-        },
       ),
     );
   }

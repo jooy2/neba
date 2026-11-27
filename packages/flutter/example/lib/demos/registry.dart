@@ -155,6 +155,13 @@ import 'package:neba_example/demos/data_list/dividers.dart';
 import 'package:neba_example/demos/data_list/hero.dart';
 import 'package:neba_example/demos/data_list/label_width.dart';
 import 'package:neba_example/demos/data_list/orientation.dart';
+import 'package:neba_example/demos/date_picker/bounds.dart';
+import 'package:neba_example/demos/date_picker/granularity.dart';
+import 'package:neba_example/demos/date_picker/hero.dart';
+import 'package:neba_example/demos/date_picker/label_placement.dart';
+import 'package:neba_example/demos/date_picker/sizes.dart';
+import 'package:neba_example/demos/date_picker/states.dart';
+import 'package:neba_example/demos/date_picker/variants.dart';
 import 'package:neba_example/demos/dialog/controlled.dart';
 import 'package:neba_example/demos/dialog/hero.dart';
 import 'package:neba_example/demos/dialog/scrolling.dart';
@@ -583,6 +590,13 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'data-list/hero': DataListHero.new,
   'data-list/label-width': DataListLabelWidth.new,
   'data-list/orientation': DataListOrientation.new,
+  'date-picker/bounds': DatePickerBounds.new,
+  'date-picker/granularity': DatePickerGranularity.new,
+  'date-picker/hero': DatePickerHero.new,
+  'date-picker/label-placement': DatePickerLabelPlacement.new,
+  'date-picker/sizes': DatePickerSizes.new,
+  'date-picker/states': DatePickerStates.new,
+  'date-picker/variants': DatePickerVariants.new,
   'dialog/controlled': DialogControlled.new,
   'dialog/hero': DialogHero.new,
   'dialog/scrolling': DialogScrolling.new,
