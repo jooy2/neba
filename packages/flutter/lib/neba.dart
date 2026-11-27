@@ -68,6 +68,7 @@ export 'src/components/flex/neba_flex.dart';
 export 'src/components/floating_action_button/neba_floating_action_button.dart';
 export 'src/components/floating_bottom_navigation/neba_floating_bottom_navigation.dart';
 export 'src/components/footer/neba_footer.dart';
+export 'src/components/gallery/neba_gallery.dart';
 export 'src/components/gauge_chart/neba_gauge_chart.dart';
 export 'src/components/grid/neba_grid.dart';
 export 'src/components/grid_container/neba_grid_container.dart';

@@ -205,6 +205,13 @@ import 'package:neba_example/demos/floating_bottom_navigation/pinned.dart';
 import 'package:neba_example/demos/footer/hero.dart';
 import 'package:neba_example/demos/footer/measure.dart';
 import 'package:neba_example/demos/footer/variant.dart';
+import 'package:neba_example/demos/gallery/captions.dart';
+import 'package:neba_example/demos/gallery/columns.dart';
+import 'package:neba_example/demos/gallery/fit.dart';
+import 'package:neba_example/demos/gallery/hero.dart';
+import 'package:neba_example/demos/gallery/hover.dart';
+import 'package:neba_example/demos/gallery/layouts.dart';
+import 'package:neba_example/demos/gallery/preview.dart';
 import 'package:neba_example/demos/gauge_chart/hero.dart';
 import 'package:neba_example/demos/gauge_chart/sweep.dart';
 import 'package:neba_example/demos/gauge_chart/thresholds.dart';
@@ -663,6 +670,13 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'footer/hero': FooterHero.new,
   'footer/measure': FooterMeasure.new,
   'footer/variant': FooterVariant.new,
+  'gallery/captions': GalleryCaptions.new,
+  'gallery/columns': GalleryColumns.new,
+  'gallery/fit': GalleryFit.new,
+  'gallery/hero': GalleryHero.new,
+  'gallery/hover': GalleryHover.new,
+  'gallery/layouts': GalleryLayouts.new,
+  'gallery/preview': GalleryPreview.new,
   'gauge-chart/hero': GaugeChartHero.new,
   'gauge-chart/sweep': GaugeChartSweep.new,
   'gauge-chart/thresholds': GaugeChartThresholds.new,
