@@ -8,7 +8,7 @@ flutter: true
 
 <p class="neba-lede">창의 한쪽 변에 붙는 패널입니다. 페이지 위에 떠서 열고 닫힐 수도 있고, 레이아웃의 일부로 고정된 사이드바가 될 수도 있습니다. 어느 쪽이든 같은 패널입니다.</p>
 
-<Demo src="drawer/hero" align="center" />
+<Demo src="drawer/hero" align="center" frameMinHeight="440" />
 
 ::: fw react
 
@@ -94,7 +94,17 @@ overlay drawer는 앱의 root `Overlay`에 열립니다. navigator가 있는 `Wi
 
 <Demo src="drawer/inline">
 
+::: fw react
+
 <<< @/.vitepress/demos/drawer/inline.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/drawer/inline.dart
+
+:::
 
 </Demo>
 
@@ -122,9 +132,19 @@ overlay drawer는 앱의 root `Overlay`에 열립니다. navigator가 있는 `Wi
 
 스크롤되는 것은 본문뿐이므로 `title`, `description`, `actions`는 제자리에 있습니다. `dividers`는 구역 사이의 여백을 하이라인으로 바꾸는데, 헤더가 움직이지 않았다고 말해 주는 것이 바로 그 선입니다.
 
-<Demo src="drawer/scrolling">
+<Demo src="drawer/scrolling" frameMinHeight="420">
+
+::: fw react
 
 <<< @/.vitepress/demos/drawer/scrolling.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/drawer/scrolling.dart
+
+:::
 
 </Demo>
 

@@ -8,7 +8,7 @@ flutter: true
 
 <p class="neba-lede">A panel attached to one edge of the window. It either floats over the page and is dismissed, or sits in the layout as a fixed sidebar: the same panel either way.</p>
 
-<Demo src="drawer/hero" align="center" />
+<Demo src="drawer/hero" align="center" frameMinHeight="440" />
 
 ::: fw react
 
@@ -94,7 +94,17 @@ Because it is one component, a sidebar that becomes a hamburger at a breakpoint 
 
 <Demo src="drawer/inline">
 
+::: fw react
+
 <<< @/.vitepress/demos/drawer/inline.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/drawer/inline.dart
+
+:::
 
 </Demo>
 
@@ -122,9 +132,19 @@ Because it is one component, a sidebar that becomes a hamburger at a breakpoint 
 
 The body is the only part that scrolls, so `title`, `description` and `actions` stay put. `dividers` replaces the space between the sections with hairlines, which is what says the header did not move.
 
-<Demo src="drawer/scrolling">
+<Demo src="drawer/scrolling" frameMinHeight="420">
+
+::: fw react
 
 <<< @/.vitepress/demos/drawer/scrolling.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/drawer/scrolling.dart
+
+:::
 
 </Demo>
 
