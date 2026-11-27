@@ -694,6 +694,7 @@ class NebaAnimateRun extends StatefulWidget {
     this.restsUntilPlayed = false,
     this.endless,
     this.restart,
+    this.keepsPlace = false,
     this.builder,
     this.layoutBuilder,
     this.children,
@@ -763,6 +764,12 @@ class NebaAnimateRun extends StatefulWidget {
   /// counting as another run: for content that changed under a run already
   /// going, as a typewriter handed a new line types it from the start.
   final Object? restart;
+
+  /// Whether a new duration keeps the run where it was: the clock past the
+  /// delay is scaled by the same ratio, so a strip timed by its own length
+  /// keeps its place when it is measured again, rather than jumping to where
+  /// the old clock falls on the new duration.
+  final bool keepsPlace;
 
   /// Draws every frame, in place of [effect] on [child] or [children].
   final NebaRunBuilder? builder;
@@ -930,6 +937,10 @@ class _NebaAnimateRunState extends State<NebaAnimateRun> with SingleTickerProvid
     if (oldWidget.effect.keyframe != widget.effect.keyframe ||
         oldWidget.restart != widget.restart) {
       _rewind();
+    } else if (widget.keepsPlace &&
+        oldWidget.timing.duration > 0 &&
+        oldWidget.timing.duration != widget.timing.duration) {
+      _rescale(oldWidget.timing.duration, widget.timing.duration);
     }
 
     if (widget.trigger == NebaAnimateTrigger.manual &&
@@ -985,6 +996,23 @@ class _NebaAnimateRunState extends State<NebaAnimateRun> with SingleTickerProvid
 
     _finished = false;
     _clock.value = 0;
+  }
+
+  /// The clock past the delay scaled from [from] milliseconds a pass to
+  /// [to], picked up again by the ticker from where it now stands.
+  void _rescale(double from, double to) {
+    final double delay = widget.timing.delay;
+    final double now = _clock.value;
+
+    if (now <= delay || _finished) {
+      return;
+    }
+
+    if (_ticker.isActive) {
+      _ticker.stop();
+    }
+
+    _clock.value = delay + (now - delay) * to / from;
   }
 
   /// Lets it go, from the beginning if it has run before.

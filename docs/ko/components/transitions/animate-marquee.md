@@ -1,6 +1,7 @@
 ---
 title: AnimateMarquee
 order: 9
+flutter: true
 ---
 
 # AnimateMarquee
@@ -8,6 +9,8 @@ order: 9
 <p class="neba-lede">내용이 끝없이 한쪽으로 흘러가는 효과입니다. 내용을 두 벌 깔고 각 벌이 정확히 자기 길이만큼 이동하므로, 이음매도 없고 띠가 비는 프레임도 없습니다.</p>
 
 <Demo src="animate-marquee/hero" />
+
+::: fw react
 
 ```tsx
 import { AnimateMarquee } from 'neba';
@@ -19,11 +22,39 @@ import { AnimateMarquee } from 'neba';
 </AnimateMarquee>;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+NebaAnimateMarquee(
+  speed: 45,
+  gap: 24,
+  children: <Widget>[for (final String name in customers) NebaChip(child: Text(name))],
+);
+```
+
+:::
+
 ## Props
 
 <PropsTable name="AnimateMarquee" />
 
+::: fw react
+
 나머지 `<span>` 속성은 모두 루트로 전달됩니다. 모든 `Animate*`가 공유하는 설정은 [Prop 규약](../../design/prop-conventions)에 있습니다.
+
+:::
+
+::: fw flutter
+
+주어진 너비를 차지하고, 너비에 제한이 없으면 내용의 길이만큼 차지하며, 높이는 내용만큼입니다. 세로 띠는 주어진 높이를 차지합니다. `gap`의 단위는 논리 픽셀입니다. 모든 `Animate*`가 공유하는 설정은 [Prop 규약](../../design/prop-conventions)에 있습니다.
+
+벌마다 `children`을 새로 빌드하므로, 그 안에 `GlobalKey`나 직접 만든 `FocusNode`를 두면 안 됩니다. 두 위젯에 넘긴 노드는 나중에 빌드된 쪽, 곧 focus를 받을 수 없는 사본의 것이 됩니다.
+
+:::
 
 ## 예시
 
@@ -33,27 +64,57 @@ import { AnimateMarquee } from 'neba';
 
 <Demo src="animate-marquee/speed">
 
+::: fw react
+
 <<< @/.vitepress/demos/animate-marquee/speed.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/animate_marquee/speed.dart
+
+:::
 
 </Demo>
 
 ### orientation
 
-`vertical`은 띠를 가로가 아니라 세로로 흘립니다. 로그나 활동 피드에 씁니다. 흐를 자리가 있으려면 상자에 높이가 있어야 합니다.
+<Fw react="`vertical`은" flutter="`NebaOrientation.vertical`은" /> 띠를 가로가 아니라 세로로 흘립니다. 로그나 활동 피드에 씁니다. 흐를 자리가 있으려면 상자에 높이가 있어야 합니다.
 
 <Demo src="animate-marquee/vertical">
 
+::: fw react
+
 <<< @/.vitepress/demos/animate-marquee/vertical.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/animate_marquee/vertical.dart
+
+:::
 
 </Demo>
 
 ### pauseOnHover
 
-기본으로 켜져 있고, 장식이 아닙니다. 포인터 앞을 지나가는 내용은 안정적으로 클릭할 수 없고, 멈추지 않는 띠 안의 링크는 아무도 따라갈 수 없는 링크입니다. 포인터뿐 아니라 focus에도 반응하므로, 탭으로 도달한 링크 역시 흐르지 않습니다. `trigger="hover"`에서는 포인터와 focus가 띠를 움직이게 하므로 적용되지 않습니다.
+기본으로 켜져 있고, 장식이 아닙니다. 포인터 앞을 지나가는 내용은 안정적으로 클릭할 수 없고, 멈추지 않는 띠 안의 링크는 아무도 따라갈 수 없는 링크입니다. 포인터뿐 아니라 focus에도 반응하므로, 탭으로 도달한 링크 역시 흐르지 않습니다. <Fw react='`trigger="hover"`에서는' flutter="`NebaAnimateTrigger.hover`에서는" /> 포인터와 focus가 띠를 움직이게 하므로 적용되지 않습니다.
 
 <Demo src="animate-marquee/pause">
 
+::: fw react
+
 <<< @/.vitepress/demos/animate-marquee/pause.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/animate_marquee/pause.dart
+
+:::
 
 </Demo>
 
@@ -61,15 +122,31 @@ import { AnimateMarquee } from 'neba';
 
 `gap`은 항목 사이의 간격이자, 한 바퀴의 마지막 항목과 다음 바퀴의 첫 항목 사이의 간격입니다. `copies`는 내용을 몇 번 이어 붙이는지입니다. 컨테이너만큼 넓은 내용이라면 둘이면 충분하고, 내용이 짧아 뒤에 빈 구간이 생길 때 올리면 됩니다.
 
+::: fw react
+
 ```tsx
 <AnimateMarquee copies={4} gap="3rem">
   <Chip>짧은 항목 하나</Chip>
 </AnimateMarquee>
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+const NebaAnimateMarquee(
+  copies: 4,
+  gap: 48,
+  children: <Widget>[NebaChip(child: Text('짧은 항목 하나'))],
+);
+```
+
+:::
+
 ## 접근성
 
-- 첫 번째 벌만 읽히고 닿을 수 있습니다. 나머지는 `aria-hidden`이고 `inert`입니다. 그렇지 않으면 스크린 리더가 띠 전체를 깔린 횟수만큼 읽고, 키보드도 링크마다 그만큼 멈추게 됩니다.
+- 첫 번째 벌만 읽히고 닿을 수 있습니다. 나머지는 <Fw react="`aria-hidden`이고 `inert`입니다." flutter="semantics 트리와 focus 순서, 포인터에서 모두 빠집니다." /> 그렇지 않으면 스크린 리더가 띠 전체를 깔린 횟수만큼 읽고, 키보드도 링크마다 그만큼 멈추게 됩니다.
 - 축소된 모션 설정에서는 띠가 멈추고, 내용을 `copies`만큼 반복하지 않고 한 번만 그리며, 가장자리에서 자르는 대신 여러 줄로 감쌉니다.
 - `pauseOnHover`가 그 안의 상호작용 요소를 쓸 수 있게 만드는 것이고, 포인터가 띠 위에 있을 때와 focus가 안쪽에 들어왔을 때를 모두 덮습니다. 링크나 버튼이 든 띠에서는 끄지 마세요.
 - 터치 화면에서는 포인터를 띠 위에 올려 둘 수 없고, 띠는 5초 넘게 계속 움직입니다. 옆에 일시정지 버튼을 두고 그 상태를 `paused`에 연결하세요.

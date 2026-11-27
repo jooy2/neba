@@ -45,6 +45,10 @@ import 'package:neba_example/demos/animate_lighting/colors.dart';
 import 'package:neba_example/demos/animate_lighting/hero.dart';
 import 'package:neba_example/demos/animate_lighting/hover.dart';
 import 'package:neba_example/demos/animate_lighting/shape.dart';
+import 'package:neba_example/demos/animate_marquee/hero.dart';
+import 'package:neba_example/demos/animate_marquee/pause.dart';
+import 'package:neba_example/demos/animate_marquee/speed.dart';
+import 'package:neba_example/demos/animate_marquee/vertical.dart';
 import 'package:neba_example/demos/animate_reveal/hero.dart';
 import 'package:neba_example/demos/animate_reveal/sides.dart';
 import 'package:neba_example/demos/animate_rotate/hero.dart';
@@ -665,6 +669,10 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'animate-lighting/hero': AnimateLightingHero.new,
   'animate-lighting/hover': AnimateLightingHover.new,
   'animate-lighting/shape': AnimateLightingShape.new,
+  'animate-marquee/hero': AnimateMarqueeHero.new,
+  'animate-marquee/pause': AnimateMarqueePause.new,
+  'animate-marquee/speed': AnimateMarqueeSpeed.new,
+  'animate-marquee/vertical': AnimateMarqueeVertical.new,
   'animate-reveal/hero': AnimateRevealHero.new,
   'animate-reveal/sides': AnimateRevealSides.new,
   'animate-rotate/hero': AnimateRotateHero.new,
