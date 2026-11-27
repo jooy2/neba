@@ -105,6 +105,8 @@ import 'package:neba_example/demos/typography/clamp.dart';
 import 'package:neba_example/demos/typography/colors.dart';
 import 'package:neba_example/demos/typography/hero.dart';
 import 'package:neba_example/demos/typography/scale.dart';
+import 'package:neba_example/demos/visually_hidden/hero.dart';
+import 'package:neba_example/demos/visually_hidden/skip_link.dart';
 
 /// The demos, by key.
 const Map<String, Widget Function()> demos = <String, Widget Function()>{
@@ -207,4 +209,6 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'typography/colors': TypographyColors.new,
   'typography/hero': TypographyHero.new,
   'typography/scale': TypographyScale.new,
+  'visually-hidden/hero': VisuallyHiddenHero.new,
+  'visually-hidden/skip-link': VisuallyHiddenSkipLink.new,
 };

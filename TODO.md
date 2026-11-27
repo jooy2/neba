@@ -74,7 +74,7 @@ What is left, in order:
 
 Port in this order, because each group is built out of the ones before it: `NebaBox` first, since nearly every demo puts its content on one, then the layout primitives the demos stand on, then `NebaButton` and the rest of the inputs, the display group, feedback, surfaces, charts, the agent group, and the transitions last. Within a group, take the components another component reuses first: `NebaButton` before `NebaIconButton` and `NebaButtonGroup`, `NebaPopover` before `NebaSelect`. `NebaTypography` went ahead of the rest of the layout group, because the demos of the layout widgets are written in it; `NebaChip`, `NebaAvatar` and `NebaCard` are the ones most of the waiting demos below need next.
 
-Some components have no single Flutter equivalent of what they are on the web, and their form is decided when they are reached, then written on their page: `NebaVisuallyHidden` (a `Semantics` node), `NebaTextLink` (a callback rather than an `href`, since the package opens nothing itself), `NebaImage` and `NebaGallery` (an `ImageProvider` rather than a URL), `NebaCodeBlock` (no highlight.js; a tokenizer of its own or a caller-supplied one), and the page shell (`NebaPageLayout`, `NebaHeader`, `NebaFooter`, `NebaSidebar`) against a phone's safe areas.
+Some components have no single Flutter equivalent of what they are on the web, and their form is decided when they are reached, then written on their page: `NebaTextLink` (a callback rather than an `href`, since the package opens nothing itself), `NebaImage` and `NebaGallery` (an `ImageProvider` rather than a URL), `NebaCodeBlock` (no highlight.js; a tokenizer of its own or a caller-supplied one), and the page shell (`NebaPageLayout`, `NebaHeader`, `NebaFooter`, `NebaSidebar`) against a phone's safe areas.
 
 Demos that wait on a component not ported yet, to be added with it: `flex/direction` and `card/form` (`NebaTextField`) and `aspect-ratio/reserving` (`NebaSkeleton`). `chip/links` has no Flutter twin: the package opens nothing itself, so a chip has no `href`. The React demos of per-breakpoint maps (`container/responsive`, `grid/responsive`) have no Flutter twin, because the Flutter widgets take no such map. A widget that draws a shape reads the ring of a pile it is in through `NebaRing`, as `NebaBox` does, so that `ring` follows it. `button/render` has no Flutter twin: a Flutter button has no element to swap.
 
@@ -120,7 +120,7 @@ Demos that wait on a component not ported yet, to be added with it: `flex/direct
 - [ ] `NebaBreadcrumb`
 - [ ] `NebaAnchor`
 - [ ] `NebaTreeView`
-- [ ] `NebaVisuallyHidden`
+- [x] `NebaVisuallyHidden`
 
 ### Inputs (36)
 
