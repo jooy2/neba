@@ -73,6 +73,7 @@ export 'src/components/table/neba_table.dart';
 export 'src/components/tabs/neba_tabs.dart';
 export 'src/components/text_field/neba_text_field.dart';
 export 'src/components/text_link/neba_text_link.dart';
+export 'src/components/timeline/neba_timeline.dart';
 export 'src/components/toggle/neba_toggle.dart';
 export 'src/components/toggle_group/neba_toggle_group.dart';
 export 'src/components/tooltip/neba_tooltip.dart';

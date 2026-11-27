@@ -1,6 +1,7 @@
 ---
 title: Timeline
 order: 12
+flutter: true
 ---
 
 # Timeline
@@ -8,6 +9,8 @@ order: 12
 <p class="neba-lede">순서가 있는 단계들을 시간 흐름대로 나열합니다. 주문 처리 상태나 배포 이력처럼 순서 자체가 정보인 목록에 씁니다.</p>
 
 <Demo src="timeline/hero" />
+
+::: fw react
 
 ```tsx
 import { Timeline, TimelineItem } from 'neba';
@@ -21,6 +24,25 @@ import { Timeline, TimelineItem } from 'neba';
 </Timeline>;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+const NebaTimeline(
+  active: 2,
+  children: <Widget>[
+    NebaTimelineItem(title: Text('주문'), meta: Text('7월 12일'), child: Text('결제가 완료되었습니다.')),
+    NebaTimelineItem(title: Text('배송 중'), meta: Text('7월 14일')),
+    NebaTimelineItem(title: Text('배송 완료')),
+  ],
+);
+```
+
+:::
+
 ## Props
 
 ### Timeline
@@ -28,6 +50,12 @@ import { Timeline, TimelineItem } from 'neba';
 <PropsTable name="Timeline" />
 
 `active`는 값이 아니라 **인덱스**입니다. 이 인덱스보다 앞선 항목은 `complete`, 해당 항목은 `current`, 뒤는 `upcoming`이 됩니다. 생략하면 전부 `upcoming`, 항목 수를 주면 전부 `complete`입니다.
+
+::: fw flutter
+
+세로 타임라인은 주어진 너비를 그대로 차지하고, 가로 타임라인은 그 너비를 단계마다 똑같이 나눕니다. `render`는 없습니다. Flutter의 semantics에는 목록이 한 종류뿐입니다.
+
+:::
 
 ### TimelineItem
 
@@ -37,13 +65,23 @@ import { Timeline, TimelineItem } from 'neba';
 
 ### bullet
 
-`bullet`에는 어떤 node든 넣을 수 있습니다. 번호는 사용자를 안내하는 절차에, 아이콘은 이미 일어난 사건에 어울립니다. 생략하면 원이 그려집니다.
+`bullet`에는 어떤 <Fw react="node든" flutter="widget이든" /> 넣을 수 있습니다. 번호는 사용자를 안내하는 절차에, 아이콘은 이미 일어난 사건에 어울립니다. 생략하면 원이 그려집니다.
 
 세 상태는 각각 다른 모양을 씁니다. `complete`는 채워진 원, `current`는 후광이 둘린 채워진 원, `upcoming`은 빈 원입니다. 색을 구분하지 못해도 상태가 전달됩니다.
 
 <Demo src="timeline/bullets">
 
+::: fw react
+
 <<< @/.vitepress/demos/timeline/bullets.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/timeline/bullets.dart
+
+:::
 
 </Demo>
 
@@ -55,7 +93,17 @@ import { Timeline, TimelineItem } from 'neba';
 
 <Demo src="timeline/status">
 
+::: fw react
+
 <<< @/.vitepress/demos/timeline/status.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/timeline/status.dart
+
+:::
 
 </Demo>
 
@@ -65,12 +113,34 @@ import { Timeline, TimelineItem } from 'neba';
 
 <Demo src="timeline/horizontal">
 
+::: fw react
+
 <<< @/.vitepress/demos/timeline/horizontal.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/timeline/horizontal.dart
+
+:::
 
 </Demo>
 
 ## 접근성
 
+::: fw react
+
 - `<ol>`로 렌더링되므로 순서가 있는 목록으로 읽힙니다.
 - `current` 상태의 항목에는 `aria-current="step"`이 붙습니다.
 - `complete`와 `upcoming` 항목은 화면에 보이지 않는 글로 상태를 말합니다. 불릿은 모양으로만 말하기 때문입니다. 낱말은 `locale`이나 `labels`에서 옵니다.
+
+:::
+
+::: fw flutter
+
+- 타임라인은 semantics 트리에서 목록이고, 각 단계는 순서대로 그 항목입니다.
+- `current` 상태의 항목은 선택된 것으로 표시되며, 웹에서는 `aria-current="true"`가 됩니다.
+- `complete`와 `upcoming` 항목은 제목보다 먼저 상태를 말합니다. 불릿은 모양으로만 말하기 때문입니다. 낱말은 `locale`이나 `labels`에서 옵니다.
+
+:::
