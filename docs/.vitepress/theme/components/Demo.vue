@@ -103,7 +103,18 @@ const props = defineProps({
    * React one is drawn over the page, so a preview that opens one asks for the
    * room it needs here.
    */
-  minHeight: { type: [Number, String], default: 40 }
+  minHeight: { type: [Number, String], default: 40 },
+  /**
+   * The least height of the Flutter preview, in px or as a CSS length, in
+   * place of `minHeight`, which it otherwise is.
+   *
+   * For a demo that opens a surface over the window, such as a Drawer. A React
+   * preview opens it over the whole page; a Flutter one can only open it over
+   * its own frame, which is otherwise as tall as the buttons that open it. Set
+   * here, the room is the Flutter frame's alone and a React preview keeps its
+   * own height.
+   */
+  frameMinHeight: { type: [Number, String], default: 0 }
 });
 
 // `lang` says which language the page is; `localeIndex` says where it lives in
@@ -113,13 +124,16 @@ const locale = localeOf(lang.value);
 const base = basePath(localeIndex.value);
 
 /*
- * The reserve, as a CSS length. A bare number is pixels whichever way it was
- * written: `min-height="380"` in Markdown is a static attribute and arrives as
- * the string "380", which as `min-height: 380` is no length at all — the browser
- * dropped it, and a hundred and five previews reserved nothing.
+ * The reserve and the frame's floor, as CSS lengths. A bare number is pixels
+ * whichever way it was written: `min-height="380"` in Markdown is a static
+ * attribute and arrives as the string "380", which as `min-height: 380` is no
+ * length at all — the browser dropped it, and a hundred and five previews
+ * reserved nothing.
  */
-const reserve = computed(() =>
-  /^\d+(\.\d+)?$/.test(String(props.minHeight)) ? `${props.minHeight}px` : props.minHeight
+const toLength = (value) => (/^\d+(\.\d+)?$/.test(String(value)) ? `${value}px` : value);
+const reserve = computed(() => toLength(props.minHeight));
+const frameFloor = computed(() =>
+  props.frameMinHeight ? toLength(props.frameMinHeight) : reserve.value
 );
 
 const host = ref(null);
@@ -375,7 +389,10 @@ onBeforeUnmount(() => {
         class="neba-demo-frame"
         :src="frameUrl"
         :title="t(locale, 'flutterFrame')"
-        :style="{ height: frameHeight ? `${frameHeight}px` : reserve, minHeight: reserve }"
+        :style="{
+          height: frameHeight ? `max(${frameHeight}px, ${frameFloor})` : reserve,
+          minHeight: frameFloor
+        }"
       />
     </div>
     <div v-if="$slots.default" class="neba-demo-source">

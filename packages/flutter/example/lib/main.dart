@@ -80,11 +80,11 @@ class _GalleryAppState extends State<GalleryApp> {
                 child: single(),
               );
 
-        // An overlay for the popups to be drawn in: WidgetsApp builds a
-        // Navigator, and the Overlay that comes with it, only when it is
-        // given routes, and the gallery has none.
-        return Overlay.wrap(
-          child: NebaProvider(colorScheme: _scheme, child: body),
+        // An overlay for a drawer or a portal to open into: with no navigator,
+        // the app has none of its own.
+        return NebaProvider(
+          colorScheme: _scheme,
+          child: Overlay.wrap(child: body),
         );
       },
     );

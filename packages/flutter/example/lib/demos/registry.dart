@@ -104,6 +104,8 @@ import 'package:neba_example/demos/divider/hero.dart';
 import 'package:neba_example/demos/divider/labels.dart';
 import 'package:neba_example/demos/divider/size.dart';
 import 'package:neba_example/demos/divider/vertical.dart';
+import 'package:neba_example/demos/drawer/rounded.dart';
+import 'package:neba_example/demos/drawer/sides.dart';
 import 'package:neba_example/demos/flex/alignment.dart';
 import 'package:neba_example/demos/flex/direction.dart';
 import 'package:neba_example/demos/flex/hero.dart';
@@ -359,6 +361,8 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'divider/labels': DividerLabels.new,
   'divider/size': DividerSize.new,
   'divider/vertical': DividerVertical.new,
+  'drawer/rounded': DrawerRounded.new,
+  'drawer/sides': DrawerSides.new,
   'flex/alignment': FlexAlignment.new,
   'flex/direction': FlexDirection.new,
   'flex/hero': FlexHero.new,

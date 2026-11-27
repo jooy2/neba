@@ -1,6 +1,7 @@
 ---
 title: Drawer
 order: 10
+flutter: true
 ---
 
 # Drawer
@@ -8,6 +9,8 @@ order: 10
 <p class="neba-lede">A panel attached to one edge of the window. It either floats over the page and is dismissed, or sits in the layout as a fixed sidebar: the same panel either way.</p>
 
 <Demo src="drawer/hero" align="center" />
+
+::: fw react
 
 ```tsx
 import { Button, Drawer, List } from 'neba';
@@ -17,13 +20,47 @@ import { Button, Drawer, List } from 'neba';
 </Drawer>;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+NebaDrawer(
+  title: const Text('Workspace'),
+  triggerBuilder: (BuildContext context, VoidCallback open) {
+    return NebaButton(
+      onPressed: open,
+      variant: NebaVariant.outline,
+      child: const Text('Open navigation'),
+    );
+  },
+  child: navigation,
+);
+```
+
+:::
+
 ## Props
 
 <PropsTable name="Drawer" />
 
+::: fw react
+
 Native `<div>` attributes pass through to the panel. Only `color`, `title` and `children` are excluded, since the table above spells them differently.
 
 `DrawerClose` is Base UI's `Dialog.Close`, re-exported. Give it a `render` prop and any element dismisses the drawer it is inside: `<DrawerClose render={<Button>Cancel</Button>} />`. It belongs to an `overlay` drawer: an `inline` one is not a dialog.
+
+:::
+
+::: fw flutter
+
+A widget cannot be handed a press from outside, so the trigger is a builder: `triggerBuilder` is called with the callback that opens the drawer, and what it builds stays where the drawer was written. `NebaDrawerClose` is the same arrangement for closing: its `builder` is handed the callback that closes the drawer it is inside, in either mode, so a Cancel button in an uncontrolled drawer needs no state: `NebaDrawerClose(builder: (context, close) => NebaButton(onPressed: close, child: const Text('Cancel')))`.
+
+An overlay drawer opens into the app's root `Overlay`, which a `WidgetsApp` with a navigator already has; an app built without one wraps its home in `Overlay.wrap`. The panel is built where the drawer was written, so it keeps the theme and the `NebaProvider` defaults from there.
+
+:::
 
 The shared axes are described in [prop conventions](../../design/prop-conventions).
 
@@ -33,15 +70,25 @@ The shared axes are described in [prop conventions](../../design/prop-convention
 
 `side` is the edge the panel is attached to. `left` and `right` take a width from the `size` ladder and fill the height; `top` and `bottom` fill the width and are as tall as their content, up to 85% of the window.
 
-<Demo src="drawer/sides">
+<Demo src="drawer/sides" frameMinHeight="420">
+
+::: fw react
 
 <<< @/.vitepress/demos/drawer/sides.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/drawer/sides.dart
+
+:::
 
 </Demo>
 
 ### mode
 
-`overlay`, the default, is the drawer you open: a scrim, a focus trap, Escape, and focus returned to the trigger. `inline` puts the same panel in the layout (no scrim, no portal, nothing to dismiss), and `open` decides whether it is in the flow at all. It defaults to open, so a fixed sidebar needs no state.
+`overlay`, the default, is the drawer you open: a scrim, a focus trap, Escape, and focus returned to the trigger. `inline` puts the same panel in the layout (no scrim, no <Fw react="portal" flutter="overlay" />, nothing to dismiss), and `open` decides whether it is in the flow at all. It defaults to open, so a fixed sidebar needs no state.
 
 Because it is one component, a sidebar that becomes a hamburger at a breakpoint is a `mode` that changes rather than two components to swap between.
 
@@ -55,9 +102,19 @@ Because it is one component, a sidebar that becomes a hamburger at a breakpoint 
 
 `rounded` cuts the two corners on the edge facing the page: the top and bottom of a side panel, the inner pair of a top or bottom one. The corners against the window edge stay square. Turn it off for a panel that should read as an extension of the window.
 
-<Demo src="drawer/rounded">
+<Demo src="drawer/rounded" frameMinHeight="320">
+
+::: fw react
 
 <<< @/.vitepress/demos/drawer/rounded.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/drawer/rounded.dart
+
+:::
 
 </Demo>
 
@@ -73,14 +130,33 @@ The body is the only part that scrolls, so `title`, `description` and `actions` 
 
 ### extent
 
-`extent` is how far the panel reaches in from its edge: a **width** for `left` and `right`, a **height** for `top` and `bottom`. Numbers are pixels, strings are CSS lengths. Left alone, a side panel takes the width its `size` implies.
+`extent` is how far the panel reaches in from its edge: a **width** for `left` and `right`, a **height** for `top` and `bottom`. <Fw react="Numbers are pixels, strings are CSS lengths." flutter="It is in logical pixels; a share of the window is worked out from `MediaQuery.sizeOf`." /> Left alone, a side panel takes the width its `size` implies.
+
+::: fw react
 
 ```tsx
 <Drawer side="right" extent={420} title="Details" />
 <Drawer side="bottom" extent="50vh" title="Filters" />
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+NebaDrawer(side: NebaSide.right, extent: 420, title: const Text('Details'));
+NebaDrawer(
+  side: NebaSide.bottom,
+  extent: MediaQuery.sizeOf(context).height / 2,
+  title: const Text('Filters'),
+);
+```
+
+:::
+
 ### headingLevel
+
+::: fw react
 
 The level the title is written at, `2` by default. An `inline` drawer's title is a heading in the page, so set the level that fits where the drawer sits: `3` inside a section headed `<h2>`. An `overlay` drawer is a dialog, which starts a heading order of its own, and rarely needs it.
 
@@ -88,7 +164,21 @@ The level the title is written at, `2` by default. An `inline` drawer's title is
 <Drawer mode="inline" title="Filters" headingLevel={3} />
 ```
 
+:::
+
+::: fw flutter
+
+The level a screen reader hears the title at, `2` by default. An `inline` drawer's title is a heading on the screen, so set the level that fits where the drawer sits: `3` inside a section whose heading is at level 2. An `overlay` drawer is a dialog, which starts a heading order of its own, and rarely needs it.
+
+```dart
+NebaDrawer(mode: NebaDrawerMode.inline, title: const Text('Filters'), headingLevel: 3);
+```
+
+:::
+
 ### keepMounted
+
+::: fw react
 
 A closed drawer's contents are not in the DOM by default. `keepMounted` keeps them there, hidden, which is what a drawer of navigation links needs for a crawler to find them. An `overlay` drawer is portalled, so its contents arrive once the page has hydrated rather than in the server's HTML; a closed `inline` drawer is in the server's HTML too. A [Sidebar](../layout/sidebar) that collapses into a drawer passes its own `keepMounted` here.
 
@@ -97,6 +187,20 @@ A closed drawer's contents are not in the DOM by default. `keepMounted` keeps th
   <nav>…</nav>
 </Drawer>
 ```
+
+:::
+
+::: fw flutter
+
+A closed drawer's contents are not built by default. `keepMounted` keeps them built, offstage, out of the focus order and out of the semantics tree, so what is in them keeps its state from one opening to the next: a scroll position, a half-filled field. A [Sidebar](../layout/sidebar) that collapses into a drawer passes its own `keepMounted` here.
+
+```dart
+NebaDrawer(keepMounted: true, title: const Text('Navigation'), triggerBuilder: menu, child: nav);
+```
+
+:::
+
+::: fw react
 
 ### classNames
 
@@ -108,7 +212,19 @@ A closed drawer's contents are not in the DOM by default. `keepMounted` keeps th
 
 The slots are `backdrop`, `viewport`, `title`, `description`, `close`, `body` and `actions`, the same as [Dialog](../feedback/dialog)'s. `backdrop` and `viewport` exist only in `overlay` mode, where both render at the end of `<body>`, outside the panel. An `inline` drawer's title holds off a host stylesheet's heading rule, but a property your `classNames.title` sets is left to your class. See [prop conventions](../../design/prop-conventions) for how a class name you pass resolves against the component's own.
 
+:::
+
+::: fw flutter
+
+### safeArea
+
+On a phone an overlay drawer runs under the system's insets: the status bar, a notch, the home indicator. `safeArea`, on by default, pads the panel's contents by the insets of the three edges it runs to and never by the one it faces the page with, so the sheet still reaches the edge of the screen and only what is on it moves. The insets are read from the root overlay the panel opens into, so a `SafeArea` around the place the drawer was written does not take them away. An `inline` drawer is part of a layout that has already answered the insets and takes none.
+
+:::
+
 ## Accessibility
+
+::: fw react
 
 - In `overlay` mode the panel is a modal dialog: focus is trapped inside, the page behind goes inert, Escape closes it and focus returns to the trigger.
 - `title` names the drawer and `description` describes it, wired with `aria-labelledby` and `aria-describedby`. A drawer with neither needs an `aria-label` of its own.
@@ -117,3 +233,17 @@ The slots are `backdrop`, `viewport`, `title`, `description`, `close`, `body` an
 - An `inline` drawer is not a dialog: it takes no focus, traps nothing, and announces nothing. Its `title` is a plain heading, so put it in the page's heading order with `headingLevel`.
 - A closed drawer kept in the DOM by `keepMounted` is hidden: its contents are out of the tab order and the accessibility tree, and it holds no focus and leaves the page usable until it opens.
 - `locale` decides the ×'s accessible name; `closeLabel` writes it out instead.
+
+:::
+
+::: fw flutter
+
+- In `overlay` mode the panel is a dialog that scopes the route: the first thing in it that takes the focus has it, Tab goes round inside it, a screen reader reads only the panel, Escape closes it and the focus returns to what had it before.
+- `title` is a heading at `headingLevel` and names the dialog. Flutter has no counterpart of `aria-describedby`, so `description` is read after the title, in reading order. A drawer with no title takes a `semanticLabel`.
+- `modal: NebaModal.trapFocus` keeps the page usable while still holding the focus inside; a press on the page reaches it and closes the drawer. `NebaModal.off` lets Tab leave as well.
+- `dismissible: false` cancels Escape, the press on the scrim and a screen reader's dismiss gesture. Give that drawer actions that close it, because there will be no other way out.
+- An `inline` drawer is not a dialog: it takes no focus, holds nothing, and announces nothing. Its `title` is a plain heading, so put it in the screen's heading order with `headingLevel`.
+- A closed drawer kept built by `keepMounted` is offstage: its contents are out of the focus order and the semantics tree, and it leaves the page usable until it opens.
+- `locale` decides the ×'s name; `closeLabel` writes it out instead.
+
+:::

@@ -39,14 +39,11 @@ class _ShowcaseAppState extends State<ShowcaseApp> {
       color: const Color(0xFF3B5BDB),
       debugShowCheckedModeBanner: false,
       builder: (BuildContext context, Widget? _) {
-        // An overlay for the popups to be drawn in: WidgetsApp builds a
-        // Navigator, and the Overlay that comes with it, only when it is
-        // given routes, and this app has none.
-        return Overlay.wrap(
-          child: NebaProvider(
-            colorScheme: _scheme,
-            child: _Home(onSchemePressed: _handleSchemePressed),
-          ),
+        // An overlay for a drawer or a portal to open into: with no navigator,
+        // the app has none of its own.
+        return NebaProvider(
+          colorScheme: _scheme,
+          child: Overlay.wrap(child: _Home(onSchemePressed: _handleSchemePressed)),
         );
       },
     );
