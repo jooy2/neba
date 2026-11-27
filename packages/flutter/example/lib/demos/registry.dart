@@ -57,6 +57,9 @@ import 'package:neba_example/demos/grid/offset.dart';
 import 'package:neba_example/demos/grid/padding.dart';
 import 'package:neba_example/demos/grid/spacing.dart';
 import 'package:neba_example/demos/grid/spans.dart';
+import 'package:neba_example/demos/icon_button/hero.dart';
+import 'package:neba_example/demos/icon_button/sizes.dart';
+import 'package:neba_example/demos/icon_button/states.dart';
 import 'package:neba_example/demos/portal/hero.dart';
 import 'package:neba_example/demos/scroll_area/fade.dart';
 import 'package:neba_example/demos/scroll_area/hero.dart';
@@ -129,6 +132,9 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'grid/padding': GridPadding.new,
   'grid/spacing': GridSpacing.new,
   'grid/spans': GridSpans.new,
+  'icon-button/hero': IconButtonHero.new,
+  'icon-button/sizes': IconButtonSizes.new,
+  'icon-button/states': IconButtonStates.new,
   'portal/hero': PortalHero.new,
   'scroll-area/fade': ScrollAreaFade.new,
   'scroll-area/hero': ScrollAreaHero.new,

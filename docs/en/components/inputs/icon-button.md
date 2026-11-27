@@ -1,6 +1,7 @@
 ---
 title: IconButton
 order: 14
+flutter: true
 ---
 
 # IconButton
@@ -9,19 +10,45 @@ order: 14
 
 <Demo src="icon-button/hero" />
 
+::: fw react
+
 ```tsx
 import { IconButton } from 'neba';
 
 <IconButton icon={<PlusIcon />} label="Add item" />;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+NebaIconButton(onPressed: add, icon: const PlusIcon(), label: 'Add item');
+```
+
+:::
+
 ## Props
 
 <PropsTable name="IconButton" />
 
+::: fw react
+
 Every native `<button>` attribute passes through. It uses [Button](./button)'s axes unchanged, including `variant`, `elevation`, `loading` and `readOnly`.
 
 For a square icon control, a [Button](./button) with no `children` already is one.
+
+:::
+
+::: fw flutter
+
+It takes [Button](./button)'s axes unchanged, including `variant`, `elevation`, `loading` and `readOnly`, and with no `onPressed` it is disabled. In a [ButtonGroup](./button-group) the corners that face a neighbour are squared off like any button's.
+
+For a square icon control, a [Button](./button) with no `child` already is one.
+
+:::
 
 ## Examples
 
@@ -31,7 +58,17 @@ The same control heights [Button](./button) uses, so a disc drops into a row of 
 
 <Demo src="icon-button/sizes">
 
+::: fw react
+
 <<< @/.vitepress/demos/icon-button/sizes.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/icon_button/sizes.dart
+
+:::
 
 </Demo>
 
@@ -41,11 +78,23 @@ They behave exactly as the same props do on [Button](./button). `loading` puts a
 
 <Demo src="icon-button/states">
 
+::: fw react
+
 <<< @/.vitepress/demos/icon-button/states.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/icon_button/states.dart
+
+:::
 
 </Demo>
 
 ### label
+
+::: fw react
 
 `label` is a required prop. A button whose only content is a glyph has no other way to get an accessible name, so the type demands one.
 
@@ -59,7 +108,36 @@ They behave exactly as the same props do on [Button](./button). `loading` puts a
 
 `label` is not shown on screen. Wrap the button in a [Tooltip](../feedback/tooltip) to make the name visible too.
 
+:::
+
+::: fw flutter
+
+`label` is a required parameter. A button whose only content is a glyph has no other way to get a name a screen reader can say, so the constructor demands one.
+
+```dart
+// Does not compile.
+NebaIconButton(onPressed: remove, icon: const TrashIcon());
+
+// This.
+NebaIconButton(onPressed: remove, icon: const TrashIcon(), label: 'Delete file');
+```
+
+`label` is not shown on screen. Wrap the button in a [Tooltip](../feedback/tooltip) to make the name visible too.
+
+:::
+
 ## Accessibility
+
+::: fw react
 
 - `label` is passed through as `aria-label`.
 - The focus ring only appears on `:focus-visible`.
+
+:::
+
+::: fw flutter
+
+- `label` is the name a screen reader hears, and a tap, Enter and Space all press the button.
+- The focus ring only appears for keyboard focus.
+
+:::

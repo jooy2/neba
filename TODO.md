@@ -125,7 +125,7 @@ Demos that wait on a component not ported yet, to be added with it: `flex/direct
 ### Inputs (36)
 
 - [x] `NebaButton`
-- [ ] `NebaIconButton`
+- [x] `NebaIconButton`
 - [x] `NebaButtonGroup`
 - [ ] `NebaSegmentedButton`
 - [ ] `NebaToggle`
