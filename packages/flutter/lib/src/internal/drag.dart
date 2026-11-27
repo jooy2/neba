@@ -53,6 +53,7 @@ class NebaDragRegion extends StatefulWidget {
     this.onEnd,
     this.enabled = true,
     this.eager = true,
+    this.slop,
     this.cursor = MouseCursor.defer,
     super.key,
   });
@@ -80,6 +81,12 @@ class NebaDragRegion extends StatefulWidget {
   /// Whether the gesture is claimed on the press rather than once the pointer
   /// has travelled past the platform's slop.
   final bool eager;
+
+  /// How far the pointer travels before a drag that is not [eager] is
+  /// claimed, in logical pixels. Defaults to the platform's slop, which for a
+  /// mouse is a pixel; a drag that starts on something the reader may only
+  /// have meant to press, such as a DataTable's heading, waits longer.
+  final double? slop;
 
   /// The pointer's cursor over the region while it is [enabled].
   final MouseCursor cursor;
@@ -120,6 +127,7 @@ class _NebaDragRegionState extends State<NebaDragRegion> {
   Widget build(BuildContext context) {
     _recognizer
       ..eager = widget.eager
+      ..slop = widget.slop
       ..onStart = widget.onStart
       ..gestureSettings = MediaQuery.maybeGestureSettingsOf(context);
 
@@ -140,6 +148,7 @@ class _NebaDragRecognizer extends OneSequenceGestureRecognizer {
   _NebaDragRecognizer({super.debugOwner});
 
   bool eager = true;
+  double? slop;
   bool Function(Offset position)? onStart;
   VoidCallback? onAccept;
   ValueChanged<Offset>? onMove;
@@ -182,7 +191,8 @@ class _NebaDragRecognizer extends OneSequenceGestureRecognizer {
     if (event is PointerMoveEvent) {
       final Offset travelled = event.localPosition - _origin;
 
-      if (!_accepted && travelled.distance > computeHitSlop(event.kind, gestureSettings)) {
+      if (!_accepted &&
+          travelled.distance > (slop ?? computeHitSlop(event.kind, gestureSettings))) {
         resolve(GestureDisposition.accepted);
       }
 

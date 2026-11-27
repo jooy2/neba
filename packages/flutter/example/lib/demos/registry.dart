@@ -164,6 +164,15 @@ import 'package:neba_example/demos/data_list/dividers.dart';
 import 'package:neba_example/demos/data_list/hero.dart';
 import 'package:neba_example/demos/data_list/label_width.dart';
 import 'package:neba_example/demos/data_list/orientation.dart';
+import 'package:neba_example/demos/data_table/columns.dart';
+import 'package:neba_example/demos/data_table/density.dart';
+import 'package:neba_example/demos/data_table/hero.dart';
+import 'package:neba_example/demos/data_table/manual.dart';
+import 'package:neba_example/demos/data_table/pages.dart';
+import 'package:neba_example/demos/data_table/search.dart';
+import 'package:neba_example/demos/data_table/selection.dart';
+import 'package:neba_example/demos/data_table/sorting.dart';
+import 'package:neba_example/demos/data_table/virtual.dart';
 import 'package:neba_example/demos/date_picker/bounds.dart';
 import 'package:neba_example/demos/date_picker/granularity.dart';
 import 'package:neba_example/demos/date_picker/hero.dart';
@@ -656,6 +665,15 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'data-list/hero': DataListHero.new,
   'data-list/label-width': DataListLabelWidth.new,
   'data-list/orientation': DataListOrientation.new,
+  'data-table/columns': DataTableColumns.new,
+  'data-table/density': DataTableDensity.new,
+  'data-table/hero': DataTableHero.new,
+  'data-table/manual': DataTableManual.new,
+  'data-table/pages': DataTablePages.new,
+  'data-table/search': DataTableSearch.new,
+  'data-table/selection': DataTableSelection.new,
+  'data-table/sorting': DataTableSorting.new,
+  'data-table/virtual': DataTableVirtual.new,
   'date-picker/bounds': DatePickerBounds.new,
   'date-picker/granularity': DatePickerGranularity.new,
   'date-picker/hero': DatePickerHero.new,

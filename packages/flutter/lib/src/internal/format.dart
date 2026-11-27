@@ -105,3 +105,10 @@ const List<String> _months = <String>[
 String nebaFormatMonthDay(DateTime date) {
   return '${_months[date.month - 1]} ${date.day}';
 }
+
+/// [date] with its year, `Jun 1, 2026`: how the React package's
+/// `Intl.DateTimeFormat` writes a date at `dateStyle: 'medium'` in English,
+/// which is what a DataTable cell with nothing to draw it shows.
+String nebaFormatDate(DateTime date) {
+  return '${nebaFormatMonthDay(date)}, ${date.year}';
+}
