@@ -140,6 +140,12 @@ import 'package:neba_example/demos/hover_card/delay.dart';
 import 'package:neba_example/demos/hover_card/hero.dart';
 import 'package:neba_example/demos/hover_card/placement.dart';
 import 'package:neba_example/demos/hover_card/sizes.dart';
+import 'package:neba_example/demos/how_to_steps/bare.dart';
+import 'package:neba_example/demos/how_to_steps/controlled.dart';
+import 'package:neba_example/demos/how_to_steps/divider.dart';
+import 'package:neba_example/demos/how_to_steps/orientation.dart';
+import 'package:neba_example/demos/how_to_steps/scrolling.dart';
+import 'package:neba_example/demos/how_to_steps/transition.dart';
 import 'package:neba_example/demos/icon/colors.dart';
 import 'package:neba_example/demos/icon/hero.dart';
 import 'package:neba_example/demos/icon/sizes.dart';
@@ -439,6 +445,12 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'hover-card/hero': HoverCardHero.new,
   'hover-card/placement': HoverCardPlacement.new,
   'hover-card/sizes': HoverCardSizes.new,
+  'how-to-steps/bare': HowToStepsBare.new,
+  'how-to-steps/controlled': HowToStepsControlled.new,
+  'how-to-steps/divider': HowToStepsDivider.new,
+  'how-to-steps/orientation': HowToStepsOrientation.new,
+  'how-to-steps/scrolling': HowToStepsScrolling.new,
+  'how-to-steps/transition': HowToStepsTransition.new,
   'icon-button/hero': IconButtonHero.new,
   'icon-button/sizes': IconButtonSizes.new,
   'icon-button/states': IconButtonStates.new,

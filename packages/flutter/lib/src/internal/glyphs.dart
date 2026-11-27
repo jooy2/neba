@@ -124,6 +124,12 @@ abstract final class NebaGlyphs {
     const NebaGlyphPart.stroke('M14.5 8A6.5 6.5 0 0 0 8 1.5', width: 2, cap: StrokeCap.round),
   ];
 
+  /// An arrow turning back on itself: start over.
+  static final List<NebaGlyphPart> restart = <NebaGlyphPart>[
+    const NebaGlyphPart.stroke('M13 8a5 5 0 1 1-1.6-3.67', cap: StrokeCap.round),
+    const NebaGlyphPart.stroke('M13.25 2.25v3h-3', cap: StrokeCap.round, join: StrokeJoin.round),
+  ];
+
   /// A chain link: a link that stays where it is.
   static final List<NebaGlyphPart> link = <NebaGlyphPart>[
     const NebaGlyphPart.stroke(

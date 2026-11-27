@@ -1,6 +1,7 @@
 ---
 title: HowToSteps
 order: 15
+flutter: true
 ---
 
 # HowToSteps
@@ -8,6 +9,8 @@ order: 15
 <p class="neba-lede">독자가 하나씩 따라가는 안내서입니다. 한쪽에 번호가 매겨진 단계 목록이 있고 그 옆에 지금 단계의 설명이, 그 아래에 다음으로 넘어가는 버튼이 놓입니다. 마지막 단계까지 가면 끝났다는 것을 함께 알립니다.</p>
 
 <Demo src="how-to-steps/hero" minHeight="420" />
+
+::: fw react
 
 ```tsx
 import { HowToSteps } from 'neba';
@@ -21,13 +24,41 @@ import { HowToSteps } from 'neba';
 />;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+const NebaHowToSteps(
+  title: Text('cron으로 작업 예약하기'),
+  steps: <NebaHowToStep>[
+    NebaHowToStep(title: Text('crontab 열기'), content: Text('crontab -e로 내 crontab을 엽니다.')),
+    NebaHowToStep(title: Text('스케줄 작성'), content: Text('다섯 개의 필드, 그다음 명령어.')),
+  ],
+);
+```
+
+:::
+
 ## Props
 
 <PropsTable name="HowToSteps" />
 
+::: fw react
+
 `color`, `title`, `content`를 뺀 모든 네이티브 `<div>` 속성이 그대로 전달됩니다. 이 셋은 컴포넌트가 직접 씁니다. 공통 축은 [prop 규칙](../../design/prop-conventions)에서 설명합니다.
 
-### HowToStep
+:::
+
+::: fw flutter
+
+안내서는 받은 폭을 그대로 씁니다. 공통 축은 [prop 규칙](../../design/prop-conventions)에서 설명합니다.
+
+:::
+
+### <Fw react="HowToStep" flutter="NebaHowToStep" />
 
 <PropsTable name="HowToStep" />
 
@@ -39,17 +70,37 @@ import { HowToSteps } from 'neba';
 
 <Demo src="how-to-steps/orientation" minHeight="360">
 
+::: fw react
+
 <<< @/.vitepress/demos/how-to-steps/orientation.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/how_to_steps/orientation.dart
+
+:::
 
 </Demo>
 
 ### maxHeight
 
-안에서 스크롤이 시작되기 전까지 안내서가 커질 수 있는 높이입니다. 숫자는 픽셀입니다. 시트가 커지는 대신 목록과 본문이 각자 안에서 스크롤되고, 단계가 바뀌면 현재 행이 보이는 자리로 따라옵니다.
+안에서 스크롤이 시작되기 전까지 안내서가 커질 수 있는 높이입니다. <Fw react="숫자는 픽셀입니다." flutter="논리 픽셀로 받습니다." /> 시트가 커지는 대신 목록과 본문이 각자 안에서 스크롤되고, 단계가 바뀌면 현재 행이 보이는 자리로 따라옵니다.
 
 <Demo src="how-to-steps/scrolling" minHeight="400">
 
+::: fw react
+
 <<< @/.vitepress/demos/how-to-steps/scrolling.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/how_to_steps/scrolling.dart
+
+:::
 
 </Demo>
 
@@ -59,7 +110,17 @@ import { HowToSteps } from 'neba';
 
 <Demo src="how-to-steps/controlled" minHeight="380">
 
+::: fw react
+
 <<< @/.vitepress/demos/how-to-steps/controlled.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/how_to_steps/controlled.dart
+
+:::
 
 </Demo>
 
@@ -67,9 +128,21 @@ import { HowToSteps } from 'neba';
 
 각 단계는 glyph를 하나 받을 수 있고, 목록이 아니라 그 단계 본문의 제목 앞에 그려집니다. 터미널 작업인지, 파일 작업인지, 경고인지처럼 어떤 종류의 단계인지를 나타낼 때 쓰세요.
 
+::: fw react
+
 ```tsx
 { title: 'crontab 열기', icon: <TerminalIcon />, content: … }
 ```
+
+:::
+
+::: fw flutter
+
+```dart
+NebaHowToStep(title: Text('crontab 열기'), icon: TerminalIcon(), content: …)
+```
+
+:::
 
 ### divider
 
@@ -77,29 +150,59 @@ import { HowToSteps } from 'neba';
 
 <Demo src="how-to-steps/divider" minHeight="320">
 
+::: fw react
+
 <<< @/.vitepress/demos/how-to-steps/divider.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/how_to_steps/divider.dart
+
+:::
 
 </Demo>
 
 ### transition
 
-독자가 어떤 단계로 옮겨갔을 때 그 단계가 등장하는 방식이며, 어디서나 [`transition`](../../design/prop-conventions)이 쓰는 것과 같은 어휘를 씁니다. effect 이름 하나를 주거나, duration과 easing, 방향까지 정하는 객체를 넘길 수 있습니다. `'none'`이면 꺼지고, reduced-motion 설정에서도 꺼집니다.
+독자가 어떤 단계로 옮겨갔을 때 그 단계가 등장하는 방식이며, 어디서나 [`transition`](../../design/prop-conventions)이 쓰는 것과 같은 어휘를 씁니다. <Fw react="effect 이름 하나를 주거나, duration과 easing, 방향까지 정하는 객체를 넘길 수 있습니다. `'none'`이면 꺼지고" flutter="duration과 curve, 방향을 담은 `NebaTransition`을 넘깁니다. `null`이면 꺼지고" />, reduced-motion 설정에서도 꺼집니다.
 
 효과는 패널에서만 실행되고, 버튼과 목록 행은 움직이지 않습니다. 가이드가 처음 그려질 때의 단계에는 등장 효과가 없으므로, 페이지 맨 위의 가이드도 첫 화면에 바로 그려집니다.
 
 <Demo src="how-to-steps/transition" minHeight="340">
 
+::: fw react
+
 <<< @/.vitepress/demos/how-to-steps/transition.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/how_to_steps/transition.dart
+
+:::
 
 </Demo>
 
 ### navigation · completion
 
-`navigation={false}`는 버튼 줄을 없애고 목록만 남깁니다. 페이지가 자체 내비게이션을 가진 곳에 안내서를 끼워 넣을 때 쓰는 형태입니다. `completion={false}`는 완료 상태 자체를 없앱니다. 마지막 단계는 그냥 마지막 단계가 됩니다.
+<Fw react="`navigation={false}`는" flutter="`navigation: false`는" /> 버튼 줄을 없애고 목록만 남깁니다. 페이지가 자체 내비게이션을 가진 곳에 안내서를 끼워 넣을 때 쓰는 형태입니다. <Fw react="`completion={false}`는" flutter="`completion: false`는" /> 완료 상태 자체를 없앱니다. 마지막 단계는 그냥 마지막 단계가 됩니다.
 
 <Demo src="how-to-steps/bare" minHeight="480">
 
+::: fw react
+
 <<< @/.vitepress/demos/how-to-steps/bare.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/how_to_steps/bare.dart
+
+:::
 
 </Demo>
 
@@ -109,13 +212,29 @@ import { HowToSteps } from 'neba';
 
 ### headingLevel
 
+::: fw react
+
 `title`은 기본적으로 `<h3>`으로, 각 단계의 제목은 그보다 한 단계 아래인 `<h4>`로 그려집니다. 페이지에 맞춰 그 시작점을 옮기려면 `headingLevel`을 쓰세요. `<h1>` 바로 아래의 안내서라면 `2`, 섹션 안의 안내서라면 `4`입니다. `title`이 없으면 단계의 제목이 `headingLevel` 자체를 씁니다.
 
 ```tsx
 <HowToSteps steps={steps} title="시작하기" headingLevel={2} />
 ```
 
+:::
+
+::: fw flutter
+
+screen reader에게 `title`은 기본적으로 3단계 heading이고, 각 단계의 제목은 그보다 한 단계 아래인 4단계입니다. 화면에 맞춰 그 시작점을 옮기려면 `headingLevel`을 쓰세요. 화면의 제목 바로 아래의 안내서라면 `2`, 섹션 안의 안내서라면 `4`입니다. `title`이 없으면 단계의 제목이 `headingLevel` 자체를 씁니다.
+
+```dart
+NebaHowToSteps(steps: steps, title: const Text('시작하기'), headingLevel: 2);
+```
+
+:::
+
 ### image
+
+::: fw react
 
 단계는 `content` 위에 그림을 하나 둘 수 있고, 그 그림이 말하는 내용은 `imageAlt`로 씁니다. 파일 자체의 픽셀 크기를 `imageWidth`와 `imageHeight`로 주면 브라우저가 그림이 도착하기 전에 그 비율만큼 자리를 잡아 두므로, 그림이 도착해도 본문이 자라지 않습니다. 크기가 아니라 비율이라 그림은 여전히 본문 너비를 채웁니다. 기본은 lazy로 불러오며, 페이지 맨 위의 안내서라면 `imageLoading: 'eager'`를 쓰세요.
 
@@ -123,14 +242,45 @@ import { HowToSteps } from 'neba';
 { title: '패널 열기', image: '/panel.png', imageWidth: 1600, imageHeight: 900 }
 ```
 
+:::
+
+::: fw flutter
+
+단계는 `content` 위에 그림 하나를 `ImageProvider`로 둘 수 있고, 그 그림이 말하는 내용은 `imageAlt`로 씁니다. 파일 자체의 픽셀 크기를 `imageWidth`와 `imageHeight`로 주면 그림이 도착하기 전에 그 비율만큼 자리를 잡아 두므로, 그림이 도착해도 본문이 자라지 않습니다. 크기가 아니라 비율이라 그림은 여전히 본문 너비를 채웁니다. `imageLoading`은 없습니다. 모든 단계의 그림은 안내서가 빌드될 때 함께 불러옵니다.
+
+```dart
+NebaHowToStep(
+  title: Text('패널 열기'),
+  image: AssetImage('assets/panel.png'),
+  imageWidth: 1600,
+  imageHeight: 900,
+)
+```
+
+:::
+
 ### content
 
-`content`는 노드를 받으므로 한 단계 안에 [CodeBlock](../display/code-block)이, `image`로 스크린샷이, 폼이, 다른 컴포넌트가 들어갈 수 있습니다. 본문 영역이 가장 긴 단계의 높이를 유지하므로 코드 블록이 들어 있는 단계에 도착해도 카드 크기가 바뀌지 않습니다. 단계가 바뀔 때 아무것도 다시 mount되지 않으므로 안내서 중간의 폼은 입력해 둔 내용을 그대로 들고 있습니다.
+`content`는 <Fw react="노드를" flutter="위젯을" /> 받으므로 한 단계 안에 [CodeBlock](../display/code-block)이, `image`로 스크린샷이, 폼이, 다른 컴포넌트가 들어갈 수 있습니다. 본문 영역이 가장 긴 단계의 높이를 유지하므로 코드 블록이 들어 있는 단계에 도착해도 카드 크기가 바뀌지 않습니다. 단계가 바뀔 때 아무것도 <Fw react="다시 mount되지" flutter="다시 빌드되지" /> 않으므로 안내서 중간의 폼은 입력해 둔 내용을 그대로 들고 있습니다.
 
 ## 접근성
+
+::: fw react
 
 - 목록은 tablist가 아니라 버튼의 목록이며, 현재 행은 `aria-current="step"`을 지닙니다.
 - 각 행은 "Step 3: Use it"처럼 읽히고, 번호가 든 원은 장식입니다. `title`이 노드인 행은 자기 내용 그대로 읽힙니다.
 - 다른 단계로 넘어가면 polite live region이 "Step 2: Configure"처럼 알립니다. 본문이 제자리에서 바뀌고 focus는 누른 버튼에 머물기 때문입니다.
 - 보이지 않는 단계들은 본문 높이를 유지하기 위해 문서에 남아 있으며 `inert`입니다. tab 순서에서 빠지고, accessibility tree에서 빠지고, 페이지 내 찾기에서도 빠집니다.
 - 한 페이지에 안내서가 둘 이상이면 `title`을 주세요. `title`이 있으면 안내서는 그 제목으로 이름이 붙은 `role="group"`이 됩니다.
+
+:::
+
+::: fw flutter
+
+- 목록은 tab bar가 아니라 버튼의 목록이며, 현재 행은 selected로 표시되고 웹에서는 `aria-current`로 읽힙니다.
+- 각 행은 "Step 3: Use it"처럼 읽히고, 번호가 든 원은 장식입니다. `title`이 `Text`가 아닌 행은 자기 내용 그대로 읽힙니다.
+- 다른 단계로 넘어가면 live region이 "Step 2: Configure"처럼 알립니다. 본문이 제자리에서 바뀌고 focus는 누른 버튼에 머물기 때문입니다. Done을 누르면 focus가 Start over로, Start over를 누르면 다시 Next로 옮겨 갑니다.
+- 보이지 않는 단계들은 본문 높이를 유지하기 위해 빌드된 채 남아 있으며, focus 순서와 semantics 트리에서 빠집니다.
+- 한 화면에 안내서가 둘 이상이면 `title`을 주세요. `title`이 `Text`이면 안내서는 그 제목으로 이름이 붙은 그룹이 됩니다.
+
+:::

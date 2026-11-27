@@ -54,7 +54,8 @@ num nebaTransitionRepeat(NebaTransition transition) {
   return transition.repeat ?? (transition.type == NebaAnimation.blink ? double.infinity : 1);
 }
 
-/// Plays [transition] on [child] once, when it is first built.
+/// Plays [transition] on [child] once, when it is first built, and again
+/// from the start each time [trigger] changes.
 ///
 /// [delayOffset] and [durationOffset] are added to the transition's own, which
 /// is how a pile staggers one effect across its items. A duration never goes
@@ -66,6 +67,8 @@ class NebaEntrance extends StatefulWidget {
     required this.child,
     this.delayOffset = Duration.zero,
     this.durationOffset = Duration.zero,
+    this.trigger,
+    this.playsOnBuild = true,
     super.key,
   });
 
@@ -80,6 +83,18 @@ class NebaEntrance extends StatefulWidget {
 
   /// What arrives.
   final Widget child;
+
+  /// A value whose change plays the transition again from its start, as
+  /// putting an animation back on an element does in CSS. [child] stays built
+  /// through it, so a step of a guide that is arrived at again keeps what was
+  /// typed into it.
+  final Object? trigger;
+
+  /// Whether the transition plays when the widget is first built. Off, the
+  /// child starts at rest and only a change of [trigger] plays it: for
+  /// content that arrives with the page and should be there in its first
+  /// paint.
+  final bool playsOnBuild;
 
   @override
   State<NebaEntrance> createState() => _NebaEntranceState();
@@ -112,8 +127,16 @@ class _NebaEntranceState extends State<NebaEntrance> with SingleTickerProviderSt
 
     final bool reduced = nebaReducedMotion(context);
 
-    if (!_settled || reduced != _reduced) {
+    if (!_settled) {
       _settled = true;
+      _reduced = reduced;
+
+      if (widget.playsOnBuild) {
+        _start();
+      } else {
+        _controller.value = 1;
+      }
+    } else if (reduced != _reduced) {
       _reduced = reduced;
       _start();
     }
@@ -123,10 +146,11 @@ class _NebaEntranceState extends State<NebaEntrance> with SingleTickerProviderSt
   void didUpdateWidget(NebaEntrance oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    // A new effect starts over, as a new animation name does in CSS. A new
-    // duration on the same effect does not, and a finished entrance stays
-    // finished.
-    if (oldWidget.transition.type != widget.transition.type) {
+    // A new effect starts over, as a new animation name does in CSS, and so
+    // does a new trigger. A new duration on the same effect does not, and a
+    // finished entrance stays finished.
+    if (oldWidget.transition.type != widget.transition.type ||
+        oldWidget.trigger != widget.trigger) {
       _start();
     }
   }

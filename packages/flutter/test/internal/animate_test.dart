@@ -154,6 +154,38 @@ void main() {
       await tester.pumpAndSettle();
     });
 
+    testWidgets('starts at rest when told not to play on build, and plays on a new trigger', (
+      WidgetTester tester,
+    ) async {
+      Future<void> place(Object trigger) {
+        return tester.pumpWidget(
+          host(
+            Center(
+              child: NebaEntrance(
+                transition: const NebaTransition.fade(),
+                playsOnBuild: false,
+                trigger: trigger,
+                child: const _Kept(),
+              ),
+            ),
+          ),
+        );
+      }
+
+      await place(0);
+      expect(opacityOf(tester), 1);
+      expect(tester.hasRunningAnimations, isFalse);
+
+      final State<_Kept> kept = tester.state(find.byType(_Kept));
+
+      await place(1);
+      expect(opacityOf(tester), 0);
+
+      await tester.pumpAndSettle();
+      expect(opacityOf(tester), 1);
+      expect(tester.state(find.byType(_Kept)), same(kept));
+    });
+
     testWidgets('draws the last frame at once for a reader who asked for less motion', (
       WidgetTester tester,
     ) async {
@@ -246,4 +278,17 @@ void main() {
       await tester.pumpAndSettle();
     });
   });
+}
+
+/// A widget with state of its own, to see that a replay keeps it.
+class _Kept extends StatefulWidget {
+  const _Kept();
+
+  @override
+  State<_Kept> createState() => _KeptState();
+}
+
+class _KeptState extends State<_Kept> {
+  @override
+  Widget build(BuildContext context) => const SizedBox(width: 10, height: 10);
 }

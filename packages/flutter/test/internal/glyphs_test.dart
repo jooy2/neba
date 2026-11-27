@@ -1,6 +1,8 @@
 // The shared glyphs: every one reads, fits its box, and takes the ambient
 // colour.
 
+import 'dart:ui';
+
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:neba/neba.dart';
@@ -20,6 +22,7 @@ void main() {
     'plus': NebaGlyphs.plus,
     'dot': NebaGlyphs.dot,
     'spinner': NebaGlyphs.spinner,
+    'restart': NebaGlyphs.restart,
     'note': NebaGlyphs.note,
     'success': NebaGlyphs.success,
     'warning': NebaGlyphs.warning,
@@ -29,7 +32,7 @@ void main() {
   for (final MapEntry<String, List<NebaGlyphPart>> glyph in all.entries) {
     test('${glyph.key} stays inside its 16-unit box', () {
       for (final NebaGlyphPart part in glyph.value) {
-        final Rect bounds = parseSvgPath(part.data).getBounds();
+        final Rect bounds = _drawnBounds(parseSvgPath(part.data));
 
         expect(bounds.left, greaterThanOrEqualTo(0));
         expect(bounds.top, greaterThanOrEqualTo(0));
@@ -65,4 +68,25 @@ void main() {
 
     expect(tester.getSize(find.byType(NebaGlyph)), const Size(20, 20));
   });
+}
+
+/// The box a path's line actually covers, walked along its length: what
+/// `Path.getBounds` gives also takes in the control points of its curves,
+/// which stand outside a wide arc.
+Rect _drawnBounds(Path path) {
+  Rect? bounds;
+
+  for (final PathMetric metric in path.computeMetrics()) {
+    for (int i = 0; i <= 200; i++) {
+      final Offset? point = metric.getTangentForOffset(metric.length * i / 200)?.position;
+
+      if (point != null) {
+        bounds =
+            bounds?.expandToInclude(Rect.fromLTWH(point.dx, point.dy, 0, 0)) ??
+            Rect.fromLTWH(point.dx, point.dy, 0, 0);
+      }
+    }
+  }
+
+  return bounds ?? Rect.zero;
 }
