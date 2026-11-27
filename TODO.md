@@ -305,7 +305,7 @@ Some components have no single Flutter equivalent of what they are on the web, a
 - [x] `NebaAnimateReveal`
 - [x] `NebaAnimateFloat`
 - [x] `NebaAnimateShake`
-- [ ] `NebaAnimateAppear`
+- [x] `NebaAnimateAppear`
 - [ ] `NebaAnimateSplit`
 - [ ] `NebaAnimateTyping`
 - [ ] `NebaAnimateScramble`

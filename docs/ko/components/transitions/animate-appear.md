@@ -1,6 +1,7 @@
 ---
 title: AnimateAppear
 order: 9
+flutter: true
 ---
 
 # AnimateAppear
@@ -8,6 +9,8 @@ order: 9
 <p class="neba-lede">여러 개가 하나씩 차례로 제자리에 내려앉는 효과입니다. 자식마다 같은 짧은 fade와 미끄러짐이 자기 순서만큼 늦춰져 실행되므로, 효과가 개별 항목이 아니라 묶음 전체에 속합니다.</p>
 
 <Demo src="animate-appear/hero" />
+
+::: fw react
 
 ```tsx
 import { AnimateAppear } from 'neba';
@@ -18,25 +21,64 @@ import { AnimateAppear } from 'neba';
 </AnimateAppear>;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+const NebaAnimateAppear(
+  children: <Widget>[
+    NebaCard(title: Text('디자인 리뷰'), child: Text('목요일 14:00')),
+    NebaCard(title: Text('스프린트 계획'), child: Text('금요일 10:00')),
+  ],
+);
+```
+
+:::
+
 ## Props
 
 <PropsTable name="AnimateAppear" />
+
+::: fw react
 
 나머지 `<div>` 속성은 모두 루트로 전달됩니다. 모든 `Animate*`가 공유하는 설정은 [Prop 규약](../../design/prop-conventions)에 있습니다.
 
 애니메이션은 자식을 감싸는 래퍼가 아니라 자식 자신에게 쓰입니다. 그래서 `<li>`의 나열은 그대로 `<li>`의 나열로 남고, grid의 셀은 그대로 직계 자식으로 남습니다. 글자만 있는 자식만은 쓸 요소가 없으므로 `<span>`으로 감쌉니다.
 
+:::
+
+::: fw flutter
+
+`children`을 받아 `layoutBuilder`로 배치하며, 주지 않으면 `Column`입니다. 그래서 칩 한 줄은 이 위젯이 없을 때의 그 줄과 똑같이 배치됩니다. 모든 `Animate*`가 공유하는 설정은 [Prop 규약](../../design/prop-conventions)에 있습니다.
+
+`stagger`가 0이어도 자식마다 저마다 효과를 재생하고, 묶음 둘레에는 아무것도 그리지 않습니다. `distance`의 단위는 논리 픽셀입니다.
+
+:::
+
 ## 예시
 
 ### stagger
 
-자식 하나와 다음 자식 사이의 간격(밀리초)입니다. 이 효과 자체이며, 나머지는 자식 하나가 하는 일입니다.
+자식 하나와 다음 자식 사이의 간격<Fw react="(밀리초)입니다." flutter="이며 `Duration`으로 받습니다." /> 이 효과 자체이며, 나머지는 자식 하나가 하는 일입니다.
 
 간격은 *자식*마다 매겨지므로 무엇을 넘기는지가 중요합니다. 자식 여덟은 여덟 걸음이고, 여덟 개를 담은 자식 하나는 한 걸음입니다. 목록의 일부를 효과에서 빼는 방법도 그것입니다. 묶으면 됩니다.
 
 <Demo src="animate-appear/stagger">
 
+::: fw react
+
 <<< @/.vitepress/demos/animate-appear/stagger.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/animate_appear/stagger.dart
+
+:::
 
 </Demo>
 
@@ -46,21 +88,41 @@ import { AnimateAppear } from 'neba';
 
 <Demo src="animate-appear/direction">
 
+::: fw react
+
 <<< @/.vitepress/demos/animate-appear/direction.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/animate_appear/direction.dart
+
+:::
 
 </Demo>
 
 ### trigger="visible"
 
-가장 자연스러운 조합입니다. 독자가 다다르는 순간 한 번 내려앉는 내용 묶음. 전체가 루트의 observer 하나를 공유하므로 마흔 개짜리 목록도 observer는 하나입니다.
+가장 자연스러운 조합입니다. 독자가 다다르는 순간 한 번 내려앉는 내용 묶음. <Fw react="전체가 루트의 observer 하나를 공유하므로 마흔 개짜리 목록도 observer는 하나입니다." flutter="전체를 한 번에 재므로 마흔 개짜리 목록도 재는 일은 한 번입니다." />
 
 <Demo src="animate-appear/visible">
 
+::: fw react
+
 <<< @/.vitepress/demos/animate-appear/visible.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/animate_appear/visible.dart
+
+:::
 
 </Demo>
 
 ## 접근성
 
 - 축소된 모션 설정에서는 애니메이션이 마지막 프레임으로 바로 넘어가고, 목록 전체가 그냥 거기 있습니다.
-- 래퍼는 role도 이름도 더하지 않습니다. 목록이 정말 목록이라면 `render={<ul />}`처럼 진짜 요소를 주세요.
+- 래퍼는 role도 이름도 더하지 않습니다. <Fw react="목록이 정말 목록이라면 `render={<ul />}`처럼 진짜 요소를 주세요." flutter="안에 든 것은 제 role과 이름을 그대로 가집니다." />

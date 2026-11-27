@@ -22,6 +22,10 @@ import 'package:neba_example/demos/alert/variants.dart';
 import 'package:neba_example/demos/anchor/hero.dart';
 import 'package:neba_example/demos/anchor/rail.dart';
 import 'package:neba_example/demos/anchor/sizes.dart';
+import 'package:neba_example/demos/animate_appear/direction.dart';
+import 'package:neba_example/demos/animate_appear/hero.dart';
+import 'package:neba_example/demos/animate_appear/stagger.dart';
+import 'package:neba_example/demos/animate_appear/visible.dart';
 import 'package:neba_example/demos/animate_blink/counted.dart';
 import 'package:neba_example/demos/animate_blink/floor.dart';
 import 'package:neba_example/demos/animate_blink/hero.dart';
@@ -624,6 +628,10 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'anchor/hero': AnchorHero.new,
   'anchor/rail': AnchorRail.new,
   'anchor/sizes': AnchorSizes.new,
+  'animate-appear/direction': AnimateAppearDirection.new,
+  'animate-appear/hero': AnimateAppearHero.new,
+  'animate-appear/stagger': AnimateAppearStagger.new,
+  'animate-appear/visible': AnimateAppearVisible.new,
   'animate-blink/counted': AnimateBlinkCounted.new,
   'animate-blink/floor': AnimateBlinkFloor.new,
   'animate-blink/hero': AnimateBlinkHero.new,

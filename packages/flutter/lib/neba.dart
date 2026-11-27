@@ -26,6 +26,7 @@ export 'src/components/accordion/neba_accordion.dart';
 export 'src/components/agent_steps/neba_agent_steps.dart';
 export 'src/components/alert/neba_alert.dart';
 export 'src/components/anchor/neba_anchor.dart';
+export 'src/components/animate_appear/neba_animate_appear.dart';
 export 'src/components/animate_blink/neba_animate_blink.dart';
 export 'src/components/animate_fade/neba_animate_fade.dart';
 export 'src/components/animate_float/neba_animate_float.dart';

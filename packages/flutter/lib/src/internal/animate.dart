@@ -584,12 +584,14 @@ abstract class NebaAnimateBase extends StatelessWidget {
 }
 
 /// [settings]' run of [effect], backwards when [reversed], over [duration]
-/// when it is not [NebaAnimateBase.duration]: the one way an `Animate*`
-/// widget builds itself.
+/// when it is not [NebaAnimateBase.duration], and on each of the children
+/// even with no step when [eachChild]: the one way an `Animate*` widget
+/// builds itself.
 Widget nebaAnimate(
   NebaAnimateBase settings, {
   required NebaEffect effect,
   bool reversed = false,
+  bool eachChild = false,
   Duration? duration,
 }) {
   return NebaAnimateRun(
@@ -610,6 +612,7 @@ Widget nebaAnimate(
     stagger: _ms(settings.stagger),
     durationStep: _ms(settings.durationStep),
     reverse: settings.reverse,
+    eachChild: eachChild,
     timeline: settings.timeline,
     range: settings.range,
     layoutBuilder: settings.layoutBuilder,
@@ -644,6 +647,7 @@ class NebaAnimateRun extends StatefulWidget {
     this.stagger = 0,
     this.durationStep = 0,
     this.reverse = false,
+    this.eachChild = false,
     this.timeline = NebaAnimateTimeline.time,
     this.range = const NebaViewRange(),
     this.observes = true,
@@ -686,6 +690,11 @@ class NebaAnimateRun extends StatefulWidget {
 
   /// See [NebaAnimateBase.reverse].
   final bool reverse;
+
+  /// Whether each of [children] runs the effect on its own even with no
+  /// [stagger] or [durationStep], as a list that settles in does: a piece
+  /// that grows grows about its own middle rather than the list's.
+  final bool eachChild;
 
   /// See [NebaAnimateBase.timeline].
   final NebaAnimateTimeline timeline;
@@ -760,7 +769,8 @@ class _NebaAnimateRunState extends State<NebaAnimateRun> with SingleTickerProvid
   bool get _infinite => widget.timing.repeat.isInfinite;
 
   bool get _spread {
-    return widget.children != null && (widget.stagger != 0 || widget.durationStep != 0);
+    return widget.children != null &&
+        (widget.eachChild || widget.stagger != 0 || widget.durationStep != 0);
   }
 
   /// The timing of each piece: one for the whole, or one per child.
