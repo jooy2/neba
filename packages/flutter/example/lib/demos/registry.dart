@@ -24,6 +24,9 @@ import 'package:neba_example/demos/app_logo/link.dart';
 import 'package:neba_example/demos/app_logo/name.dart';
 import 'package:neba_example/demos/app_logo/shape.dart';
 import 'package:neba_example/demos/app_logo/variant.dart';
+import 'package:neba_example/demos/area_chart/hero.dart';
+import 'package:neba_example/demos/area_chart/single.dart';
+import 'package:neba_example/demos/area_chart/stacked.dart';
 import 'package:neba_example/demos/aspect_ratio/fit.dart';
 import 'package:neba_example/demos/aspect_ratio/hero.dart';
 import 'package:neba_example/demos/aspect_ratio/ratios.dart';
@@ -341,6 +344,9 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'app-logo/name': AppLogoName.new,
   'app-logo/shape': AppLogoShape.new,
   'app-logo/variant': AppLogoVariant.new,
+  'area-chart/hero': AreaChartHero.new,
+  'area-chart/single': AreaChartSingle.new,
+  'area-chart/stacked': AreaChartStacked.new,
   'aspect-ratio/fit': AspectRatioFit.new,
   'aspect-ratio/hero': AspectRatioHero.new,
   'aspect-ratio/ratios': AspectRatioRatios.new,

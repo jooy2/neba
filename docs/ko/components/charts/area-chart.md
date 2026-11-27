@@ -1,6 +1,7 @@
 ---
 title: AreaChart
 order: 3
+flutter: true
 ---
 
 # AreaChart
@@ -8,6 +9,8 @@ order: 3
 <p class="neba-lede">선 아래를 채운 차트입니다. 합해서 의미가 있는 양을 나타낼 때, 그리고 stacked로는 그 합이 무엇으로 이루어져 있는지를 나타낼 때 씁니다.</p>
 
 <Demo src="area-chart/hero" />
+
+::: fw react
 
 ```tsx
 import { AreaChart } from 'neba';
@@ -23,6 +26,26 @@ import { AreaChart } from 'neba';
 />;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+const NebaAreaChart(
+  label: '티어별 사용 스토리지',
+  categories: <Object>['Jan', 'Feb', 'Mar'],
+  stacked: NebaChartStacking.on,
+  series: <NebaChartSeries>[
+    NebaChartSeries(name: 'Hot', data: <num>[120, 138, 149]),
+    NebaChartSeries(name: 'Archive', data: <num>[610, 648, 690]),
+  ],
+);
+```
+
+:::
+
 데이터 형식은 모든 차트가 공유합니다. `series`와 `categories`, 그리고 0이 아니라 결측을 뜻하는 `null`입니다. 전체 정의는 [LineChart](./line-chart#데이터-형식) 문서에 있습니다.
 
 둘 중 무엇을 쓸지는 그 양이 *무엇인지*로 갈립니다. 합해도 아무 뜻이 없는 값이라면(온도, 비율, 점수) 선 아래의 채움은 장식일 뿐이고, 그런 것이 두 개 겹치면 서로를 가릴 뿐입니다.
@@ -31,17 +54,37 @@ import { AreaChart } from 'neba';
 
 <PropsTable name="AreaChart" />
 
+::: fw react
+
 `<div>`의 native 속성과 [Box](../surfaces/box)의 모든 prop이 그대로 전달됩니다. `xAxis`·`yAxis`·`legend`·`tooltip`은 [LineChart](./line-chart#props)와 같은 형태를 받고, [`brush`](./line-chart#brush)·[`references`](./line-chart#references)·[`secondaryAxis`](./line-chart#secondaryaxis)·[`exportable`](./line-chart#exportable)도 그곳에서와 똑같이 동작합니다. 공용 축은 [prop 규약](../../design/prop-conventions)을 참고하세요.
+
+:::
+
+::: fw flutter
+
+차트는 [LineChart](./line-chart#props)처럼 [Box](../surfaces/box) 위에 놓입니다. `xAxis`·`yAxis`·`legend`·`tooltip`은 그곳과 같은 형태를 받고, [`references`](./line-chart#references)·[`secondaryAxis`](./line-chart#secondaryaxis)도 똑같이 동작합니다. `brush`와 `exportable`은 Flutter 패키지에 아직 없습니다. Dart에는 `bool`이나 단어를 함께 받는 타입이 없으므로 `stacked`는 `NebaChartStacking`의 `off`·`on`·`full`입니다. 공용 축은 [prop 규약](../../design/prop-conventions)을 참고하세요.
+
+:::
 
 ## 예시
 
 ### stacked
 
-`false`는 밴드를 겹쳐 그려 "각각 얼마인가"에 답합니다. `true`는 쌓아서 위쪽 가장자리가 합계가 됩니다. `'full'`은 각 category를 100%로 정규화하므로 차트가 크기가 아니라 비중에 대한 것이 됩니다. 값 축이 백분율로 바뀌고 그렇다고 표시하며, tooltip에는 원래 숫자가 남습니다.
+<Fw react="`false`는" flutter="`off`는" /> 밴드를 겹쳐 그려 "각각 얼마인가"에 답합니다. <Fw react="`true`는" flutter="`on`은" /> 쌓아서 위쪽 가장자리가 합계가 됩니다. <Fw react="`'full'`은" flutter="`full`은" /> 각 category를 100%로 정규화하므로 차트가 크기가 아니라 비중에 대한 것이 됩니다. 값 축이 백분율로 바뀌고 그렇다고 표시하며, tooltip에는 원래 숫자가 남습니다.
 
 <Demo src="area-chart/stacked">
 
+::: fw react
+
 <<< @/.vitepress/demos/area-chart/stacked.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/area_chart/stacked.dart
+
+:::
 
 </Demo>
 
@@ -51,7 +94,17 @@ series가 하나면 범례가 나오지 않습니다. 무엇을 그린 것인지
 
 <Demo src="area-chart/single">
 
+::: fw react
+
 <<< @/.vitepress/demos/area-chart/single.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/area_chart/single.dart
+
+:::
 
 </Demo>
 
@@ -59,11 +112,28 @@ series가 하나면 범례가 나오지 않습니다. 무엇을 그린 것인지
 
 [LineChart](./line-chart#curve)와 같은 세 prop이며 뜻도 같습니다. 다만 `markers`의 기본값은 `auto`가 아니라 `none`입니다.
 
-stacked 차트에서는 결측에서 끊어진 밴드가 그 위에 쌓인 밴드까지 끊으므로, 대개 `nulls="zero"`를 넘깁니다. `zero`는 데이터를 고쳐 쓰므로 축과 tooltip과 표도 함께 0이라고 말합니다.
+stacked 차트에서는 결측에서 끊어진 밴드가 그 위에 쌓인 밴드까지 끊으므로, 대개 <Fw react='`nulls="zero"`를' flutter="`nulls: NebaChartNulls.zero`를" /> 넘깁니다. `zero`는 데이터를 고쳐 쓰므로 축과 tooltip과 표도 함께 0이라고 말합니다.
+
+::: fw react
 
 ```tsx
 <AreaChart curve="step" markers="all" nulls="zero" … />
 ```
+
+:::
+
+::: fw flutter
+
+```dart
+NebaAreaChart(
+  curve: NebaChartCurve.step,
+  markers: NebaChartMarkers.all,
+  nulls: NebaChartNulls.zero,
+  …
+)
+```
+
+:::
 
 ### 값 축
 
@@ -71,6 +141,18 @@ LineChart와 달리 AreaChart는 값 축에 0을 남겨 둡니다. 채움의 두
 
 ## 접근성
 
+::: fw react
+
 - 데이터는 `label`을 caption으로 하는 **화면에 보이지 않는 표**로도 렌더링됩니다. 데이터 점이 500개를 넘으면 caption과 머리글 행은 바로 쓰고, 행은 차트가 처음 그려진 직후에 조금씩 나눠 추가합니다. 그래서 서버에서 렌더링한 HTML에는 행이 들어가지 않습니다.
 - plot에 focus할 수 있습니다. `←`·`→`로 category를 옮기고, `Home`·`End`로 양 끝으로, `Escape`로 해제합니다.
 - `stacked="full"`일 때 tooltip과 표는 백분율이 아니라 넘긴 값을 그대로 보고합니다. 차트는 비중을 보여 주고, 원래 숫자에도 여전히 닿을 수 있습니다.
+
+:::
+
+::: fw flutter
+
+- plot은 한 문장으로 설명되는 이미지 노드 하나이고, 데이터는 `label`을 caption으로 하는 숨은 표입니다. [LineChart](./line-chart#접근성)와 같으며, Flutter가 그중 무엇을 표현할 수 있고 없는지도 그곳에 있습니다. 데이터 점이 500개를 넘으면 행은 첫 프레임 뒤에 쉬는 틈마다 나눠 추가합니다.
+- plot은 focus를 받습니다. `←`·`→`로 category를 옮기고, `Home`·`End`로 양 끝으로, `Escape`로 해제하며, 옮길 때마다 읽고 있는 값을 알립니다.
+- `stacked: NebaChartStacking.full`일 때 tooltip과 표는 백분율이 아니라 넘긴 값을 그대로 보고합니다. 차트는 비중을 보여 주고, 원래 숫자에도 여전히 닿을 수 있습니다.
+
+:::
