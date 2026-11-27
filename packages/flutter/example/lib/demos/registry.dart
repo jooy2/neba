@@ -139,6 +139,15 @@ import 'package:neba_example/demos/chip/hero.dart';
 import 'package:neba_example/demos/chip/interactive.dart';
 import 'package:neba_example/demos/chip/sizes.dart';
 import 'package:neba_example/demos/chip/variants.dart';
+import 'package:neba_example/demos/code_block/chrome.dart';
+import 'package:neba_example/demos/code_block/hero.dart';
+import 'package:neba_example/demos/code_block/language.dart';
+import 'package:neba_example/demos/code_block/marks.dart';
+import 'package:neba_example/demos/code_block/numbers.dart';
+import 'package:neba_example/demos/code_block/prompt.dart';
+import 'package:neba_example/demos/code_block/scroll.dart';
+import 'package:neba_example/demos/code_block/theme.dart';
+import 'package:neba_example/demos/code_block/typography.dart';
 import 'package:neba_example/demos/collapsible/hero.dart';
 import 'package:neba_example/demos/collapsible/mounting.dart';
 import 'package:neba_example/demos/collapsible/slots.dart';
@@ -274,6 +283,7 @@ import 'package:neba_example/demos/hover_card/sizes.dart';
 import 'package:neba_example/demos/how_to_steps/bare.dart';
 import 'package:neba_example/demos/how_to_steps/controlled.dart';
 import 'package:neba_example/demos/how_to_steps/divider.dart';
+import 'package:neba_example/demos/how_to_steps/hero.dart';
 import 'package:neba_example/demos/how_to_steps/orientation.dart';
 import 'package:neba_example/demos/how_to_steps/scrolling.dart';
 import 'package:neba_example/demos/how_to_steps/transition.dart';
@@ -652,6 +662,15 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'chip/interactive': ChipInteractive.new,
   'chip/sizes': ChipSizes.new,
   'chip/variants': ChipVariants.new,
+  'code-block/chrome': CodeBlockChrome.new,
+  'code-block/hero': CodeBlockHero.new,
+  'code-block/language': CodeBlockLanguage.new,
+  'code-block/marks': CodeBlockMarks.new,
+  'code-block/numbers': CodeBlockNumbers.new,
+  'code-block/prompt': CodeBlockPrompt.new,
+  'code-block/scroll': CodeBlockScroll.new,
+  'code-block/theme': CodeBlockTheme.new,
+  'code-block/typography': CodeBlockTypography.new,
   'collapsible/hero': CollapsibleHero.new,
   'collapsible/mounting': CollapsibleMounting.new,
   'collapsible/slots': CollapsibleSlots.new,
@@ -787,6 +806,7 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'how-to-steps/bare': HowToStepsBare.new,
   'how-to-steps/controlled': HowToStepsControlled.new,
   'how-to-steps/divider': HowToStepsDivider.new,
+  'how-to-steps/hero': HowToStepsHero.new,
   'how-to-steps/orientation': HowToStepsOrientation.new,
   'how-to-steps/scrolling': HowToStepsScrolling.new,
   'how-to-steps/transition': HowToStepsTransition.new,

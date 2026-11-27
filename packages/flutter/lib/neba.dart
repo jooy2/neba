@@ -54,6 +54,7 @@ export 'src/components/chat_bubble/neba_chat_bubble.dart';
 export 'src/components/checkbox/neba_checkbox.dart';
 export 'src/components/checkbox_group/neba_checkbox_group.dart';
 export 'src/components/chip/neba_chip.dart';
+export 'src/components/code_block/neba_code_block.dart';
 export 'src/components/collapsible/neba_collapsible.dart';
 export 'src/components/combobox/neba_combobox.dart';
 export 'src/components/command_palette/neba_command_palette.dart';

@@ -88,6 +88,26 @@ abstract final class NebaGlyphs {
     ),
   ];
 
+  /// Two sheets, one over the other: copy.
+  static final List<NebaGlyphPart> copy = <NebaGlyphPart>[
+    const NebaGlyphPart.stroke(
+      'M7.5 5.75h4a1.75 1.75 0 0 1 1.75 1.75v4a1.75 1.75 0 0 1-1.75 1.75h-4a1.75 1.75 0 0 1-1.75-1.75v-4a1.75 1.75 0 0 1 1.75-1.75Z',
+    ),
+    const NebaGlyphPart.stroke(
+      'M10.25 3.6a1.85 1.85 0 0 0-1.5-.85h-4a2 2 0 0 0-2 2v4c0 .62.28 1.17.72 1.54',
+      cap: StrokeCap.round,
+    ),
+  ];
+
+  /// Two angle brackets: code, as it is written.
+  static final List<NebaGlyphPart> code = <NebaGlyphPart>[
+    const NebaGlyphPart.stroke(
+      'M5.75 4.5 2.5 8l3.25 3.5m4.5-7L13.5 8l-3.25 3.5',
+      cap: StrokeCap.round,
+      join: StrokeJoin.round,
+    ),
+  ];
+
   /// An arrow along the line of reading: what comes next.
   static final List<NebaGlyphPart> arrowRight = <NebaGlyphPart>[
     const NebaGlyphPart.stroke(
