@@ -231,6 +231,7 @@ import 'package:neba_example/demos/pill/hero.dart';
 import 'package:neba_example/demos/pill/slots.dart';
 import 'package:neba_example/demos/pill/text.dart';
 import 'package:neba_example/demos/pill/variants.dart';
+import 'package:neba_example/demos/popconfirm/hero.dart';
 import 'package:neba_example/demos/popover/controlled.dart';
 import 'package:neba_example/demos/popover/form.dart';
 import 'package:neba_example/demos/popover/hero.dart';
@@ -602,6 +603,7 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'pill/slots': PillSlots.new,
   'pill/text': PillText.new,
   'pill/variants': PillVariants.new,
+  'popconfirm/hero': PopconfirmHero.new,
   'popover/controlled': PopoverControlled.new,
   'popover/form': PopoverForm.new,
   'popover/hero': PopoverHero.new,

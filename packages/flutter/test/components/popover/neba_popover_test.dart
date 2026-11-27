@@ -90,6 +90,30 @@ void main() {
       semantics.dispose();
     });
 
+    testWidgets('takes a name of its own, which names it on the web too', (
+      WidgetTester tester,
+    ) async {
+      final SemanticsHandle semantics = tester.ensureSemantics();
+
+      await tester.pumpWidget(
+        scene(
+          const NebaPopover(
+            defaultOpen: true,
+            semanticLabel: 'Sharing',
+            child: Text('Anyone with the link can read it.'),
+          ),
+        ),
+      );
+
+      expect(
+        tester.getSemantics(
+          find.ancestor(of: find.byType(NebaFloatingSheet), matching: find.byType(Semantics)).first,
+        ),
+        matchesSemantics(label: 'Sharing', namesRoute: true),
+      );
+      semantics.dispose();
+    });
+
     testWidgets('draws the description under the title, muted', (WidgetTester tester) async {
       await tester.pumpWidget(
         scene(

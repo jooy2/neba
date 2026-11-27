@@ -1,4 +1,12 @@
-import { densityRow, from, renamed, sizeRow, WIDGET, type PropRow } from './shared';
+import {
+  densityRow,
+  from,
+  renamed,
+  semanticLabelRow,
+  sizeRow,
+  WIDGET,
+  type PropRow
+} from './shared';
 
 export default {
   Popover: [
@@ -77,6 +85,7 @@ export default {
         ko: 'size가 정한 최대 너비를 대신할 값(논리 픽셀)',
         en: 'A cap overriding the one size implies, in logical pixels'
       }
-    })
+    }),
+    semanticLabelRow
   ]
 } satisfies Record<string, PropRow[]>;

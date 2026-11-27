@@ -50,6 +50,7 @@ class NebaPopover extends StatefulWidget {
     this.locale,
     this.closeLabel,
     this.width,
+    this.semanticLabel,
     super.key,
   });
 
@@ -137,6 +138,11 @@ class NebaPopover extends StatefulWidget {
   /// [size] gives.
   final double? width;
 
+  /// The name a screen reader announces for the popup, in place of the words
+  /// of a [title] that is a [Text]: React's `aria-label`, for a popup whose
+  /// heading is in its body or is not a [Text].
+  final String? semanticLabel;
+
   /// The widest a popup gets at each size, one rung narrower than a dialog.
   static const Map<NebaSize, double> maxWidths = <NebaSize, double>{
     NebaSize.xs: 224,
@@ -186,14 +192,17 @@ class _NebaPopoverState extends State<NebaPopover> {
     final NebaDensity density = widget.density ?? defaults.density ?? NebaDensity.standard;
     final bool open = _isOpen;
     final Widget? title = widget.title;
-    final String? name = title is Text ? title.data : null;
+    final String? name = widget.semanticLabel ?? (title is Text ? title.data : null);
     final String closeLabel =
         widget.closeLabel ?? nebaMessages(context, 'action', locale: widget.locale)['close']!;
 
+    // A label names the popup only with `namesRoute` beside it: on the web a
+    // dialog's own label is its `aria-label` then, and is dropped without.
     final Widget popup = Semantics(
       container: true,
       explicitChildNodes: true,
       role: SemanticsRole.dialog,
+      namesRoute: name == null ? null : true,
       label: name,
       child: FocusTraversalGroup(
         // The order the widgets are written in, as the DOM orders a tab
