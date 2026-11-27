@@ -273,7 +273,7 @@ Demos that wait on a component not ported yet, to be added with it: `carousel/ph
 ### Transitions (17)
 
 - [x] `NebaAnimateFade`
-- [ ] `NebaAnimateGrow`
+- [x] `NebaAnimateGrow`
 - [ ] `NebaAnimateZoom`
 - [ ] `NebaAnimateSlide`
 - [ ] `NebaAnimateRotate`
