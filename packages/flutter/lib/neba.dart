@@ -139,6 +139,7 @@ export 'src/components/timeline_chart/neba_timeline_chart.dart';
 export 'src/components/toast/neba_toast.dart';
 export 'src/components/toggle/neba_toggle.dart';
 export 'src/components/toggle_group/neba_toggle_group.dart';
+export 'src/components/tool_call/neba_tool_call.dart';
 export 'src/components/toolbar/neba_toolbar.dart';
 export 'src/components/tooltip/neba_tooltip.dart';
 export 'src/components/tour/neba_tour.dart';

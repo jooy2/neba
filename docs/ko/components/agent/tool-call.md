@@ -1,6 +1,7 @@
 ---
 title: ToolCall
 order: 1
+flutter: true
 ---
 
 # ToolCall
@@ -8,6 +9,8 @@ order: 1
 <p class="neba-lede">에이전트 transcript에 놓이는 도구 호출 하나입니다. 무엇을 불렀고, 무엇을 넘겼고, 무엇이 돌아왔고, 얼마나 걸렸는지를 보여 줍니다. 헤더는 늘 보이고 나머지는 그 뒤로 접힙니다.</p>
 
 <Demo src="tool-call/hero" />
+
+::: fw react
 
 ```tsx
 import { ToolCall } from 'neba';
@@ -21,11 +24,39 @@ import { ToolCall } from 'neba';
 />;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+const NebaToolCall(
+  name: Text('search_docs'),
+  status: NebaRunStatus.success,
+  duration: Duration(milliseconds: 412),
+  args: Text('{ "query": "acrylic surface" }'),
+  result: Text('{ "hits": 4 }'),
+);
+```
+
+:::
+
 ## Props
 
 <PropsTable name="ToolCall" />
 
+::: fw react
+
 `<div>`의 기본 속성은 루트로 전달됩니다. 위 표에서 다르게 정의한 `color`와 `onChange`만 제외됩니다.
+
+:::
+
+::: fw flutter
+
+`duration`은 밀리초 숫자가 아니라 `Duration`입니다. `labels`는 React 패키지가 쓰는 이름을 키로 삼는 맵입니다. `showIcon: false`가 React의 `icon={false}`이고, `hiddenUntilFound` 자리에는 `keepMounted`가 있습니다.
+
+:::
 
 `status`는 공용 [`NebaRunStatus`](../../design/prop-conventions)이며, [AgentSteps](./agent-steps)의 step이 받는 것과 같은 네 단어입니다. 나머지 공용 축도 다른 곳에서와 같은 뜻입니다.
 
@@ -39,25 +70,65 @@ import { ToolCall } from 'neba';
 
 <Demo src="tool-call/status">
 
+::: fw react
+
 <<< @/.vitepress/demos/tool-call/status.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/tool_call/status.dart
+
+:::
 
 </Demo>
 
 ### duration
 
+::: fw react
+
 밀리초 단위입니다. 1초 미만은 밀리초로, 그 위는 초로 씁니다. 처음 10초까지는 소수점 한 자리, 그 뒤로는 정수입니다. `Intl.NumberFormat`을 거치므로 `locale`이 독자의 언어로 씁니다.
+
+:::
+
+::: fw flutter
+
+`Duration`입니다. 1초 미만은 밀리초로, 그 위는 초로 씁니다. 처음 10초까지는 소수점 한 자리, 그 뒤로는 정수입니다. 위젯 계층에는 `Intl`이 없어서 늘 영어(`340ms`, `4.2s`)로 쓰며, `locale`은 그 주변의 단어를 바꿉니다.
+
+:::
 
 주지 않으면 `running`인 호출이 실행을 시작한 시점부터 스스로 셉니다. 첫 1초 동안은 아무 말도 하지 않고, 그 뒤로 1초마다 갱신하며, 실제 `duration`이 도착하면 멈춥니다.
 
 ### args · result · error
 
+::: fw react
+
 문자열은 `<pre>`에 들어가고, 줄바꿈이 그대로 유지되며 필요하면 스크롤이 생깁니다. 들여쓴 JSON도, 스택 트레이스도, diff도 줄이 어디서 끊기느냐가 곧 의미이기 때문입니다. 그 밖의 값은 노드로 보고 손대지 않고 그리므로 [CodeBlock](../display/code-block)이나 [DataList](../display/data-list)를 그대로 넣을 수 있습니다.
+
+:::
+
+::: fw flutter
+
+평범한 `Text`는 고정폭 글꼴로 따로 된 블록에 들어갑니다. 줄바꿈은 그대로 유지되고, 줄을 바꾸는 대신 스크롤합니다. 들여쓴 JSON도, 스택 트레이스도, diff도 줄이 어디서 끊기느냐가 곧 의미이기 때문입니다. 그 밖의 위젯은 손대지 않고 그리므로 [DataList](../display/data-list)를 그대로 넣을 수 있고, 문자열을 블록에 넣지 않으려면 `Text.rich`로 넘기면 됩니다.
+
+:::
 
 `status`가 `error`이면 `error`가 `result` 자리를 대신하고, 제목도 "결과"가 아니라 "실패"가 됩니다. `error`가 없으면 실패한 호출도 `result`를 보여 주는데, 도구가 돌려준 오류 자체인 경우가 많기 때문입니다.
 
 <Demo src="tool-call/body">
 
+::: fw react
+
 <<< @/.vitepress/demos/tool-call/body.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/tool_call/body.dart
+
+:::
 
 </Demo>
 
@@ -67,11 +138,21 @@ import { ToolCall } from 'neba';
 
 `open`을 넘기면 이 동작까지 함께 꺼집니다. 제어되는 ToolCall은 호출한 쪽이 둔 그대로이고, 실패해도 움직이지 않습니다.
 
-`args`도 `result`도 `error`도 children도 없는 ToolCall은 아예 disclosure가 아닙니다. 헤더 줄만 그리고 누를 것은 없습니다.
+`args`도 `result`도 `error`도 <Fw react="children" flutter="child" code />도 없는 ToolCall은 아예 disclosure가 아닙니다. 헤더 줄만 그리고 누를 것은 없습니다.
 
-### hiddenUntilFound
+### <Fw react="hiddenUntilFound" flutter="keepMounted" />
+
+::: fw react
 
 켜져 있습니다. 닫힌 패널은 `hidden="until-found"`로 DOM에 남으므로 인자와 결과가 서버 렌더에 포함되고, 브라우저의 페이지 내 찾기가 이를 찾아 패널을 열 수 있습니다. 결과가 긴 호출이 많이 쌓이는 transcript라면 `hiddenUntilFound={false}`로 닫힌 패널을 DOM에서 빼세요. 각 패널은 열릴 때 만들어집니다.
+
+:::
+
+::: fw flutter
+
+켜져 있습니다. 닫힌 패널도 내용을 빌드된 채로 둡니다. 결과가 긴 호출이 많이 쌓이는 transcript라면 `keepMounted: false`로 닫힌 패널을 내려놓으세요. 각 패널은 열릴 때 만들어집니다.
+
+:::
 
 ### variant
 
@@ -79,14 +160,37 @@ import { ToolCall } from 'neba';
 
 <Demo src="tool-call/variant">
 
+::: fw react
+
 <<< @/.vitepress/demos/tool-call/variant.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/tool_call/variant.dart
+
+:::
 
 </Demo>
 
 ## 접근성
+
+::: fw react
 
 - 헤더는 진짜 버튼이고, Base UI가 `aria-expanded`와 `aria-controls`로 패널과 연결합니다.
 - 닫힌 패널은 tab 순서에도 accessibility tree에도 없습니다. `hiddenUntilFound`를 끄지 않는 한 브라우저의 페이지 내 찾기는 그 안의 글을 찾아 패널을 열 수 있습니다.
 - 상태는 단어로 쓰여 있어서 스크린 리더가 그 행에 닿으면 읽습니다. 표시는 `aria-hidden`입니다. 모양은 읽히지 않기 때문입니다.
 - 상태가 바뀌어도 저절로 알려지지는 않습니다. 호출이 실패한 순간을 들려주려면 앱이 페이지에 두는 live region, 예컨대 `role="status"` 요소에 그 내용을 쓰세요.
 - 루트에 `data-status`가 붙습니다. 스타일링과, 상태를 확인해야 하는 테스트를 위한 것입니다.
+
+:::
+
+::: fw flutter
+
+- 스크린 리더는 헤더를 펼쳐졌거나 접힌 버튼으로 듣고, 도구 이름, 단어로 된 상태, meta, 시간을 그 이름으로 읽습니다. Enter와 Space로 열고 닫습니다.
+- 닫힌 패널은 닫히기 시작하는 순간부터 focus 순서에도 semantics tree에도 없습니다. 빌드된 채로 남아 있어도 마찬가지입니다.
+- 표시는 그리기만 하고 읽지 않으며, 상태는 대신 단어로 말합니다. 영어의 "Result" 같은 제목은 대문자로 그리지만 원래 단어로 읽습니다.
+- 상태가 바뀌어도 저절로 알려지지는 않습니다. 호출이 실패한 순간을 들려주려면 앱이 `SemanticsService`나 직접 둔 live region으로 알리세요.
+
+:::

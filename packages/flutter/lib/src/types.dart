@@ -197,6 +197,30 @@ enum NebaModal {
   trapFocus,
 }
 
+/// How far a piece of work an agent is doing has got: the React package's
+/// `NebaRunStatus`, which a `NebaToolCall` and a `NebaAgentStep` share.
+///
+/// One vocabulary for both, because a tool call and a step of a plan are the
+/// same lifecycle seen at two scales. Four, and the list is closed: [success]
+/// and [error] are two endings rather than one with a flag beside it, and
+/// there is no `cancelled`, because a run that was stopped ended without
+/// succeeding, which is what [error] says. `NebaTimeline` keeps its own words
+/// on purpose: a step of a checkout is upcoming rather than pending, because
+/// nothing is waiting on it.
+enum NebaRunStatus {
+  /// Not started: a dashed ring, in the secondary family.
+  pending,
+
+  /// Going on now: the turning ring, in the widget's own family.
+  running,
+
+  /// Ended, and did what it was asked: a tick, always in the success family.
+  success,
+
+  /// Ended, and did not: a cross, always in the danger family.
+  error,
+}
+
 /// Whether the colours follow the platform's brightness or are pinned.
 enum NebaColorScheme {
   /// Follow `MediaQueryData.platformBrightness`.
