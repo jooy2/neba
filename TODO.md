@@ -319,7 +319,7 @@ Some components have no single Flutter equivalent of what they are on the web, a
 
 Every component arrives with its own widget tests in phase 2. This phase is the suite that holds across all of them, as `plass-ui`'s `test/package/` does:
 
-- [ ] Every surface the pointer can act on lights under it, and nothing else does.
+- [x] Every surface the pointer can act on lights under it, and nothing else does. `packages/flutter/test/package/light_test.dart` holds the design language's list: both layers on a Button, an IconButton, a Toggle and a SegmentedButton, the spotlight alone on a Tabs bar and a field, and no light on a Card, a ListItem, an Accordion, a Chip, a Checkbox, a Switch, a Slider, an OtpField or a TextLink, which is the React package's set.
 - [ ] Reduced motion (`MediaQuery.disableAnimations`) stops every animation that is not the user's own drag.
 - [ ] Every component lays out right to left, and no source file says left or right where it means start or end.
 - [x] Every component fits a 320-pixel-wide screen without an overflow. `packages/flutter/example/test/gallery_test.dart` lays every demo out at 320×568 in Inter, the face the gallery bundles, since the test font's squares are nearly twice as wide as real letters; the sample app's `demos_test.dart` adds 360, 390 and 834. Its first run found a PromptInput's start group sharing its room with a spacer. Two demos are wider than 320 by what they show and are left out of that one test: a calendar at `lg`, seven 44-pixel cells as in the React package, and `Mod+Alt+Shift+Delete` written out in words in the monospaced face the gallery does not bundle.
