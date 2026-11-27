@@ -91,6 +91,12 @@ It draws nothing and takes no `className` or `style`. A child that should take t
 
 :::
 
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/flex/spacing.dart
+
+:::
+
 </Demo>
 
 ### justifyContent · alignItems

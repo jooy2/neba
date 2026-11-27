@@ -68,6 +68,12 @@ NebaScrollArea(height: 200, fade: true, child: changelog);
 
 :::
 
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/scroll_area/orientation.dart
+
+:::
+
 </Demo>
 
 ### fade

@@ -91,6 +91,12 @@ NebaFlex(
 
 :::
 
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/flex/spacing.dart
+
+:::
+
 </Demo>
 
 ### justifyContent · alignItems

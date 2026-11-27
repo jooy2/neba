@@ -24,10 +24,16 @@ import 'package:neba_example/demos/button/icons.dart';
 import 'package:neba_example/demos/button/sizes.dart';
 import 'package:neba_example/demos/button/states.dart';
 import 'package:neba_example/demos/button/variants.dart';
+import 'package:neba_example/demos/chip/content.dart';
+import 'package:neba_example/demos/chip/hero.dart';
+import 'package:neba_example/demos/chip/interactive.dart';
+import 'package:neba_example/demos/chip/sizes.dart';
+import 'package:neba_example/demos/chip/variants.dart';
 import 'package:neba_example/demos/container/hero.dart';
 import 'package:neba_example/demos/container/max_width.dart';
 import 'package:neba_example/demos/container/plain.dart';
 import 'package:neba_example/demos/flex/hero.dart';
+import 'package:neba_example/demos/flex/spacing.dart';
 import 'package:neba_example/demos/grid/alignment.dart';
 import 'package:neba_example/demos/grid/columns.dart';
 import 'package:neba_example/demos/grid/hero.dart';
@@ -38,8 +44,10 @@ import 'package:neba_example/demos/grid/spacing.dart';
 import 'package:neba_example/demos/grid/spans.dart';
 import 'package:neba_example/demos/scroll_area/fade.dart';
 import 'package:neba_example/demos/scroll_area/hero.dart';
+import 'package:neba_example/demos/scroll_area/orientation.dart';
 import 'package:neba_example/demos/scroll_area/sizes.dart';
 import 'package:neba_example/demos/show/hero.dart';
+import 'package:neba_example/demos/show/range.dart';
 import 'package:neba_example/demos/show/transparent.dart';
 import 'package:neba_example/demos/tokens/palette.dart';
 import 'package:neba_example/demos/typography/clamp.dart';
@@ -67,10 +75,16 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'button/sizes': ButtonSizes.new,
   'button/states': ButtonStates.new,
   'button/variants': ButtonVariants.new,
+  'chip/content': ChipContent.new,
+  'chip/hero': ChipHero.new,
+  'chip/interactive': ChipInteractive.new,
+  'chip/sizes': ChipSizes.new,
+  'chip/variants': ChipVariants.new,
   'container/hero': ContainerHero.new,
   'container/max-width': ContainerMaxWidth.new,
   'container/plain': ContainerPlain.new,
   'flex/hero': FlexHero.new,
+  'flex/spacing': FlexSpacing.new,
   'grid/alignment': GridAlignment.new,
   'grid/columns': GridColumns.new,
   'grid/hero': GridHero.new,
@@ -81,8 +95,10 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'grid/spans': GridSpans.new,
   'scroll-area/fade': ScrollAreaFade.new,
   'scroll-area/hero': ScrollAreaHero.new,
+  'scroll-area/orientation': ScrollAreaOrientation.new,
   'scroll-area/sizes': ScrollAreaSizes.new,
   'show/hero': ShowHero.new,
+  'show/range': ShowRange.new,
   'show/transparent': ShowTransparent.new,
   'tokens/palette': TokensPalette.new,
   'typography/clamp': TypographyClamp.new,

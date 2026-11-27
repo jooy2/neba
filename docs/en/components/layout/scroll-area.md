@@ -68,6 +68,12 @@ A vertical scroll area has to be bounded by something or there is nothing to scr
 
 :::
 
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/scroll_area/orientation.dart
+
+:::
+
 </Demo>
 
 ### fade

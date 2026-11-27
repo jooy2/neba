@@ -86,6 +86,12 @@ Given together they are a floor and a ceiling: `above: NebaBreakpoint.sm, below:
 
 :::
 
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/show/range.dart
+
+:::
+
 </Demo>
 
 ### Inside a grid or flex row
