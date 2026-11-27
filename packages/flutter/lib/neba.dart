@@ -43,6 +43,7 @@ export 'src/components/flex/neba_flex.dart';
 export 'src/components/grid/neba_grid.dart';
 export 'src/components/grid_container/neba_grid_container.dart';
 export 'src/components/highlight/neba_highlight.dart';
+export 'src/components/hover_card/neba_hover_card.dart';
 export 'src/components/icon/neba_icon.dart';
 export 'src/components/icon_button/neba_icon_button.dart';
 export 'src/components/meter/neba_meter.dart';

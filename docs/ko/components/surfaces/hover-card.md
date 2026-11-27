@@ -1,6 +1,7 @@
 ---
 title: HoverCard
 order: 16
+flutter: true
 ---
 
 # HoverCard
@@ -8,6 +9,8 @@ order: 16
 <p class="neba-lede">포인터가 어떤 대상 위에 머무를 때 열려, 그 너머에 있는 것을 미리 보여주는 카드입니다. 멘션 뒤의 사람, 링크 뒤의 저장소, id 뒤의 배포 같은 것입니다.</p>
 
 <Demo src="hover-card/hero" />
+
+::: fw react
 
 ```tsx
 import { HoverCard, TextLink } from 'neba';
@@ -17,17 +20,47 @@ import { HoverCard, TextLink } from 'neba';
 </HoverCard>;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+NebaHoverCard(
+  trigger: NebaButton(
+    onPressed: openProfile,
+    variant: NebaVariant.text,
+    child: const Text('@nadiarowan'),
+  ),
+  title: const Text('Nadia Rowan'),
+  child: const Text('Maintainer · 214 commits'),
+);
+```
+
+:::
+
 ## Props
 
 <PropsTable name="HoverCard" />
 
+::: fw react
+
 `<div>`의 기본 속성은 popup으로 전달됩니다. 컴포넌트가 직접 소유하는 `color`, `title`, `children`만 예외입니다. `variant`와 `elevation`은 없습니다.
+
+:::
+
+::: fw flutter
+
+`variant`와 `elevation`은 없습니다. 카드는 [Popover](./popover)의 popup처럼 앱의 root `Overlay`에 그려집니다.
+
+:::
 
 ## 예시
 
 ### trigger
 
-`trigger`는 children이 아니라 요소 하나를 받고, 카드는 감싸는 요소 없이 그 요소에 병합됩니다. 그래서 레이아웃은 그대로이고 링크는 링크로 남습니다. 보통 [TextLink](../display/text-link)나 [Avatar](../display/avatar)를 넘깁니다.
+`trigger`는 children이 아니라 <Fw react="요소" flutter="위젯" /> 하나를 받고, 카드는 <Fw react="감싸는 요소 없이 그 요소에 병합됩니다" flutter="그 위젯을 감싸되 레이아웃에는 아무것도 더하지 않습니다" />. 그래서 레이아웃은 그대로이고 링크는 링크로 남습니다. 보통 [TextLink](../display/text-link)나 [Avatar](../display/avatar)를 넘깁니다.
 
 ### delay · closeDelay
 
@@ -35,7 +68,11 @@ import { HoverCard, TextLink } from 'neba';
 
 <Demo src="hover-card/delay">
 
+::: fw react
+
 <<< @/.vitepress/demos/hover-card/delay.tsx
+
+:::
 
 </Demo>
 
@@ -43,9 +80,19 @@ import { HoverCard, TextLink } from 'neba';
 
 `side`는 카드가 나타나는 trigger의 모서리이고 공간이 없으면 반대편으로 뒤집힙니다. `align`은 그 모서리 위에서의 위치입니다. `arrow`는 꼭지를 그리며 기본값은 꺼짐입니다.
 
-<Demo src="hover-card/placement">
+<Demo src="hover-card/placement" minHeight="200">
+
+::: fw react
 
 <<< @/.vitepress/demos/hover-card/placement.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/hover_card/placement.dart
+
+:::
 
 </Demo>
 
@@ -53,9 +100,19 @@ import { HoverCard, TextLink } from 'neba';
 
 `size`는 타입 스케일과 안쪽 여백, 그리고 카드가 넓어질 수 있는 한계를 정합니다. `width`는 마지막 항목만 따로 덮어씁니다.
 
-<Demo src="hover-card/sizes">
+<Demo src="hover-card/sizes" minHeight="240">
+
+::: fw react
 
 <<< @/.vitepress/demos/hover-card/sizes.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/hover_card/sizes.dart
+
+:::
 
 </Demo>
 
@@ -64,3 +121,9 @@ import { HoverCard, TextLink } from 'neba';
 - 카드 안의 내용은 trigger가 향하는 페이지에도 반드시 존재해야 합니다. hover가 없는 키보드, 포인터가 없는 터치스크린, 스크린 리더는 모두 그 경로로 도달하므로 이 카드가 유일한 통로가 되어서는 안 됩니다.
 - 포인터로 카드 안까지 들어갈 수 있어 안의 링크를 따라갈 수 있고, 포인터가 안에 있는 동안에는 열린 채로 유지됩니다.
 - Escape로 닫힙니다.
+
+::: fw flutter
+
+- 키보드 focus를 받으면 같은 `delay` 뒤에 열리고, 터치로는 열리지 않습니다. `title`은 카드의 이름으로 읽히지 않고 그려지기만 합니다.
+
+:::
