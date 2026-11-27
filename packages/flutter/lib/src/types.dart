@@ -157,6 +157,23 @@ enum NebaLabelPlacement {
   float,
 }
 
+/// How a bar sits in the page's scroll, spelled the way CSS spells it. A
+/// Header and a Footer read it.
+///
+/// Flutter has no `position`, so the page scroll that gives it its meaning is
+/// a `NebaPageLayout`'s: a bar it was handed is held at its edge or scrolls
+/// away, and a bar anywhere else is a box like any other.
+enum NebaPosition {
+  /// In the flow, scrolling away with the content.
+  static,
+
+  /// In the flow until it reaches the edge, then held there.
+  sticky,
+
+  /// Held at the edge, with its room reserved by the layout around it.
+  fixed,
+}
+
 /// How much of the page behind a popup is taken away while it is open: the
 /// React package's `modal`, `boolean | 'trap-focus'`, which a Popover, a
 /// Dialog, a Drawer and an Overlay share.

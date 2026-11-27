@@ -1,6 +1,7 @@
 ---
 title: Sidebar
 order: 4
+flutter: true
 ---
 
 # Sidebar
@@ -8,6 +9,8 @@ order: 4
 <p class="neba-lede">A column beside the page's content, and a drawer once the window is too narrow to hold one. It renders a real <code>&lt;aside&gt;</code>, which is the complementary landmark.</p>
 
 <Demo src="sidebar/hero" minHeight="300" />
+
+::: fw react
 
 ```tsx
 import { List, ListItem, Sidebar } from 'neba';
@@ -22,11 +25,25 @@ import { List, ListItem, Sidebar } from 'neba';
 </Sidebar>;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+NebaSidebar(label: 'Sections', child: navigation);
+```
+
+:::
+
 ## Props
 
 ### Sidebar
 
 <PropsTable name="Sidebar" />
+
+::: fw react
 
 Every native `<aside>` attribute passes through, apart from `color` and `title`. The shared axes are described under [prop conventions](../../design/prop-conventions).
 
@@ -34,21 +51,41 @@ Every native `<aside>` attribute passes through, apart from `color` and `title`.
 
 It lays out its own children and nothing else. To have a page laid out _around_ it, put it in a [PageLayout](./page-layout)'s `sidebar` or `endSidebar` slot.
 
+:::
+
+::: fw flutter
+
+`width`, `minWidth` and `maxWidth` are logical pixels, and `collapseBelow` is a `NebaBreakpoint`, where `NebaBreakpoint.xs`, which no width is below, is React's `'none'`. The shared axes are described under [prop conventions](../../design/prop-conventions).
+
+It lays out its own child and nothing else, and takes the height it is given: in a `Row`, give the row `CrossAxisAlignment.stretch`. Its content scrolls inside it. To have a page laid out _around_ it, put it in a [PageLayout](./page-layout)'s `sidebar` or `endSidebar` slot. `safeArea`, which the React package does not have, keeps the content clear of the system insets the layout hands the column, and the drawer's own when it is one.
+
+:::
+
 ### SidebarTrigger
 
 <PropsTable name="SidebarTrigger" />
 
+::: fw react
+
 Everything else an [IconButton](../inputs/icon-button) takes passes through. It has to be inside a PageLayout to have something to open; outside one it renders nothing. It is hidden at and above the breakpoint with CSS rather than left out of the markup, so it never appears in a header a moment after the page arrives.
+
+:::
+
+::: fw flutter
+
+It is an [IconButton](../inputs/icon-button), and `onPressed` is called after the press has opened or closed the drawer. It has to be inside a PageLayout to have something to open; outside one it builds nothing, and inside one it builds nothing at and above the breakpoint.
+
+:::
 
 ## Examples
 
 ### width · size
 
-`size` sets the column's default width (`md` is 16rem), and `width` overrides it with a number in pixels or any CSS length.
+`size` sets the column's default width (`md` is <Fw react="16rem" flutter="256 logical pixels" />), and `width` overrides it with <Fw react="a number in pixels or any CSS length" flutter="a number in logical pixels" />.
 
 ### resizable
 
-Lets the reader drag the inner edge. `minWidth` and `maxWidth` bound it, `onResize` fires on every step, and `onResizeEnd` fires once when the edge is let go, which is where to store a width you want to remember. The handle is a focusable `role="separator"`, so the left and right arrow keys do the same thing.
+Lets the reader drag the inner edge. `minWidth` and `maxWidth` bound it, `onResize` fires on every step, and `onResizeEnd` fires once when the edge is let go, which is where to store a width you want to remember. The handle is a focusable <Fw react='`role="separator"`' flutter="slider in the semantics tree, 8 pixels wide inside the inner edge" />, so the left and right arrow keys do the same thing.
 
 <Demo src="sidebar/resizable" minHeight="300">
 
@@ -70,13 +107,19 @@ Lets the reader drag the inner edge. `minWidth` and `maxWidth` bound it, `onResi
 
 The width below which the column becomes a [Drawer](../surfaces/drawer) over a scrim, with a focus trap, an Escape and a way back to the trigger. The children exist once either way, and `title` is drawn only in the drawer.
 
-It defaults to the PageLayout's own value, and to `none` outside one.
+It defaults to the PageLayout's own value, and to <Fw react="`none`" flutter="`NebaBreakpoint.xs`" /> outside one.
+
+::: fw react
 
 The drawer's code is a separate chunk, fetched the first time the sidebar collapses or a pointer or the focus reaches a SidebarTrigger. A page whose sidebar stays a column never downloads it.
+
+:::
 
 ### Reopening a collapsed sidebar
 
 A SidebarTrigger brings back a sidebar the window has become too narrow to hold. Put it in a [Header](./header)'s `brand` slot, ahead of the logo.
+
+::: fw react
 
 ```tsx
 import { Header, PageLayout, Sidebar, SidebarTrigger } from 'neba';
@@ -86,7 +129,23 @@ import { Header, PageLayout, Sidebar, SidebarTrigger } from 'neba';
 </PageLayout>;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+NebaPageLayout(
+  header: const NebaHeader(brand: <Widget>[NebaSidebarTrigger(), Text('Neba')]),
+  sidebar: NebaSidebar(child: navigation),
+  child: page,
+);
+```
+
+:::
+
 ### keepMounted
+
+::: fw react
 
 The server sends the column, so a crawler that does not run scripts reads the sidebar's links either way. A crawler that runs them at a phone's width, as Google's does, sees the sidebar collapse into a closed drawer, and a closed drawer is not in the DOM. `keepMounted` keeps the closed drawer's contents in the DOM, hidden, so the links stay on the page. It changes nothing while the sidebar is a column.
 
@@ -96,14 +155,40 @@ The server sends the column, so a crawler that does not run scripts reads the si
 </Sidebar>
 ```
 
+:::
+
+::: fw flutter
+
+A closed drawer's contents are not built. `keepMounted` keeps them built, offstage, so a scroll position or a half-filled filter survives from one opening to the next. It changes nothing while the sidebar is a column.
+
+```dart
+NebaSidebar(collapseBelow: NebaBreakpoint.md, keepMounted: true, child: filters);
+```
+
+:::
+
 ### sticky
 
-On inside a PageLayout and off outside one, so a standalone Sidebar is not sticky unless `sticky` is set. With the page scrolling it becomes a sticky column as tall as what is left of the window under the header; with only the content scrolling it is already as tall as the layout and this changes nothing.
+<Fw react="On inside a PageLayout and off outside one, so a standalone Sidebar is not sticky unless `sticky` is set." flutter="On inside a PageLayout. Flutter has no sticky position, so it is the layout that holds the column, and a standalone Sidebar is a box like any other." /> With the page scrolling it becomes a sticky column as tall as what is left of the window under the header; with only the content scrolling it is already as tall as the layout and this changes nothing.
 
 ## Accessibility
+
+::: fw react
 
 - It renders `<aside>`, the `complementary` landmark, and names itself with the `locale`'s word for "Sidebar" unless `label` says otherwise. A page with two sidebars must name both.
 - Collapsed, it is a modal dialog: the focus is held inside it, Escape closes it, and the focus returns to the trigger.
 - A closed drawer kept in the DOM by `keepMounted` is hidden, so its contents are out of the tab order and the accessibility tree, and it holds no focus.
 - The resize handle is a `role="separator"` with `tabindex="0"` and is named by the `locale`. Left and right arrows move it by 16px.
 - `locale` is inherited from the PageLayout, so it is written once per page.
+
+:::
+
+::: fw flutter
+
+- The column is a `complementary` region named by the `locale`'s word for "Sidebar" unless `label` says otherwise, and a plain group inside another region, where Flutter allows no second one. A screen with two sidebars must name both.
+- Collapsed, it is a modal dialog: the focus is held inside it, Escape closes it, and the focus returns to what had it.
+- A closed drawer kept built by `keepMounted` is offstage, so its contents are out of the focus order and the semantics tree.
+- The resize handle is a focusable slider named by the `locale`, whose value is the width; a screen reader's increase and decrease and the left and right arrows move it by 16 pixels.
+- `locale` is inherited from the PageLayout, so it is written once per screen.
+
+:::

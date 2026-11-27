@@ -1,6 +1,7 @@
 ---
 title: PageLayout
 order: 1
+flutter: true
 ---
 
 # PageLayout
@@ -8,6 +9,8 @@ order: 1
 <p class="neba-lede">페이지의 뼈대를 잡는 컴포넌트입니다. header와 footer, 사이드바 하나 또는 둘, 그리고 그 사이의 내용을 배치하며 자기 표면은 그리지 않습니다.</p>
 
 <Demo src="page-layout/hero" minHeight="420" />
+
+::: fw react
 
 ```tsx
 import { Footer, Header, PageLayout, Sidebar } from 'neba';
@@ -17,9 +20,28 @@ import { Footer, Header, PageLayout, Sidebar } from 'neba';
 </PageLayout>;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+NebaPageLayout(
+  header: const NebaHeader(brand: <Widget>[NebaSidebarTrigger(), Text('Neba')]),
+  sidebar: const NebaSidebar(child: Text('탐색')),
+  footer: const NebaFooter(child: Text('© 2026 Neba')),
+  child: page,
+);
+```
+
+:::
+
 ## Props
 
 <PropsTable name="PageLayout" />
+
+::: fw react
 
 `<div>`의 native 속성은 그대로 전달됩니다. 공통 축은 [prop 규칙](../../design/prop-conventions)에서 설명합니다.
 
@@ -29,7 +51,29 @@ import { Footer, Header, PageLayout, Sidebar } from 'neba';
 
 children은 실제 `<main>` 안에 놓입니다. `mainId`가 그 요소의 id이며 skip link가 향하는 곳입니다. 페이지 자체가 아닌 레이아웃, 예를 들어 페이지의 레이아웃 안에서 미리 보여 주는 앱 셸은 `main={false}`를 넘겨 id도 skip link도 없는 평범한 `<div>`에 넣습니다. [Mockup](../surfaces/mockup)의 화면 안에서는 이것이 기본값입니다.
 
+:::
+
+::: fw flutter
+
+공통 축은 [prop 규칙](../../design/prop-conventions)에서 설명합니다.
+
+스크롤 뷰는 레이아웃이 가지므로 `child`는 페이지 속 내용처럼 그 안에서 자기 높이대로 배치됩니다. 스크롤 뷰가 아니라 페이지를 이루는 위젯을 넣으세요. 스크롤되는 것은 `controller`로 다룹니다.
+
+레이아웃의 바는 넘겨받은 `header`와 `footer`뿐입니다. 바로 넘겨받은 [Header](./header)와 [Footer](./footer)는 `position`을 읽고, 직접 만든 위젯으로 감싼 header는 sticky header처럼 위에 붙잡으며, 그렇게 감싼 footer는 static footer처럼 페이지와 함께 스크롤합니다. 글 자체의 것처럼 다른 곳에 있는 Header나 Footer는 그 부분의 바이며 레이아웃에 영향을 주지 않습니다.
+
+child는 main 영역이고, skip link는 focus를 그리로 옮깁니다. Flutter에는 id가 없으므로 `mainId`와 `mainProps`도 없습니다. 다른 레이아웃의 본문 안에 있는 레이아웃은 `main`으로 따로 정하지 않으면 두 번째 main 영역이 되지 않으며, 미리보기처럼 페이지 자체가 아닌 레이아웃은 `main: false`를 넘깁니다.
+
+:::
+
 거터나 최대 너비는 정하지 않습니다. 그것은 [Container](./container)의 일이고, 안에 넣어 두면 한 경로에서는 넓은 대시보드를, 다음 경로에서는 좁은 본문을 담을 수 있습니다.
+
+::: fw flutter
+
+### Safe area
+
+휴대전화에서는 Flutter의 `Scaffold`가 하듯 각 영역이 자기가 닿는 화면 가장자리의 시스템 inset만 넘겨받고 나머지는 받지 않습니다. header는 위와 양옆, footer는 아래와 양옆, 사이드바 열은 자기 쪽 변과 가로지르는 바가 없는 위나 아래, 본문은 남은 것을 받습니다. [Header](./header), [Footer](./footer), [Sidebar](./sidebar)는 시트를 가장자리까지 깔아 둔 채 그 위의 내용만 자기 몫의 inset만큼 안쪽으로 들이며, 각자의 `safeArea`로 끌 수 있습니다. 본문의 몫은 `MediaQuery`에 담기므로 안의 `SafeArea`나 padding을 갖는 목록이 그만큼 비켜 섭니다. React 패키지에는 이에 해당하는 것이 없습니다. 브라우저 페이지는 `viewport-fit=cover`일 때만 inset을 만나기 때문입니다.
+
+:::
 
 ## 예시
 
@@ -45,7 +89,7 @@ header와 사이드바 중 어느 쪽이 위쪽 모서리를 차지하는지 정
 
 ### collapseBelow
 
-이 너비보다 좁아지면 두 사이드바가 열이 아니라 drawer가 됩니다. [SidebarTrigger](./sidebar#sidebartrigger)가 그것을 여는 버튼이며, 정확히 같은 너비에서 나타납니다. `none`이면 어느 너비에서도 열로 남습니다.
+이 너비보다 좁아지면 두 사이드바가 열이 아니라 drawer가 됩니다. [SidebarTrigger](./sidebar#sidebartrigger)가 그것을 여는 버튼이며, 정확히 같은 너비에서 나타납니다. <Fw react="`none`이면" flutter="어떤 너비도 그보다 좁지 않은 `NebaBreakpoint.xs`이면" /> 어느 너비에서도 열로 남습니다.
 
 <Demo src="page-layout/collapse" minHeight="360">
 
@@ -65,6 +109,8 @@ header와 사이드바 중 어느 쪽이 위쪽 모서리를 차지하는지 정
 
 ### scroll
 
+::: fw react
+
 기본값 `page`는 문서 자체가 스크롤됩니다. 휴대폰에서 브라우저 주소창이 숨고, 뒤로 가기에서 스크롤 위치가 복원되며, [Header](./header)는 `position: sticky`로 자리를 지킵니다. `content`는 레이아웃을 창 높이에 고정하고 바 사이의 영역만 스크롤합니다.
 
 ```tsx
@@ -73,7 +119,26 @@ header와 사이드바 중 어느 쪽이 위쪽 모서리를 차지하는지 정
 </PageLayout>
 ```
 
+:::
+
+::: fw flutter
+
+기본값 `page`는 페이지 전체를 하나의 스크롤 뷰로 스크롤합니다. sticky [Header](./header)는 내용이 시트 아래로 지나가는 채 위에서 자리를 지키고, 사이드바는 내용 옆에서 자리를 지키다가 내용이 끝나면 함께 올라가며, footer는 끝까지 스크롤해야 나타납니다. `content`는 바와 사이드바를 제자리에 두고 그 사이의 영역만 스크롤합니다.
+
+```dart
+NebaPageLayout(
+  scroll: NebaPageLayoutScroll.content,
+  header: const NebaHeader(),
+  sidebar: const NebaSidebar(child: Text('파일')),
+  child: workspace,
+);
+```
+
+:::
+
 ### height
+
+::: fw react
 
 `viewport`는 창 높이라, 내용이 짧아도 footer가 화면 아래에 붙습니다. `auto`는 부모의 높이로, 페이지가 아닌 레이아웃([Mockup](../surfaces/mockup) 화면 안의 앱 셸이나 미리보기)을 위한 값입니다. 숫자나 CSS 길이를 주면 그 값이 됩니다.
 
@@ -85,9 +150,31 @@ header와 사이드바 중 어느 쪽이 위쪽 모서리를 차지하는지 정
 </div>
 ```
 
+:::
+
+::: fw flutter
+
+`NebaPageLayoutHeight.viewport`는 창 높이라, 내용이 짧아도 footer가 화면 아래에 붙습니다. `NebaPageLayoutHeight.auto`는 부모가 정한 높이로, 미리보기나 큰 도구의 한 칸처럼 페이지가 아닌 레이아웃을 위한 값입니다. `NebaPageLayoutHeight.pixels(320)`은 그 값 그대로입니다.
+
+```dart
+SizedBox(
+  height: 384,
+  child: NebaPageLayout(
+    height: NebaPageLayoutHeight.auto,
+    scroll: NebaPageLayoutScroll.content,
+    header: const NebaHeader(),
+    child: preview,
+  ),
+);
+```
+
+:::
+
 ### drawer를 직접 다루기
 
 `sidebarOpen`과 `onSidebarOpenChange`가 앞쪽 drawer를, `endSidebarOpen`과 `onEndSidebarOpenChange`가 뒤쪽 drawer를 controlled로 만듭니다. 경로가 바뀔 때 drawer를 닫아야 하는 경우에 씁니다.
+
+::: fw react
 
 ```tsx
 const [open, setOpen] = useState(false);
@@ -97,10 +184,39 @@ const [open, setOpen] = useState(false);
 </PageLayout>;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+NebaPageLayout(
+  sidebarOpen: open,
+  onSidebarOpenChange: (bool next) => setState(() => open = next),
+  sidebar: const NebaSidebar(child: Text('탐색')),
+  child: page,
+);
+```
+
+:::
+
 ## 접근성
+
+::: fw react
 
 - children은 `<main>`으로 감싸이고, header와 footer, 사이드바는 각각 `<header>`, `<footer>`, `<aside>`로 그려져 `banner`, `contentinfo`, `complementary` 랜드마크가 됩니다.
 - "본문으로 건너뛰기" 링크가 문서 맨 앞에 놓이며 focus를 받을 때만 그려집니다. 페이지에 이미 같은 링크가 있을 때만 `skipLink={false}`로 끄세요.
 - `<main>`은 `tabIndex={-1}`이라서 건너뛰기 링크를 따라가면 focus가 그리로 옮겨지고, 다음 Tab은 페이지 안에서 시작합니다. `scroll="content"`에서는 focus를 받은 `<main>`을 방향키로 스크롤할 수 있습니다. `mainProps`에 준 `tabIndex`가 우선합니다.
 - `locale`은 skip link와 레이아웃 안 모든 Sidebar·SidebarTrigger의 언어를 정합니다. 지원하지 않는 tag는 영어로 돌아가며, `skipLabel`로 문구를 직접 쓸 수도 있습니다.
 - 사이드바가 둘인 페이지는 각각에 `label`을 반드시 주어야 합니다.
+
+:::
+
+::: fw flutter
+
+- child는 main 영역, footer는 `contentInfo` 영역, 사이드바 열은 각각 `complementary` 영역이며, 모두 Flutter semantics 역할의 이름입니다. Flutter에는 banner 역할이 없어서 header는 순서대로 읽히는 묶음이고, `label`이 있으면 그 이름의 region입니다.
+- "본문으로 건너뛰기" 링크는 화면의 배치와 상관없이 focus 순서의 맨 앞에 놓이며 focus를 받을 때만 그려집니다. 화면에 이미 같은 링크가 있을 때만 `skipLink: false`로 끄세요.
+- main 영역은 Tab이 멈추는 자리는 아니지만 focus를 받을 수 있어서, 건너뛰기 링크를 따라가면 focus가 그리로 옮겨지며 가장자리 안쪽에 링이 그려지고 다음 Tab은 그 안에서 시작합니다. Tab은 header, 앞쪽 사이드바, 본문, 뒤쪽 사이드바, footer 순서로 지나가며 각 영역 안에서는 읽는 순서를 따릅니다.
+- `locale`은 skip link와 레이아웃 안 모든 Sidebar·SidebarTrigger의 언어를 정합니다. 등록하지 않은 언어는 영어로 돌아가며, `skipLabel`로 문구를 직접 쓸 수도 있습니다.
+- 사이드바가 둘인 화면은 각각에 `label`을 반드시 주어야 합니다.
+
+:::

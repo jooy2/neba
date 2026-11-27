@@ -12,8 +12,7 @@ The port lives on the branch **`flutter-port`**, pushed to GitHub and not merged
 
 The boxes below say what is ported; `git log --oneline` on the branch says in which order. A session that ports several components at once runs each port in a worktree of its own and brings the commit over with `git cherry-pick`: `TODO.md`, `CHANGELOG.md` and `packages/flutter/CLAUDE.md` then conflict on neighbouring lines, which is resolved by keeping both, and `lib/neba.dart` and the demo registry are regenerated with `dart run tool/generate.dart` rather than merged. What comes next, in order:
 
-1. The page shell (`NebaPageLayout`, `NebaHeader`, `NebaFooter`, `NebaSidebar`), on the drag scaffold `NebaPanes` brought (`lib/src/internal/drag.dart`).
-2. The inputs, in the order of section 2. `NebaToggle` and `NebaToggleGroup` read the same `NebaButtonGroupScope` and lay out on the same `NebaJoinedRun` that `NebaButtonGroup` does.
+1. The inputs, in the order of section 2. `NebaToggle` and `NebaToggleGroup` read the same `NebaButtonGroupScope` and lay out on the same `NebaJoinedRun` that `NebaButtonGroup` does.
 
 To set up a machine (Flutter 3.50.1 stable and Node 26 were used; the package floor is Flutter 3.41):
 
@@ -46,9 +45,12 @@ The six steps of a port are in `packages/flutter/CLAUDE.md`. What the last sessi
 - **The wedge copies the stylesheet, which draws it inside the sheet.** The React `arrow` sits a pixel outward from the popup's padding box on the facing side, so on a tooltip only a pixel of it shows below or above, on a side edge none of it, and on a bordered sheet its two slanted strokes are drawn just inside the edge. `nebaPlaceFloating` reproduces that geometry rather than guessing what was meant; if the React side moves the wedge out, `box` in that function moves with it.
 - **A field-shaped widget** is built from `lib/src/internal/field.dart` and `notch.dart`, as `NebaTextField` is: `NebaFieldColumn` for the label, the description and the error, `NebaFieldShell` for the box with its looks, ring, light and notch, `NebaFieldWidth` for the width and `NebaFieldSemantics` for what a screen reader hears. A label that is a `Text` is drawn a second time by the notch's sizer as a `RichText`, so a test's `find.text` still finds it once. A Fieldset's `disabled` has no counterpart yet: `NebaFieldset` should put a scope above its fields that each field ORs into its own `disabled`, as `internal/fieldset.ts` does.
 - **A press target larger than the control** is the React package's `neba-hit`, which grows a tick's, a track's or a ×'s pressable box to 24 pixels past its drawn edge. `NebaCheckbox`, `NebaRadio` and `NebaSwitch` were ported before `lib/src/internal/hit.dart` existed, so they take the press on the label and on the gap beside the control instead (`NebaChoiceField` in `lib/src/internal/choice.dart`), and a checkbox with no label is pressed on its 18 pixels alone. They should move onto `NebaHitArea` and `NebaHitTarget`, as `NebaAlert`'s × did, which takes a press for a target from the box around it without changing the layout. A Fieldset's `disabled` should reach the three the same way it reaches a field.
+- **A surface that opens over the window** (a drawer, and a dialog after it) opens into the app's root `Overlay` through `NebaModalLayer` in `lib/src/internal/modal.dart`. A `WidgetsApp` with no navigator has no overlay, so the gallery and the sample app wrap their home in `Overlay.wrap`, and a widget test pumps into one. A Flutter preview opens it over its own frame only, which is as tall as the demo, so such a `<Demo>` takes `frameMinHeight`.
 - **Checking it.** `flutter analyze` and `flutter test` in `packages/flutter`, in `packages/flutter/example` (every demo in both themes and at a phone's width) and in `examples/flutter` (the sample app, which shows every demo too), `npm run typecheck`, `npm run lint`, `npx prettier . --check` and `npm run build` in `docs` (the build runs the container check), and `npm run flutter:demos -- --force` before looking at a preview. With the browser pane hidden, a preview below the first screen never mounts; open the gallery directly at `/flutter/index.html?demo={key}&theme=dark` on the dev server to see one.
 
 Still open from that session:
+
+- [ ] **A page whose content is a lazily built list.** `NebaPageLayout` lays its `child` out whole inside the scroll view it owns, as a document is laid out, so a page whose content is a list of thousands of rows builds every row at once. It wants a sliver slot beside `child`, laid out in the band that holds the sidebars beside it.
 
 - [ ] **Selection handles and a copy-and-paste toolbar for the fields.** `NebaTextField` leaves `EditableText.selectionControls` null, because both are drawn by Material or Cupertino, which the package does not import. The pointer and the keyboard select and the keyboard copies and pastes, and on the web the browser's own menu does too, but a touch screen shows no handles and no Cut, Copy, Paste or Select all. It wants `TextSelectionControls` of the package's own, a handle and a toolbar on `NebaSheet`, shared by every field that holds an `EditableText`; the gestures in `neba_text_field.dart` would then stop skipping the toolbar.
 
@@ -88,7 +90,7 @@ Port in this order, because each group is built out of the ones before it: `Neba
 
 Some components have no single Flutter equivalent of what they are on the web, and their form is decided when they are reached, then written on their page: `NebaTextLink` (a callback rather than an `href`, since the package opens nothing itself), `NebaImage` and `NebaGallery` (an `ImageProvider` rather than a URL), `NebaCodeBlock` (no highlight.js; a tokenizer of its own or a caller-supplied one), and the page shell (`NebaPageLayout`, `NebaHeader`, `NebaFooter`, `NebaSidebar`) against a phone's safe areas.
 
-Demos that wait on a component not ported yet, to be added with it: `meter/thresholds` (`NebaSlider`), `popover/form` (`NebaSelect`), and `drawer/hero`, `drawer/inline` and `drawer/scrolling` (`NebaList`). `chip/links` and `pagination/links` have no Flutter twin: the package opens nothing itself, so neither has an `href`. The React demos of per-breakpoint maps (`container/responsive`, `grid/responsive`) have no Flutter twin, because the Flutter widgets take no such map. A widget that draws a shape reads the ring of a pile it is in through `NebaRing`, as `NebaBox` does, so that `ring` follows it. `button/render` has no Flutter twin: a Flutter button has no element to swap.
+Demos that wait on a component not ported yet, to be added with it: `meter/thresholds` (`NebaSlider`), `popover/form` (`NebaSelect`), `drawer/hero`, `drawer/inline`, `drawer/scrolling` and the three `sidebar/*` demos (`NebaList`), the four `header/*` demos and `footer/hero` (`NebaAppLogo`), and the four `page-layout/*` demos (both). `chip/links` and `pagination/links` have no Flutter twin: the package opens nothing itself, so neither has an `href`. The React demos of per-breakpoint maps (`container/responsive`, `grid/responsive`) have no Flutter twin, because the Flutter widgets take no such map. A widget that draws a shape reads the ring of a pile it is in through `NebaRing`, as `NebaBox` does, so that `ring` follows it. `button/render` has no Flutter twin: a Flutter button has no element to swap.
 
 ### Layout (15)
 
@@ -103,10 +105,10 @@ Demos that wait on a component not ported yet, to be added with it: `meter/thres
 - [x] `NebaScrollZone`
 - [x] `NebaPanes`
 - [x] `NebaPortal`
-- [ ] `NebaPageLayout`
-- [ ] `NebaHeader`
-- [ ] `NebaFooter`
-- [ ] `NebaSidebar`
+- [x] `NebaPageLayout`
+- [x] `NebaHeader`
+- [x] `NebaFooter`
+- [x] `NebaSidebar`
 
 ### Display (23)
 

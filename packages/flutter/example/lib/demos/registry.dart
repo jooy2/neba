@@ -110,6 +110,8 @@ import 'package:neba_example/demos/flex/alignment.dart';
 import 'package:neba_example/demos/flex/direction.dart';
 import 'package:neba_example/demos/flex/hero.dart';
 import 'package:neba_example/demos/flex/spacing.dart';
+import 'package:neba_example/demos/footer/measure.dart';
+import 'package:neba_example/demos/footer/variant.dart';
 import 'package:neba_example/demos/grid/alignment.dart';
 import 'package:neba_example/demos/grid/auto_grow.dart';
 import 'package:neba_example/demos/grid/columns.dart';
@@ -367,6 +369,8 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'flex/direction': FlexDirection.new,
   'flex/hero': FlexHero.new,
   'flex/spacing': FlexSpacing.new,
+  'footer/measure': FooterMeasure.new,
+  'footer/variant': FooterVariant.new,
   'grid/alignment': GridAlignment.new,
   'grid/auto-grow': GridAutoGrow.new,
   'grid/columns': GridColumns.new,
