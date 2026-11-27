@@ -194,6 +194,10 @@ import 'package:neba_example/demos/fieldset/disabled.dart';
 import 'package:neba_example/demos/fieldset/hero.dart';
 import 'package:neba_example/demos/fieldset/sizes.dart';
 import 'package:neba_example/demos/fieldset/spacing.dart';
+import 'package:neba_example/demos/file_picker/hero.dart';
+import 'package:neba_example/demos/file_picker/rejection.dart';
+import 'package:neba_example/demos/file_picker/states.dart';
+import 'package:neba_example/demos/file_picker/variants.dart';
 import 'package:neba_example/demos/flex/alignment.dart';
 import 'package:neba_example/demos/flex/direction.dart';
 import 'package:neba_example/demos/flex/hero.dart';
@@ -678,6 +682,10 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'fieldset/hero': FieldsetHero.new,
   'fieldset/sizes': FieldsetSizes.new,
   'fieldset/spacing': FieldsetSpacing.new,
+  'file-picker/hero': FilePickerHero.new,
+  'file-picker/rejection': FilePickerRejection.new,
+  'file-picker/states': FilePickerStates.new,
+  'file-picker/variants': FilePickerVariants.new,
   'flex/alignment': FlexAlignment.new,
   'flex/direction': FlexDirection.new,
   'flex/hero': FlexHero.new,

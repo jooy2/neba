@@ -65,6 +65,7 @@ export 'src/components/divider/neba_divider.dart';
 export 'src/components/drawer/neba_drawer.dart';
 export 'src/components/empty/neba_empty.dart';
 export 'src/components/fieldset/neba_fieldset.dart';
+export 'src/components/file_picker/neba_file_picker.dart';
 export 'src/components/flex/neba_flex.dart';
 export 'src/components/floating_action_button/neba_floating_action_button.dart';
 export 'src/components/floating_bottom_navigation/neba_floating_bottom_navigation.dart';

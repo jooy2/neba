@@ -208,7 +208,7 @@ Demos that wait on a component not ported yet, to be added with it: `how-to-step
 - [x] `NebaMenubar`
 - [ ] `NebaNavigationMenu`
 - [ ] `NebaCommandPalette`
-- [ ] `NebaFilePicker`
+- [x] `NebaFilePicker`
 - [x] `NebaTransfer`
 - [x] `NebaTreeSelect`
 - [x] `NebaPagination`
