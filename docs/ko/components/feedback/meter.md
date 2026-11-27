@@ -66,6 +66,12 @@ const NebaMeter(value: 38, label: Text('Storage'), showValue: true);
 
 :::
 
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/meter/thresholds.dart
+
+:::
+
 </Demo>
 
 ### min · max · format

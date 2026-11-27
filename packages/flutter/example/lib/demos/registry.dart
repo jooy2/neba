@@ -186,6 +186,7 @@ import 'package:neba_example/demos/list/spacing.dart';
 import 'package:neba_example/demos/list/variants.dart';
 import 'package:neba_example/demos/meter/hero.dart';
 import 'package:neba_example/demos/meter/sizes.dart';
+import 'package:neba_example/demos/meter/thresholds.dart';
 import 'package:neba_example/demos/meter/values.dart';
 import 'package:neba_example/demos/number_field/format.dart';
 import 'package:neba_example/demos/number_field/hero.dart';
@@ -535,6 +536,7 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'list/variants': ListVariants.new,
   'meter/hero': MeterHero.new,
   'meter/sizes': MeterSizes.new,
+  'meter/thresholds': MeterThresholds.new,
   'meter/values': MeterValues.new,
   'number-field/format': NumberFieldFormat.new,
   'number-field/hero': NumberFieldHero.new,

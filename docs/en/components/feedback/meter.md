@@ -66,6 +66,12 @@ Where the bar changes colour. Each entry is a point on the scale and the family 
 
 :::
 
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/meter/thresholds.dart
+
+:::
+
 </Demo>
 
 ### min · max · format
