@@ -1,6 +1,7 @@
 ---
 title: FloatingBottomNavigation
 order: 24
+flutter: true
 ---
 
 # FloatingBottomNavigation
@@ -8,6 +9,8 @@ order: 24
 <p class="neba-lede">앱의 주요 목적지들을 담은 바입니다. 아래 가장자리에 붙는 대신 그 위로 떠 있으며, 담긴 목적지만큼만 넓고, 스타디움 모양으로 잘려 있고, 그 아래로 페이지가 계속 이어집니다.</p>
 
 <Demo src="floating-bottom-navigation/hero" minHeight="320" />
+
+::: fw react
 
 ```tsx
 import { BottomNavigationItem, FloatingBottomNavigation } from 'neba';
@@ -22,17 +25,54 @@ import { BottomNavigationItem, FloatingBottomNavigation } from 'neba';
 </FloatingBottomNavigation>;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+Stack(
+  children: <Widget>[
+    page,
+    NebaFloatingBottomNavigation<String>(
+      label: 'Main',
+      value: section,
+      onValueChange: (String next) => setState(() => section = next),
+      children: const <NebaBottomNavigationItem<String>>[
+        NebaBottomNavigationItem<String>(value: 'home', icon: homeIcon, child: Text('Home')),
+        NebaBottomNavigationItem<String>(value: 'search', icon: searchIcon, child: Text('Search')),
+      ],
+    ),
+  ],
+);
+```
+
+:::
+
 ## Props
 
 <PropsTable name="FloatingBottomNavigation" />
 
+::: fw react
+
 `onChange`를 빼면 나머지 `<nav>` 속성은 그대로 루트에 전달됩니다. 들을 만한 변화는 `onValueChange`입니다. 공용 축(`variant` `size` `color` `density` `elevation` `position`)은 [prop 규약](../../design/prop-conventions)에 있습니다.
 
-목적지는 `BottomNavigationItem`으로, [BottomNavigation](./bottom-navigation)이 받는 것과 같은 항목입니다. `value`, `icon`, `href`, `disabled` 등 항목에 관한 것은 모두 그 페이지에 있습니다.
+:::
+
+::: fw flutter
+
+목적지는 `NebaBottomNavigationItem`의 목록인 `children`이고, 바는 그 `value`의 타입에 대해 제네릭입니다. `value`를 `null`로 두면 바가 `defaultValue`에서 시작해 상태를 스스로 관리합니다. `position`은 [FloatingActionButton](./floating-action-button)이 받는 타입을 다른 이름으로 받습니다. 공용 축(`variant` `size` `color` `density` `elevation` `position`)은 [prop 규약](../../design/prop-conventions)에 있습니다.
+
+:::
+
+목적지는 <Fw react="`BottomNavigationItem`으로" flutter="`NebaBottomNavigationItem`으로" />, [BottomNavigation](./bottom-navigation)이 받는 것과 같은 항목입니다. `value`, `icon`, `href`, `disabled` 등 항목에 관한 것은 모두 그 페이지에 있습니다.
 
 ## 예시
 
 ### offset · safeArea
+
+::: fw react
 
 `offset`은 바가 아래 가장자리에서 얼마나 떠 있는지를 픽셀 수나 CSS 길이로 정합니다. `safeArea`는 그 간격에 `env(safe-area-inset-bottom)`을 더해 폰의 홈 인디케이터를 피하며, 안쪽 줄만이 아니라 시트 전체를 올립니다.
 
@@ -40,23 +80,65 @@ import { BottomNavigationItem, FloatingBottomNavigation } from 'neba';
 <FloatingBottomNavigation offset={24} safeArea={false} />
 ```
 
+:::
+
+::: fw flutter
+
+`offset`은 바가 아래 가장자리에서 얼마나 떠 있는지를 논리 픽셀로 정합니다. `safeArea`는 `fixed`나 `sticky`인 바의 그 간격에 아래쪽 시스템 inset을 더해 폰의 홈 인디케이터를 피하며, 안쪽 줄만이 아니라 시트 전체를 올립니다. `absolute`인 바는 화면 가장자리에 닿지 않는 영역에 속하므로, FloatingActionButton처럼 inset을 더하지 않습니다.
+
+```dart
+NebaFloatingBottomNavigation<String>(offset: 24, safeArea: false, children: destinations);
+```
+
+:::
+
 ### position
+
+::: fw react
 
 기본값 `fixed`는 창 아래에 바를 붙입니다. `absolute`는 가장 가까운 positioned 조상의 아래에 붙이며, 자기만의 화면 안에 놓이는 바가 원하는 값이자 위 미리보기가 쓰는 값입니다. `sticky`는 스크롤되는 것의 아래에 붙이고, `static`은 흐름 안에 가운데 정렬로 되돌립니다.
 
+:::
+
+::: fw flutter
+
+Flutter에는 창을 기준으로 고정하는 배치가 없으므로, 떠 있는 바는 받은 공간 전체를 차지하고 그 아래쪽 가운데에 뜹니다. [FloatingActionButton](./floating-action-button)이 모서리에 앉는 것과 같습니다. 바가 떠 있을 화면이나 영역 위의 `Stack`에 넣고, 그 아래에서 스크롤되는 내용의 끝에 여백을 두어 마지막 줄이 바 밑에서 나올 수 있게 하세요. 바 옆을 누르면 아래에 있는 것이 그대로 눌립니다. 기본값 `fixed`와 `sticky`, `absolute`는 똑같이 뜨고 `safeArea`만 다릅니다. `static`은 흐름 안에 가운데 정렬로 되돌립니다.
+
+:::
+
 <Demo src="floating-bottom-navigation/pinned" minHeight="300">
 
+::: fw react
+
 <<< @/.vitepress/demos/floating-bottom-navigation/pinned.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/floating_bottom_navigation/pinned.dart
+
+:::
 
 </Demo>
 
 ### labels
 
-기본값 `selected`는 읽는 사람이 지금 있는 목적지의 이름만 그리고, `all`은 모든 이름을, `none`은 아무 이름도 그리지 않습니다. `selected`에서 목적지를 누르면 그 이름이 자라고 옆의 목적지들이 비켜서는 동안 하이라이트가 그 아래로 미끄러져 들어옵니다. 그리지 않은 이름도 문서에는 남아 옆의 글리프에게 접근성 이름을 줍니다.
+기본값 `selected`는 읽는 사람이 지금 있는 목적지의 이름만 그리고, `all`은 모든 이름을, `none`은 아무 이름도 그리지 않습니다. `selected`에서 목적지를 누르면 그 이름이 자라고 옆의 목적지들이 비켜서는 동안 하이라이트가 그 아래로 미끄러져 들어옵니다. 그리지 않은 이름도 <Fw react="문서에는 남아" flutter="그대로 읽혀" /> 옆의 글리프에게 <Fw react="접근성 이름을" flutter="이름을" /> 줍니다.
 
 <Demo src="floating-bottom-navigation/labels" minHeight="340">
 
+::: fw react
+
 <<< @/.vitepress/demos/floating-bottom-navigation/labels.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/floating_bottom_navigation/labels.dart
+
+:::
 
 </Demo>
 
@@ -66,13 +148,25 @@ import { BottomNavigationItem, FloatingBottomNavigation } from 'neba';
 
 <Demo src="floating-bottom-navigation/appearance" minHeight="320">
 
+::: fw react
+
 <<< @/.vitepress/demos/floating-bottom-navigation/appearance.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/floating_bottom_navigation/appearance.dart
+
+:::
 
 </Demo>
 
 ### 직접 제어하기
 
 `value`를 넘기면 바는 자기 상태를 갖지 않습니다. 라우터가 이미 읽는 사람의 위치를 알고 있을 때 쓰는 모양입니다.
+
+::: fw react
 
 ```tsx
 <FloatingBottomNavigation value={pathname} onValueChange={navigate}>
@@ -82,7 +176,25 @@ import { BottomNavigationItem, FloatingBottomNavigation } from 'neba';
 </FloatingBottomNavigation>
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+NebaFloatingBottomNavigation<String>(
+  value: location,
+  onValueChange: navigate,
+  children: const <NebaBottomNavigationItem<String>>[
+    NebaBottomNavigationItem<String>(value: '/home', icon: homeIcon, child: Text('Home')),
+  ],
+);
+```
+
+:::
+
 ## 접근성
+
+::: fw react
 
 - 루트는 `<nav>`이고 `label`이 그 이름입니다. `role="tablist"`가 아니므로 목적지마다 tab 정지점이 따로 있고, 방향키로 목적지 사이를 옮겨 다니지 않습니다.
 - 지금 있는 목적지는 `aria-current="page"`를 답니다.
@@ -90,3 +202,16 @@ import { BottomNavigationItem, FloatingBottomNavigation } from 'neba';
 - `labels`가 그리지 않은 이름도 문서에는 남아 목적지의 접근성 이름이 됩니다. 글리프뿐인 항목에게는 그것이 이름의 전부입니다.
 - 움직임을 줄이도록 설정한 사용자에게는 하이라이트와 이름이 움직이지 않고 바로 새 배치로 바뀝니다.
 - `position="fixed"`일 때는 페이지 아래쪽에 바의 높이와 `offset`만큼 여백을 두세요. 그렇지 않으면 마지막 줄이 가려집니다.
+
+:::
+
+::: fw flutter
+
+- screen reader는 `label`로 이름 붙은 내비게이션 영역을 듣습니다. tab bar가 아니므로 목적지마다 focus 정지점이 따로 있고, 방향키로 목적지 사이를 옮겨 다니지 않습니다. 한 화면에 바가 둘 이상이면 모두 `label`을 주세요. 이름 없는 내비게이션 영역이 둘째로 나오면 Flutter의 semantics 검사가 실패합니다.
+- 지금 있는 목적지는 선택된 항목으로 읽힙니다.
+- 각 목적지는 버튼이며, `href`를 주면 링크입니다.
+- `labels`가 그리지 않은 이름도 그대로 목적지의 이름입니다. 글리프뿐인 항목에게는 그것이 이름의 전부입니다.
+- 움직임을 줄이도록 설정한 사용자에게는 하이라이트와 이름이 움직이지 않고 바로 새 배치로 바뀝니다.
+- 바 아래에서 스크롤되는 내용의 끝에 바의 높이와 `offset`만큼 여백을 두세요. 그렇지 않으면 마지막 줄이 가려집니다.
+
+:::

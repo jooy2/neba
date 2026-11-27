@@ -17,15 +17,16 @@ import 'package:neba/src/theme/theme.dart';
 import 'package:neba/src/theme/tokens.dart';
 import 'package:neba/src/types.dart';
 
-/// Where a floating button sits: [NebaPosition]'s three values and the
-/// fourth CSS one, [absolute], which makes it belong to a region rather than
-/// to the screen.
+/// Where a floating button sits, and a `NebaFloatingBottomNavigation`, which
+/// takes it as `NebaFloatingBottomNavigationPosition`: [NebaPosition]'s three
+/// values and the fourth CSS one, [absolute], which makes it belong to a
+/// region rather than to the screen.
 ///
 /// Flutter has no positioning against the window, so every value but
-/// [static] floats the same way: the button takes the whole of the space it
-/// is laid out in and sits in its corner. Put it in a `Stack` over the screen
-/// or the region it floats over. What differs is whether it keeps clear of the
-/// system insets.
+/// [static] floats the same way: the widget takes the whole of the space it
+/// is laid out in and sits in its corner, or at the bottom of it. Put it in a
+/// `Stack` over the screen or the region it floats over. What differs is
+/// whether it keeps clear of the system insets.
 enum NebaFloatingActionButtonPosition {
   /// In the flow, as any other button: in a toolbar or a row.
   static,

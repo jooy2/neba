@@ -17,11 +17,17 @@
 ///   one again.
 /// - **Only a change of the current item animates.** The run resizing under a
 ///   tile that was already in the right place moves it there at once, so it
-///   never lags behind a window being dragged.
+///   never lags behind a window being dragged, and so does a run laid out at
+///   new constraints while the tile is travelling.
+/// - **A move under way goes to wherever its item has got to.** An item that
+///   grows as the tile travels to it, as a FloatingBottomNavigation's
+///   destination does while its name arrives on the same clock, is met where
+///   it ends rather than where it was when the move began.
 ///
-/// The items run in a row or down a column, and may wrap onto further lines,
-/// as a CSS `flex-wrap` row does. A SegmentedButton draws one row, a Tabs bar
-/// any of the four, and a FloatingBottomNavigation will draw a row.
+/// The items run in a row or down a column, with room between them if asked,
+/// and may wrap onto further lines, as a CSS `flex-wrap` row does. A
+/// SegmentedButton draws one row, a Tabs bar any of the four, and a
+/// FloatingBottomNavigation one row with room between its destinations.
 ///
 /// The library talking to itself: nothing here is exported.
 library;
@@ -47,6 +53,10 @@ import 'package:neba/src/theme/scale.dart';
 /// past a bounded width, and a column a new line beside it when the next item
 /// would run past a bounded height; [fill] then shares each line's width
 /// between its items, and a line in a column is as wide as its widest item.
+///
+/// [spacing] is the room between one item and the next along a line, and
+/// between one line and the next, as a CSS `gap` is. The tile covers an item
+/// and none of the room beside it.
 class NebaTileRun extends StatefulWidget {
   /// A run of [children] with [tile] behind the one at [current].
   const NebaTileRun({
@@ -56,8 +66,9 @@ class NebaTileRun extends StatefulWidget {
     this.axis = Axis.horizontal,
     this.wrap = false,
     this.fill = false,
+    this.spacing = 0,
     super.key,
-  });
+  }) : assert(spacing >= 0);
 
   /// What is drawn behind the current item, laid out at its size.
   final Widget tile;
@@ -76,6 +87,10 @@ class NebaTileRun extends StatefulWidget {
 
   /// Whether a row takes the whole width it is given and shares it.
   final bool fill;
+
+  /// The room between one item and the next, and between one line and the
+  /// next.
+  final double spacing;
 
   @override
   State<NebaTileRun> createState() => _NebaTileRunState();
@@ -118,6 +133,7 @@ class _NebaTileRunState extends State<NebaTileRun> with SingleTickerProviderStat
       axis: widget.axis,
       wrap: widget.wrap,
       fill: widget.fill,
+      spacing: widget.spacing,
       textDirection: Directionality.of(context),
       children: <Widget>[widget.tile, ...widget.children],
     );
@@ -133,6 +149,7 @@ class _TileRow extends MultiChildRenderObjectWidget {
     required this.axis,
     required this.wrap,
     required this.fill,
+    required this.spacing,
     required this.textDirection,
     required super.children,
   });
@@ -142,6 +159,7 @@ class _TileRow extends MultiChildRenderObjectWidget {
   final Axis axis;
   final bool wrap;
   final bool fill;
+  final double spacing;
   final TextDirection textDirection;
 
   @override
@@ -152,6 +170,7 @@ class _TileRow extends MultiChildRenderObjectWidget {
       axis: axis,
       wrap: wrap,
       fill: fill,
+      spacing: spacing,
       textDirection: textDirection,
     );
   }
@@ -164,6 +183,7 @@ class _TileRow extends MultiChildRenderObjectWidget {
       ..axis = axis
       ..wrap = wrap
       ..fill = fill
+      ..spacing = spacing
       ..textDirection = textDirection;
   }
 }
@@ -179,12 +199,14 @@ class _RenderTileRow extends RenderBox
     required Axis axis,
     required bool wrap,
     required bool fill,
+    required double spacing,
     required TextDirection textDirection,
   }) : _animation = animation,
        _current = current,
        _axis = axis,
        _wrap = wrap,
        _fill = fill,
+       _spacing = spacing,
        _textDirection = textDirection;
 
   Animation<double> _animation;
@@ -232,6 +254,14 @@ class _RenderTileRow extends RenderBox
     }
   }
 
+  double _spacing;
+  set spacing(double value) {
+    if (_spacing != value) {
+      _spacing = value;
+      markNeedsLayout();
+    }
+  }
+
   TextDirection _textDirection;
   set textDirection(TextDirection value) {
     if (_textDirection != value) {
@@ -249,6 +279,10 @@ class _RenderTileRow extends RenderBox
   /// Whether [current] changed since the last layout, which is the one thing
   /// that makes the tile travel rather than jump.
   bool _moved = false;
+
+  /// The constraints of the last layout: new ones are the run resized from
+  /// outside, which lands a move at once.
+  BoxConstraints? _laidAt;
 
   @override
   void attach(PipelineOwner owner) {
@@ -305,15 +339,20 @@ class _RenderTileRow extends RenderBox
     final double room = !_wrap
         ? double.infinity
         : (row ? constraints.maxWidth : constraints.maxHeight);
+    final double gap = _spacing;
     final List<List<int>> lines = <List<int>>[];
     double along = 0;
 
     for (int i = 0; i < items.length; i++) {
       final double length = row ? naturals[i].width : naturals[i].height;
 
-      if (lines.isEmpty || (along > 0 && along + length > room)) {
+      if (lines.isEmpty || (along > 0 && along + gap + length > room)) {
         lines.add(<int>[]);
         along = 0;
+      }
+
+      if (lines.last.isNotEmpty) {
+        along += gap;
       }
 
       lines.last.add(i);
@@ -331,7 +370,7 @@ class _RenderTileRow extends RenderBox
 
     for (final List<int> line in lines) {
       if (row && share != null) {
-        final List<double> widths = nebaShareWidth(share, <double>[
+        final List<double> widths = nebaShareWidth(share - gap * (line.length - 1), <double>[
           for (final int i in line) naturals[i].width,
         ]);
 
@@ -368,7 +407,7 @@ class _RenderTileRow extends RenderBox
     final List<double> thicknesses = <double>[];
 
     for (final List<int> line in lines) {
-      double length = 0;
+      double length = gap * (line.length - 1);
       double thickness = 0;
 
       for (final int i in line) {
@@ -382,7 +421,8 @@ class _RenderTileRow extends RenderBox
     }
 
     final double longest = lengths.fold<double>(0, (double a, double b) => b > a ? b : a);
-    final double thick = thicknesses.fold<double>(0, (double a, double b) => a + b);
+    final double thick =
+        thicknesses.fold<double>(0, (double a, double b) => a + b) + gap * (lines.length - 1);
     final Size total = row
         ? Size(share != null && share > longest ? share : longest, thick)
         : Size(thick, longest);
@@ -400,15 +440,15 @@ class _RenderTileRow extends RenderBox
         if (row) {
           final double x = reversed ? total.width - position - size.width : position;
           rects[i] = Offset(x, across + (thicknesses[l] - size.height) / 2) & size;
-          position += size.width;
+          position += size.width + gap;
         } else {
           final double x = reversed ? total.width - across - size.width : across;
           rects[i] = Offset(x, position) & size;
-          position += size.height;
+          position += size.height + gap;
         }
       }
 
-      across += thicknesses[l];
+      across += thicknesses[l] + gap;
     }
 
     return (rects, total);
@@ -440,10 +480,12 @@ class _RenderTileRow extends RenderBox
       (items[i].parentData! as _TileRowParentData).offset = rects[i].topLeft;
     }
 
-    _placeTile(rects);
+    final bool resized = _laidAt != null && _laidAt != constraints;
+    _laidAt = constraints;
+    _placeTile(rects, resized: resized);
   }
 
-  void _placeTile(List<Rect> rects) {
+  void _placeTile(List<Rect> rects, {required bool resized}) {
     final RenderBox? tile = _tile;
 
     if (tile == null) {
@@ -478,9 +520,17 @@ class _RenderTileRow extends RenderBox
       _from = shown;
       _to = target;
     } else if (_to != target) {
-      // The run moved under a tile that was already in place.
-      _from = target;
-      _to = target;
+      if (!resized && _animation.status != AnimationStatus.completed) {
+        // The item a move is going to changed size or place on the way, as
+        // one whose name arrives on the same clock does: the move goes on to
+        // where it is now, and meets it where it ends.
+        _to = target;
+      } else {
+        // The run moved under a tile that was already in place, or was laid
+        // out anew while it travelled.
+        _from = target;
+        _to = target;
+      }
     }
 
     final Rect rect = Rect.lerp(_from, _to, _animation.value)!;
@@ -501,14 +551,16 @@ class _RenderTileRow extends RenderBox
   @override
   double computeMaxIntrinsicHeight(double width) => _intrinsic(width: false, min: false);
 
-  /// The items' extents added up along the run and the largest across it; a
-  /// run that wraps needs no more along it than its longest item.
+  /// The items' extents added up along the run, with the room between them,
+  /// and the largest across it; a run that wraps needs no more along it than
+  /// its longest item.
   double _intrinsic({required bool width, required bool min}) {
     final bool along = width == (_axis == Axis.horizontal);
-    double sum = 0;
+    final List<RenderBox> items = _items;
+    double sum = items.length > 1 ? _spacing * (items.length - 1) : 0;
     double largest = 0;
 
-    for (final RenderBox item in _items) {
+    for (final RenderBox item in items) {
       final double extent = width
           ? (min
                 ? item.getMinIntrinsicWidth(double.infinity)

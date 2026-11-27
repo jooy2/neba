@@ -35,7 +35,7 @@ The six steps of a port are in `packages/flutter/CLAUDE.md`. What the last sessi
 - **Pictures** are copied from `docs/public/samples/` into `packages/flutter/example/assets/samples/` at the same path and loaded as `Image.asset('assets/samples/…')`; `example/test/samples_test.dart` holds the copies to the originals, and the sample app maps those keys to `packages/neba_example/` itself. A row that holds text wraps it in `Flexible`, as a CSS flex item shrinks, or it overflows at a phone's width.
 - **Emoji draw nothing in a web preview.** The gallery ships Inter and no emoji font, so a Dart demo uses a character Inter has where the React demo has an emoji; on a device the system font draws one.
 - **A hidden browser pane holds the frames back.** With the pane hidden the page runs as a background page and its animation frames are throttled to a handful a second or none, so a picture that fades up looks like it never arrived. Wake the page (any `requestAnimationFrame` from the JavaScript tool will do) before reading a screenshot as a failure.
-- **A tile that slides behind the current item** is `NebaTileRun` in `lib/src/internal/tile.dart`, which `NebaSegmentedButton` and `NebaTabs` draw their tile with, in a row, a column, or lines that wrap; `NebaFloatingBottomNavigation` should take the same rather than a second one.
+- **A tile that slides behind the current item** is `NebaTileRun` in `lib/src/internal/tile.dart`, which `NebaSegmentedButton`, `NebaTabs` and `NebaFloatingBottomNavigation` draw their tile with, in a row, a column, or lines that wrap, with `spacing` between the items. A move under way follows its item to where it ends, so an item that grows on the same clock, as a floating bar's destination does while its name arrives, is met where it finishes.
 - **A control drawn smaller than a finger** (the React package's `neba-hit`) is a `NebaHitTarget` inside a `NebaHitArea`, from `lib/src/internal/hit.dart`, as `NebaAlert`'s × is. `NebaChip`'s × came first and takes its press over the chip's height instead; moving it over is open.
 - **A live region** (`role="alert"`, `role="status"`, `aria-live`) is a `NebaLiveRegion`, from `lib/src/internal/live_region.dart`, which writes the role on the web and a live region on Android and iOS. `NebaSkeleton` came first and still writes `liveRegion: true` itself.
 - **A sheet that says what happened** lays its row out with `NebaMessageContent` from `lib/src/internal/message.dart`, as `NebaAlert` and the toasts do: the glyph, the title over the message in a live region, an action and the × each centred on the first line. A toast's stack is drawn through an `OverlayPortal` the provider shows again on every new toast, so it comes over a popup opened before it; `NebaDialog` and `NebaDrawer` should open through the root overlay too, and a toast raised from one is then drawn over it.
@@ -201,7 +201,7 @@ Demos that wait on a component not ported yet, to be added with it: `carousel/ph
 - [ ] `NebaDateTimePicker`
 - [ ] `NebaDateRangePicker`
 - [x] `NebaBottomNavigation`
-- [ ] `NebaFloatingBottomNavigation`
+- [x] `NebaFloatingBottomNavigation`
 - [x] `NebaFloatingActionButton`
 
 ### Feedback (14)

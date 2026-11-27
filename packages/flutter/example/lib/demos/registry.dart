@@ -157,6 +157,10 @@ import 'package:neba_example/demos/floating_action_button/corners.dart';
 import 'package:neba_example/demos/floating_action_button/dial.dart';
 import 'package:neba_example/demos/floating_action_button/extended.dart';
 import 'package:neba_example/demos/floating_action_button/hero.dart';
+import 'package:neba_example/demos/floating_bottom_navigation/appearance.dart';
+import 'package:neba_example/demos/floating_bottom_navigation/hero.dart';
+import 'package:neba_example/demos/floating_bottom_navigation/labels.dart';
+import 'package:neba_example/demos/floating_bottom_navigation/pinned.dart';
 import 'package:neba_example/demos/footer/hero.dart';
 import 'package:neba_example/demos/footer/measure.dart';
 import 'package:neba_example/demos/footer/variant.dart';
@@ -542,6 +546,10 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'floating-action-button/dial': FloatingActionButtonDial.new,
   'floating-action-button/extended': FloatingActionButtonExtended.new,
   'floating-action-button/hero': FloatingActionButtonHero.new,
+  'floating-bottom-navigation/appearance': FloatingBottomNavigationAppearance.new,
+  'floating-bottom-navigation/hero': FloatingBottomNavigationHero.new,
+  'floating-bottom-navigation/labels': FloatingBottomNavigationLabels.new,
+  'floating-bottom-navigation/pinned': FloatingBottomNavigationPinned.new,
   'footer/hero': FooterHero.new,
   'footer/measure': FooterMeasure.new,
   'footer/variant': FooterVariant.new,
