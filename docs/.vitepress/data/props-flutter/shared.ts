@@ -297,6 +297,26 @@ export function animateChildRows(component: string): PropRow[] {
   ];
 }
 
+/**
+ * The style a line of text is set in, on the text effects, which in React take
+ * it from the element's own classes.
+ */
+export const textStyleRow: PropRow = {
+  name: 'style',
+  type: 'TextStyle?',
+  description: {
+    ko: '글을 쓸 스타일. 주변 DefaultTextStyle 위에 얹힙니다',
+    en: 'The style the text is set in, over the DefaultTextStyle around it'
+  }
+};
+
+/** How the lines of a text effect are aligned. */
+export const textAlignRow: PropRow = {
+  name: 'textAlign',
+  type: 'TextAlign?',
+  description: { ko: '줄의 정렬', en: 'How the lines of the text are aligned' }
+};
+
 /** The name a screen reader announces: React's `aria-label`. */
 export const semanticLabelRow: PropRow = {
   name: 'semanticLabel',

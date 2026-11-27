@@ -1,6 +1,7 @@
 ---
 title: AnimateSplit
 order: 9
+flutter: true
 ---
 
 # AnimateSplit
@@ -9,15 +10,31 @@ order: 9
 
 <Demo src="animate-split/hero" minHeight="140" />
 
+::: fw react
+
 ```tsx
 import { AnimateSplit } from 'neba';
 
 <AnimateSplit render={<h1 />}>한 단어씩 도착하는 문장</AnimateSplit>;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+const NebaAnimateSplit(text: '한 단어씩 도착하는 문장');
+```
+
+:::
+
 ## Props
 
 <PropsTable name="AnimateSplit" />
+
+::: fw react
 
 나머지 `<span>` 속성은 루트로 그대로 전달됩니다. 모든 `Animate*`가 공유하는 설정은 [prop 규약](../../design/prop-conventions)에 있습니다.
 
@@ -25,30 +42,60 @@ import { AnimateSplit } from 'neba';
 
 각 조각은 `inline-block`입니다. inline 상자는 위로 옮길 수 없기 때문입니다. 그리고 각 조각이 뒤따르던 공백을 함께 가지므로, 줄은 여전히 단어 사이에서 나뉘고 공백 안에서 끊기지 않습니다. 글자 단위로 나눌 때는 한 단어의 조각을 한데 묶어 두므로 단어가 두 줄로 갈라지지 않습니다.
 
+:::
+
+::: fw flutter
+
+줄은 `text`로 받고, 주변 `DefaultTextStyle` 위에 `style`을 얹어 쓰며 `textAlign`으로 정렬합니다. 모든 `Animate*`가 공유하는 설정은 [prop 규약](../../design/prop-conventions)에 있습니다.
+
+각 조각은 한 문단 안에 줄의 baseline에 맞춰 놓인 위젯이고, 단어 사이의 공백은 글자로 남습니다. 그래서 줄은 같은 글이 나뉘었을 자리, 곧 단어 사이에서 나뉘고 공백 안에서 끊기지 않습니다. 글자 단위로 나눌 때는 한 단어의 글자를 한데 묶어 두므로 단어가 두 줄로 갈라지지 않습니다. `distance`의 단위는 논리 픽셀이며, 주지 않으면 글자 크기의 10분의 4입니다.
+
+:::
+
 ## 예시
 
 ### by와 effect
 
-`by`는 조각 하나가 무엇인지입니다. 기본값은 `word`인데, 여덟 단어짜리 제목은 상자 여덟 개이고 같은 제목을 글자로 쪼개면 마흔여섯 개이기 때문입니다. `effect`는 각 조각이 어떤 애니메이션으로 도착하는지이며 라이브러리 공통 어휘를 씁니다. 그래서 쪼개진 제목의 fade와 [AnimateFade](./animate-fade)는 같은 fade입니다.
+`by`는 조각 하나가 무엇인지입니다. 기본값은 <Fw react="`word`인데," flutter="`NebaSplitBy.word`인데," /> 여덟 단어짜리 제목은 상자 여덟 개이고 같은 제목을 글자로 쪼개면 마흔여섯 개이기 때문입니다. `effect`는 각 조각이 어떤 애니메이션으로 도착하는지이며 라이브러리 공통 어휘를 씁니다. 그래서 쪼개진 제목의 fade와 [AnimateFade](./animate-fade)는 같은 fade입니다.
 
 <Demo src="animate-split/by" minHeight="280">
 
+::: fw react
+
 <<< @/.vitepress/demos/animate-split/by.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/animate_split/by.dart
+
+:::
 
 </Demo>
 
 ### stagger
 
-`stagger`는 한 조각 뒤 다음 조각이 시작하기까지의 간격이고, 이 효과를 이루는 것이 바로 그것입니다. 기본값은 45ms. `durationStep`은 뒤의 조각일수록 재생 시간을 늘리고, `reverse`는 줄을 끝에서부터 실행합니다.
+`stagger`는 한 조각 뒤 다음 조각이 시작하기까지의 간격이고, 이 효과를 이루는 것이 바로 그것입니다. 기본값은 <Fw react="45ms." flutter="`Duration(milliseconds: 45)`입니다." /> `durationStep`은 뒤의 조각일수록 재생 시간을 늘리고, `reverse`는 줄을 끝에서부터 실행합니다.
 
 ### locale
+
+::: fw react
 
 경계를 찾을 언어입니다. 일본어·태국어·중국어에서 단어 경계는 공백이 아니고, 그런 글을 공백으로 쪼개면 문장 전체를 담은 조각 하나가 나옵니다.
 
 이 경계는 브라우저마다 다르게 잡힙니다. 그래서 서버에서 렌더링하는 페이지에서는 서버와 브라우저의 첫 렌더링이 모든 브라우저에서 같은 규칙으로 줄을 쪼개고, 하이드레이션이 끝나면 `locale`에 맞춰 다시 쪼갭니다. 공백으로 단어를 나누는 글이라면 두 결과가 같습니다. 일본어나 태국어 줄은 글자마다 한 조각으로 시작했다가, 하이드레이션 뒤에 조각이 단어 단위로 합쳐집니다.
 
+:::
+
+::: fw flutter
+
+`locale`은 없습니다. Dart에는 단어나 글자를 나누는 segmenter가 따로 없어서, 줄은 언제나 React 패키지가 하이드레이션 전에 쓰는 규칙으로 쪼개지고 어느 플랫폼에서나 결과가 같습니다. 단어는 공백이나 그 뒤의 문장 부호에서 끝나고, 일본어·중국어·태국어처럼 공백 없이 쓰는 문자는 글자마다 한 조각입니다.
+
+:::
+
 ## 접근성
 
-- 문장 전체가 스크린 리더를 위해 잘린 상자 안에 한 번 들어 있고, 조각들은 접근성 트리에서 숨겨집니다. 그러지 않으면 문장이 마흔여섯 개의 낱글자 목록으로 읽히고 페이지 내 찾기로는 아무것도 걸리지 않습니다.
-- 조각은 문서에 글자로 들어가지 않고 그려지기만 합니다. 그래서 검색 엔진이 읽는 내용, 복사되는 내용, `textContent`가 돌려주는 값 모두 공백까지 그대로인 문장 한 번입니다.
+- <Fw react="문장 전체가 스크린 리더를 위해 잘린 상자 안에 한 번 들어 있고, 조각들은 접근성 트리에서 숨겨집니다." flutter="스크린 리더에는 문장 전체가 한 번 전달되고, 조각들은 semantics 트리에서 빠집니다." /> 그러지 않으면 문장이 마흔여섯 개의 낱글자 목록으로 읽힙니다<Fw react=". 페이지 내 찾기로도 아무것도 걸리지 않습니다" />.
+- <Fw react="조각은 문서에 글자로 들어가지 않고 그려지기만 합니다. 그래서 검색 엔진이 읽는 내용, 복사되는 내용, `textContent`가 돌려주는 값 모두 공백까지 그대로인 문장 한 번입니다." flutter="글자는 독자가 세는 대로 셉니다. 그래서 `한`과 악센트가 붙은 `e`는 두 조각이 아니라 한 조각씩입니다." />
 - 모션 감소 설정에서는 애니메이션이 마지막 프레임으로 바로 넘어가고, 줄이 통째로 그려집니다.

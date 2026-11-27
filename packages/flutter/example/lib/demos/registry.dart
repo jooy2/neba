@@ -48,6 +48,8 @@ import 'package:neba_example/demos/animate_shake/hero.dart';
 import 'package:neba_example/demos/animate_slide/distance.dart';
 import 'package:neba_example/demos/animate_slide/edges.dart';
 import 'package:neba_example/demos/animate_slide/hero.dart';
+import 'package:neba_example/demos/animate_split/by.dart';
+import 'package:neba_example/demos/animate_split/hero.dart';
 import 'package:neba_example/demos/animate_zoom/hero.dart';
 import 'package:neba_example/demos/animate_zoom/strength.dart';
 import 'package:neba_example/demos/animate_zoom/visible.dart';
@@ -654,6 +656,8 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'animate-slide/distance': AnimateSlideDistance.new,
   'animate-slide/edges': AnimateSlideEdges.new,
   'animate-slide/hero': AnimateSlideHero.new,
+  'animate-split/by': AnimateSplitBy.new,
+  'animate-split/hero': AnimateSplitHero.new,
   'animate-zoom/hero': AnimateZoomHero.new,
   'animate-zoom/strength': AnimateZoomStrength.new,
   'animate-zoom/visible': AnimateZoomVisible.new,
