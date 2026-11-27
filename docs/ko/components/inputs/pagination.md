@@ -1,6 +1,7 @@
 ---
 title: Pagination
 order: 11
+flutter: true
 ---
 
 # Pagination
@@ -9,11 +10,30 @@ order: 11
 
 <Demo src="pagination/hero" />
 
+::: fw react
+
 ```tsx
 import { Pagination } from 'neba';
 
 <Pagination count={24} page={page} onPageChange={setPage} showEdges />;
 ```
+
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+NebaPagination(
+  count: 24,
+  page: page,
+  onPageChange: (int next) => setState(() => page = next),
+  showEdges: true,
+);
+```
+
+:::
 
 ## Props
 
@@ -31,7 +51,17 @@ import { Pagination } from 'neba';
 
 <Demo src="pagination/variants">
 
+::: fw react
+
 <<< @/.vitepress/demos/pagination/variants.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/pagination/variants.dart
+
+:::
 
 </Demo>
 
@@ -43,7 +73,17 @@ import { Pagination } from 'neba';
 
 <Demo src="pagination/range">
 
+::: fw react
+
 <<< @/.vitepress/demos/pagination/range.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/pagination/range.dart
+
+:::
 
 </Demo>
 
@@ -51,11 +91,23 @@ import { Pagination } from 'neba';
 
 <Demo src="pagination/sizes">
 
+::: fw react
+
 <<< @/.vitepress/demos/pagination/sizes.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/pagination/sizes.dart
+
+:::
 
 </Demo>
 
 ### getPageHref
+
+::: fw react
 
 페이지의 주소를 돌려주면 줄의 번호들이 실제 `<a href>`가 됩니다. 크롤러는 버튼을 누르지 못하므로, 이것 없이는 목록의 2페이지 이후가 검색 엔진에 존재하지 않습니다. 새 탭으로 열기, 주소 복사, 누르기 전에 목적지 확인 같은 브라우저의 기본 동작도 함께 돌아옵니다. 좌우 화살표에는 `rel="prev"`와 `rel="next"`가 붙습니다.
 
@@ -69,7 +121,17 @@ import { Pagination } from 'neba';
 
 </Demo>
 
+:::
+
+::: fw flutter
+
+패키지는 아무것도 직접 열지 않으므로 `getPageHref`는 없습니다. 페이지는 누르는 것이고, `onPageChange`가 앱이 쓰는 router로 그 페이지에 갑니다. 크롤러가 따라갈 링크도 없지만, Flutter 앱이 그것을 내줄 일은 없습니다.
+
+:::
+
 ## 접근성
+
+::: fw react
 
 - `<nav>`가 `<ul>`을 감싸는 구조로 렌더링되고, 현재 페이지에 `aria-current="page"`가 붙습니다.
 - 줄임표는 버튼이 아니라 문장 부호이므로 비활성 버튼으로 렌더링되지 않습니다.
@@ -77,3 +139,16 @@ import { Pagination } from 'neba';
 - `getPageHref`를 넘기면 번호가 링크가 되므로 스크린리더의 링크 목록에 올라가고, 키보드 사용자가 목적지를 미리 확인할 수 있습니다.
 - accessible name은 `label` · `pageLabel` · `previousLabel` · `nextLabel` · `firstLabel` · `lastLabel`로 모두 지정할 수 있습니다. 한 화면에 Pagination이 여러 개라면 `label`로 각각이 무엇의 페이지인지 밝혀 주세요.
 - nav 이름, 페이지 버튼, 화살표, 현재 위치를 읽는 문장까지 모두 `locale`이 정합니다. 어느 것이든 각자의 prop으로 직접 쓸 수 있습니다.
+
+:::
+
+::: fw flutter
+
+- 줄은 "Pagination", 또는 `semanticLabel`을 이름으로 가진 하나의 노드이고, 페이지마다 버튼이 하나씩 들어 있습니다. 현재 페이지는 선택된 상태입니다.
+- 줄임표는 컨트롤이 아니라 문장 부호이므로 비활성 버튼이 아니며 screen reader가 건너뜁니다.
+- 갈 곳이 없는 이동 버튼은 비활성인 채로 focus 순서에 남습니다. Next를 눌러 마지막 페이지에 닿아도 포커스가 그 자리에 있습니다.
+- 정중하게 읽히는 상태 문장이 "Page 3 of 8"처럼 현재 위치를 알립니다. 줄임표가 끼면 버튼만으로는 전체 페이지 수를 알 수 없기 때문입니다.
+- 이름은 `semanticLabel` · `pageLabel` · `previousLabel` · `nextLabel` · `firstLabel` · `lastLabel`로 모두 지정할 수 있습니다. 한 화면에 Pagination이 여러 개라면 `semanticLabel`로 각각이 무엇의 페이지인지 밝혀 주세요.
+- 줄의 이름, 페이지 버튼, 화살표, 현재 위치를 읽는 문장까지 모두 `locale`이 정합니다.
+
+:::

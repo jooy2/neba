@@ -186,6 +186,15 @@ abstract final class NebaGlyphs {
     ),
   ];
 
+  /// Two chevrons pointing to the end: the last page.
+  static final List<NebaGlyphPart> doubleChevron = <NebaGlyphPart>[
+    const NebaGlyphPart.stroke(
+      'm7.5 4.5 3.5 3.5-3.5 3.5M3.5 4.5 7 8l-3.5 3.5',
+      cap: StrokeCap.round,
+      join: StrokeJoin.round,
+    ),
+  ];
+
   /// The neutral severity: a note.
   static final List<NebaGlyphPart> note = <NebaGlyphPart>[
     NebaGlyphPart.stroke(_circle(8, 8, 6.25)),

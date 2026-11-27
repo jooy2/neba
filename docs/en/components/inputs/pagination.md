@@ -1,6 +1,7 @@
 ---
 title: Pagination
 order: 11
+flutter: true
 ---
 
 # Pagination
@@ -9,11 +10,30 @@ order: 11
 
 <Demo src="pagination/hero" />
 
+::: fw react
+
 ```tsx
 import { Pagination } from 'neba';
 
 <Pagination count={24} page={page} onPageChange={setPage} showEdges />;
 ```
+
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+NebaPagination(
+  count: 24,
+  page: page,
+  onPageChange: (int next) => setState(() => page = next),
+  showEdges: true,
+);
+```
+
+:::
 
 ## Props
 
@@ -31,7 +51,17 @@ The default is `text` rather than [Button](./button)'s `solid`: several filled b
 
 <Demo src="pagination/variants">
 
+::: fw react
+
 <<< @/.vitepress/demos/pagination/variants.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/pagination/variants.dart
+
+:::
 
 </Demo>
 
@@ -43,7 +73,17 @@ The number of slots in the row stays constant as the page changes. The window sl
 
 <Demo src="pagination/range">
 
+::: fw react
+
 <<< @/.vitepress/demos/pagination/range.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/pagination/range.dart
+
+:::
 
 </Demo>
 
@@ -51,11 +91,23 @@ The number of slots in the row stays constant as the page changes. The window sl
 
 <Demo src="pagination/sizes">
 
+::: fw react
+
 <<< @/.vitepress/demos/pagination/sizes.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/pagination/sizes.dart
+
+:::
 
 </Demo>
 
 ### getPageHref
+
+::: fw react
 
 Return the address of a page and the numbers in the row become real `<a href>`. A crawler cannot press a button, so without this everything past page one of a list does not exist to a search engine. The browser's own behaviour comes back with it: open in a new tab, copy the address, see where a press goes before making it. The two arrows carry `rel="prev"` and `rel="next"`.
 
@@ -69,7 +121,17 @@ The page being read and an arrow at the end of the row stay links, with no `href
 
 </Demo>
 
+:::
+
+::: fw flutter
+
+The package opens nothing itself, so there is no `getPageHref`: a page is a press, and `onPageChange` goes to it through whatever router the app uses. There is no link for a crawler to follow, which a Flutter app does not have to serve.
+
+:::
+
 ## Accessibility
+
+::: fw react
 
 - Renders a `<nav>` around a `<ul>`, with `aria-current="page"` on the current page.
 - The ellipsis is punctuation rather than a control, so it is not rendered as a disabled button.
@@ -77,3 +139,16 @@ The page being read and an arrow at the end of the row stay links, with no `href
 - With `getPageHref` the numbers are links, so they appear in a screen reader's list of links and a keyboard reader can see where each one goes.
 - Every accessible name is settable: `label` · `pageLabel` · `previousLabel` · `nextLabel` · `firstLabel` · `lastLabel`. With more than one pagination on a screen, use `label` to say what each one paginates.
 - `locale` decides the nav name, the page buttons, the arrows and the sentence that reads out where you are. Each of them takes a string of its own.
+
+:::
+
+::: fw flutter
+
+- The row is one node named "Pagination", or by `semanticLabel`, holding a button per page; the current page is selected.
+- The ellipsis is punctuation rather than a control, so it is not a disabled button and a screen reader skips it.
+- A stepper with nowhere to go stays in the focus order, disabled. Pressing Next onto the last page leaves the focus where it was.
+- A status read politely says where the reader is, "Page 3 of 8", since the buttons alone do not say how many pages there are once an ellipsis is in the row.
+- Every name is settable: `semanticLabel` · `pageLabel` · `previousLabel` · `nextLabel` · `firstLabel` · `lastLabel`. With more than one pagination on a screen, use `semanticLabel` to say what each one paginates.
+- `locale` decides the row's name, the page buttons, the arrows and the sentence that reads out where you are.
+
+:::

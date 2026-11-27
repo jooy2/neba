@@ -48,6 +48,7 @@ export 'src/components/hover_card/neba_hover_card.dart';
 export 'src/components/icon/neba_icon.dart';
 export 'src/components/icon_button/neba_icon_button.dart';
 export 'src/components/meter/neba_meter.dart';
+export 'src/components/pagination/neba_pagination.dart';
 export 'src/components/panes/neba_panes.dart';
 export 'src/components/popover/neba_popover.dart';
 export 'src/components/portal/neba_portal.dart';

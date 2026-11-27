@@ -125,6 +125,10 @@ import 'package:neba_example/demos/icon_button/states.dart';
 import 'package:neba_example/demos/meter/hero.dart';
 import 'package:neba_example/demos/meter/sizes.dart';
 import 'package:neba_example/demos/meter/values.dart';
+import 'package:neba_example/demos/pagination/hero.dart';
+import 'package:neba_example/demos/pagination/range.dart';
+import 'package:neba_example/demos/pagination/sizes.dart';
+import 'package:neba_example/demos/pagination/variants.dart';
 import 'package:neba_example/demos/panes/fixed.dart';
 import 'package:neba_example/demos/panes/hero.dart';
 import 'package:neba_example/demos/panes/orientation.dart';
@@ -359,6 +363,10 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'meter/hero': MeterHero.new,
   'meter/sizes': MeterSizes.new,
   'meter/values': MeterValues.new,
+  'pagination/hero': PaginationHero.new,
+  'pagination/range': PaginationRange.new,
+  'pagination/sizes': PaginationSizes.new,
+  'pagination/variants': PaginationVariants.new,
   'panes/fixed': PanesFixed.new,
   'panes/hero': PanesHero.new,
   'panes/orientation': PanesOrientation.new,
