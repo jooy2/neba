@@ -128,13 +128,19 @@ class NebaSheet extends StatelessWidget {
               painter: _SheetPainter(
                 fill: fillColor ?? fill,
                 edge: edgeColor ?? edgeless,
+                bordered: edge != null,
                 tokens: tokens,
                 plate: plateOnTop ? NebaPlate.none : plate,
                 texture: texture,
                 borderRadius: borderRadius,
               ),
               foregroundPainter: plateOnTop && plate != NebaPlate.none
-                  ? _PlatePainter(tokens: tokens, plate: plate, borderRadius: borderRadius)
+                  ? _PlatePainter(
+                      tokens: tokens,
+                      plate: plate,
+                      bordered: edge != null,
+                      borderRadius: borderRadius,
+                    )
                   : null,
               child: child,
             );
@@ -203,6 +209,7 @@ class _SheetPainter extends CustomPainter {
   _SheetPainter({
     required this.fill,
     required this.edge,
+    required this.bordered,
     required this.tokens,
     required this.plate,
     required this.texture,
@@ -211,6 +218,10 @@ class _SheetPainter extends CustomPainter {
 
   final Color fill;
   final Color edge;
+
+  /// Whether the sheet has an edge that takes a pixel, which the plate's
+  /// inset light sits inside, as a CSS inset shadow sits inside the border.
+  final bool bordered;
   final NebaTokens tokens;
   final NebaPlate plate;
   final bool texture;
@@ -253,7 +264,7 @@ class _SheetPainter extends CustomPainter {
       );
     }
 
-    _paintPlate(canvas, shape, tokens, plate);
+    _paintPlate(canvas, bordered ? shape.deflate(1) : shape, tokens, plate);
 
     if (edge.a > 0) {
       _strokeInside(canvas, shape, edge);
@@ -264,6 +275,7 @@ class _SheetPainter extends CustomPainter {
   bool shouldRepaint(_SheetPainter oldDelegate) {
     return oldDelegate.fill != fill ||
         oldDelegate.edge != edge ||
+        oldDelegate.bordered != bordered ||
         oldDelegate.tokens != tokens ||
         oldDelegate.plate != plate ||
         oldDelegate.texture != texture ||
@@ -273,27 +285,36 @@ class _SheetPainter extends CustomPainter {
 
 /// The plate on its own, over a sheet's content.
 class _PlatePainter extends CustomPainter {
-  _PlatePainter({required this.tokens, required this.plate, required this.borderRadius});
+  _PlatePainter({
+    required this.tokens,
+    required this.plate,
+    required this.bordered,
+    required this.borderRadius,
+  });
 
   final NebaTokens tokens;
   final NebaPlate plate;
+  final bool bordered;
   final BorderRadius borderRadius;
 
   @override
   void paint(Canvas canvas, Size size) {
-    _paintPlate(canvas, borderRadius.toRRect(Offset.zero & size), tokens, plate);
+    final RRect shape = borderRadius.toRRect(Offset.zero & size);
+    _paintPlate(canvas, bordered ? shape.deflate(1) : shape, tokens, plate);
   }
 
   @override
   bool shouldRepaint(_PlatePainter oldDelegate) {
     return oldDelegate.tokens != tokens ||
         oldDelegate.plate != plate ||
+        oldDelegate.bordered != bordered ||
         oldDelegate.borderRadius != borderRadius;
   }
 }
 
 /// The light along the top of [shape] and, on a solid plate, the full white
-/// hairline of the cut edge.
+/// hairline of the cut edge. [shape] is the CSS padding box: inside the edge
+/// on a sheet that has one, where an inset shadow is drawn.
 void _paintPlate(Canvas canvas, RRect shape, NebaTokens tokens, NebaPlate plate) {
   if (plate != NebaPlate.none) {
     // `inset 0 1px 0`: the sheet minus itself moved down a pixel, which

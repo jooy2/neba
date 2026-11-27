@@ -646,13 +646,16 @@ class _RenderNotch extends RenderBox
       }
     }
 
-    // The top light, a sheet's plate: the shape minus itself a pixel down.
+    // The top light, a sheet's plate: the shape inside the hairline minus
+    // itself a pixel down. Each piece of the edge is a 1-pixel border, drawn
+    // or not, and an inset shadow sits inside the border.
+    final RRect inner = shape.deflate(1);
     final Path topBand = Path.combine(
       PathOperation.difference,
-      Path()..addRRect(shape),
-      Path()..addRRect(shape.shift(const Offset(0, 1))),
+      Path()..addRRect(inner),
+      Path()..addRRect(inner.shift(const Offset(0, 1))),
     );
-    split(Rect.fromLTRB(gapStart, box.top, gapEnd, box.top + 1), paint.top, paint.gapTop, (
+    split(Rect.fromLTRB(gapStart, box.top + 1, gapEnd, box.top + 2), paint.top, paint.gapTop, (
       Color color,
     ) {
       canvas.drawPath(topBand, Paint()..color = color);

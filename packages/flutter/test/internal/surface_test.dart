@@ -119,6 +119,54 @@ void main() {
     expect(to.dx, greaterThan(from.dx));
   });
 
+  testWidgets('lays the top light inside an edge, as an inset shadow sits inside a border', (
+    WidgetTester tester,
+  ) async {
+    const Color edge = Color(0xFF2050D0);
+
+    Widget plated({Color? edge}) {
+      return host(
+        Center(
+          child: NebaSheet(
+            fill: const Color(0xFFFFFFFF),
+            edge: edge,
+            borderRadius: BorderRadius.circular(8),
+            child: const SizedBox(width: 120, height: 32),
+          ),
+        ),
+      );
+    }
+
+    final Finder painter = find.descendant(
+      of: find.byType(NebaSheet),
+      matching: find.byType(CustomPaint),
+    );
+
+    await tester.pumpWidget(plated(edge: edge));
+    await tester.pumpAndSettle();
+    final NebaTokens tokens = NebaTheme.of(tester.element(find.byType(NebaSheet)));
+    // The sheet is 122 by 34 with its edge; the light is the second row.
+    expect(
+      painter.first,
+      paints..path(
+        color: tokens.plateTop,
+        includes: <Offset>[const Offset(61, 1.5)],
+        excludes: <Offset>[const Offset(61, 0.5), const Offset(61, 2.5)],
+      ),
+    );
+
+    await tester.pumpWidget(plated());
+    await tester.pumpAndSettle();
+    expect(
+      painter.first,
+      paints..path(
+        color: tokens.plateTop,
+        includes: <Offset>[const Offset(60, 0.5)],
+        excludes: <Offset>[const Offset(60, 1.5)],
+      ),
+    );
+  });
+
   test('draws the same grain every time, at 12% and no more', () {
     final Uint8List first = NebaGrain.pixels();
     final Uint8List second = NebaGrain.pixels();
