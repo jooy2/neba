@@ -180,6 +180,9 @@ import 'package:neba_example/demos/date_picker/label_placement.dart';
 import 'package:neba_example/demos/date_picker/sizes.dart';
 import 'package:neba_example/demos/date_picker/states.dart';
 import 'package:neba_example/demos/date_picker/variants.dart';
+import 'package:neba_example/demos/date_time_picker/bounds.dart';
+import 'package:neba_example/demos/date_time_picker/hero.dart';
+import 'package:neba_example/demos/date_time_picker/label_placement.dart';
 import 'package:neba_example/demos/dialog/controlled.dart';
 import 'package:neba_example/demos/dialog/hero.dart';
 import 'package:neba_example/demos/dialog/scrolling.dart';
@@ -685,6 +688,9 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'date-picker/sizes': DatePickerSizes.new,
   'date-picker/states': DatePickerStates.new,
   'date-picker/variants': DatePickerVariants.new,
+  'date-time-picker/bounds': DateTimePickerBounds.new,
+  'date-time-picker/hero': DateTimePickerHero.new,
+  'date-time-picker/label-placement': DateTimePickerLabelPlacement.new,
   'dialog/controlled': DialogControlled.new,
   'dialog/hero': DialogHero.new,
   'dialog/scrolling': DialogScrolling.new,

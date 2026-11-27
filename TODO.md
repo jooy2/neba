@@ -221,7 +221,7 @@ Demos that wait on a component not ported yet, to be added with it: `how-to-step
 - [x] `NebaCalendar`
 - [x] `NebaDatePicker`
 - [x] `NebaTimePicker`
-- [ ] `NebaDateTimePicker`
+- [x] `NebaDateTimePicker`
 - [ ] `NebaDateRangePicker`
 - [x] `NebaBottomNavigation`
 - [x] `NebaFloatingBottomNavigation`

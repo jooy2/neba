@@ -236,6 +236,25 @@ abstract final class NebaDate {
     }
   }
 
+  /// The same span as [timeUnitSpan], as the two moments on [at]'s day, for
+  /// a bound that carries a day. Set on the wall clock rather than counted
+  /// from midnight, which is an hour out on a day the clocks change: that
+  /// day is 23 or 25 hours long.
+  static (DateTime, DateTime) timeUnitRange(NebaTimeUnit unit, DateTime at) {
+    final (int from, int to) = timeUnitSpan(unit, at);
+
+    DateTime moment(int seconds) {
+      return withTime(
+        at,
+        hours: seconds ~/ 3600,
+        minutes: seconds % 3600 ~/ 60,
+        seconds: seconds % 60,
+      );
+    }
+
+    return (moment(from), moment(to));
+  }
+
   /// [date]'s weekday as the calendar counts columns: [DateTime.weekday]
   /// with Sunday taken round to sit before Monday, so a week starting on any
   /// day is a subtraction away.

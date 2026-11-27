@@ -24,7 +24,8 @@ import 'package:neba/src/theme/theme.dart';
 /// `{shortMonth}`, `{monthNumber}`, `{day}`, `{weekday}` (the long name) and
 /// `{shortWeekday}` for the day; `{hour}` (0 to 23), `{paddedHour}` (00 to
 /// 23), `{dialHour}` (12, 1 to 11), `{minute}`, `{second}` (each two digits)
-/// and `{dayPeriod}` ([am] or [pm]) for the time of day.
+/// and `{dayPeriod}` ([am] or [pm]) for the time of day; and, in [dateTime],
+/// `{mediumDate}` and `{time}` for those two patterns whole.
 ///
 /// ```dart
 /// registerNebaDateNames(
@@ -43,6 +44,7 @@ import 'package:neba/src/theme/theme.dart';
 ///     pm: '오후',
 ///     time: '{dayPeriod} {dialHour}:{minute}',
 ///     timeWithSeconds: '{dayPeriod} {dialHour}:{minute}:{second}',
+///     dateTime: '{mediumDate} {time}',
 ///   ),
 /// );
 /// ```
@@ -62,6 +64,7 @@ class NebaDateNames {
     this.hour12 = true,
     this.time = '{dialHour}:{minute} {dayPeriod}',
     this.timeWithSeconds = '{dialHour}:{minute}:{second} {dayPeriod}',
+    this.dateTime = '{mediumDate}, {time}',
   });
 
   /// The twelve months' names, January first: the header's month button, a
@@ -112,6 +115,10 @@ class NebaDateNames {
 
   /// The same with the seconds, for a time picker that shows them.
   final String timeWithSeconds;
+
+  /// A day and a time in one string: the default format of a date and time
+  /// picker. `{mediumDate}` and `{time}` stand for those two patterns.
+  final String dateTime;
 
   /// The names English is written with, which every language falls back to.
   static const NebaDateNames english = NebaDateNames(
@@ -192,7 +199,11 @@ class NebaDateNames {
   }
 
   /// [pattern] with its placeholders filled from [date].
-  String write(String pattern, DateTime date) {
+  String write(String pattern, DateTime date) => _fill(pattern, date, whole: true);
+
+  // `{mediumDate}` and `{time}` are filled only one level down, so a pattern
+  // that names itself is written once rather than without end.
+  String _fill(String pattern, DateTime date, {required bool whole}) {
     String two(int value) => value.toString().padLeft(2, '0');
 
     return pattern.replaceAllMapped(RegExp(r'\{(\w+)\}'), (Match match) {
@@ -210,6 +221,8 @@ class NebaDateNames {
         'minute' => two(date.minute),
         'second' => two(date.second),
         'dayPeriod' => date.hour < 12 ? am : pm,
+        'mediumDate' when whole => _fill(mediumDate, date, whole: false),
+        'time' when whole => _fill(time, date, whole: false),
         _ => match.group(0)!,
       };
     });
@@ -229,7 +242,8 @@ class NebaDateNames {
         other.pm == pm &&
         other.hour12 == hour12 &&
         other.time == time &&
-        other.timeWithSeconds == timeWithSeconds;
+        other.timeWithSeconds == timeWithSeconds &&
+        other.dateTime == dateTime;
   }
 
   @override
@@ -246,6 +260,7 @@ class NebaDateNames {
     hour12,
     time,
     timeWithSeconds,
+    dateTime,
   );
 }
 

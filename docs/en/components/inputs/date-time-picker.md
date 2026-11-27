@@ -1,13 +1,16 @@
 ---
 title: DateTimePicker
 order: 17
+flutter: true
 ---
 
 # DateTimePicker
 
 <p class="neba-lede">Chooses a day and a time in one popup. Use it where the two together make a single moment: a scheduled send, a publish time.</p>
 
-<Demo src="date-time-picker/hero" />
+<Demo src="date-time-picker/hero" minHeight="440" />
+
+::: fw react
 
 ```tsx
 import { DateTimePicker } from 'neba';
@@ -15,11 +18,38 @@ import { DateTimePicker } from 'neba';
 <DateTimePicker label="Publish at" placeholder="Pick a moment" minuteStep={15} clearable />;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+NebaDateTimePicker(
+  label: const Text('Publish at'),
+  placeholder: const Text('Pick a moment'),
+  minuteStep: 15,
+  clearable: true,
+);
+```
+
+:::
+
 ## Props
 
 <PropsTable name="DateTimePicker" />
 
+::: fw react
+
 Native `<div>` attributes pass through to the root. Only `color`, `defaultValue` and `children` are excluded, since the table above spells them differently.
+
+:::
+
+::: fw flutter
+
+`value` is a `DateTime?`. Left `null`, the picker keeps its own state from `defaultValue`, and a `value` that goes from a moment to `null` empties it. `format` is a function from the `DateTime` to the words the trigger shows, and its default writes the locale's `NebaDateNames.dateTime`, the medium date and the time in one string. `shouldDisableTime` is handed a `NebaTimeUnit`, and `showStartIcon: false` is React's `startIcon={false}`. `name`, `required` and `classNames` are not there, as on [DatePicker](./date-picker).
+
+:::
 
 The calendar props behave as they do on [DatePicker](./date-picker) and the clock props as they do on [TimePicker](./time-picker). The calendar and the clock sit side by side at the same height.
 
@@ -35,27 +65,59 @@ The bounds are read at **full precision**, not just to the day. A `minDate` of 0
 
 That is what a rule like "no earlier than now" needs.
 
-<Demo src="date-time-picker/bounds">
+<Demo src="date-time-picker/bounds" minHeight="460">
+
+::: fw react
 
 <<< @/.vitepress/demos/date-time-picker/bounds.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/date_time_picker/bounds.dart
+
+:::
 
 </Demo>
 
 ### labelPlacement
 
-`notch` and `float` work as they do on [TextField](./text-field#labelplacement). The calendar glyph at the start of the trigger is where a `float` label would rest, so the label stays in the notch unless you pass `startIcon={false}`. It also stays there while the popup is open.
+`notch` and `float` work as they do on [TextField](./text-field#labelplacement). The calendar glyph at the start of the trigger is where a `float` label would rest, so the label stays in the notch unless you pass <Fw react="startIcon={false}" flutter="showStartIcon: false" code />. It also stays there while the popup is open.
 
-<Demo src="date-time-picker/label-placement">
+<Demo src="date-time-picker/label-placement" minHeight="440">
+
+::: fw react
 
 <<< @/.vitepress/demos/date-time-picker/label-placement.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/date_time_picker/label_placement.dart
+
+:::
 
 </Demo>
 
 ### What the trigger shows
 
-The trigger wears the calendar glyph and not the clock. The value is written as one string with `Intl`, combining the date and the time.
+The trigger wears the calendar glyph and not the clock. The value is written as one string, combining the date and the time, <Fw react="with `Intl`" flutter="in the locale's `NebaDateNames`" />.
 
 ## Accessibility
 
+::: fw react
+
 - The calendar is a `role="grid"` and the clock a set of `role="listbox"` columns. See [DatePicker](./date-picker#accessibility) and [TimePicker](./time-picker#accessibility) for the details.
 - The trigger is named by its label, when it has one, followed by the value, which is one `Intl` string holding both the date and the time.
+
+:::
+
+::: fw flutter
+
+- The calendar is a table of named cells and the clock a set of columns, each a group of buttons named by what its rows say. See [DatePicker](./date-picker#accessibility) and [TimePicker](./time-picker#accessibility) for the details.
+- The trigger is one node to a screen reader: a button named by a `Text` label, which says the date and the time it shows as its value, in one string.
+- The popup opens with the chosen day focused. `Tab` moves from the calendar's grid to the hours, the minutes and the footer in turn.
+
+:::

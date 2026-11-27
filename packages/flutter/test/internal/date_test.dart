@@ -97,6 +97,19 @@ void main() {
       ));
     });
 
+    test('puts the span of a row on the day of the moment it is read at', () {
+      final DateTime at = DateTime(2026, 11, 1, 9, 45, 12);
+
+      expect(NebaDate.timeUnitRange(NebaTimeUnit.hour, at), (
+        DateTime(2026, 11, 1, 9),
+        DateTime(2026, 11, 1, 9, 59, 59),
+      ));
+      expect(NebaDate.timeUnitRange(NebaTimeUnit.meridiem, at), (
+        DateTime(2026, 11, 1),
+        DateTime(2026, 11, 1, 11, 59, 59),
+      ));
+    });
+
     test('replaces the fields of the clock it is given and holds a moment to its bounds', () {
       final DateTime at = DateTime(2026, 7, 27, 9, 45, 12, 500);
 
@@ -163,6 +176,21 @@ void main() {
       expect(english.write(english.timeWithSeconds, DateTime(2026, 7, 27, 9, 5, 7)), '9:05:07 AM');
       expect(english.write('{paddedHour}:{minute} {hour}', DateTime(2026, 7, 27, 9, 5)), '09:05 9');
       expect(english.hour12, isTrue);
+      expect(
+        english.write(english.dateTime, DateTime(2026, 7, 27, 14, 30)),
+        'Jul 27, 2026, 2:30 PM',
+      );
+      // A pattern that names itself is written once, not without end.
+      expect(
+        const NebaDateNames(
+          months: <String>[],
+          shortMonths: <String>[],
+          weekdays: <String>[],
+          shortWeekdays: <String>[],
+          time: '{time}',
+        ).write('{time}', DateTime(2026)),
+        '{time}',
+      );
       expect(
         const NebaDateNames(
           months: <String>[],
