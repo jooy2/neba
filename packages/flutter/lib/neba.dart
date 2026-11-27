@@ -113,6 +113,7 @@ export 'src/components/progress_linear/neba_progress_linear.dart';
 export 'src/components/provider/neba_provider.dart';
 export 'src/components/radio_group/neba_radio_group.dart';
 export 'src/components/rating/neba_rating.dart';
+export 'src/components/reasoning/neba_reasoning.dart';
 export 'src/components/scatter_chart/neba_scatter_chart.dart';
 export 'src/components/scroll_area/neba_scroll_area.dart';
 export 'src/components/scroll_zone/neba_scroll_zone.dart';

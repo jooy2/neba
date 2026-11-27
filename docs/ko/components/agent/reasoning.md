@@ -1,6 +1,7 @@
 ---
 title: Reasoning
 order: 3
+flutter: true
 ---
 
 # Reasoning
@@ -9,17 +10,41 @@ order: 3
 
 <Demo src="reasoning/hero" />
 
+::: fw react
+
 ```tsx
 import { Reasoning } from 'neba';
 
 <Reasoning streaming={thinking}>{thoughts}</Reasoning>;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+NebaReasoning(streaming: thinking, child: Text(thoughts));
+```
+
+:::
+
 ## Props
 
 <PropsTable name="Reasoning" />
 
+::: fw react
+
 `<div>`의 기본 속성은 루트로 전달됩니다. 위 표에서 다르게 정의한 `color`와 `onChange`만 제외됩니다.
+
+:::
+
+::: fw flutter
+
+`duration`은 밀리초 숫자가 아니라 `Duration`입니다. `labels`는 React 패키지가 쓰는 문장 이름을 키로 삼는 맵입니다. `showIcon: false`가 React의 `icon={false}`이고, `hiddenUntilFound` 자리에는 `keepMounted`가 있습니다.
+
+:::
 
 라이브러리의 다른 fold는 [Spoiler](../surfaces/spoiler)와 [Collapsible](../surfaces/collapsible)이고, 둘 다 열림 상태는 독자의 것입니다. 독자가 덮었고 독자가 엽니다. 이쪽은 스트림의 것입니다.
 
@@ -27,19 +52,39 @@ import { Reasoning } from 'neba';
 
 ### streaming
 
+::: fw react
+
 나머지를 전부 끌고 가는 prop 하나입니다. true인 동안 헤더가 그렇게 말하고, 표시가 돌고, 루트에 `data-streaming`과 `aria-busy`가 붙고, 패널이 열려 있습니다. false가 되면 헤더는 요약이 되고, `autoClose`를 끄지 않았다면 패널은 접힙니다.
+
+:::
+
+::: fw flutter
+
+나머지를 전부 끌고 가는 prop 하나입니다. true인 동안 헤더가 그렇게 말하고, 표시가 돌고, 패널이 열려 있습니다. false가 되면 헤더는 요약이 되고, `autoClose`를 끄지 않았다면 패널은 접힙니다.
+
+:::
 
 `streaming`이 이미 true인 상태로 *마운트*된 Reasoning은 열린 채로 시작합니다. 열어 줄 변화가 앞으로 오지 않고, 닫힌 패널은 화면에 도착하고 있는 유일한 것을 가리게 되기 때문입니다.
 
 <Demo src="reasoning/streaming">
 
+::: fw react
+
 <<< @/.vitepress/demos/reasoning/streaming.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/reasoning/streaming.dart
+
+:::
 
 </Demo>
 
 ### duration
 
-밀리초 단위이고, 헤더는 "Thought for 4.2s"로 읽힙니다. 주지 않으면 `streaming`이 true가 된 시점부터 스스로 셉니다. 세는 동안은 1초마다 갱신하고, 스트림이 멈출 때 한 번 더 재므로 헤더에는 실제로 걸린 시간이 적힙니다. 1초가 안 되는 구간은 "Thought for 900ms"처럼 씁니다. 스트림이 한 번도 돌지 않은 패널은 "Finished thinking"이라고 씁니다.
+<Fw react="밀리초 단위이고" flutter="Duration이고" />, 헤더는 "Thought for 4.2s"로 읽힙니다. 주지 않으면 `streaming`이 true가 된 시점부터 스스로 셉니다. 세는 동안은 1초마다 갱신하고, 스트림이 멈출 때 한 번 더 재므로 헤더에는 실제로 걸린 시간이 적힙니다. 1초가 안 되는 구간은 "Thought for 900ms"처럼 씁니다. 스트림이 한 번도 돌지 않은 패널은 "Finished thinking"이라고 씁니다.
 
 ### autoOpen
 
@@ -51,15 +96,37 @@ import { Reasoning } from 'neba';
 
 켜져 있으므로 `autoOpen`은 스트림이 끝날 때 패널을 닫기까지 합니다. 끄면 사고가 다 도착한 뒤에도 패널이 열려 있습니다. 저절로 접히는 패널은 독자가 읽고 있는 아래의 답을 페이지 위로 끌어올립니다. `autoClose`는 `autoOpen`이 켜져 있을 때만 읽으며, 독자는 여전히 헤더를 눌러 패널을 접을 수 있습니다.
 
+::: fw react
+
 ```tsx
 <Reasoning streaming={streaming} autoClose={false}>
   {thinking}
 </Reasoning>
 ```
 
-### hiddenUntilFound
+:::
+
+::: fw flutter
+
+```dart
+NebaReasoning(streaming: streaming, autoClose: false, child: Text(thinking));
+```
+
+:::
+
+### <Fw react="hiddenUntilFound" flutter="keepMounted" />
+
+::: fw react
 
 켜져 있습니다. 닫힌 패널은 `hidden="until-found"`로 DOM에 남으므로 사고 내용이 서버 렌더에 포함되고, 브라우저의 페이지 내 찾기가 이를 찾아 패널을 열 수 있습니다. `hiddenUntilFound={false}`를 주면 닫힌 패널이 DOM에서 빠집니다.
+
+:::
+
+::: fw flutter
+
+켜져 있습니다. 닫힌 패널도 사고 내용을 빌드된 채로 둡니다. `keepMounted: false`를 주면 패널이 닫힌 동안에는 내려놓습니다.
+
+:::
 
 ### variant
 
@@ -67,14 +134,37 @@ import { Reasoning } from 'neba';
 
 <Demo src="reasoning/variant">
 
+::: fw react
+
 <<< @/.vitepress/demos/reasoning/variant.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/reasoning/variant.dart
+
+:::
 
 </Demo>
 
 ## 접근성
+
+::: fw react
 
 - 헤더는 진짜 버튼이고, Base UI가 `aria-expanded`와 `aria-controls`로 패널과 연결합니다.
 - 스트림이 도는 동안 루트에 `aria-busy`가 붙습니다.
 - 닫힌 패널은 tab 순서에도 accessibility tree에도 없습니다. `hiddenUntilFound`를 끄지 않는 한 브라우저의 페이지 내 찾기는 그 안의 글을 찾아 패널을 열 수 있습니다.
 - 패널은 일부러 live region이 **아닙니다**. 사고는 길고 도착하면서 계속 고쳐지므로, 스크린 리더가 그 수정을 전부 읽으면 정작 다다르려던 답이 묻힙니다.
 - 사고가 끝나는 것도 알려지지 않습니다. 이를 들려주려면 앱이 페이지에 두는 live region, 예컨대 `role="status"` 요소에 그 내용을 쓰세요.
+
+:::
+
+::: fw flutter
+
+- 스크린 리더는 헤더를 펼쳐졌거나 접힌 버튼으로 듣고, 헤더의 문장을 그 이름으로 읽습니다. Enter와 Space로 열고 닫습니다.
+- 닫힌 패널은 닫히기 시작하는 순간부터 focus 순서에도 semantics tree에도 없습니다.
+- 패널은 일부러 live region이 **아닙니다**. 사고는 길고 도착하면서 계속 고쳐지므로, 스크린 리더가 그 수정을 전부 읽으면 정작 다다르려던 답이 묻힙니다.
+- 사고가 끝나는 것도 알려지지 않습니다. 이를 들려주려면 앱이 `SemanticsService`나 직접 둔 live region으로 알리세요.
+
+:::

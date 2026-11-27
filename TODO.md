@@ -281,7 +281,7 @@ Some components have no single Flutter equivalent of what they are on the web, a
 
 - [x] `NebaToolCall`
 - [ ] `NebaApproval`
-- [ ] `NebaReasoning`
+- [x] `NebaReasoning`
 - [ ] `NebaAgentSteps`
 - [ ] `NebaContextWindow`
 - [ ] `NebaSources`

@@ -426,6 +426,9 @@ import 'package:neba_example/demos/rating/icons.dart';
 import 'package:neba_example/demos/rating/precision.dart';
 import 'package:neba_example/demos/rating/readonly.dart';
 import 'package:neba_example/demos/rating/states.dart';
+import 'package:neba_example/demos/reasoning/hero.dart';
+import 'package:neba_example/demos/reasoning/streaming.dart';
+import 'package:neba_example/demos/reasoning/variant.dart';
 import 'package:neba_example/demos/scatter_chart/axes.dart';
 import 'package:neba_example/demos/scatter_chart/bubble.dart';
 import 'package:neba_example/demos/scatter_chart/hero.dart';
@@ -1000,6 +1003,9 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'rating/precision': RatingPrecision.new,
   'rating/readonly': RatingReadonly.new,
   'rating/states': RatingStates.new,
+  'reasoning/hero': ReasoningHero.new,
+  'reasoning/streaming': ReasoningStreaming.new,
+  'reasoning/variant': ReasoningVariant.new,
   'scatter-chart/axes': ScatterChartAxes.new,
   'scatter-chart/bubble': ScatterChartBubble.new,
   'scatter-chart/hero': ScatterChartHero.new,
