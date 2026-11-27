@@ -190,6 +190,7 @@ import 'package:neba_example/demos/line_chart/ticks.dart';
 import 'package:neba_example/demos/line_chart/two_axes.dart';
 import 'package:neba_example/demos/list/dividers.dart';
 import 'package:neba_example/demos/list/hero.dart';
+import 'package:neba_example/demos/list/interactive.dart';
 import 'package:neba_example/demos/list/spacing.dart';
 import 'package:neba_example/demos/list/variants.dart';
 import 'package:neba_example/demos/meter/hero.dart';
@@ -555,6 +556,7 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'line-chart/two-axes': LineChartTwoAxes.new,
   'list/dividers': ListDividers.new,
   'list/hero': ListHero.new,
+  'list/interactive': ListInteractive.new,
   'list/spacing': ListSpacing.new,
   'list/variants': ListVariants.new,
   'meter/hero': MeterHero.new,

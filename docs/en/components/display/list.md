@@ -161,6 +161,12 @@ Use <Fw react="`variant=&quot;text&quot;`" flutter="`NebaVariant.text`" /> insid
 
 :::
 
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/list/interactive.dart
+
+:::
+
 </Demo>
 
 ## Accessibility
