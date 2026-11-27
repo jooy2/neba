@@ -41,6 +41,9 @@ import 'package:neba_example/demos/animate_float/hero.dart';
 import 'package:neba_example/demos/animate_grow/hero.dart';
 import 'package:neba_example/demos/animate_grow/origin.dart';
 import 'package:neba_example/demos/animate_grow/settling.dart';
+import 'package:neba_example/demos/animate_headline/breaking.dart';
+import 'package:neba_example/demos/animate_headline/controlled.dart';
+import 'package:neba_example/demos/animate_headline/hero.dart';
 import 'package:neba_example/demos/animate_lighting/colors.dart';
 import 'package:neba_example/demos/animate_lighting/hero.dart';
 import 'package:neba_example/demos/animate_lighting/hover.dart';
@@ -665,6 +668,9 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'animate-grow/hero': AnimateGrowHero.new,
   'animate-grow/origin': AnimateGrowOrigin.new,
   'animate-grow/settling': AnimateGrowSettling.new,
+  'animate-headline/breaking': AnimateHeadlineBreaking.new,
+  'animate-headline/controlled': AnimateHeadlineControlled.new,
+  'animate-headline/hero': AnimateHeadlineHero.new,
   'animate-lighting/colors': AnimateLightingColors.new,
   'animate-lighting/hero': AnimateLightingHero.new,
   'animate-lighting/hover': AnimateLightingHover.new,

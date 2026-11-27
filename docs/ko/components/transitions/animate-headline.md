@@ -1,6 +1,7 @@
 ---
 title: AnimateHeadline
 order: 9
+flutter: true
 ---
 
 # AnimateHeadline
@@ -8,6 +9,8 @@ order: 9
 <p class="neba-lede">한 줄이 위의 줄을 밀어내며 교체되는 효과입니다. 모든 줄이 같은 grid 칸에 놓이므로 상자는 첫 프레임부터 가장 긴 줄만큼 높고, 릴이 도는 동안 크기가 변하지 않습니다.</p>
 
 <Demo src="animate-headline/hero" />
+
+::: fw react
 
 ```tsx
 import { AnimateHeadline } from 'neba';
@@ -19,11 +22,26 @@ import { AnimateHeadline } from 'neba';
 </AnimateHeadline>;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+const NebaAnimateHeadline(
+  interval: Duration(milliseconds: 2000),
+  children: <Widget>[Text('빠른'), Text('조용한'), Text('당신의')],
+);
+```
+
+:::
+
 ## Props
 
 <PropsTable name="AnimateHeadline" />
 
-나머지 `<span>` 속성은 모두 루트로 전달됩니다. 모든 `Animate*`가 공유하는 설정은 [Prop 규약](../../design/prop-conventions)에 있습니다.
+<Fw react="나머지 `<span>` 속성은 모두 루트로 전달됩니다." flutter="`children`은 모두 같은 자리에 배치되고, 보이지 않는 줄은 보이지 않은 채 자리를 지킵니다. 올라오는 줄과 나가는 줄은 상자 경계에서 잘립니다. `rise`의 단위는 논리 픽셀이며, 주지 않으면 한 줄 자신의 높이입니다." /> 모든 `Animate*`가 공유하는 설정은 [Prop 규약](../../design/prop-conventions)에 있습니다.
 
 ## 예시
 
@@ -33,7 +51,17 @@ import { AnimateHeadline } from 'neba';
 
 <Demo src="animate-headline/breaking">
 
+::: fw react
+
 <<< @/.vitepress/demos/animate-headline/breaking.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/animate_headline/breaking.dart
+
+:::
 
 </Demo>
 
@@ -43,13 +71,25 @@ import { AnimateHeadline } from 'neba';
 
 <Demo src="animate-headline/controlled">
 
+::: fw react
+
 <<< @/.vitepress/demos/animate-headline/controlled.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/animate_headline/controlled.dart
+
+:::
 
 </Demo>
 
 ### loop와 rise
 
-`loop`를 끄면 릴은 마지막 줄에서 멈추고 거기 머뭅니다. `rise`는 한 줄이 올라오거나 나가며 이동하는 거리입니다. 기본값 `'100%'`는 한 줄 자신의 높이이고, 더 작은 값은 교체가 아니라 살짝 밀어 올리는 정도가 됩니다.
+`loop`를 끄면 릴은 마지막 줄에서 멈추고 거기 머뭅니다. `rise`는 한 줄이 올라오거나 나가며 이동하는 거리입니다. <Fw react="기본값 `'100%'`는 한 줄 자신의 높이이고," flutter="주지 않으면 한 줄 자신의 높이이고," /> 더 작은 값은 교체가 아니라 살짝 밀어 올리는 정도가 됩니다.
+
+::: fw react
 
 ```tsx
 <AnimateHeadline loop={false} rise="0.4rem">
@@ -59,10 +99,24 @@ import { AnimateHeadline } from 'neba';
 </AnimateHeadline>
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+const NebaAnimateHeadline(
+  loop: false,
+  rise: 6,
+  children: <Widget>[Text('업로드 중…'), Text('처리 중…'), Text('완료')],
+);
+```
+
+:::
+
 ## 접근성
 
-- 지금 보이는 줄만 접근성 트리에 있습니다. 나머지는 `visibility: hidden`이라 자리는 지키면서 읽는 순서에는 들어가지 않습니다.
-- 문서 안에서 각 줄 사이에 공백이 하나씩 있으므로, 요소의 텍스트는 한 단어로 붙지 않고 `faster quieter yours`처럼 읽힙니다.
+- 지금 보이는 줄만 <Fw react="접근성 트리에 있습니다. 나머지는 `visibility: hidden`이라" flutter="semantics 트리에 있습니다. 나머지는 숨겨져 있어" /> 자리는 지키면서 읽는 순서에는 들어가지 않습니다.
+- <Fw react="문서 안에서 각 줄 사이에 공백이 하나씩 있으므로, 요소의 텍스트는 한 단어로 붙지 않고 `faster quieter yours`처럼 읽힙니다." flutter="나가는 줄은 다음 줄이 올라오는 순간 semantics 트리에서 빠집니다." />
 - 릴이 돌 때 아무것도 알리지 않습니다. 2초마다 바뀌는 live region은 쓸 수 없으므로 의도한 동작입니다. 그래서 이 컴포넌트는 어느 것이어도 상관없는 문구 묶음에 쓰고, 독자가 반드시 봐야 하는 내용에는 쓰지 마세요.
 - 축소된 모션 설정에서는 릴이 스스로 돌지 않고 보이던 줄에 머뭅니다. controlled `index`를 바꾸면 줄이 바뀌며, 미끄러지는 대신 그냥 나타납니다.
 - 그 밖의 경우에는 5초 넘게 계속 바뀌므로 페이지에 멈출 방법이 있어야 합니다. 옆에 일시정지 버튼을 두고 그 상태를 `paused`에 연결하세요.

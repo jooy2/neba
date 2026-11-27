@@ -312,7 +312,7 @@ Some components have no single Flutter equivalent of what they are on the web, a
 - [x] `NebaAnimateCounter`
 - [x] `NebaAnimateLighting`
 - [x] `NebaAnimateMarquee`
-- [ ] `NebaAnimateHeadline`
+- [x] `NebaAnimateHeadline`
 
 ## 3. Component tests
 
