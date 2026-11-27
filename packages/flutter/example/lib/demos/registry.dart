@@ -45,6 +45,11 @@ import 'package:neba_example/demos/chip/variants.dart';
 import 'package:neba_example/demos/container/hero.dart';
 import 'package:neba_example/demos/container/max_width.dart';
 import 'package:neba_example/demos/container/plain.dart';
+import 'package:neba_example/demos/divider/colors.dart';
+import 'package:neba_example/demos/divider/hero.dart';
+import 'package:neba_example/demos/divider/labels.dart';
+import 'package:neba_example/demos/divider/size.dart';
+import 'package:neba_example/demos/divider/vertical.dart';
 import 'package:neba_example/demos/flex/alignment.dart';
 import 'package:neba_example/demos/flex/hero.dart';
 import 'package:neba_example/demos/flex/spacing.dart';
@@ -131,6 +136,11 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'container/hero': ContainerHero.new,
   'container/max-width': ContainerMaxWidth.new,
   'container/plain': ContainerPlain.new,
+  'divider/colors': DividerColors.new,
+  'divider/hero': DividerHero.new,
+  'divider/labels': DividerLabels.new,
+  'divider/size': DividerSize.new,
+  'divider/vertical': DividerVertical.new,
   'flex/alignment': FlexAlignment.new,
   'flex/hero': FlexHero.new,
   'flex/spacing': FlexSpacing.new,

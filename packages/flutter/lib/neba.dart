@@ -30,6 +30,7 @@ export 'src/components/button_group/neba_button_group.dart';
 export 'src/components/card/neba_card.dart';
 export 'src/components/chip/neba_chip.dart';
 export 'src/components/container/neba_container.dart';
+export 'src/components/divider/neba_divider.dart';
 export 'src/components/flex/neba_flex.dart';
 export 'src/components/grid/neba_grid.dart';
 export 'src/components/grid_container/neba_grid_container.dart';
