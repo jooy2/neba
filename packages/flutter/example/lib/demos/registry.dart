@@ -214,6 +214,9 @@ import 'package:neba_example/demos/otp_field/hero.dart';
 import 'package:neba_example/demos/otp_field/lengths.dart';
 import 'package:neba_example/demos/otp_field/sizes.dart';
 import 'package:neba_example/demos/otp_field/states.dart';
+import 'package:neba_example/demos/overlay/dismissible.dart';
+import 'package:neba_example/demos/overlay/hero.dart';
+import 'package:neba_example/demos/overlay/tones.dart';
 import 'package:neba_example/demos/page_layout/collapse.dart';
 import 'package:neba_example/demos/page_layout/hero.dart';
 import 'package:neba_example/demos/page_layout/span.dart';
@@ -586,6 +589,9 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'otp-field/lengths': OtpFieldLengths.new,
   'otp-field/sizes': OtpFieldSizes.new,
   'otp-field/states': OtpFieldStates.new,
+  'overlay/dismissible': OverlayDismissible.new,
+  'overlay/hero': OverlayHero.new,
+  'overlay/tones': OverlayTones.new,
   'page-layout/collapse': PageLayoutCollapse.new,
   'page-layout/hero': PageLayoutHero.new,
   'page-layout/span': PageLayoutSpan.new,

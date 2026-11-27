@@ -23,10 +23,48 @@ import 'package:flutter/widgets.dart';
 
 import 'package:neba/src/internal/floating.dart';
 import 'package:neba/src/internal/motion.dart';
+import 'package:neba/src/internal/surface.dart';
 import 'package:neba/src/theme/scale.dart';
 import 'package:neba/src/theme/theme.dart';
 import 'package:neba/src/theme/tokens.dart';
 import 'package:neba/src/types.dart';
+
+/// What the page behind a modal surface is dimmed with: a [color] laid over
+/// it, if any, and a blur of [blurSigma] with a [saturation] under that.
+///
+/// With neither it draws nothing, and still takes the pointer while the
+/// surface is fully modal.
+@immutable
+class NebaScrim {
+  /// A scrim of [color] over the page blurred by [blurSigma].
+  const NebaScrim({this.color, this.blurSigma = 0, this.saturation = 1})
+    : assert(blurSigma >= 0),
+      assert(saturation >= 0);
+
+  /// The colour laid over the page, usually translucent.
+  final Color? color;
+
+  /// The standard deviation of the blur behind it, a CSS `blur()` length.
+  final double blurSigma;
+
+  /// How saturated the blurred page is, a CSS `saturate()` amount.
+  final double saturation;
+
+  /// The scrim behind a dialog and a drawer: `--neba-scrim` over a 2-pixel
+  /// blur.
+  static NebaScrim of(NebaTokens tokens) => NebaScrim(color: tokens.scrim, blurSigma: 2);
+
+  @override
+  bool operator ==(Object other) {
+    return other is NebaScrim &&
+        other.color == color &&
+        other.blurSigma == blurSigma &&
+        other.saturation == saturation;
+  }
+
+  @override
+  int get hashCode => Object.hash(color, blurSigma, saturation);
+}
 
 /// Builds the surface of a [NebaModalLayer] from how far it has arrived,
 /// from `0`, not there, to `1`, there. The surface is laid out against the
@@ -66,6 +104,7 @@ class NebaModalLayer extends StatefulWidget {
     this.role = SemanticsRole.dialog,
     this.initialFocus,
     this.finalFocus,
+    this.scrim,
     this.child,
     super.key,
   }) : assert(role == SemanticsRole.dialog || role == SemanticsRole.alertDialog);
@@ -107,6 +146,10 @@ class NebaModalLayer extends StatefulWidget {
   /// Where the focus goes when the surface closes, in place of what held it
   /// before the surface opened.
   final FocusNode? finalFocus;
+
+  /// What the page behind is dimmed with, [NebaScrim.of] the tokens when
+  /// left out.
+  final NebaScrim? scrim;
 
   /// What stays where the layer was written: usually what opens it.
   final Widget? child;
@@ -289,6 +332,7 @@ class _NebaModalLayerState extends State<NebaModalLayer> with SingleTickerProvid
           ),
         ),
         _Scrim(
+          look: widget.scrim,
           opacity: _curved,
           // The scrim is still drawn outside a full modal; only the pointer
           // goes through it, to the page.
@@ -331,18 +375,42 @@ class _NebaModalLayerState extends State<NebaModalLayer> with SingleTickerProvid
   }
 }
 
-/// The page dimmed behind a modal surface, `--neba-scrim` over a 2-pixel blur,
-/// fading with the surface.
+/// The page dimmed behind a modal surface, fading with the surface.
 class _Scrim extends StatelessWidget {
-  const _Scrim({required this.opacity, required this.blocking, required this.onPressed});
+  const _Scrim({
+    required this.look,
+    required this.opacity,
+    required this.blocking,
+    required this.onPressed,
+  });
 
+  final NebaScrim? look;
   final Animation<double> opacity;
   final bool blocking;
   final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {
-    final NebaTokens tokens = NebaTheme.of(context);
+    final NebaScrim look = this.look ?? NebaScrim.of(NebaTheme.of(context));
+    final Color? color = look.color;
+    Widget painted = color == null ? const SizedBox.expand() : ColoredBox(color: color);
+
+    if (look.blurSigma > 0 || look.saturation != 1) {
+      final ui.ImageFilter blur = ui.ImageFilter.blur(
+        sigmaX: look.blurSigma,
+        sigmaY: look.blurSigma,
+      );
+
+      painted = BackdropFilter(
+        filter: look.saturation == 1
+            ? blur
+            : ui.ImageFilter.compose(
+                outer: ui.ColorFilter.matrix(saturationMatrix(look.saturation)),
+                inner: blur,
+              ),
+        child: painted,
+      );
+    }
 
     return IgnorePointer(
       ignoring: !blocking,
@@ -351,13 +419,7 @@ class _Scrim extends StatelessWidget {
         onTap: onPressed,
         // The way out a screen reader has is the surface's own dismiss action.
         excludeFromSemantics: true,
-        child: FadeTransition(
-          opacity: opacity,
-          child: BackdropFilter(
-            filter: ui.ImageFilter.blur(sigmaX: 2, sigmaY: 2),
-            child: ColoredBox(color: tokens.scrim),
-          ),
-        ),
+        child: FadeTransition(opacity: opacity, child: painted),
       ),
     );
   }

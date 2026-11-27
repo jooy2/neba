@@ -212,7 +212,7 @@ Demos that wait on a component not ported yet, to be added with it: `carousel/ph
 - [x] `NebaPopconfirm`
 - [x] `NebaToast`
 - [x] `NebaTooltip`
-- [ ] `NebaOverlay`
+- [x] `NebaOverlay`
 - [x] `NebaProgressLinear`
 - [x] `NebaProgressCircular`
 - [x] `NebaProgressBox`

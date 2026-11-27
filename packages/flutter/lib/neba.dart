@@ -65,6 +65,7 @@ export 'src/components/list/neba_list.dart';
 export 'src/components/meter/neba_meter.dart';
 export 'src/components/number_field/neba_number_field.dart';
 export 'src/components/otp_field/neba_otp_field.dart';
+export 'src/components/overlay/neba_overlay.dart';
 export 'src/components/page_layout/neba_page_layout.dart';
 export 'src/components/pagination/neba_pagination.dart';
 export 'src/components/panes/neba_panes.dart';
