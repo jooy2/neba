@@ -195,6 +195,7 @@ typedef _Disc = ({Offset centre, double outer, double inner});
 
 class _NebaPieChartState extends State<NebaPieChart> with SingleTickerProviderStateMixin {
   final FocusNode _focus = FocusNode(debugLabel: 'NebaPieChart');
+  final NebaChartLabelBin _labels = NebaChartLabelBin();
   final GlobalKey _plotKey = GlobalKey();
   late final NebaChartEmphasis _emphasis = NebaChartEmphasis(vsync: this);
   late final NebaChartPressOutside _outside = NebaChartPressOutside(
@@ -234,6 +235,7 @@ class _NebaPieChartState extends State<NebaPieChart> with SingleTickerProviderSt
   @override
   void dispose() {
     _outside.dispose();
+    _labels.dispose();
     _focus.dispose();
     _emphasis.dispose();
     super.dispose();
@@ -625,7 +627,7 @@ class _NebaPieChartState extends State<NebaPieChart> with SingleTickerProviderSt
                     color: colors[arc.index],
                   ),
               ],
-              labels: labels,
+              labels: _labels.hold(labels),
               emphasis: _emphasis,
             ),
           ),

@@ -325,7 +325,7 @@ Every component arrives with its own widget tests in phase 2. This phase is the 
 - [x] Muted text and every focus ring keep their contrast against the surfaces they sit on, in both themes. `packages/flutter/test/theme/contrast_test.dart` checks the tokens rather than the widgets, since every widget draws from them: the ink on each family's solid fill at rest, under the pointer and pressed at 4.5:1, each family's ring at 3:1 against the page, and muted text at 4.5:1 on the page, a panel and a pressed panel, in both themes and under reduced transparency.
 - [ ] A widget's layers keep their child when its state changes, so a press never rebuilds what is inside it.
 - [ ] Focus semantics: every control is reachable by keyboard and announces its role, state and name.
-- [ ] Every controller, listener and ticker a widget creates is disposed with it.
+- [x] Every controller, listener and ticker a widget creates is disposed with it. Checked by a run of the whole suite with `LeakTesting.enable()` from `leak_tracker_flutter_testing` in `test/flutter_test_config.dart`, left out of the commit because the package would have to depend on it. The one leak in the library was the text painters a bar, line, area, pie and gauge chart lay their labels out in, which `test/internal/chart_labels_test.dart` now counts through `FlutterMemoryAllocations`; what the run still reports is made by the tests themselves (an `OverlayEntry` a test inserts, a test image, the elements of a build that throws on purpose) and the grain tile `surface.dart` keeps for the whole app.
 - [ ] The suite passes on the Flutter floor `pubspec.yaml` declares, 3.41.0, as well as the latest stable release.
 
 ## 4. The sample app's tests

@@ -247,10 +247,17 @@ class _BarSeries {
 /// What the pointer changes is which column is active and which series the
 /// legend is pointing at, and neither moves a bar: the painter reads both off
 /// the chart's emphasis.
-class _BarTrace {
+class _BarTrace implements NebaChartDisposable {
   _BarTrace(this.series);
 
   final List<_BarSeries> series;
+
+  @override
+  void dispose() {
+    for (final _BarSeries one in series) {
+      disposeChartLabels(one.bars.map((_Bar bar) => bar.label));
+    }
+  }
 }
 
 /// Lays out the bars of every shown series of [layout], the React package's

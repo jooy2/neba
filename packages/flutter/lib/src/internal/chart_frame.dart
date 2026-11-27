@@ -333,6 +333,74 @@ class NebaChartLabel {
   }
 }
 
+/// Disposes the painter of every label in [labels].
+void disposeChartLabels(Iterable<NebaChartLabel?> labels) {
+  for (final NebaChartLabel? label in labels) {
+    label?.painter.dispose();
+  }
+}
+
+/// A trace that holds text painters of its own. [NebaCartesianChart]
+/// disposes a trace it has traced again after the frame that stops painting
+/// it, and the last one with the chart.
+abstract interface class NebaChartDisposable {
+  /// Disposes the painters the trace holds.
+  void dispose();
+}
+
+/// The labels a chart lays out while it builds, kept for as long as they are
+/// painted: each set goes after the frame that replaces it, and the last one
+/// with the chart.
+class NebaChartLabelBin {
+  List<NebaChartLabel> _held = const <NebaChartLabel>[];
+
+  /// Keeps [labels] and returns them, and lets the set before them go once
+  /// this frame is painted.
+  List<NebaChartLabel> hold(List<NebaChartLabel> labels) {
+    final List<NebaChartLabel> previous = _held;
+
+    _held = labels;
+
+    if (!identical(previous, labels) && previous.isNotEmpty) {
+      SchedulerBinding.instance.addPostFrameCallback((Duration _) => disposeChartLabels(previous));
+    }
+
+    return labels;
+  }
+
+  /// Lets the last set go.
+  void dispose() {
+    disposeChartLabels(_held);
+    _held = const <NebaChartLabel>[];
+  }
+}
+
+/// [builder] with a [NebaChartLabelBin] that lives as long as this widget
+/// does, for a chart with no state of its own to keep its labels in.
+class NebaChartLabelScope extends StatefulWidget {
+  /// Builds [builder] with a bin of its own.
+  const NebaChartLabelScope({super.key, required this.builder});
+
+  /// What is built, with the bin to hold each build's labels in.
+  final Widget Function(BuildContext context, NebaChartLabelBin labels) builder;
+
+  @override
+  State<NebaChartLabelScope> createState() => _NebaChartLabelScopeState();
+}
+
+class _NebaChartLabelScopeState extends State<NebaChartLabelScope> {
+  final NebaChartLabelBin _labels = NebaChartLabelBin();
+
+  @override
+  void dispose() {
+    _labels.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.builder(context, _labels);
+}
+
 /// A one-pixel rule from [from] to [to], dashed four on and four off unless
 /// [solid].
 void chartPaintRule(Canvas canvas, Offset from, Offset to, Color color, {bool solid = true}) {
@@ -2007,13 +2075,7 @@ class _ChartModel {
   final NebaChartLayout layout;
   final List<Object> chrome;
 
-  void dispose() {
-    for (final Object op in chrome) {
-      if (op is NebaChartLabel) {
-        op.painter.dispose();
-      }
-    }
-  }
+  void dispose() => disposeChartLabels(chrome.whereType<NebaChartLabel>());
 }
 
 class _Rule {
@@ -2078,6 +2140,11 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
   void dispose() {
     _outside.dispose();
     _model?.dispose();
+
+    if (_traced case final NebaChartDisposable traced) {
+      traced.dispose();
+    }
+
     _focus.dispose();
     _emphasis.dispose();
     super.dispose();
@@ -3022,6 +3089,11 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
     }
 
     final T traced = widget.trace(layout);
+
+    // Disposed after the frame that stops painting it, as the model is.
+    if (cached case final NebaChartDisposable previous) {
+      SchedulerBinding.instance.addPostFrameCallback((Duration _) => previous.dispose());
+    }
 
     _traced = traced;
     _tracedKey = key;

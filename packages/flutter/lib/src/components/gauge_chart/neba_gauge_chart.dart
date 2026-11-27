@@ -169,114 +169,119 @@ class NebaGaugeChart extends StatelessWidget {
         ? center.data
         : null;
 
-    final Widget dial = NebaChartBox(
-      height: plotHeight,
-      builder: (BuildContext context, double width) {
-        final _Dial dial = _Dial.of(
-          width: width,
-          height: plotHeight,
-          fontSize: fontSize,
-          sweep: sweep,
-          thickness: thickness,
-          ticks: ticks,
-          range: showRange
-              ? <String>[
-                  for (final double end in <double>[min, max])
-                    chartTruncate(write(end), math.max(0, width * 0.28), fontSize),
-                ]
-              : const <String>[],
-          caption: caption != null,
-          reading: reading,
-        );
+    final Widget dial = NebaChartLabelScope(
+      builder: (BuildContext context, NebaChartLabelBin labels) => NebaChartBox(
+        height: plotHeight,
+        builder: (BuildContext context, double width) {
+          final _Dial dial = _Dial.of(
+            width: width,
+            height: plotHeight,
+            fontSize: fontSize,
+            sweep: sweep,
+            thickness: thickness,
+            ticks: ticks,
+            range: showRange
+                ? <String>[
+                    for (final double end in <double>[min, max])
+                      chartTruncate(write(end), math.max(0, width * 0.28), fontSize),
+                  ]
+                : const <String>[],
+            caption: caption != null,
+            reading: reading,
+          );
 
-        if (range == 0 || dial.outer <= 0) {
-          return NebaChartEmpty(empty: empty, size: size, locale: locale);
-        }
+          if (range == 0 || dial.outer <= 0) {
+            return NebaChartEmpty(empty: empty, size: size, locale: locale);
+          }
 
-        final TextStyle labelStyle = DefaultTextStyle.of(context).style.copyWith(
-          fontSize: fontSize,
-          color: tokens.mutedFg,
-          fontFeatures: const <FontFeature>[FontFeature.tabularFigures()],
-          height: 1.2,
-        );
-        final TextDirection direction = Directionality.of(context);
-        final List<NebaChartLabel> ends = <NebaChartLabel>[
-          for (final (int index, String text) in dial.range.indexed)
-            NebaChartLabel(
-              chartTextPainter(text, labelStyle, direction),
-              dial.rangeAt(index),
-              anchor: dial.labelUnder ? 0 : (index == 0 ? -1 : 1),
-            ),
-        ];
+          final TextStyle labelStyle = DefaultTextStyle.of(context).style.copyWith(
+            fontSize: fontSize,
+            color: tokens.mutedFg,
+            fontFeatures: const <FontFeature>[FontFeature.tabularFigures()],
+            height: 1.2,
+          );
+          final TextDirection direction = Directionality.of(context);
+          final List<NebaChartLabel> ends = labels.hold(<NebaChartLabel>[
+            for (final (int index, String text) in dial.range.indexed)
+              NebaChartLabel(
+                chartTextPainter(text, labelStyle, direction),
+                dial.rangeAt(index),
+                anchor: dial.labelUnder ? 0 : (index == 0 ? -1 : 1),
+              ),
+          ]);
 
-        // A changed reading travels along the arc over the fill's duration,
-        // by how much of the stroke is drawn, and a threshold crossed on the
-        // way changes its colour over the shorter one, as a meter's does.
-        final Widget arc = TweenAnimationBuilder<Color?>(
-          tween: ColorTween(end: tokens.roles(family).fill),
-          duration: nebaDuration(context, NebaScale.duration),
-          curve: NebaScale.ease,
-          builder: (BuildContext context, Color? fill, Widget? _) {
-            return TweenAnimationBuilder<double>(
-              tween: Tween<double>(end: fraction ?? 0),
-              duration: nebaDuration(context, NebaScale.durationFill),
-              curve: NebaScale.ease,
-              builder: (BuildContext context, double drawn, Widget? _) {
-                return CustomPaint(
-                  size: Size(width, plotHeight),
-                  painter: _GaugePainter(
-                    dial: dial,
-                    track: tokens.roles(color).soft,
-                    fill: fill ?? tokens.roles(family).fill,
-                    fraction: fraction == null ? null : drawn,
-                    grid: tokens.chartGrid,
-                    ends: ends,
-                  ),
-                );
-              },
-            );
-          },
-        );
-
-        return Stack(
-          clipBehavior: Clip.none,
-          children: <Widget>[
-            arc,
-            // Real text rather than paint: this is the one number the chart
-            // is about. Held to the chord it sits on, so a center of the
-            // caller's own is wrapped by the dial rather than laid across the
-            // tile beside it, and placed so the reading, not the middle of the
-            // reading and its caption, lands on the line it is meant for.
-            Positioned.fill(
-              child: CustomSingleChildLayout(
-                delegate: _ReadingLayout(middle: dial.blockMiddle, room: dial.room),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  spacing: 2,
-                  children: <Widget>[
-                    DefaultTextStyle.merge(
-                      style: TextStyle(
-                        fontSize: dial.readingSize,
-                        fontWeight: FontWeight.w600,
-                        color: tokens.fg,
-                        fontFeatures: const <FontFeature>[FontFeature.tabularFigures()],
-                      ),
-                      textAlign: TextAlign.center,
-                      child: center ?? Text(reading ?? ''),
+          // A changed reading travels along the arc over the fill's duration,
+          // by how much of the stroke is drawn, and a threshold crossed on the
+          // way changes its colour over the shorter one, as a meter's does.
+          final Widget arc = TweenAnimationBuilder<Color?>(
+            tween: ColorTween(end: tokens.roles(family).fill),
+            duration: nebaDuration(context, NebaScale.duration),
+            curve: NebaScale.ease,
+            builder: (BuildContext context, Color? fill, Widget? _) {
+              return TweenAnimationBuilder<double>(
+                tween: Tween<double>(end: fraction ?? 0),
+                duration: nebaDuration(context, NebaScale.durationFill),
+                curve: NebaScale.ease,
+                builder: (BuildContext context, double drawn, Widget? _) {
+                  return CustomPaint(
+                    size: Size(width, plotHeight),
+                    painter: _GaugePainter(
+                      dial: dial,
+                      track: tokens.roles(color).soft,
+                      fill: fill ?? tokens.roles(family).fill,
+                      fraction: fraction == null ? null : drawn,
+                      grid: tokens.chartGrid,
+                      ends: ends,
                     ),
-                    if (caption != null)
+                  );
+                },
+              );
+            },
+          );
+
+          return Stack(
+            clipBehavior: Clip.none,
+            children: <Widget>[
+              arc,
+              // Real text rather than paint: this is the one number the chart
+              // is about. Held to the chord it sits on, so a center of the
+              // caller's own is wrapped by the dial rather than laid across the
+              // tile beside it, and placed so the reading, not the middle of the
+              // reading and its caption, lands on the line it is meant for.
+              Positioned.fill(
+                child: CustomSingleChildLayout(
+                  delegate: _ReadingLayout(middle: dial.blockMiddle, room: dial.room),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    spacing: 2,
+                    children: <Widget>[
                       DefaultTextStyle.merge(
-                        style: TextStyle(color: tokens.mutedFg, fontSize: NebaScale.metaText[size]),
+                        style: TextStyle(
+                          fontSize: dial.readingSize,
+                          fontWeight: FontWeight.w600,
+                          color: tokens.fg,
+                          fontFeatures: const <FontFeature>[FontFeature.tabularFigures()],
+                        ),
                         textAlign: TextAlign.center,
-                        child: caption,
+                        child: center ?? Text(reading ?? ''),
                       ),
-                  ],
+                      if (caption != null)
+                        DefaultTextStyle.merge(
+                          style: TextStyle(
+                            color: tokens.mutedFg,
+                            fontSize: NebaScale.metaText[size],
+                          ),
+                          textAlign: TextAlign.center,
+                          child: caption,
+                        ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
-        );
-      },
+            ],
+          );
+        },
+      ),
     );
 
     return NebaChartSurface(

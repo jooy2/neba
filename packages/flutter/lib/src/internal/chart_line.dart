@@ -55,12 +55,19 @@ class NebaLineSeriesTrace {
 ///
 /// The pointer moving from one column to the next changes which marker grows
 /// and nothing else, so nothing here is traced again for it.
-class NebaLineTrace {
+class NebaLineTrace implements NebaChartDisposable {
   /// The traces of every series, `null` for one that is hidden.
   NebaLineTrace(this.series);
 
   /// One trace per series, by its place in the list it was passed in.
   final List<NebaLineSeriesTrace?> series;
+
+  @override
+  void dispose() {
+    for (final NebaLineSeriesTrace? one in series) {
+      disposeChartLabels(one?.labels ?? const <NebaChartLabel>[]);
+    }
+  }
 }
 
 /// Traces every shown series of [layout].
