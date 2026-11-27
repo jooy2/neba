@@ -361,6 +361,9 @@ class _NebaRatingState extends State<NebaRating> {
         onEnter: interactive ? (PointerEnterEvent event) => setState(() => _hovered = score) : null,
         child: GestureDetector(
           behavior: HitTestBehavior.opaque,
+          // The tap a screen reader sends is the radio's above; a second one
+          // here would split off a node of its own with no name.
+          excludeFromSemantics: true,
           onTap: interactive
               ? () {
                   _focus.requestFocus();

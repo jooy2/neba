@@ -155,6 +155,9 @@ void main() {
         hasTapAction: true,
       ),
     );
+    // Every star is one named radio, with no second tap target of no name
+    // under it.
+    await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
 
     await pump(tester, const NebaRating(value: 4.6, readOnly: true));
     expect(
