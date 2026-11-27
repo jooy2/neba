@@ -2,7 +2,6 @@
 library;
 
 import 'package:flutter/scheduler.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 import 'package:neba/src/components/toggle/neba_toggle.dart';
@@ -195,14 +194,6 @@ class _NebaToggleGroupState extends State<NebaToggleGroup> {
   }
 
   KeyEventResult _handleKey(FocusNode _, KeyEvent event) {
-    if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
-      return KeyEventResult.ignored;
-    }
-
-    final bool horizontal = widget.orientation == NebaOrientation.horizontal;
-    final bool rtl = Directionality.of(context) == TextDirection.rtl;
-    final LogicalKeyboardKey key = event.logicalKey;
-    final int count = widget.children.length;
     int? current;
 
     for (final MapEntry<int, (FocusNode, bool)> entry in _nodes.entries) {
@@ -211,65 +202,30 @@ class _NebaToggleGroupState extends State<NebaToggleGroup> {
       }
     }
 
-    if (current == null || count == 0) {
+    if (current == null || widget.children.isEmpty) {
       return KeyEventResult.ignored;
     }
 
-    int? target;
+    final int? target = nebaRovingTarget(
+      event,
+      current: current,
+      count: widget.children.length,
+      axis: widget.orientation == NebaOrientation.horizontal ? Axis.horizontal : Axis.vertical,
+      textDirection: Directionality.of(context),
+      loop: widget.loopFocus,
+      focusable: (int index) => _nodes[index]?.$2 ?? false,
+    );
 
-    if (key == LogicalKeyboardKey.home) {
-      // The first that can take the focus, and from the far end the last.
-      target = _step(1, from: -1, count: count, loop: false);
-    } else if (key == LogicalKeyboardKey.end) {
-      target = _step(-1, from: count, count: count, loop: false);
-    } else {
-      final int? direction = switch (key) {
-        LogicalKeyboardKey.arrowRight when horizontal => rtl ? -1 : 1,
-        LogicalKeyboardKey.arrowLeft when horizontal => rtl ? 1 : -1,
-        LogicalKeyboardKey.arrowDown when !horizontal => 1,
-        LogicalKeyboardKey.arrowUp when !horizontal => -1,
-        _ => null,
-      };
-
-      if (direction == null) {
-        return KeyEventResult.ignored;
-      }
-
-      target = _step(direction, from: current, count: count, loop: widget.loopFocus);
+    if (target == null) {
+      return KeyEventResult.ignored;
     }
 
-    if (target != null) {
+    if (target != current) {
       _nodes[target]!.$1.requestFocus();
       setState(() => _active = target);
     }
 
     return KeyEventResult.handled;
-  }
-
-  /// The next toggle from [from] in [direction] that can take the focus, or
-  /// `null` at an end that does not wrap.
-  int? _step(int direction, {required int from, required int count, required bool loop}) {
-    int index = from;
-
-    for (int tries = 0; tries < count; tries++) {
-      index += direction;
-
-      if (index < 0 || index >= count) {
-        if (!loop) {
-          return null;
-        }
-
-        index = (index + count) % count;
-      }
-
-      final (FocusNode, bool)? node = _nodes[index];
-
-      if (node != null && node.$2) {
-        return index;
-      }
-    }
-
-    return null;
   }
 
   @override

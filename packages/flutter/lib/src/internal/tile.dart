@@ -1,10 +1,10 @@
-/// A row of items with one tile behind the current item, sliding to the next
+/// A run of items with one tile behind the current item, sliding to the next
 /// one when the current item changes: the React package's
 /// `src/internal/tile.ts` and the measurement around it, in a render object.
 ///
 /// The React package measures the current item's offsets after it renders and
 /// writes them onto the tile as four custom properties, which a transition on
-/// `left`, `top`, `width` and `height` animates. Here the row lays its items
+/// `left`, `top`, `width` and `height` animates. Here the run lays its items
 /// out itself, so it knows the current item's rectangle in the same pass, and
 /// the tile is laid out at the rectangle between where it was and where it is
 /// going. It is the rectangle that moves, never a transform: the tile is an
@@ -15,12 +15,13 @@
 ///   in from a corner.
 /// - **No current item hides the tile**, and the next placement is a first
 ///   one again.
-/// - **Only a change of the current item animates.** The row resizing under a
+/// - **Only a change of the current item animates.** The run resizing under a
 ///   tile that was already in the right place moves it there at once, so it
 ///   never lags behind a window being dragged.
 ///
-/// A SegmentedButton draws one, and a FloatingBottomNavigation will draw the
-/// same.
+/// The items run in a row or down a column, and may wrap onto further lines,
+/// as a CSS `flex-wrap` row does. A SegmentedButton draws one row, a Tabs bar
+/// any of the four, and a FloatingBottomNavigation will draw a row.
 ///
 /// The library talking to itself: nothing here is exported.
 library;
@@ -32,17 +33,28 @@ import 'package:neba/src/internal/button_group.dart';
 import 'package:neba/src/internal/motion.dart';
 import 'package:neba/src/theme/scale.dart';
 
-/// [children] in a row with [tile] behind the one at [current].
+/// [children] in a row or a column with [tile] behind the one at [current].
 ///
-/// The row is as wide as its items, or with [fill] as wide as a bounded width
-/// it is given, shared between them as a `NebaJoinedRun` shares it. Under a
+/// A row is as wide as its items, or with [fill] as wide as the width it is
+/// given, shared between them as a `NebaJoinedRun` shares it: a bounded
+/// width, or the minimum width of an unbounded one, which is how a row inside
+/// a scroll view fills the view while it fits. Each item keeps its own height
+/// and is centred across the row. A column is as wide as its widest item, and
+/// every item takes that width, as a CSS column stretches its items. Under a
 /// right-to-left direction the first item is at the right.
+///
+/// With [wrap], a row starts a new line below when the next item would run
+/// past a bounded width, and a column a new line beside it when the next item
+/// would run past a bounded height; [fill] then shares each line's width
+/// between its items, and a line in a column is as wide as its widest item.
 class NebaTileRun extends StatefulWidget {
-  /// A row of [children] with [tile] behind the one at [current].
+  /// A run of [children] with [tile] behind the one at [current].
   const NebaTileRun({
     required this.tile,
     required this.children,
     this.current,
+    this.axis = Axis.horizontal,
+    this.wrap = false,
     this.fill = false,
     super.key,
   });
@@ -56,7 +68,13 @@ class NebaTileRun extends StatefulWidget {
   /// The index of the item the tile is behind, or `null` for none.
   final int? current;
 
-  /// Whether the row takes the whole bounded width it is given and shares it.
+  /// Whether the items run in a row or down a column.
+  final Axis axis;
+
+  /// Whether the items wrap onto further lines when they run out of room.
+  final bool wrap;
+
+  /// Whether a row takes the whole width it is given and shares it.
   final bool fill;
 
   @override
@@ -97,6 +115,8 @@ class _NebaTileRunState extends State<NebaTileRun> with SingleTickerProviderStat
     return _TileRow(
       animation: _eased,
       current: widget.current,
+      axis: widget.axis,
+      wrap: widget.wrap,
       fill: widget.fill,
       textDirection: Directionality.of(context),
       children: <Widget>[widget.tile, ...widget.children],
@@ -110,6 +130,8 @@ class _TileRow extends MultiChildRenderObjectWidget {
   const _TileRow({
     required this.animation,
     required this.current,
+    required this.axis,
+    required this.wrap,
     required this.fill,
     required this.textDirection,
     required super.children,
@@ -117,6 +139,8 @@ class _TileRow extends MultiChildRenderObjectWidget {
 
   final Animation<double> animation;
   final int? current;
+  final Axis axis;
+  final bool wrap;
   final bool fill;
   final TextDirection textDirection;
 
@@ -125,6 +149,8 @@ class _TileRow extends MultiChildRenderObjectWidget {
     return _RenderTileRow(
       animation: animation,
       current: current,
+      axis: axis,
+      wrap: wrap,
       fill: fill,
       textDirection: textDirection,
     );
@@ -135,6 +161,8 @@ class _TileRow extends MultiChildRenderObjectWidget {
     renderObject
       ..animation = animation
       ..current = current
+      ..axis = axis
+      ..wrap = wrap
       ..fill = fill
       ..textDirection = textDirection;
   }
@@ -148,10 +176,14 @@ class _RenderTileRow extends RenderBox
   _RenderTileRow({
     required Animation<double> animation,
     required int? current,
+    required Axis axis,
+    required bool wrap,
     required bool fill,
     required TextDirection textDirection,
   }) : _animation = animation,
        _current = current,
+       _axis = axis,
+       _wrap = wrap,
        _fill = fill,
        _textDirection = textDirection;
 
@@ -172,6 +204,22 @@ class _RenderTileRow extends RenderBox
     if (_current != value) {
       _current = value;
       _moved = true;
+      markNeedsLayout();
+    }
+  }
+
+  Axis _axis;
+  set axis(Axis value) {
+    if (_axis != value) {
+      _axis = value;
+      markNeedsLayout();
+    }
+  }
+
+  bool _wrap;
+  set wrap(bool value) {
+    if (_wrap != value) {
+      _wrap = value;
       markNeedsLayout();
     }
   }
@@ -229,80 +277,167 @@ class _RenderTileRow extends RenderBox
     return items.isEmpty ? items : items.sublist(1);
   }
 
-  /// Each item's size: its own, or with [fill] its share of a bounded width.
+  /// Where each item goes and how big the run is, with every item sized and
+  /// placed by [measure].
   ///
   /// An item is measured by its dry layout and then laid out once, tightly,
   /// for the reason `NebaJoinedRun` gives: laid out tight, an item is its own
-  /// relayout boundary, and a loose layout first would leave the row deaf to
+  /// relayout boundary, and a loose layout first would leave the run deaf to
   /// an item that grew.
-  List<Size> _sizes(
+  (List<Rect>, Size) _arrange(
     BoxConstraints constraints,
     Size Function(RenderBox child, BoxConstraints constraints) measure,
   ) {
     final List<RenderBox> items = _items;
-    final BoxConstraints natural = BoxConstraints(maxHeight: constraints.maxHeight);
+    final bool row = _axis == Axis.horizontal;
+    // A row's items at their own widths, and a column's at theirs however
+    // wide the column may grow: an item that can stretch would otherwise take
+    // the whole width on offer before its neighbours were measured.
+    final BoxConstraints natural = row
+        ? BoxConstraints(maxHeight: constraints.maxHeight)
+        : const BoxConstraints();
+    final List<Size> naturals = <Size>[
+      for (final RenderBox item in items) item.getDryLayout(natural),
+    ];
 
-    List<Size> sizes = <Size>[for (final RenderBox item in items) item.getDryLayout(natural)];
+    // The lines, as runs of indices, broken where the next item would pass
+    // the length the run may have.
+    final double room = !_wrap
+        ? double.infinity
+        : (row ? constraints.maxWidth : constraints.maxHeight);
+    final List<List<int>> lines = <List<int>>[];
+    double along = 0;
 
-    if (_fill && constraints.hasBoundedWidth && items.isNotEmpty) {
-      final List<double> widths = nebaShareWidth(constraints.maxWidth, <double>[
-        for (final Size size in sizes) size.width,
-      ]);
-      sizes = <Size>[
-        for (int i = 0; i < items.length; i++)
-          items[i].getDryLayout(
-            BoxConstraints.tightFor(width: widths[i]).copyWith(maxHeight: constraints.maxHeight),
-          ),
-      ];
+    for (int i = 0; i < items.length; i++) {
+      final double length = row ? naturals[i].width : naturals[i].height;
+
+      if (lines.isEmpty || (along > 0 && along + length > room)) {
+        lines.add(<int>[]);
+        along = 0;
+      }
+
+      lines.last.add(i);
+      along += length;
     }
 
-    return <Size>[
+    // A row fills a bounded width, or the minimum width of an unbounded one:
+    // the width of the scroll view it is in.
+    final double? share = row && _fill
+        ? (constraints.hasBoundedWidth
+              ? constraints.maxWidth
+              : (constraints.minWidth > 0 ? constraints.minWidth : null))
+        : null;
+    final List<Size> sizes = List<Size>.of(naturals);
+
+    for (final List<int> line in lines) {
+      if (row && share != null) {
+        final List<double> widths = nebaShareWidth(share, <double>[
+          for (final int i in line) naturals[i].width,
+        ]);
+
+        for (int k = 0; k < line.length; k++) {
+          sizes[line[k]] = items[line[k]].getDryLayout(
+            BoxConstraints.tightFor(width: widths[k]).copyWith(maxHeight: constraints.maxHeight),
+          );
+        }
+      } else if (!row) {
+        // A column's items take its widest one's width, held to the width
+        // the column may have.
+        double widest = 0;
+
+        for (final int i in line) {
+          widest = naturals[i].width > widest ? naturals[i].width : widest;
+        }
+
+        if (widest > constraints.maxWidth) {
+          widest = constraints.maxWidth;
+        }
+
+        for (final int i in line) {
+          sizes[i] = Size(widest, naturals[i].height);
+        }
+      }
+    }
+
+    final List<Size> laid = <Size>[
       for (int i = 0; i < items.length; i++) measure(items[i], BoxConstraints.tight(sizes[i])),
     ];
-  }
 
-  static Size _total(List<Size> sizes) {
-    double width = 0;
-    double height = 0;
+    // Each line's length along the run and its thickness across it.
+    final List<double> lengths = <double>[];
+    final List<double> thicknesses = <double>[];
 
-    for (final Size size in sizes) {
-      width += size.width;
-      height = size.height > height ? size.height : height;
+    for (final List<int> line in lines) {
+      double length = 0;
+      double thickness = 0;
+
+      for (final int i in line) {
+        length += row ? laid[i].width : laid[i].height;
+        final double across = row ? laid[i].height : laid[i].width;
+        thickness = across > thickness ? across : thickness;
+      }
+
+      lengths.add(length);
+      thicknesses.add(thickness);
     }
 
-    return Size(width, height);
+    final double longest = lengths.fold<double>(0, (double a, double b) => b > a ? b : a);
+    final double thick = thicknesses.fold<double>(0, (double a, double b) => a + b);
+    final Size total = row
+        ? Size(share != null && share > longest ? share : longest, thick)
+        : Size(thick, longest);
+
+    final bool reversed = _textDirection == TextDirection.rtl;
+    final List<Rect> rects = List<Rect>.filled(items.length, Rect.zero);
+    double across = 0;
+
+    for (int l = 0; l < lines.length; l++) {
+      double position = 0;
+
+      for (final int i in lines[l]) {
+        final Size size = laid[i];
+
+        if (row) {
+          final double x = reversed ? total.width - position - size.width : position;
+          rects[i] = Offset(x, across + (thicknesses[l] - size.height) / 2) & size;
+          position += size.width;
+        } else {
+          final double x = reversed ? total.width - across - size.width : across;
+          rects[i] = Offset(x, position) & size;
+          position += size.height;
+        }
+      }
+
+      across += thicknesses[l];
+    }
+
+    return (rects, total);
   }
 
   @override
   Size computeDryLayout(BoxConstraints constraints) {
-    return constraints.constrain(
-      _total(_sizes(constraints, (RenderBox child, BoxConstraints c) => child.getDryLayout(c))),
+    final (List<Rect> _, Size total) = _arrange(
+      constraints,
+      (RenderBox child, BoxConstraints c) => child.getDryLayout(c),
     );
+
+    return constraints.constrain(total);
   }
 
   @override
   void performLayout() {
     final List<RenderBox> items = _items;
-    final List<Size> sizes = _sizes(constraints, (RenderBox child, BoxConstraints c) {
+    final (List<Rect> rects, Size total) = _arrange(constraints, (
+      RenderBox child,
+      BoxConstraints c,
+    ) {
       child.layout(c, parentUsesSize: true);
       return child.size;
     });
-    final Size total = _total(sizes);
     size = constraints.constrain(total);
 
-    final bool reversed = _textDirection == TextDirection.rtl;
-    final double run = total.width;
-    double position = 0;
-    final List<Rect> rects = <Rect>[];
-
     for (int i = 0; i < items.length; i++) {
-      final Size itemSize = sizes[i];
-      final double x = reversed ? run - position - itemSize.width : position;
-      final Offset offset = Offset(x, (total.height - itemSize.height) / 2);
-
-      (items[i].parentData! as _TileRowParentData).offset = offset;
-      rects.add(offset & itemSize);
-      position += itemSize.width;
+      (items[i].parentData! as _TileRowParentData).offset = rects[i].topLeft;
     }
 
     _placeTile(rects);
@@ -343,7 +478,7 @@ class _RenderTileRow extends RenderBox
       _from = shown;
       _to = target;
     } else if (_to != target) {
-      // The row moved under a tile that was already in place.
+      // The run moved under a tile that was already in place.
       _from = target;
       _to = target;
     }
@@ -355,33 +490,37 @@ class _RenderTileRow extends RenderBox
   }
 
   @override
-  double computeMinIntrinsicWidth(double height) {
-    return _items.fold<double>(0, (double sum, RenderBox item) {
-      return sum + item.getMinIntrinsicWidth(height);
-    });
-  }
+  double computeMinIntrinsicWidth(double height) => _intrinsic(width: true, min: true);
 
   @override
-  double computeMaxIntrinsicWidth(double height) {
-    return _items.fold<double>(0, (double sum, RenderBox item) {
-      return sum + item.getMaxIntrinsicWidth(height);
-    });
-  }
+  double computeMaxIntrinsicWidth(double height) => _intrinsic(width: true, min: false);
 
   @override
-  double computeMinIntrinsicHeight(double width) {
-    return _items.fold<double>(0, (double tallest, RenderBox item) {
-      final double height = item.getMinIntrinsicHeight(double.infinity);
-      return height > tallest ? height : tallest;
-    });
-  }
+  double computeMinIntrinsicHeight(double width) => _intrinsic(width: false, min: true);
 
   @override
-  double computeMaxIntrinsicHeight(double width) {
-    return _items.fold<double>(0, (double tallest, RenderBox item) {
-      final double height = item.getMaxIntrinsicHeight(double.infinity);
-      return height > tallest ? height : tallest;
-    });
+  double computeMaxIntrinsicHeight(double width) => _intrinsic(width: false, min: false);
+
+  /// The items' extents added up along the run and the largest across it; a
+  /// run that wraps needs no more along it than its longest item.
+  double _intrinsic({required bool width, required bool min}) {
+    final bool along = width == (_axis == Axis.horizontal);
+    double sum = 0;
+    double largest = 0;
+
+    for (final RenderBox item in _items) {
+      final double extent = width
+          ? (min
+                ? item.getMinIntrinsicWidth(double.infinity)
+                : item.getMaxIntrinsicWidth(double.infinity))
+          : (min
+                ? item.getMinIntrinsicHeight(double.infinity)
+                : item.getMaxIntrinsicHeight(double.infinity));
+      sum += extent;
+      largest = extent > largest ? extent : largest;
+    }
+
+    return along && !(_wrap && min) ? sum : largest;
   }
 
   @override

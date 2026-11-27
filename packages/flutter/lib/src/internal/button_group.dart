@@ -199,6 +199,79 @@ class NebaToggleGroupScope extends InheritedWidget {
   }
 }
 
+/// Where the arrow keys, Home and End move a roving focus in a set of
+/// [count] controls whose focus is at [current]: the one stop a toggle group
+/// or a tab bar makes in the focus order, and the keys that walk it.
+///
+/// The arrows along [axis] move to the next or the previous control that is
+/// [focusable], the horizontal ones in the reading direction, wrapping at the
+/// ends when [loop] says so; Home and End move to the first and the last.
+/// Returns `null` for a key the set does not answer, and [current] itself for
+/// one that leads nowhere, which the set still takes.
+int? nebaRovingTarget(
+  KeyEvent event, {
+  required int current,
+  required int count,
+  required Axis axis,
+  required TextDirection textDirection,
+  required bool loop,
+  required bool Function(int index) focusable,
+}) {
+  if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
+    return null;
+  }
+
+  final bool horizontal = axis == Axis.horizontal;
+  final bool rtl = textDirection == TextDirection.rtl;
+  final LogicalKeyboardKey key = event.logicalKey;
+
+  /// The next control from [from] in [direction] that can take the focus, or
+  /// `null` at an end that does not wrap.
+  int? step(int direction, {required int from, required bool loop}) {
+    int index = from;
+
+    for (int tries = 0; tries < count; tries++) {
+      index += direction;
+
+      if (index < 0 || index >= count) {
+        if (!loop) {
+          return null;
+        }
+
+        index = (index + count) % count;
+      }
+
+      if (focusable(index)) {
+        return index;
+      }
+    }
+
+    return null;
+  }
+
+  if (key == LogicalKeyboardKey.home) {
+    return step(1, from: -1, loop: false) ?? current;
+  }
+
+  if (key == LogicalKeyboardKey.end) {
+    return step(-1, from: count, loop: false) ?? current;
+  }
+
+  final int? direction = switch (key) {
+    LogicalKeyboardKey.arrowRight when horizontal => rtl ? -1 : 1,
+    LogicalKeyboardKey.arrowLeft when horizontal => rtl ? 1 : -1,
+    LogicalKeyboardKey.arrowDown when !horizontal => 1,
+    LogicalKeyboardKey.arrowUp when !horizontal => -1,
+    _ => null,
+  };
+
+  if (direction == null) {
+    return null;
+  }
+
+  return step(direction, from: current, loop: loop) ?? current;
+}
+
 /// A run of controls that read as one cut piece: each is told which of its
 /// sides face a neighbour, [overlap] pulls each one back over the one before
 /// so two hairlines share a single line, a column is as wide as its widest

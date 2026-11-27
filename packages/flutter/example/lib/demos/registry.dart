@@ -169,6 +169,13 @@ import 'package:neba_example/demos/switch/hero.dart';
 import 'package:neba_example/demos/switch/placement.dart';
 import 'package:neba_example/demos/switch/sizes.dart';
 import 'package:neba_example/demos/switch/states.dart';
+import 'package:neba_example/demos/tabs/align.dart';
+import 'package:neba_example/demos/tabs/hero.dart';
+import 'package:neba_example/demos/tabs/icons.dart';
+import 'package:neba_example/demos/tabs/orientation.dart';
+import 'package:neba_example/demos/tabs/overflow.dart';
+import 'package:neba_example/demos/tabs/variants.dart';
+import 'package:neba_example/demos/tabs/wheel.dart';
 import 'package:neba_example/demos/text_field/controlled.dart';
 import 'package:neba_example/demos/text_field/hero.dart';
 import 'package:neba_example/demos/text_field/icons.dart';
@@ -367,6 +374,13 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'switch/placement': SwitchPlacement.new,
   'switch/sizes': SwitchSizes.new,
   'switch/states': SwitchStates.new,
+  'tabs/align': TabsAlign.new,
+  'tabs/hero': TabsHero.new,
+  'tabs/icons': TabsIcons.new,
+  'tabs/orientation': TabsOrientation.new,
+  'tabs/overflow': TabsOverflow.new,
+  'tabs/variants': TabsVariants.new,
+  'tabs/wheel': TabsWheel.new,
   'text-field/controlled': TextFieldControlled.new,
   'text-field/hero': TextFieldHero.new,
   'text-field/icons': TextFieldIcons.new,

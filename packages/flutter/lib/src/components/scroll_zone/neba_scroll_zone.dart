@@ -15,6 +15,7 @@ import 'package:neba/src/internal/focus_ring.dart';
 import 'package:neba/src/internal/glyphs.dart';
 import 'package:neba/src/internal/messages.dart';
 import 'package:neba/src/internal/scroll_keys.dart';
+import 'package:neba/src/internal/wheel.dart';
 import 'package:neba/src/theme/scale.dart';
 import 'package:neba/src/theme/theme.dart';
 import 'package:neba/src/theme/tokens.dart';
@@ -528,53 +529,23 @@ class _NebaScrollZoneState extends State<NebaScrollZone> with SingleTickerProvid
     }
   }
 
-  /// The wheel over the strip.
-  ///
-  /// A wheel is offered to the deepest scroll view under the pointer first,
-  /// so the strip's own scroll view and anything nearer the pointer have
-  /// already had their chance when this runs: whatever registers here is
-  /// what none of them took.
+  /// The wheel over the strip, as `nebaStripWheel` answers it, and the way it
+  /// went for the snap to settle towards.
   void _onSignal(PointerSignalEvent event) {
-    if (event is! PointerScrollEvent || !_controller.hasClients) {
+    if (!_controller.hasClients) {
       return;
     }
 
-    final ScrollPosition position = _controller.position;
+    final int? direction = nebaStripWheel(
+      event,
+      _controller.position,
+      axis: _horizontal ? Axis.horizontal : Axis.vertical,
+      turn: widget.wheel,
+      textDirection: Directionality.of(context),
+    );
 
-    // A strip that fits is not a scroll container as far as the reader is
-    // concerned, and holding the page there would be holding it for nothing.
-    if (position.maxScrollExtent - position.minScrollExtent <= _slack) {
-      return;
-    }
-
-    final Offset delta = event.scrollDelta;
-
-    if (widget.wheel &&
-        _horizontal &&
-        delta.dy != 0 &&
-        delta.dy.abs() >= delta.dx.abs() &&
-        !HardwareKeyboard.instance.isControlPressed) {
-      _grid.direction = delta.dy.sign.toInt();
-      GestureBinding.instance.pointerSignalResolver.register(event, (PointerSignalEvent event) {
-        // Ahead is ahead in either writing direction: the scroll offset is
-        // already counted from the leading edge.
-        position.pointerScroll(delta.dy);
-      });
-
-      return;
-    }
-
-    // What the strip scrolls by itself stays the strip's at its ends too,
-    // rather than carrying on into the page behind.
-    final bool flipped =
-        HardwareKeyboard.instance.isShiftPressed && event.kind == PointerDeviceKind.mouse;
-    final double along = _horizontal ? (flipped ? delta.dy : delta.dx) : (flipped ? 0 : delta.dy);
-
-    if (along != 0) {
-      final bool rtl = _horizontal && Directionality.of(context) == TextDirection.rtl;
-
-      _grid.direction = (rtl ? -along : along).sign.toInt();
-      GestureBinding.instance.pointerSignalResolver.register(event, (PointerSignalEvent event) {});
+    if (direction != null) {
+      _grid.direction = direction;
     }
   }
 
