@@ -42,7 +42,7 @@ Every native `<button>` attribute passes straight through. The one exception is 
 
 ::: fw flutter
 
-The label is `child`, usually a `Text`, and the action is `onPressed`. With no `onPressed` the button is disabled, as every Flutter button is. `semanticLabel` names a button that has only an icon.
+The label is `child`, usually a `Text`, and the action is `onPressed`. With no `onPressed` the button is disabled, as every Flutter button is. `semanticLabel` names a button that has only an icon. A label stays on one line, and a button held narrower than its label ends it in an ellipsis rather than running past its edge.
 
 :::
 

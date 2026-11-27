@@ -182,6 +182,10 @@ class NebaButton extends StatelessWidget {
               child: DefaultTextStyle.merge(
                 style: TextStyle(fontSize: text, height: 1, fontWeight: FontWeight.w500),
                 softWrap: false,
+                // A label never wraps; held narrower than itself, it ends in
+                // an ellipsis rather than running out of the button.
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 child: IconTheme.merge(
                   // Icons track the label, as `1.2em` does.
                   data: IconThemeData(size: text * 1.2),
@@ -191,7 +195,7 @@ class NebaButton extends StatelessWidget {
                     spacing: NebaScale.gap[size]!,
                     children: <Widget>[
                       if (loading) const NebaSpinner() else ?startIcon,
-                      ?child,
+                      if (child case final Widget given?) Flexible(child: given),
                       ?endIcon,
                     ],
                   ),

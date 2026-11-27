@@ -70,6 +70,45 @@ void main() {
       );
       await press.up();
     });
+    testWidgets('ends its label in an ellipsis rather than overflowing a narrow box', (
+      WidgetTester tester,
+    ) async {
+      await pump(
+        tester,
+        SizedBox(
+          width: 90,
+          child: NebaButton(
+            onPressed: noop,
+            child: const Text('Deploy the main branch to production'),
+          ),
+        ),
+      );
+
+      expect(tester.takeException(), isNull);
+      expect(tester.getSize(find.byType(NebaButton)).width, lessThanOrEqualTo(90));
+
+      final DefaultTextStyle style = DefaultTextStyle.of(
+        tester.element(find.text('Deploy the main branch to production')),
+      );
+
+      expect(style.maxLines, 1);
+      expect(style.overflow, TextOverflow.ellipsis);
+    });
+
+    testWidgets('keeps its own width in a row that leaves it all the room it wants', (
+      WidgetTester tester,
+    ) async {
+      await pump(
+        tester,
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[NebaButton(onPressed: noop, child: const Text('Save'))],
+        ),
+      );
+
+      expect(tester.takeException(), isNull);
+      expect(tester.getSize(find.byType(NebaButton)).width, greaterThan(40));
+    });
   });
 
   group('style props', () {

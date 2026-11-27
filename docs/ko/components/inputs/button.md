@@ -42,7 +42,7 @@ NebaButton(onPressed: save, child: const Text('Save'));
 
 ::: fw flutter
 
-라벨은 보통 `Text`인 `child`로, 동작은 `onPressed`로 받습니다. 다른 Flutter 버튼처럼 `onPressed`가 없으면 비활성입니다. 아이콘만 있는 버튼의 이름은 `semanticLabel`로 붙입니다.
+라벨은 보통 `Text`인 `child`로, 동작은 `onPressed`로 받습니다. 다른 Flutter 버튼처럼 `onPressed`가 없으면 비활성입니다. 아이콘만 있는 버튼의 이름은 `semanticLabel`로 붙입니다. 라벨은 한 줄을 유지하며, 버튼이 라벨보다 좁게 놓이면 라벨이 가장자리를 넘지 않고 말줄임표로 끝납니다.
 
 :::
 
