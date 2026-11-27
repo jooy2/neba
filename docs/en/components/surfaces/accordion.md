@@ -110,6 +110,12 @@ The sheet is never filled with colour. Use `text` inside a [Card](./card): the c
 
 :::
 
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/accordion/behaviour.dart
+
+:::
+
 </Demo>
 
 ### size

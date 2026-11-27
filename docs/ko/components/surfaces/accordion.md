@@ -110,6 +110,12 @@ sheet는 색으로 채워지지 않습니다. [Card](./card) 안에 넣을 때�
 
 :::
 
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/accordion/behaviour.dart
+
+:::
+
 </Demo>
 
 ### size

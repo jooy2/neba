@@ -69,6 +69,12 @@ const NebaCollapsible(
 
 :::
 
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/collapsible/slots.dart
+
+:::
+
 </Demo>
 
 ### <Fw react="trigger" flutter="triggerBuilder" />

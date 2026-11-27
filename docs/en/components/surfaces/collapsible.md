@@ -69,6 +69,12 @@ The shared axes (`variant` `size` `color` `density` `elevation`) are defined in 
 
 :::
 
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/collapsible/slots.dart
+
+:::
+
 </Demo>
 
 ### <Fw react="trigger" flutter="triggerBuilder" />

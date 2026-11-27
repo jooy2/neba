@@ -6,6 +6,7 @@ library;
 
 import 'package:flutter/widgets.dart';
 
+import 'package:neba_example/demos/accordion/behaviour.dart';
 import 'package:neba_example/demos/accordion/hero.dart';
 import 'package:neba_example/demos/accordion/sizes.dart';
 import 'package:neba_example/demos/accordion/variants.dart';
@@ -80,6 +81,7 @@ import 'package:neba_example/demos/chip/sizes.dart';
 import 'package:neba_example/demos/chip/variants.dart';
 import 'package:neba_example/demos/collapsible/hero.dart';
 import 'package:neba_example/demos/collapsible/mounting.dart';
+import 'package:neba_example/demos/collapsible/slots.dart';
 import 'package:neba_example/demos/collapsible/trigger.dart';
 import 'package:neba_example/demos/collapsible/variants.dart';
 import 'package:neba_example/demos/container/hero.dart';
@@ -211,6 +213,7 @@ import 'package:neba_example/demos/visually_hidden/skip_link.dart';
 
 /// The demos, by key.
 const Map<String, Widget Function()> demos = <String, Widget Function()>{
+  'accordion/behaviour': AccordionBehaviour.new,
   'accordion/hero': AccordionHero.new,
   'accordion/sizes': AccordionSizes.new,
   'accordion/variants': AccordionVariants.new,
@@ -285,6 +288,7 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'chip/variants': ChipVariants.new,
   'collapsible/hero': CollapsibleHero.new,
   'collapsible/mounting': CollapsibleMounting.new,
+  'collapsible/slots': CollapsibleSlots.new,
   'collapsible/trigger': CollapsibleTrigger.new,
   'collapsible/variants': CollapsibleVariants.new,
   'container/hero': ContainerHero.new,
