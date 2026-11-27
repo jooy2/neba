@@ -151,14 +151,13 @@ const os = /mac|iphone|ipad|ipod/i.test(userAgent)
 
 ::: fw flutter
 
-Flutter 패키지에는 아직 메뉴가 없습니다. 그전까지는 Shortcut을 행 끝, 해당 라벨 옆에 둡니다.
+[MenuItem](../inputs/menu)의 `shortcut`이 Shortcut을 주로 넣는 자리입니다. 행은 라벨 뒤 끝자리에 놓을 뿐 아무것도 바인딩하지 않습니다.
 
 ```dart
-Row(
-  children: <Widget>[
-    const Expanded(child: Text('이름 바꾸기')),
-    const NebaShortcut(keys: 'Mod+E'),
-  ],
+NebaMenuItem(
+  onPressed: rename,
+  shortcut: const NebaShortcut(keys: 'Mod+E'),
+  child: const Text('이름 바꾸기'),
 );
 ```
 

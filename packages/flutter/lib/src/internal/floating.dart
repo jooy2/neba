@@ -543,6 +543,7 @@ class NebaFloating extends StatefulWidget {
     this.closeOnTriggerPress = false,
     this.moveFocus = false,
     this.modal = NebaModal.off,
+    this.barrierCutout,
     this.intentionalOutsidePress = false,
     this.instant = false,
     this.enabled = true,
@@ -606,6 +607,14 @@ class NebaFloating extends StatefulWidget {
   /// Anything but [NebaModal.off] keeps Tab inside the popup; [NebaModal.on]
   /// also lays a barrier over the page that takes every pointer.
   final NebaModal modal;
+
+  /// What the barrier of a [NebaModal.on] surface leaves the pointer through
+  /// to: the widget under this key keeps its presses and its hover, as Base
+  /// UI's backdrop cuts out the trigger of a modal menu and the whole bar of a
+  /// menubar, so the trigger can close what it opened and the bar can be
+  /// crossed. A press there still counts as outside the surface unless it is
+  /// on the trigger.
+  final GlobalKey? barrierCutout;
 
   /// Whether a mouse closes the surface on a whole click outside it rather
   /// than on the press going down. A finger always closes it on a tap, and
@@ -1298,10 +1307,13 @@ class _NebaFloatingState extends State<NebaFloating> with SingleTickerProviderSt
         fit: StackFit.expand,
         children: <Widget>[
           if (open)
-            const Positioned.fill(
-              child: MouseRegion(
-                cursor: SystemMouseCursors.basic,
-                child: Listener(behavior: HitTestBehavior.opaque),
+            Positioned.fill(
+              child: _BarrierCutout(
+                cutout: widget.barrierCutout,
+                child: const MouseRegion(
+                  cursor: SystemMouseCursors.basic,
+                  child: Listener(behavior: HitTestBehavior.opaque),
+                ),
               ),
             ),
           layer,
@@ -1310,6 +1322,48 @@ class _NebaFloatingState extends State<NebaFloating> with SingleTickerProviderSt
     }
 
     return layer;
+  }
+}
+
+/// A modal barrier with a hole in it where [cutout] is drawn: a pointer over
+/// that widget passes through the barrier as if it were not there.
+class _BarrierCutout extends SingleChildRenderObjectWidget {
+  const _BarrierCutout({required this.cutout, required Widget super.child});
+
+  final GlobalKey? cutout;
+
+  @override
+  _RenderBarrierCutout createRenderObject(BuildContext context) {
+    return _RenderBarrierCutout(cutout);
+  }
+
+  @override
+  void updateRenderObject(BuildContext context, _RenderBarrierCutout renderObject) {
+    renderObject.cutout = cutout;
+  }
+}
+
+class _RenderBarrierCutout extends RenderProxyBox {
+  _RenderBarrierCutout(this.cutout);
+
+  GlobalKey? cutout;
+
+  @override
+  bool hitTest(BoxHitTestResult result, {required Offset position}) {
+    final RenderObject? hole = cutout?.currentContext?.findRenderObject();
+
+    if (hole is RenderBox && hole.attached && hole.hasSize) {
+      final Rect rect = MatrixUtils.transformRect(
+        hole.getTransformTo(null),
+        Offset.zero & hole.size,
+      );
+
+      if (rect.contains(localToGlobal(position))) {
+        return false;
+      }
+    }
+
+    return super.hitTest(result, position: position);
   }
 }
 

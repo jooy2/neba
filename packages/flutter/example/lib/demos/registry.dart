@@ -212,6 +212,12 @@ import 'package:neba_example/demos/list/hero.dart';
 import 'package:neba_example/demos/list/interactive.dart';
 import 'package:neba_example/demos/list/spacing.dart';
 import 'package:neba_example/demos/list/variants.dart';
+import 'package:neba_example/demos/menu/basic.dart';
+import 'package:neba_example/demos/menu/context.dart';
+import 'package:neba_example/demos/menu/hero.dart';
+import 'package:neba_example/demos/menu/nested.dart';
+import 'package:neba_example/demos/menu/sizes.dart';
+import 'package:neba_example/demos/menu/state.dart';
 import 'package:neba_example/demos/meter/hero.dart';
 import 'package:neba_example/demos/meter/sizes.dart';
 import 'package:neba_example/demos/meter/thresholds.dart';
@@ -601,6 +607,12 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'list/interactive': ListInteractive.new,
   'list/spacing': ListSpacing.new,
   'list/variants': ListVariants.new,
+  'menu/basic': MenuBasic.new,
+  'menu/context': MenuContext.new,
+  'menu/hero': MenuHero.new,
+  'menu/nested': MenuNested.new,
+  'menu/sizes': MenuSizes.new,
+  'menu/state': MenuState.new,
   'meter/hero': MeterHero.new,
   'meter/sizes': MeterSizes.new,
   'meter/thresholds': MeterThresholds.new,

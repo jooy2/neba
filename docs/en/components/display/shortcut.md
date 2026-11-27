@@ -151,14 +151,13 @@ Key caps sit one step below the control heights, like a [Chip](./chip), and are 
 
 ::: fw flutter
 
-The Flutter package has no menu yet. Until it does, a Shortcut sits at the end of a row beside the label it belongs to.
+[MenuItem](../inputs/menu)'s `shortcut` is where a Shortcut usually goes. The row sets it at its end, after the label, and binds nothing.
 
 ```dart
-Row(
-  children: <Widget>[
-    const Expanded(child: Text('Rename')),
-    const NebaShortcut(keys: 'Mod+E'),
-  ],
+NebaMenuItem(
+  onPressed: rename,
+  shortcut: const NebaShortcut(keys: 'Mod+E'),
+  child: const Text('Rename'),
 );
 ```
 

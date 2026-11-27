@@ -1,11 +1,14 @@
 // nebaPlaceFloating: Base UI's positioner, checked on the numbers rather
 // than through a widget — the side, the alignment, the flip, the slide and
-// the wedge.
+// the wedge — and the one thing about NebaFloating's barrier no popup's own
+// suite reaches, the hole it leaves for a trigger.
 
-import 'package:flutter/painting.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:neba/neba.dart';
 import 'package:neba/src/internal/floating.dart';
+
+import '../support/host.dart';
 
 void main() {
   const Size bounds = Size(400, 400);
@@ -232,6 +235,66 @@ void main() {
 
       expect(placement.rect.left, 100 - 3);
       expect(placement.rect.left + placement.arrow![1].dx, 108);
+    });
+  });
+
+  group('the barrier', () {
+    Widget scene({
+      required GlobalKey? cutout,
+      required VoidCallback onKept,
+      required VoidCallback onBehind,
+    }) {
+      return host(
+        Overlay.wrap(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              NebaFloating(
+                open: true,
+                onOpenChange: (bool open, NebaFloatingReason reason) {},
+                modal: NebaModal.on,
+                barrierCutout: cutout,
+                popup: const SizedBox(width: 40, height: 40),
+                child: KeyedSubtree(
+                  key: cutout,
+                  child: NebaButton(onPressed: onKept, child: const Text('Kept')),
+                ),
+              ),
+              const SizedBox(height: 80),
+              NebaButton(onPressed: onBehind, child: const Text('Behind')),
+            ],
+          ),
+        ),
+      );
+    }
+
+    testWidgets('lets the pointer through to what it cuts out, and nowhere else', (
+      WidgetTester tester,
+    ) async {
+      int kept = 0;
+      int behind = 0;
+
+      await tester.pumpWidget(
+        scene(cutout: GlobalKey(), onKept: () => kept += 1, onBehind: () => behind += 1),
+      );
+      await tester.pump();
+
+      await tester.tap(find.text('Kept'));
+      await tester.tap(find.text('Behind'), warnIfMissed: false);
+
+      expect(kept, 1);
+      expect(behind, 0);
+    });
+
+    testWidgets('takes every press without one', (WidgetTester tester) async {
+      int kept = 0;
+
+      await tester.pumpWidget(scene(cutout: null, onKept: () => kept += 1, onBehind: () {}));
+      await tester.pump();
+
+      await tester.tap(find.text('Kept'), warnIfMissed: false);
+
+      expect(kept, 0);
     });
   });
 }
