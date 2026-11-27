@@ -58,7 +58,7 @@ class _CommandPaletteHeroState extends State<CommandPaletteHero> {
           variant: NebaVariant.outline,
           endIcon: const NebaShortcut(keys: 'Mod+K'),
           // Shrinks rather than overflows a narrow phone.
-          child: const Flexible(child: Text('Open the palette', overflow: TextOverflow.ellipsis)),
+          child: const Text('Open the palette'),
         ),
         if (ran != null) NebaTypography('Ran: $ran', level: NebaTypographyLevel.caption),
         NebaCommandPalette(
