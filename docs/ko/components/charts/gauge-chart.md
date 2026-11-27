@@ -68,6 +68,12 @@ const NebaGaugeChart(label: 'Memory', caption: Text('Memory'), value: 82);
 
 :::
 
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/gauge_chart/thresholds.dart
+
+:::
+
 </Demo>
 
 ### sweep

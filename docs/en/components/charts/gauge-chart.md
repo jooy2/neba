@@ -68,6 +68,12 @@ Where the arc changes colour. The last entry the value has reached wins; below a
 
 :::
 
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/gauge_chart/thresholds.dart
+
+:::
+
 </Demo>
 
 ### sweep

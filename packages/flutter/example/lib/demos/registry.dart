@@ -207,6 +207,7 @@ import 'package:neba_example/demos/footer/measure.dart';
 import 'package:neba_example/demos/footer/variant.dart';
 import 'package:neba_example/demos/gauge_chart/hero.dart';
 import 'package:neba_example/demos/gauge_chart/sweep.dart';
+import 'package:neba_example/demos/gauge_chart/thresholds.dart';
 import 'package:neba_example/demos/gauge_chart/ticks.dart';
 import 'package:neba_example/demos/grid/alignment.dart';
 import 'package:neba_example/demos/grid/auto_grow.dart';
@@ -653,6 +654,7 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'footer/variant': FooterVariant.new,
   'gauge-chart/hero': GaugeChartHero.new,
   'gauge-chart/sweep': GaugeChartSweep.new,
+  'gauge-chart/thresholds': GaugeChartThresholds.new,
   'gauge-chart/ticks': GaugeChartTicks.new,
   'grid/alignment': GridAlignment.new,
   'grid/auto-grow': GridAutoGrow.new,

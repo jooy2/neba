@@ -218,10 +218,6 @@ const List<(String, List<String>)> _footer = <(String, List<String>)>[
   ('Company', <String>['About', 'Careers', 'Blog', 'Security', 'Contact']),
 ];
 
-/// The width from which the page lays out as it does on a desktop, the React
-/// page's `md` breakpoint.
-const double _wide = 768;
-
 class ConceptsLanding extends StatefulWidget {
   const ConceptsLanding({super.key});
 
@@ -248,7 +244,8 @@ class _ConceptsLandingState extends State<ConceptsLanding> {
 
   @override
   Widget build(BuildContext context) {
-    final bool wide = MediaQuery.sizeOf(context).width >= _wide;
+    // From the `md` breakpoint up, the page lays out as it does on a desktop.
+    final bool wide = MediaQuery.sizeOf(context).width >= NebaBreakpoint.md.width;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
