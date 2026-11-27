@@ -1,26 +1,16 @@
 /// `NebaTreeSelect`, a value chosen from a tree rather than from a list.
 library;
 
-import 'dart:ui' show SemanticsValidationResult;
-
-import 'package:flutter/foundation.dart';
-import 'package:flutter/gestures.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 import 'package:neba/src/components/tree_view/neba_tree_view.dart';
+import 'package:neba/src/internal/calendar.dart';
 import 'package:neba/src/internal/field.dart';
 import 'package:neba/src/internal/fieldset.dart';
-import 'package:neba/src/internal/floating.dart';
-import 'package:neba/src/internal/focus_ring.dart';
-import 'package:neba/src/internal/glyphs.dart';
-import 'package:neba/src/internal/interaction.dart';
 import 'package:neba/src/internal/messages.dart';
-import 'package:neba/src/internal/motion.dart';
-import 'package:neba/src/internal/notch.dart';
+import 'package:neba/src/internal/picker.dart';
 import 'package:neba/src/internal/search.dart';
 import 'package:neba/src/internal/sizer.dart';
-import 'package:neba/src/internal/surface.dart';
 import 'package:neba/src/theme/scale.dart';
 import 'package:neba/src/theme/theme.dart';
 import 'package:neba/src/theme/tokens.dart';
@@ -286,15 +276,6 @@ class NebaTreeSelect<T> extends StatefulWidget {
   State<NebaTreeSelect<T>> createState() => _NebaTreeSelectState<T>();
 }
 
-/// The popup's own padding, one track tighter than a control's.
-const Map<NebaSize, double> _popupPadding = <NebaSize, double>{
-  NebaSize.xs: 6,
-  NebaSize.sm: 8,
-  NebaSize.md: 10,
-  NebaSize.lg: 12,
-  NebaSize.xl: 14,
-};
-
 /// The width of what the popup holds, and the tallest it gets: `w-64`,
 /// `max-h-80`.
 const double _panelWidth = 256;
@@ -316,7 +297,6 @@ class _NebaTreeSelectState<T> extends State<NebaTreeSelect<T>> {
   String _query = '';
   // Whether the pointer went down on the ×, so the shell under it does not
   // open the popup on the same press.
-  bool _pressOnClear = false;
 
   // What the tree is worked out from, kept while nothing it depends on
   // changes, so a keystroke at the search field folds the tree's labels
@@ -506,26 +486,6 @@ class _NebaTreeSelectState<T> extends State<NebaTreeSelect<T>> {
     widget.onExpandedChange?.call(next);
   }
 
-  void _toggle() => _setOpen(!_isOpen);
-
-  KeyEventResult _onTriggerKey(FocusNode node, KeyEvent event) {
-    final LogicalKeyboardKey key = event.logicalKey;
-    final bool presses =
-        key == LogicalKeyboardKey.enter ||
-        key == LogicalKeyboardKey.numpadEnter ||
-        key == LogicalKeyboardKey.space;
-
-    if (!presses || event is KeyUpEvent) {
-      return KeyEventResult.ignored;
-    }
-
-    if (event is KeyDownEvent) {
-      _toggle();
-    }
-
-    return KeyEventResult.handled;
-  }
-
   @override
   Widget build(BuildContext context) {
     final NebaTokens tokens = NebaTheme.of(context);
@@ -537,11 +497,9 @@ class _NebaTreeSelectState<T> extends State<NebaTreeSelect<T>> {
         widget.labelPlacement ?? defaults.labelPlacement ?? NebaLabelPlacement.top;
     final Locale? locale = widget.locale ?? defaults.locale;
     final bool disabled = _disabled;
-    final bool readOnly = widget.readOnly && !disabled;
     final bool invalid = widget.invalid ?? widget.error != null;
     final NebaColor family = invalid ? NebaColor.danger : widget.color ?? NebaColor.primary;
     final NebaColorRoles roles = tokens.roles(family);
-    final bool open = _isOpen && !_inert;
 
     _index();
 
@@ -552,26 +510,7 @@ class _NebaTreeSelectState<T> extends State<NebaTreeSelect<T>> {
     final Widget? label = widget.label;
     final Widget? placeholder = widget.placeholder;
     final Widget? startIcon = widget.startIcon;
-    final bool notched = label != null && placement != NebaLabelPlacement.top;
-    final bool rests = notched && placement == NebaLabelPlacement.float && startIcon == null;
-    final bool clears = widget.clearable && !empty && !_inert;
     final String? words = empty ? null : chosen.map(_wordsOf).join(', ');
-    final NebaFieldSemantics semantics = NebaFieldSemantics.of(
-      semanticLabel: widget.semanticLabel,
-      label: label,
-      description: widget.description,
-      error: widget.error,
-      placeholder: nebaPlainText(placeholder),
-    );
-    final double text = NebaScale.controlText[size]!;
-    final double gap = NebaScale.gap[size]!;
-    final double padX = NebaScale.paddingX[density]![size]!;
-    final double border = variant == NebaVariant.outline ? 1 : 0;
-    final TextStyle valueStyle = TextStyle(
-      fontSize: text,
-      height: NebaScale.controlLeading[size]! / text,
-      leadingDistribution: TextLeadingDistribution.even,
-    );
     final String clearLabel =
         widget.clearLabel ?? nebaMessages(context, 'action', locale: locale)['clear']!;
 
@@ -610,203 +549,54 @@ class _NebaTreeSelectState<T> extends State<NebaTreeSelect<T>> {
       }
     }
 
-    Widget content(BuildContext context, bool focused) {
-      Widget value;
+    // The picker shell every picker wears. A label of the caller's own, or a
+    // format, is drawn as it is and measured as it is.
+    final bool plain = widget.format == null && (written == null || written is Text);
 
-      if (written != null) {
-        value = DefaultTextStyle.merge(
-          style: TextStyle(color: tokens.fg),
-          child: written,
-        );
-      } else if (placeholder != null) {
-        // A resting label stands where the placeholder would be, so the
-        // placeholder shows only once the label has risen.
-        final bool hidden = rests && !focused && !open;
-
-        value = TweenAnimationBuilder<Color?>(
-          tween: ColorTween(end: hidden ? tokens.mutedFg.withValues(alpha: 0) : tokens.mutedFg),
-          duration: nebaDuration(context, NebaScale.duration),
-          curve: NebaScale.ease,
-          builder: (BuildContext context, Color? color, Widget? child) {
-            return DefaultTextStyle.merge(
-              style: TextStyle(color: color),
-              child: child!,
-            );
-          },
-          child: placeholder,
-        );
-      } else {
-        value = const SizedBox.shrink();
-      }
-
-      return Row(
-        spacing: gap,
-        children: <Widget>[
-          Expanded(
-            child: Focus(
-              focusNode: _triggerNode,
-              autofocus: widget.autofocus,
-              canRequestFocus: !disabled,
-              onKeyEvent: _onTriggerKey,
-              child: Row(
-                spacing: gap,
-                children: <Widget>[
-                  if (startIcon != null)
-                    NebaFieldAdornment(
-                      size: size,
-                      focused: focused,
-                      accent: roles.accent,
-                      child: startIcon,
-                    ),
-                  Expanded(
-                    child: ExcludeSemantics(
-                      child: DefaultTextStyle.merge(
-                        style: valueStyle,
-                        maxLines: 1,
-                        softWrap: false,
-                        overflow: TextOverflow.ellipsis,
-                        child: Align(alignment: AlignmentDirectional.centerStart, child: value),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          if (clears)
-            Listener(
-              onPointerDown: (PointerDownEvent _) => _pressOnClear = true,
-              child: _ClearButton(
-                size: size,
-                ring: roles.ring,
-                label: clearLabel,
-                onPressed: () => _commit(<T>[]),
-              ),
-            ),
-        ],
-      );
-    }
-
-    Widget trigger = NebaFieldShell(
+    return NebaPickerField(
       variant: variant,
       size: size,
+      color: widget.color ?? NebaColor.primary,
       density: density,
-      roles: roles,
       elevation: widget.elevation ?? 0,
-      disabled: disabled,
-      readOnly: readOnly,
-      keyboardRing: true,
-      cursor: disabled
-          ? SystemMouseCursors.forbidden
-          : readOnly
-          ? SystemMouseCursors.basic
-          : SystemMouseCursors.click,
-      notch: notched
-          ? NebaFieldNotch(
-              label: ExcludeSemantics(excluding: semantics.labelTaken, child: label),
-              rests: rests,
-              empty: empty && !open,
-            )
-          : null,
-      builder: content,
-    );
-
-    if (disabled) {
-      trigger = ExcludeFocus(child: trigger);
-    } else if (!readOnly) {
-      // A mouse opens it on the press going down, a finger on the tap, so a
-      // scroll that starts on it opens nothing. A press on the × is the ×'s.
-      trigger = Listener(
-        onPointerDown: (PointerDownEvent event) {
-          final bool clear = _pressOnClear;
-
-          _pressOnClear = false;
-
-          if (!clear && event.kind != PointerDeviceKind.touch && event.buttons == kPrimaryButton) {
-            _toggle();
-          }
-        },
-        child: GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          excludeFromSemantics: true,
-          onTapUp: (TapUpDetails details) {
-            if (details.kind == PointerDeviceKind.touch) {
-              _toggle();
-            }
-          },
-          child: trigger,
+      value: (plain ? null : nebaPlainText(written)) ?? words,
+      samples: <String>[?words],
+      placeholder: placeholder,
+      display: switch (written) {
+        final Widget shown when !plain => DefaultTextStyle.merge(
+          style: TextStyle(color: tokens.fg),
+          child: shown,
         ),
-      );
-    }
-
-    final Widget field = NebaFloating(
-      open: open,
-      onOpenChange: (bool next, NebaFloatingReason reason) => _setOpen(next),
-      side: NebaSide.bottom,
-      align: NebaAlign.start,
-      sideOffset: 6,
-      moveFocus: true,
-      maxHeight: _panelHeight + 2 * _popupPadding[size]! + 2,
+        _ => null,
+      },
+      // Measured as a sizer measures, so the words are not drawn twice for
+      // a reader or a test to find.
+      sizer: switch (measured) {
+        final Widget sample when !plain => NebaWidthSizer(
+          style: TextStyle(fontSize: NebaScale.controlText[size]),
+          samples: <Widget>[sample, ?placeholder],
+        ),
+        _ => null,
+      },
+      startIcon: startIcon,
+      label: label,
+      labelPlacement: placement,
+      description: widget.description,
+      error: widget.error,
+      invalid: widget.invalid,
+      clearable: widget.clearable,
+      clearLabel: clearLabel,
+      onClear: () => _commit(<T>[]),
+      open: _isOpen,
+      onOpenChange: _setOpen,
+      maxHeight: _panelHeight + 2 * nebaPickerPadding[size]! + 2,
       popup: _buildPanel(context, size: size, roles: roles, family: family, locale: locale),
-      child: trigger,
-    );
-
-    final Widget sizer = Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        // The trigger at the width of what it writes, as an inline field is.
-        Padding(
-          padding: EdgeInsetsDirectional.only(
-            start: padX + border + (startIcon == null ? 0 : text * 1.2 + gap),
-            end: padX + border + (clears ? gap + _ClearButton.extentOf(size) : 0),
-          ),
-          child: NebaWidthSizer(
-            style: valueStyle,
-            samples: <Widget>[?(measured ?? placeholder), if (rests) label],
-          ),
-        ),
-        if (notched)
-          NebaNotchSizer(label: label, size: size, density: density, variant: variant)
-        else if (label != null)
-          NebaWidthSizer(
-            style: TextStyle(fontSize: NebaScale.metaText[size], fontWeight: FontWeight.w500),
-            samples: <Widget>[label],
-          ),
-      ],
-    );
-
-    // One node for the trigger: a button that says what it holds, and that
-    // it opens a tree by being expanded or collapsed.
-    return Semantics(
-      container: true,
-      button: true,
-      label: semantics.label,
-      value: words,
-      hint: semantics.hint,
-      enabled: !disabled,
-      expanded: open,
-      readOnly: readOnly,
-      validationResult: invalid
-          ? SemanticsValidationResult.invalid
-          : SemanticsValidationResult.none,
-      onTap: _inert ? null : _toggle,
-      child: NebaFieldWidth(
-        width: 0,
-        fullWidth: widget.fullWidth,
-        sizer: sizer,
-        child: NebaFieldColumn(
-          size: size,
-          semantics: semantics,
-          errorColor: roles.accent,
-          disabled: disabled,
-          label: notched ? null : label,
-          description: widget.description,
-          error: widget.error,
-          onLabelTap: _triggerNode.requestFocus,
-          field: field,
-        ),
-      ),
+      fullWidth: widget.fullWidth,
+      disabled: disabled,
+      readOnly: widget.readOnly,
+      semanticLabel: widget.semanticLabel,
+      focusNode: _triggerNode,
+      autofocus: widget.autofocus,
     );
   }
 
@@ -861,112 +651,34 @@ class _NebaTreeSelectState<T> extends State<NebaTreeSelect<T>> {
     return Semantics(
       container: true,
       explicitChildNodes: true,
-      child: NebaSheet(
-        fill: tokens.panelPress,
-        edge: roles.line,
-        plate: NebaPlate.glass,
-        elevation: 3,
-        borderRadius: BorderRadius.circular(tokens.radius[size]!),
-        child: Padding(
-          padding: EdgeInsets.all(_popupPadding[size]!),
-          child: DefaultTextStyle.merge(
-            style: TextStyle(
-              fontSize: text,
-              height: NebaScale.controlLeading[size]! / text,
-              leadingDistribution: TextLeadingDistribution.even,
-              color: tokens.fg,
-            ),
-            child: SizedBox(
-              width: _panelWidth,
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxHeight: _panelHeight),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  spacing: _panelGap,
-                  children: <Widget>[
-                    if (widget.searchable)
-                      _SearchField(
-                        controller: _search,
-                        roles: roles,
-                        size: size,
-                        placeholder: searchWords,
-                      ),
-                    Flexible(child: SingleChildScrollView(child: tree)),
-                  ],
-                ),
-              ),
+      child: DefaultTextStyle.merge(
+        style: TextStyle(
+          fontSize: text,
+          height: NebaScale.controlLeading[size]! / text,
+          leadingDistribution: TextLeadingDistribution.even,
+          color: tokens.fg,
+        ),
+        child: SizedBox(
+          width: _panelWidth,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxHeight: _panelHeight),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              spacing: _panelGap,
+              children: <Widget>[
+                if (widget.searchable)
+                  _SearchField(
+                    controller: _search,
+                    roles: roles,
+                    size: size,
+                    placeholder: searchWords,
+                  ),
+                Flexible(child: SingleChildScrollView(child: tree)),
+              ],
             ),
           ),
         ),
-      ),
-    );
-  }
-}
-
-/// The × after the value: drawn at the size of the words beside it, muted,
-/// and brought up to full strength under the pointer and the keyboard focus,
-/// as a chip's × is.
-class _ClearButton extends StatelessWidget {
-  const _ClearButton({
-    required this.size,
-    required this.ring,
-    required this.label,
-    required this.onPressed,
-  });
-
-  final NebaSize size;
-  final Color ring;
-  final String label;
-  final VoidCallback onPressed;
-
-  /// How much room the × takes along the row: its box and the hair before
-  /// it.
-  static double extentOf(NebaSize size) => NebaScale.controlText[size]! * 1.15 + 2;
-
-  @override
-  Widget build(BuildContext context) {
-    final NebaTokens tokens = NebaTheme.of(context);
-    final double text = NebaScale.controlText[size]!;
-    final double box = text * 1.15;
-    final double glyph = text * 1.2;
-
-    return Semantics(
-      container: true,
-      button: true,
-      label: label,
-      child: NebaInteractive(
-        onTap: onPressed,
-        builder: (BuildContext context, NebaInteraction interaction, ValueListenable<Offset?> _) {
-          return Padding(
-            padding: const EdgeInsetsDirectional.only(start: 2),
-            child: SizedBox(
-              height: NebaScale.controlLeading[size],
-              child: Center(
-                widthFactor: 1,
-                child: NebaFocusRing(
-                  visible: interaction.focusVisible,
-                  color: ring,
-                  borderRadius: BorderRadius.circular(box),
-                  offset: 1,
-                  child: AnimatedOpacity(
-                    opacity: interaction.hovered || interaction.focusVisible ? 1 : 0.7,
-                    duration: nebaDuration(context, NebaScale.duration),
-                    curve: NebaScale.ease,
-                    child: SizedBox.square(
-                      dimension: box,
-                      child: OverflowBox(
-                        maxWidth: glyph,
-                        maxHeight: glyph,
-                        child: NebaGlyph(NebaGlyphs.close, size: glyph, color: tokens.mutedFg),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          );
-        },
       ),
     );
   }

@@ -248,6 +248,11 @@ void main() {
                 NebaDateRangePicker(label: const Text('Stay'), onOpenChange: (bool open) => hit()),
             find.byType(NebaDateRangePicker),
           ),
+          'NebaColorPicker': (
+            (VoidCallback hit) =>
+                NebaColorPicker(label: const Text('Accent'), onOpenChange: (bool open) => hit()),
+            find.byType(NebaColorPicker),
+          ),
           'NebaTreeSelect': (
             (VoidCallback hit) => NebaTreeSelect<String>(
               label: const Text('Folder'),

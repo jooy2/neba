@@ -67,6 +67,8 @@ class NebaPickerField extends StatefulWidget {
     this.autofocus = false,
     this.display,
     this.sizer,
+    this.isRequired = false,
+    this.maxHeight,
     super.key,
   });
 
@@ -159,6 +161,13 @@ class NebaPickerField extends StatefulWidget {
   /// What the trigger's width is measured from in place of [samples] and
   /// [placeholder], for a [display] that holds its own widths.
   final Widget? sizer;
+
+  /// Whether a screen reader is told an answer is required.
+  final bool isRequired;
+
+  /// The tallest the popup gets before it scrolls, held to the room beside
+  /// the trigger either way; `null` for as tall as what it holds.
+  final double? maxHeight;
 
   @override
   State<NebaPickerField> createState() => _NebaPickerFieldState();
@@ -389,6 +398,7 @@ class _NebaPickerFieldState extends State<NebaPickerField> {
       align: NebaAlign.start,
       sideOffset: 6,
       moveFocus: true,
+      maxHeight: widget.maxHeight,
       // As wide as what is on it, as a popup that shrinks to fit is.
       popup: NebaCalendarSheet(
         size: size,
@@ -452,6 +462,7 @@ class _NebaPickerFieldState extends State<NebaPickerField> {
       enabled: !disabled,
       expanded: open,
       readOnly: readOnly,
+      isRequired: widget.isRequired ? true : null,
       validationResult: invalid
           ? SemanticsValidationResult.invalid
           : SemanticsValidationResult.none,

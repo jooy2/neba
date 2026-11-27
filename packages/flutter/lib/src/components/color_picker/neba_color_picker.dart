@@ -10,15 +10,14 @@ import 'package:flutter/widgets.dart';
 import 'package:neba/src/internal/color.dart';
 import 'package:neba/src/internal/drag.dart';
 import 'package:neba/src/internal/field.dart';
-import 'package:neba/src/internal/floating.dart';
+import 'package:neba/src/internal/fieldset.dart';
 import 'package:neba/src/internal/focus_ring.dart';
 import 'package:neba/src/internal/format.dart';
 import 'package:neba/src/internal/glyphs.dart';
 import 'package:neba/src/internal/interaction.dart';
 import 'package:neba/src/internal/messages.dart';
 import 'package:neba/src/internal/motion.dart';
-import 'package:neba/src/internal/notch.dart';
-import 'package:neba/src/internal/sizer.dart';
+import 'package:neba/src/internal/picker.dart';
 import 'package:neba/src/internal/surface.dart';
 import 'package:neba/src/theme/scale.dart';
 import 'package:neba/src/theme/theme.dart';
@@ -357,6 +356,9 @@ String _widthSample(NebaColorFormat format, bool alpha) {
 const NebaColorValue _fallback = NebaColorValue(NebaHsv(217, 87, 82));
 
 class _NebaColorPickerState extends State<NebaColorPicker> {
+  /// Its own `disabled`, or a disabled `NebaFieldset` around it.
+  bool get _disabled => nebaFieldsetDisabled(context, widget.disabled);
+
   late String _value = widget.defaultValue;
   late bool _open = widget.defaultOpen;
   late NebaColorValue _model = parseCssColor(_current) ?? _fallback;
@@ -500,7 +502,7 @@ class _NebaColorPickerState extends State<NebaColorPicker> {
   }
 
   void _setOpen(bool open) {
-    if (open == _isOpen || (open && widget.disabled)) {
+    if (open == _isOpen || (open && _disabled)) {
       return;
     }
 
@@ -509,24 +511,6 @@ class _NebaColorPickerState extends State<NebaColorPicker> {
     }
 
     widget.onOpenChange?.call(open);
-  }
-
-  KeyEventResult _onTriggerKey(FocusNode node, KeyEvent event) {
-    final LogicalKeyboardKey key = event.logicalKey;
-    final bool activates =
-        key == LogicalKeyboardKey.enter ||
-        key == LogicalKeyboardKey.numpadEnter ||
-        key == LogicalKeyboardKey.space;
-
-    if (!activates || widget.disabled) {
-      return KeyEventResult.ignored;
-    }
-
-    if (event is KeyDownEvent) {
-      _setOpen(!_isOpen);
-    }
-
-    return event is KeyUpEvent ? KeyEventResult.ignored : KeyEventResult.handled;
   }
 
   List<_Swatch> _swatches() {
@@ -549,7 +533,7 @@ class _NebaColorPickerState extends State<NebaColorPicker> {
     final NebaDensity density = widget.density ?? defaults.density ?? NebaDensity.standard;
     final NebaLabelPlacement placement =
         widget.labelPlacement ?? defaults.labelPlacement ?? NebaLabelPlacement.top;
-    final bool disabled = widget.disabled;
+    final bool disabled = _disabled;
     final bool readOnly = widget.readOnly && !disabled;
     final bool inert = disabled || readOnly;
     final bool invalid = widget.invalid ?? widget.error != null;
@@ -659,201 +643,44 @@ class _NebaColorPickerState extends State<NebaColorPicker> {
     required bool invalid,
     required _Labels labels,
   }) {
-    final bool open = _isOpen && !disabled;
     final bool empty = _current.isEmpty;
-    final String display = empty ? labels.empty : _written;
-    final Widget? label = widget.label;
-    // The swatch at the start is where a float label would rest, so a label
-    // off the top always stands in the notch.
-    final bool notched = label != null && placement != NebaLabelPlacement.top;
-    final bool clears = widget.clearable && !disabled && !readOnly;
-    final NebaFieldSemantics semantics = NebaFieldSemantics.of(
-      semanticLabel: widget.semanticLabel,
-      label: label,
-      description: widget.description,
-      error: widget.error,
-    );
     final double text = NebaScale.controlText[size]!;
-    final double gap = NebaScale.gap[size]!;
-    final double swatch = text * 1.15;
-    final TextStyle valueStyle = TextStyle(
-      fontSize: text,
-      height: NebaScale.controlLeading[size]! / text,
-      leadingDistribution: TextLeadingDistribution.even,
-    );
 
-    Widget content(BuildContext context, bool focused) {
-      return Row(
-        spacing: gap,
-        children: <Widget>[
-          Expanded(
-            child: Focus(
-              focusNode: _triggerNode,
-              autofocus: widget.autofocus,
-              canRequestFocus: !disabled,
-              onKeyEvent: _onTriggerKey,
-              child: Row(
-                spacing: gap,
-                children: <Widget>[
-                  _ColorDot(
-                    diameter: swatch,
-                    edge: mixOklab(tokens.fg, 0.18, transparent),
-                    color: empty ? null : hsvColor(_model.hsv, widget.alpha ? _model.alpha : 1),
-                  ),
-                  Expanded(
-                    child: ExcludeSemantics(
-                      child: Text(
-                        display,
-                        maxLines: 1,
-                        softWrap: false,
-                        overflow: TextOverflow.ellipsis,
-                        style: valueStyle.copyWith(
-                          color: disabled
-                              ? tokens.disabledFg
-                              : empty
-                              ? tokens.mutedFg
-                              : tokens.fg,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          if (clears && !empty)
-            _ClearButton(
-              extent: swatch,
-              glyph: text * 1.2,
-              ring: roles.ring,
-              label: labels.clear,
-              onPressed: _clear,
-            ),
-        ],
-      );
-    }
-
-    Widget trigger = NebaFieldShell(
+    // The picker shell every picker wears, with the colour as its start
+    // glyph. The swatch is where a float label would rest, so a label off the
+    // top always stands in the notch, as on any picker with a start glyph.
+    return NebaPickerField(
       variant: variant,
       size: size,
+      color: widget.color ?? NebaColor.primary,
       density: density,
-      roles: roles,
       elevation: widget.elevation ?? 0,
+      value: empty ? null : _written,
+      samples: <String>[_widthSample(widget.format, widget.alpha)],
+      placeholder: Text(labels.empty),
+      startIcon: _ColorDot(
+        diameter: text * 1.15,
+        edge: mixOklab(tokens.fg, 0.18, transparent),
+        color: empty ? null : hsvColor(_model.hsv, widget.alpha ? _model.alpha : 1),
+      ),
+      label: widget.label,
+      labelPlacement: placement,
+      description: widget.description,
+      error: widget.error,
+      invalid: widget.invalid,
+      clearable: widget.clearable,
+      clearLabel: labels.clear,
+      onClear: _clear,
+      open: _isOpen,
+      onOpenChange: _setOpen,
+      popup: panel,
+      fullWidth: widget.fullWidth,
       disabled: disabled,
-      readOnly: readOnly,
-      keyboardRing: true,
-      cursor: disabled
-          ? SystemMouseCursors.forbidden
-          : readOnly
-          ? SystemMouseCursors.basic
-          : SystemMouseCursors.click,
-      notch: notched
-          ? NebaFieldNotch(
-              label: ExcludeSemantics(excluding: semantics.labelTaken, child: label),
-              empty: empty && !open,
-            )
-          : null,
-      builder: content,
-    );
-
-    if (disabled) {
-      trigger = ExcludeFocus(child: trigger);
-    } else {
-      trigger = GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        excludeFromSemantics: true,
-        onTap: () => _setOpen(!_isOpen),
-        child: trigger,
-      );
-    }
-
-    final Widget popup = NebaSheet(
-      fill: tokens.panelPress,
-      edge: roles.line,
-      plate: NebaPlate.glass,
-      elevation: 3,
-      borderRadius: BorderRadius.circular(tokens.radius[size]!),
-      child: Padding(
-        padding: EdgeInsets.all(NebaColorPicker.popupPadding[size]!),
-        child: DefaultTextStyle.merge(style: valueStyle, child: panel),
-      ),
-    );
-
-    final Widget field = NebaFloating(
-      open: open,
-      onOpenChange: (bool next, NebaFloatingReason reason) => _setOpen(next),
-      align: NebaAlign.start,
-      sideOffset: 6,
-      moveFocus: true,
-      enabled: !disabled,
-      popup: popup,
-      child: trigger,
-    );
-
-    final double border = variant == NebaVariant.outline ? 1 : 0;
-    final double padX = NebaScale.paddingX[density]![size]!;
-    final Widget sizer = Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        // The trigger at the width of the longest value its notation writes,
-        // or of what it says while it is empty, with room kept for the × so
-        // the trigger does not widen when a colour arrives.
-        Padding(
-          padding: EdgeInsetsDirectional.only(
-            start: padX + border + swatch + gap,
-            end: padX + border + (clears ? swatch + gap : 0),
-          ),
-          child: NebaWidthSizer(
-            style: valueStyle,
-            samples: <Widget>[Text(_widthSample(widget.format, widget.alpha)), Text(display)],
-          ),
-        ),
-        if (notched)
-          NebaNotchSizer(label: label, size: size, density: density, variant: variant)
-        else if (label != null)
-          NebaWidthSizer(
-            style: TextStyle(fontSize: NebaScale.metaText[size], fontWeight: FontWeight.w500),
-            samples: <Widget>[label],
-          ),
-      ],
-    );
-
-    // One node for the column: a button named by the label that says the
-    // colour, and that it opens a panel by being expanded or collapsed. The ×
-    // is a button of its own inside it.
-    final String? name = semantics.label;
-
-    return Semantics(
-      container: true,
-      button: true,
-      label: name ?? display,
-      value: name == null ? null : display,
-      hint: semantics.hint,
-      enabled: !disabled,
-      expanded: open,
-      readOnly: readOnly,
-      isRequired: widget.required ? true : null,
-      validationResult: invalid
-          ? SemanticsValidationResult.invalid
-          : SemanticsValidationResult.none,
-      onTap: disabled ? null : () => _setOpen(!_isOpen),
-      child: NebaFieldWidth(
-        width: 0,
-        fullWidth: widget.fullWidth,
-        sizer: sizer,
-        child: NebaFieldColumn(
-          size: size,
-          semantics: semantics,
-          errorColor: roles.accent,
-          disabled: disabled,
-          label: notched ? null : label,
-          description: widget.description,
-          error: widget.error,
-          onLabelTap: _triggerNode.requestFocus,
-          field: field,
-        ),
-      ),
+      readOnly: widget.readOnly,
+      isRequired: widget.required,
+      semanticLabel: widget.semanticLabel,
+      focusNode: _triggerNode,
+      autofocus: widget.autofocus,
     );
   }
 }
@@ -1836,60 +1663,6 @@ class _SwatchButton extends StatelessWidget {
                       child: NebaGlyph(NebaGlyphs.check, size: 12, color: readableInk(parsed.hsv)),
                     )
                   : null,
-            ),
-          );
-        },
-      ),
-    );
-  }
-}
-
-/// The × that empties the picker: drawn at the size of the text beside it,
-/// muted, and a button of its own in the focus order.
-class _ClearButton extends StatelessWidget {
-  const _ClearButton({
-    required this.extent,
-    required this.glyph,
-    required this.ring,
-    required this.label,
-    required this.onPressed,
-  });
-
-  final double extent;
-  final double glyph;
-  final Color ring;
-  final String label;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    final NebaTokens tokens = NebaTheme.of(context);
-
-    return Semantics(
-      container: true,
-      button: true,
-      label: label,
-      child: NebaInteractive(
-        onTap: onPressed,
-        builder: (BuildContext context, NebaInteraction interaction, ValueListenable<Offset?> _) {
-          return NebaFocusRing(
-            visible: interaction.focusVisible,
-            color: ring,
-            borderRadius: BorderRadius.circular(extent),
-            offset: 1,
-            // The React package's `chipRemoveClasses`, as a Chip's × is.
-            child: AnimatedOpacity(
-              opacity: interaction.hovered || interaction.focusVisible ? 1 : 0.7,
-              duration: nebaDuration(context, NebaScale.duration),
-              curve: NebaScale.ease,
-              child: SizedBox.square(
-                dimension: extent,
-                child: OverflowBox(
-                  maxWidth: glyph,
-                  maxHeight: glyph,
-                  child: NebaGlyph(NebaGlyphs.close, size: glyph, color: tokens.mutedFg),
-                ),
-              ),
             ),
           );
         },

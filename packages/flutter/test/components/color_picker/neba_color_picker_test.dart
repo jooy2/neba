@@ -84,10 +84,12 @@ void main() {
 
       await pump(tester, const NebaColorPicker(defaultValue: '#ff0000'));
 
+      // Read as its value, as every picker's trigger reads what it holds.
       expect(
         tester.getSemantics(find.byType(NebaFieldWidth)),
         matchesSemantics(
-          label: '#ff0000',
+          label: 'Choose a colour',
+          value: '#ff0000',
           isButton: true,
           hasExpandedState: true,
           isFocusable: true,
