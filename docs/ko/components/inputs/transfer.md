@@ -1,6 +1,7 @@
 ---
 title: Transfer
 order: 31
+flutter: true
 ---
 
 # Transfer
@@ -8,6 +9,8 @@ order: 31
 <p class="neba-lede">두 개의 목록과 그 사이의 화살표입니다. 한쪽에는 고를 수 있는 것 전부, 다른 쪽에는 이미 고른 것. 칩으로 가득 찬 필드가 더 이상 읽히지 않을 만큼 선택지가 많을 때 씁니다.</p>
 
 <Demo src="transfer/hero" />
+
+::: fw react
 
 ```tsx
 import { Transfer } from 'neba';
@@ -22,11 +25,40 @@ import { Transfer } from 'neba';
 />;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+NebaTransfer<String>(
+  items: const <NebaTransferItem<String>>[
+    NebaTransferItem<String>(value: 'status', label: Text('Status')),
+    NebaTransferItem<String>(value: 'commit', label: Text('Commit')),
+  ],
+  value: shown,
+  onValueChange: (List<String> next) => setState(() => shown = next),
+);
+```
+
+:::
+
 ## Props
 
 <PropsTable name="Transfer" />
 
+::: fw react
+
 `<div>`의 모든 속성이 `color`를 제외하고 그대로 전달됩니다.
+
+:::
+
+::: fw flutter
+
+`NebaTransfer`는 항목 value의 타입에 대해 제네릭이며, `sourceLabel`, `targetLabel`, 각 항목의 `label`은 위젯이고 보통 `Text`입니다. `value`를 `null`로 두면 transfer가 `defaultValue`에서 시작해 상태를 스스로 관리합니다. 주어진 너비를 채우며, 화살표 양쪽에 목록이 하나씩 놓입니다. `name`은 없습니다. Flutter에서는 이 컴포넌트를 담아 제출하는 폼이 없습니다.
+
+:::
 
 ### TransferItem
 
@@ -46,7 +78,17 @@ import { Transfer } from 'neba';
 
 <Demo src="transfer/searchable">
 
+::: fw react
+
 <<< @/.vitepress/demos/transfer/searchable.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/transfer/searchable.dart
+
+:::
 
 </Demo>
 
@@ -56,9 +98,21 @@ import { Transfer } from 'neba';
 
 <Demo src="transfer/states">
 
+::: fw react
+
 <<< @/.vitepress/demos/transfer/states.tsx
 
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/transfer/states.dart
+
+:::
+
 </Demo>
+
+::: fw react
 
 ### name
 
@@ -71,6 +125,8 @@ import { Transfer } from 'neba';
 </Form>
 ```
 
+:::
+
 ### locale · sourceLabel · targetLabel
 
 제목과 버튼과 필터의 문구는 `locale`에서 옵니다. `sourceLabel`과 `targetLabel`은 두 제목을 직접 씁니다. 대개는 이쪽을 쓰게 됩니다. "선택 가능"과 "선택함"이 그 두 목록의 실제 이름인 경우는 드뭅니다.
@@ -81,3 +137,9 @@ import { Transfer } from 'neba';
 - 각 목록 위의 체크는 그 목록의 `Select all`이며, 일부만 체크된 동안에는 mixed 상태를 알립니다.
 - 두 버튼 모두 "Move to selected", "Move to available"이라는 이름을 가지며, 옮길 것이 없으면 사용 불가가 됩니다.
 - 옮기고 나면 polite status가 몇 개가 어느 목록으로 옮겨졌는지 `locale`의 말로 알립니다("2 moved to Selected").
+
+::: fw flutter
+
+- 각 목록은 제목으로 이름 붙은 그룹으로 읽히므로, 두 개의 select all 체크와 두 개의 필터가 각자 속한 목록과 함께 들립니다.
+
+:::

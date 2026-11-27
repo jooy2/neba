@@ -463,6 +463,9 @@ import 'package:neba_example/demos/toolbar/sticky.dart';
 import 'package:neba_example/demos/tooltip/grouped.dart';
 import 'package:neba_example/demos/tooltip/hero.dart';
 import 'package:neba_example/demos/tooltip/sides.dart';
+import 'package:neba_example/demos/transfer/hero.dart';
+import 'package:neba_example/demos/transfer/searchable.dart';
+import 'package:neba_example/demos/transfer/states.dart';
 import 'package:neba_example/demos/tree_select/hero.dart';
 import 'package:neba_example/demos/tree_select/label_placement.dart';
 import 'package:neba_example/demos/tree_view/hero.dart';
@@ -936,6 +939,9 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'tooltip/grouped': TooltipGrouped.new,
   'tooltip/hero': TooltipHero.new,
   'tooltip/sides': TooltipSides.new,
+  'transfer/hero': TransferHero.new,
+  'transfer/searchable': TransferSearchable.new,
+  'transfer/states': TransferStates.new,
   'tree-select/hero': TreeSelectHero.new,
   'tree-select/label-placement': TreeSelectLabelPlacement.new,
   'tree-view/hero': TreeViewHero.new,
