@@ -75,6 +75,10 @@ import 'package:neba_example/demos/chip/hero.dart';
 import 'package:neba_example/demos/chip/interactive.dart';
 import 'package:neba_example/demos/chip/sizes.dart';
 import 'package:neba_example/demos/chip/variants.dart';
+import 'package:neba_example/demos/collapsible/hero.dart';
+import 'package:neba_example/demos/collapsible/mounting.dart';
+import 'package:neba_example/demos/collapsible/trigger.dart';
+import 'package:neba_example/demos/collapsible/variants.dart';
 import 'package:neba_example/demos/container/hero.dart';
 import 'package:neba_example/demos/container/max_width.dart';
 import 'package:neba_example/demos/container/plain.dart';
@@ -266,6 +270,10 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'chip/interactive': ChipInteractive.new,
   'chip/sizes': ChipSizes.new,
   'chip/variants': ChipVariants.new,
+  'collapsible/hero': CollapsibleHero.new,
+  'collapsible/mounting': CollapsibleMounting.new,
+  'collapsible/trigger': CollapsibleTrigger.new,
+  'collapsible/variants': CollapsibleVariants.new,
   'container/hero': ContainerHero.new,
   'container/max-width': ContainerMaxWidth.new,
   'container/plain': ContainerPlain.new,

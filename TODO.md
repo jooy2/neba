@@ -191,7 +191,7 @@ Demos that wait on a component not ported yet, to be added with it: `skeleton/sw
 - [x] `NebaBox`
 - [x] `NebaCard`
 - [ ] `NebaAccordion`
-- [ ] `NebaCollapsible`
+- [x] `NebaCollapsible`
 - [ ] `NebaTabs`
 - [ ] `NebaCarousel`
 - [ ] `NebaToolbar`
