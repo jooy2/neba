@@ -33,6 +33,7 @@ export 'src/components/animate_float/neba_animate_float.dart';
 export 'src/components/animate_grow/neba_animate_grow.dart';
 export 'src/components/animate_reveal/neba_animate_reveal.dart';
 export 'src/components/animate_rotate/neba_animate_rotate.dart';
+export 'src/components/animate_scramble/neba_animate_scramble.dart';
 export 'src/components/animate_shake/neba_animate_shake.dart';
 export 'src/components/animate_slide/neba_animate_slide.dart';
 export 'src/components/animate_split/neba_animate_split.dart';
