@@ -122,6 +122,10 @@ import 'package:neba_example/demos/icon/sizes.dart';
 import 'package:neba_example/demos/icon_button/hero.dart';
 import 'package:neba_example/demos/icon_button/sizes.dart';
 import 'package:neba_example/demos/icon_button/states.dart';
+import 'package:neba_example/demos/list/dividers.dart';
+import 'package:neba_example/demos/list/hero.dart';
+import 'package:neba_example/demos/list/spacing.dart';
+import 'package:neba_example/demos/list/variants.dart';
 import 'package:neba_example/demos/meter/hero.dart';
 import 'package:neba_example/demos/meter/sizes.dart';
 import 'package:neba_example/demos/meter/values.dart';
@@ -360,6 +364,10 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'icon/colors': IconColors.new,
   'icon/hero': IconHero.new,
   'icon/sizes': IconSizes.new,
+  'list/dividers': ListDividers.new,
+  'list/hero': ListHero.new,
+  'list/spacing': ListSpacing.new,
+  'list/variants': ListVariants.new,
   'meter/hero': MeterHero.new,
   'meter/sizes': MeterSizes.new,
   'meter/values': MeterValues.new,
