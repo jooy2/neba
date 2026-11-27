@@ -124,7 +124,7 @@ Demos that wait on a component not ported yet, to be added with it: `meter/thres
 - [ ] `NebaGallery`
 - [x] `NebaShortcut`
 - [x] `NebaList`
-- [ ] `NebaDataList`
+- [x] `NebaDataList`
 - [x] `NebaTable`
 - [ ] `NebaDataTable`
 - [ ] `NebaCodeBlock`
