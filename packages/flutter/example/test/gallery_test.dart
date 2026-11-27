@@ -5,10 +5,12 @@
 
 import 'dart:io';
 
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:neba/neba.dart';
+import 'package:neba/src/internal/glyphs.dart';
 import 'package:neba_example/demos/registry.dart';
 import 'package:neba_example/main.dart';
 
@@ -68,6 +70,40 @@ void main() {
       await tester.pump(const Duration(seconds: 1));
 
       expect(tester.takeException(), isNull);
+
+      await tester.pumpWidget(const SizedBox());
+    });
+  }
+
+  // And once with the platform asking for less motion. What is still asking
+  // for frames once every entrance has had its time is one of the indicators
+  // the design language keeps moving, slowed, because one that held still
+  // would say nothing is happening: a turning ring, a progress bar or circle
+  // with no value, a skeleton, or a bubble's typing dots.
+  final Finder indicators = find.byWidgetPredicate(
+    (Widget widget) =>
+        widget is NebaSpinner ||
+        widget is NebaSkeleton ||
+        widget is NebaProgressLinear ||
+        widget is NebaProgressCircular ||
+        widget is NebaProgressBox ||
+        (widget is NebaChatBubble && widget.typing),
+  );
+
+  for (final MapEntry<String, Widget Function()> demo in demos.entries) {
+    testWidgets('${demo.key} holds still under reduced motion', (WidgetTester tester) async {
+      tester.platformDispatcher.accessibilityFeaturesTestValue = const FakeAccessibilityFeatures(
+        disableAnimations: true,
+      );
+      addTearDown(tester.platformDispatcher.clearAccessibilityFeaturesTestValue);
+
+      await tester.pumpWidget(GalleryApp(query: <String, String>{'demo': demo.key}));
+      await tester.pump(const Duration(seconds: 4));
+      await tester.pump(const Duration(milliseconds: 16));
+
+      if (SchedulerBinding.instance.transientCallbackCount > 0) {
+        expect(indicators, findsWidgets);
+      }
 
       await tester.pumpWidget(const SizedBox());
     });
