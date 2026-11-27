@@ -22,6 +22,10 @@ import 'package:neba_example/demos/badge/hero.dart';
 import 'package:neba_example/demos/badge/placement.dart';
 import 'package:neba_example/demos/badge/sizes.dart';
 import 'package:neba_example/demos/badge/variants.dart';
+import 'package:neba_example/demos/blockquote/attribution.dart';
+import 'package:neba_example/demos/blockquote/colors.dart';
+import 'package:neba_example/demos/blockquote/hero.dart';
+import 'package:neba_example/demos/blockquote/variants.dart';
 import 'package:neba_example/demos/box/colors.dart';
 import 'package:neba_example/demos/box/elevation.dart';
 import 'package:neba_example/demos/box/hero.dart';
@@ -141,6 +145,10 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'badge/placement': BadgePlacement.new,
   'badge/sizes': BadgeSizes.new,
   'badge/variants': BadgeVariants.new,
+  'blockquote/attribution': BlockquoteAttribution.new,
+  'blockquote/colors': BlockquoteColors.new,
+  'blockquote/hero': BlockquoteHero.new,
+  'blockquote/variants': BlockquoteVariants.new,
   'box/colors': BoxColors.new,
   'box/elevation': BoxElevation.new,
   'box/hero': BoxHero.new,

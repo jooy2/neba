@@ -102,7 +102,7 @@ Demos that wait on a component not ported yet, to be added with it: `flex/direct
 
 - [x] `NebaTypography`
 - [ ] `NebaTextLink`
-- [ ] `NebaBlockquote`
+- [x] `NebaBlockquote`
 - [ ] `NebaHighlight`
 - [x] `NebaDivider`
 - [x] `NebaChip`
