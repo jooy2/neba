@@ -151,6 +151,9 @@ import 'package:neba_example/demos/combobox/multiple.dart';
 import 'package:neba_example/demos/combobox/sizes.dart';
 import 'package:neba_example/demos/combobox/states.dart';
 import 'package:neba_example/demos/combobox/variants.dart';
+import 'package:neba_example/demos/command_palette/groups.dart';
+import 'package:neba_example/demos/command_palette/hero.dart';
+import 'package:neba_example/demos/command_palette/sizes.dart';
 import 'package:neba_example/demos/concepts/landing.dart';
 import 'package:neba_example/demos/confirm/hero.dart';
 import 'package:neba_example/demos/container/hero.dart';
@@ -639,6 +642,9 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'combobox/sizes': ComboboxSizes.new,
   'combobox/states': ComboboxStates.new,
   'combobox/variants': ComboboxVariants.new,
+  'command-palette/groups': CommandPaletteGroups.new,
+  'command-palette/hero': CommandPaletteHero.new,
+  'command-palette/sizes': CommandPaletteSizes.new,
   'concepts/landing': ConceptsLanding.new,
   'confirm/hero': ConfirmHero.new,
   'container/hero': ContainerHero.new,

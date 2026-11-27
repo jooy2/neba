@@ -1,13 +1,16 @@
 ---
 title: CommandPalette
 order: 32
+flutter: true
 ---
 
 # CommandPalette
 
 <p class="neba-lede">Everything an application can do, behind one field. The shape a keyboard-first product takes once it has more actions than a menu bar can hold: a reader types what they want instead of remembering where it was put.</p>
 
-<Demo src="command-palette/hero" />
+<Demo src="command-palette/hero" frameMinHeight="460" />
+
+::: fw react
 
 ```tsx
 import { CommandPalette } from 'neba';
@@ -20,6 +23,23 @@ import { CommandPalette } from 'neba';
 />;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+NebaCommandPalette(
+  items: <NebaCommandItem>[
+    NebaCommandItem(value: 'deploy', label: 'Deploy production', group: 'Actions', onSelect: deploy),
+    const NebaCommandItem(value: 'logs', label: 'Go to logs', group: 'Navigate'),
+  ],
+);
+```
+
+:::
+
 ## Props
 
 <PropsTable name="CommandPalette" />
@@ -30,15 +50,31 @@ import { CommandPalette } from 'neba';
 
 A [Menu](./menu) is a short list in one place, with every row visible before you look for it. A [Combobox](./combobox) returns a value. This returns an action that runs.
 
+::: fw flutter
+
+A command is a `NebaCommandItem`, whose `description` and `icon` are widgets. The palette builds nothing where it is written and opens into the app's root `Overlay`, as a [Dialog](../feedback/dialog) does. There is no `className` or `classNames`: a Flutter widget has no class to hand on.
+
+:::
+
 ## Examples
 
 ### items · group
 
 Commands are drawn in the order they are given, and a heading is drawn each time `group` changes, so a group's commands have to be listed together. `icon` and `shortcut` fill in the two ends of a row, and `description` a second line under the label.
 
-<Demo src="command-palette/groups">
+<Demo src="command-palette/groups" frameMinHeight="380">
+
+::: fw react
 
 <<< @/.vitepress/demos/command-palette/groups.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/command_palette/groups.dart
+
+:::
 
 </Demo>
 
@@ -48,11 +84,31 @@ Extra words the query is matched against but that are never drawn: the name some
 
 ### shortcut
 
+::: fw react
+
 The keystroke that opens the palette, bound on the window. `Mod` is Command on a Mac and Control everywhere else: the same spelling [Shortcut](../display/shortcut) draws, read rather than written. `false` binds nothing, for an application that owns its own keyboard.
+
+:::
+
+::: fw flutter
+
+The keystroke that opens the palette, bound on the whole app whatever holds the focus, a field included. `Mod` is Command on a Mac and Control everywhere else: the same spelling [Shortcut](../display/shortcut) draws, read rather than written, with its modifiers matched exactly. `null` binds nothing, for an application that owns its own keyboard.
+
+:::
 
 ### open · defaultOpen
 
+::: fw react
+
 `open` and `onOpenChange` control the palette, and `defaultOpen` starts an uncontrolled one open. The sheet's code is fetched once the page is first idle after the palette mounts, and the sheet is mounted by the first open, so it adds nothing to what a page needs before it draws. On a server-rendered page, a palette that starts open opens once the page has hydrated.
+
+:::
+
+::: fw flutter
+
+`open` and `onOpenChange` control the palette, and `defaultOpen` starts an uncontrolled one open. The sheet is built only while it is open or fading out.
+
+:::
 
 ### onSelect
 
@@ -62,11 +118,23 @@ Each command may carry its own `onSelect`; the palette's runs after it, with the
 
 `size` sets the type scale, the height of the field and how wide the sheet may get. `width` and `maxHeight` override the last two on their own.
 
-<Demo src="command-palette/sizes">
+<Demo src="command-palette/sizes" frameMinHeight="300">
+
+::: fw react
 
 <<< @/.vitepress/demos/command-palette/sizes.tsx
 
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/command_palette/sizes.dart
+
+:::
+
 </Demo>
+
+::: fw react
 
 ### className · classNames
 
@@ -82,10 +150,26 @@ Each command may carry its own `onSelect`; the palette's runs after it, with the
 
 The slots are `backdrop`, `viewport`, `input`, `list`, `group`, `item` and `empty`. `backdrop` and `viewport` render outside the sheet, so nothing written against it finds them; `group` is one heading between the rows, not the rows under it. See [prop conventions](../../design/prop-conventions) for how a class name you pass resolves against the component's own.
 
+:::
+
 ## Accessibility
+
+::: fw react
 
 - The sheet is a modal dialog named by `label`, which has no visible title of its own. Focus moves into the field as it opens and back to wherever the reader was as it closes.
 - The field is a `combobox` over a `listbox`, with the highlighted row reported through `aria-activedescendant`; the pointer and the arrow keys move the same highlight, so Enter never runs a row other than the marked one.
 - Each run of rows that share a `group` is a `role="group"` named by its heading, so moving into it says which group it is.
 - Escape closes it.
 - A palette is never the only way to a command. Everything in it has to be reachable some other way: a reader who does not know it exists gets no other showing.
+
+:::
+
+::: fw flutter
+
+- The sheet is a modal dialog named by `label`, which has no visible title of its own. Focus moves into the field as it opens and back to whatever had it as it closes.
+- The field keeps the focus while the arrow keys move the highlight through the rows, passing over a disabled one; the pointer moves the same highlight, so Enter never runs a row other than the marked one. Each row is a button a screen reader can press.
+- Each run of rows that share a `group` is a group named by its heading, so moving into it says which group it is.
+- Escape, a press on the scrim and a screen reader's dismiss gesture close it.
+- A palette is never the only way to a command. Everything in it has to be reachable some other way: a reader who does not know it exists gets no other showing.
+
+:::

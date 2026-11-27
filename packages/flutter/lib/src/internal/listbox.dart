@@ -139,6 +139,9 @@ class NebaListRow extends StatefulWidget {
     this.onExit,
     this.onPressed,
     this.semanticLabel,
+    this.padding,
+    this.borderRadius,
+    this.wash,
     super.key,
   });
 
@@ -174,6 +177,16 @@ class NebaListRow extends StatefulWidget {
 
   /// What a screen reader hears for the row, in place of what [child] says.
   final String? semanticLabel;
+
+  /// Around [child], in place of a list's: the gutter for the tick at the
+  /// start, and the row's padding. A CommandPalette's rows have no gutter.
+  final EdgeInsetsGeometry? padding;
+
+  /// The highlight's corners, in place of a list's, the `xs` step's.
+  final BorderRadius? borderRadius;
+
+  /// The highlight's colour, in place of a list's, the family's `softHover`.
+  final Color? wash;
 
   @override
   State<NebaListRow> createState() => _NebaListRowState();
@@ -227,9 +240,11 @@ class _NebaListRowState extends State<NebaListRow> {
         ? roles.onTint
         : tokens.fg;
     final Widget? indicator = widget.indicator;
+    final Color wash = widget.wash ?? roles.softHover;
 
     Widget row = Padding(
-      padding: const EdgeInsetsDirectional.fromSTEB(_rowStart, _rowY, _rowEnd, _rowY),
+      padding:
+          widget.padding ?? const EdgeInsetsDirectional.fromSTEB(_rowStart, _rowY, _rowEnd, _rowY),
       child: DefaultTextStyle.merge(
         style: TextStyle(fontWeight: widget.selected ? FontWeight.w500 : FontWeight.w400),
         maxLines: 1,
@@ -264,14 +279,14 @@ class _NebaListRowState extends State<NebaListRow> {
     row = TweenAnimationBuilder<Color?>(
       // The wash drains at the fill's pace, as every highlight in the library
       // does; it never lands in zero time, since a row is entered, not pressed.
-      tween: ColorTween(end: highlighted ? roles.softHover : roles.softHover.withValues(alpha: 0)),
+      tween: ColorTween(end: highlighted ? wash : wash.withValues(alpha: 0)),
       duration: nebaDuration(context, NebaScale.durationFill),
       curve: NebaScale.ease,
       builder: (BuildContext context, Color? wash, Widget? child) {
         return DecoratedBox(
           decoration: BoxDecoration(
             color: wash,
-            borderRadius: BorderRadius.circular(tokens.radius[NebaSize.xs]!),
+            borderRadius: widget.borderRadius ?? BorderRadius.circular(tokens.radius[NebaSize.xs]!),
           ),
           child: child,
         );

@@ -96,9 +96,11 @@ Still open from that session:
 
 - [ ] **A chart's `brush` and `exportable`.** Neither is in `NebaCartesianChart` yet. The brush is a strip of the whole series under the plot with a window the reader drags, built on `lib/src/internal/drag.dart`; the export has no download to start in Flutter, so its counterpart is probably `onExport` alone, handed the CSV.
 
-- [ ] **A menu's sheet and rows beside a list's.** `NebaMenuSheet` and `NebaMenuRow` in `lib/src/internal/menu.dart` were written alongside `NebaListSheet` and `NebaListRow` in `listbox.dart`, and both draw the same frosted panel at elevation 3 with a wash on the row in hand. The menu's highlight is the focus and the list's is an index the keys move, so the two do not fold into one without choosing one model; the typeahead is already shared. Decide which way a Select's list should go before a picker takes either. `NebaTreeSelect` took neither, as React's takes neither: its popup is the picker shell's sheet (`pickerPopupClasses`, drawn privately in `neba_tree_select.dart` until a second picker needs it in `internal/`) holding a `NebaTreeView`, whose highlight is the focus.
+- [ ] **A menu's sheet and rows beside a list's.** `NebaMenuSheet` and `NebaMenuRow` in `lib/src/internal/menu.dart` were written alongside `NebaListSheet` and `NebaListRow` in `listbox.dart`, and both draw the same frosted panel at elevation 3 with a wash on the row in hand. The menu's highlight is the focus and the list's is an index the keys move, so the two do not fold into one without choosing one model; the typeahead is already shared. Decide which way a Select's list should go before a picker takes either. `NebaTreeSelect` took neither, as React's takes neither: its popup is the picker shell's sheet (`pickerPopupClasses`, drawn privately in `neba_tree_select.dart` until a second picker needs it in `internal/`) holding a `NebaTreeView`, whose highlight is the focus. `NebaCommandPalette` took the list's rows, with a padding, corners and a wash of its own: its field keeps the focus while the keys move the highlight, which is the list's model and not the menu's.
 
 - [ ] **`NebaTreeSelect` on the picker shell.** Its trigger and its popup sheet are drawn privately in `neba_tree_select.dart`, as React's TreeSelect draws on `PickerShell` and `pickerPopupClasses`; `lib/src/internal/picker.dart` (`NebaPickerField`) came in with `NebaDatePicker` beside it. Move TreeSelect onto `NebaPickerField` once the time and range pickers have landed on it, so the four share one shell.
+
+- [ ] **One table of key spellings.** `lib/src/internal/keys.dart` folds the tokens a `NebaCommandPalette` binds, as the React package's `internal/keys.ts` does, and `NebaShortcut` still folds the ones it draws with an alias table of its own, written out twice. `NebaShortcut` should read `keys.dart`'s, so the two can never disagree about which key a token means.
 
 - [ ] **The words a range slider's thumbs add to their values.** `NebaSlider.range` reads "20 start range" and "80 end range" in English, as Base UI writes them on the React side, where they are not in `internal/i18n.ts` either. Both packages should read them from a `slider` namespace once the React side has one; until then `thumbSemanticValue` (`getAriaValueText`) is the way to another language.
 
@@ -207,7 +209,7 @@ Demos that wait on a component not ported yet, to be added with it: `how-to-step
 - [x] `NebaMenu`
 - [x] `NebaMenubar`
 - [ ] `NebaNavigationMenu`
-- [ ] `NebaCommandPalette`
+- [x] `NebaCommandPalette`
 - [x] `NebaFilePicker`
 - [x] `NebaTransfer`
 - [x] `NebaTreeSelect`
