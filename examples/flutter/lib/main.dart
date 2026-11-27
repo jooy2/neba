@@ -14,10 +14,14 @@ void main() {
 }
 
 class ShowcaseApp extends StatefulWidget {
-  const ShowcaseApp({this.colorScheme = NebaColorScheme.system, super.key});
+  const ShowcaseApp({this.colorScheme = NebaColorScheme.system, this.demo, super.key});
 
   /// The colour scheme the app starts in.
   final NebaColorScheme colorScheme;
+
+  /// The one demo to show, by its key in the gallery's registry, in place of
+  /// the whole list: how a test lays a single demo out the way the app does.
+  final String? demo;
 
   @override
   State<ShowcaseApp> createState() => _ShowcaseAppState();
@@ -43,7 +47,9 @@ class _ShowcaseAppState extends State<ShowcaseApp> {
         // the app has none of its own.
         return NebaProvider(
           colorScheme: _scheme,
-          child: Overlay.wrap(child: _Home(onSchemePressed: _handleSchemePressed)),
+          child: Overlay.wrap(
+            child: _Home(demo: widget.demo, onSchemePressed: _handleSchemePressed),
+          ),
         );
       },
     );
@@ -51,14 +57,19 @@ class _ShowcaseAppState extends State<ShowcaseApp> {
 }
 
 class _Home extends StatelessWidget {
-  const _Home({required this.onSchemePressed});
+  const _Home({required this.demo, required this.onSchemePressed});
 
+  final String? demo;
   final ValueChanged<Brightness> onSchemePressed;
 
   @override
   Widget build(BuildContext context) {
     final NebaTokens tokens = NebaTheme.of(context);
-    final List<MapEntry<String, Widget Function()>> entries = demos.entries.toList();
+    final String? only = demo;
+    final List<MapEntry<String, Widget Function()>> entries = <MapEntry<String, Widget Function()>>[
+      for (final MapEntry<String, Widget Function()> entry in demos.entries)
+        if (only == null || entry.key == only) entry,
+    ];
     final String switchLabel = tokens.brightness == Brightness.dark ? 'Light' : 'Dark';
 
     return ColoredBox(

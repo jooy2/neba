@@ -14,7 +14,6 @@ class ToolbarHero extends StatelessWidget {
           color: NebaColor.primary,
           semanticLabel: 'Neba',
         ),
-        NebaTypography('Workspace', level: NebaTypographyLevel.h6),
       ],
       end: <Widget>[
         NebaIconButton(
@@ -25,6 +24,11 @@ class ToolbarHero extends StatelessWidget {
           size: NebaSize.sm,
         ),
         NebaButton(onPressed: () {}, size: NebaSize.sm, child: const Text('Deploy')),
+      ],
+      // The name in the middle, which gives way on a narrow screen where the
+      // two ends do not.
+      children: const <Widget>[
+        Flexible(child: NebaTypography('Workspace', level: NebaTypographyLevel.h6, lines: 1)),
       ],
     );
   }

@@ -13,12 +13,16 @@ class OtpFieldLengths extends StatelessWidget {
       children: <Widget>[
         NebaOtpField(label: Text('Four digit PIN'), length: 4, size: NebaSize.sm),
         NebaOtpField(label: Text('Six digit code, in two blocks'), length: 6, groupSize: 3),
-        NebaOtpField(
-          label: Text('Nine character key, in three'),
-          length: 9,
-          groupSize: 3,
-          charset: NebaOtpCharset.alphanumeric,
-          size: NebaSize.sm,
+        // Nine cells are wider than a small phone, so they scroll there.
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: NebaOtpField(
+            label: Text('Nine character key, in three'),
+            length: 9,
+            groupSize: 3,
+            charset: NebaOtpCharset.alphanumeric,
+            size: NebaSize.sm,
+          ),
         ),
       ],
     );

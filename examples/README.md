@@ -16,7 +16,7 @@ flutter run
 
 The flows in `integration_test/flows.dart` are written once and run in two places.
 
-- **On the host**, with no device: `flutter test`. `test/app_test.dart` runs every flow at a phone's size and at a tablet's. This is what CI runs.
+- **On the host**, with no device: `flutter test`. `test/app_test.dart` runs every flow at a phone's size and at a tablet's, and `test/demos_test.dart` lays out every demo the way the app shows it at 360×640, 390×844 and 834×1194 and checks that no demo names a picture only the documentation site serves. This is what CI runs.
 - **On a simulator, an emulator or a real device**: `flutter test integration_test -d <device>`, or with the driver, `flutter drive --driver test_driver/integration_test.dart --target integration_test/app_test.dart -d <device>`. `flutter devices` lists the ids.
 
 A device can run without its window, so a test run does not take over the screen:

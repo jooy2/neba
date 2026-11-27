@@ -53,12 +53,13 @@ class _Row extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    // The keys under their name on a screen too narrow for both on a line.
+    return Wrap(
+      alignment: WrapAlignment.spaceBetween,
+      crossAxisAlignment: WrapCrossAlignment.center,
       spacing: 16,
-      children: <Widget>[
-        Expanded(child: Text(label)),
-        shortcut,
-      ],
+      runSpacing: 4,
+      children: <Widget>[Text(label), shortcut],
     );
   }
 }

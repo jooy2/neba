@@ -347,7 +347,7 @@ class _ConceptsLandingState extends State<ConceptsLanding> {
       // The name and the links share what the actions leave, the links
       // scrolling sideways rather than running under them.
       children: <Widget>[
-        const NebaTypography('Kestrel', level: NebaTypographyLevel.h6),
+        const Flexible(child: NebaTypography('Kestrel', level: NebaTypographyLevel.h6, lines: 1)),
         if (wide)
           Flexible(
             child: SingleChildScrollView(

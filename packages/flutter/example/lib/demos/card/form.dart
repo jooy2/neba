@@ -13,7 +13,10 @@ class CardForm extends StatelessWidget {
         dividers: true,
         title: Semantics(header: true, child: const Text('Invite a teammate')),
         subtitle: const Text('They will get an email with a link.'),
-        footer: Row(
+        footer: Wrap(
+          alignment: WrapAlignment.spaceBetween,
+          spacing: 8,
+          runSpacing: 8,
           children: <Widget>[
             NebaButton(
               onPressed: () {},
@@ -21,7 +24,6 @@ class CardForm extends StatelessWidget {
               color: NebaColor.secondary,
               child: const Text('Cancel'),
             ),
-            const Spacer(),
             NebaButton(onPressed: () {}, child: const Text('Send invite')),
           ],
         ),
