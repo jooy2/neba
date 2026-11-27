@@ -563,4 +563,67 @@ void main() {
       expect(chartInkOn(NebaColor.success, 0, tokens), tokens.surface);
     });
   });
+
+  group('a category axis on numbers', () {
+    test('reads a date as its milliseconds and a string as no place at all', () {
+      final DateTime day = DateTime(2026, 3, 1);
+
+      expect(chartToNumber(day), day.millisecondsSinceEpoch.toDouble());
+      expect(chartToNumber(12), 12);
+      expect(chartToNumber(double.nan), isNull);
+      expect(chartToNumber('Seoul'), isNull);
+    });
+
+    test('places a point by its own x, then by the categories, then by its index', () {
+      const NebaChartValue own = NebaChartValue(value: 1, x: 40);
+      const NebaChartValue bare = NebaChartValue(value: 1);
+      const NebaChartValue named = NebaChartValue(value: 1, x: 'Seoul');
+
+      expect(chartPointX(own, 0, <Object>[7]), 40);
+      expect(chartPointX(bare, 0, <Object>[7]), 7);
+      expect(chartPointX(bare, 3, null), 3);
+      expect(chartPointX(named, 0, <Object>[7]), isNull);
+    });
+
+    test('measures only the points that are drawn', () {
+      final List<List<NebaChartValue>> values = <List<NebaChartValue>>[
+        <NebaChartValue>[
+          const NebaChartValue(value: 1, x: 10),
+          const NebaChartValue(x: 99),
+          const NebaChartValue(value: 2, x: -5),
+        ],
+      ];
+
+      expect(chartCategoryExtent(values, null), (min: -5.0, max: 10.0));
+      expect(
+        chartCategoryExtent(<List<NebaChartValue>>[
+          <NebaChartValue>[const NebaChartValue(value: 1, x: 'Seoul')],
+        ], null),
+        isNull,
+      );
+    });
+
+    test('sizes a bubble by the square root of its share, with a floor', () {
+      expect(chartBubbleRadius(64, 64, 40, 2), 40);
+      expect(chartBubbleRadius(16, 64, 40, 2), 20);
+      expect(chartBubbleRadius(0.001, 64, 40, 2), 2);
+      expect(chartBubbleRadius(0, 64, 40, 2), 0);
+    });
+
+    test('draws every mark shape over the area of the circle of its radius', () {
+      const Offset centre = Offset(50, 50);
+      final double circle = math.pi * 10 * 10;
+      final Rect square = chartMarkPath(NebaMarkShape.square, centre, 10).getBounds();
+      final Rect diamond = chartMarkPath(NebaMarkShape.diamond, centre, 10).getBounds();
+      final Rect triangle = chartMarkPath(NebaMarkShape.triangle, centre, 10).getBounds();
+
+      expect(chartMarkPath(NebaMarkShape.circle, centre, 10).getBounds().width, closeTo(20, 1e-3));
+      expect(square.width * square.height, closeTo(circle, 0.5));
+      expect(diamond.width * diamond.height / 2, closeTo(circle, 0.5));
+      // On its circumcircle: its apex a radius above the point, its base half
+      // of one below.
+      expect(centre.dy - triangle.top, closeTo(2 * (triangle.bottom - centre.dy), 1e-3));
+      expect(chartMarkPath(NebaMarkShape.cross, centre, 0).getBounds().isEmpty, isTrue);
+    });
+  });
 }

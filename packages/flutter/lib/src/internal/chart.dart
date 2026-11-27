@@ -398,6 +398,83 @@ String chartCategoryText(Object category) {
 }
 
 // ---------------------------------------------------------------------------
+// A category axis that runs on numbers
+// ---------------------------------------------------------------------------
+
+/// A category as a number, for a category axis that is really a value axis: a
+/// [DateTime] as its milliseconds since the epoch, a finite [num] as itself,
+/// and anything else as `null`, since a string is not a place on a number
+/// line.
+double? chartToNumber(Object? value) {
+  if (value is DateTime) {
+    return value.millisecondsSinceEpoch.toDouble();
+  }
+
+  if (value is num && value.isFinite) {
+    return value.toDouble();
+  }
+
+  return null;
+}
+
+/// Where one point sits along a category axis that runs on numbers: its own
+/// `x`, then [categories] at [index], then [index], as [chartCategoryAt]
+/// reads them, but per point rather than per column, because on a scatter
+/// each series has its own `x` at every index.
+double? chartPointX(NebaChartValue value, int index, List<Object>? categories) {
+  final Object? given = categories != null && index < categories.length ? categories[index] : null;
+
+  return chartToNumber(value.x ?? given ?? index);
+}
+
+/// The lowest and the highest `x` of the points that have a value, or `null`
+/// when none of them sits on the number line. A point with no value is not on
+/// the plot, so its `x` does not stretch the axis.
+({double min, double max})? chartCategoryExtent(
+  List<List<NebaChartValue>> values,
+  List<Object>? categories,
+) {
+  double low = double.infinity;
+  double high = double.negativeInfinity;
+  bool seen = false;
+
+  for (final List<NebaChartValue> one in values) {
+    for (int index = 0; index < one.length; index++) {
+      if (one[index].value == null) {
+        continue;
+      }
+
+      final double? x = chartPointX(one[index], index, categories);
+
+      if (x == null) {
+        continue;
+      }
+
+      seen = true;
+      low = math.min(low, x);
+      high = math.max(high, x);
+    }
+  }
+
+  return seen ? (min: low, max: high) : null;
+}
+
+/// The radius a bubble gets for its [z], under a largest of [max] pixels for
+/// the largest [maxZ].
+///
+/// [z] is an area and not a radius: a value twice as large draws a bubble
+/// twice the area, so the square root is taken. [min] is a floor, so a small
+/// but real value stays something a pointer can find; only a zero is allowed
+/// to disappear.
+double chartBubbleRadius(double z, double maxZ, double max, double min) {
+  if (!(maxZ > 0) || !z.isFinite || z <= 0) {
+    return z == 0 ? 0 : min;
+  }
+
+  return math.max(min, math.sqrt(math.min(z, maxZ) / maxZ) * max);
+}
+
+// ---------------------------------------------------------------------------
 // Ticks
 // ---------------------------------------------------------------------------
 
@@ -1003,6 +1080,97 @@ Path chartBarPath(Rect rect, double radius, NebaChartBarEnd end) {
     NebaChartBarEnd.right => RRect.fromRectAndCorners(rect, topRight: corner, bottomRight: corner),
     NebaChartBarEnd.left => RRect.fromRectAndCorners(rect, topLeft: corner, bottomLeft: corner),
   });
+}
+
+/// The shapes a point mark can take: the second identity channel a dot has
+/// going spare, which a line or a bar does not.
+enum NebaMarkShape {
+  /// A disc.
+  circle,
+
+  /// A square on its side.
+  square,
+
+  /// An equilateral triangle, point up, on its circumcircle.
+  triangle,
+
+  /// A square on its corner.
+  diamond,
+
+  /// A plus whose arms are two thirds of its half-span.
+  cross,
+}
+
+/// How much bigger than a circle of the same area each shape is drawn, solved
+/// from `πr²`, so a square never reports a value it was not given on a chart
+/// whose areas already carry one.
+const Map<NebaMarkShape, double> _shapeScale = <NebaMarkShape, double>{
+  NebaMarkShape.circle: 1,
+  NebaMarkShape.square: 0.8862,
+  NebaMarkShape.triangle: 1.5551,
+  NebaMarkShape.diamond: 1.2533,
+  NebaMarkShape.cross: 1.189,
+};
+
+/// One point mark centred on [centre], covering the area a circle of radius
+/// [r] would.
+///
+/// A triangle sits on its circumcircle rather than on its box, so it shares a
+/// centre with the other four, and growing one about [centre] grows it where
+/// it stands.
+Path chartMarkPath(NebaMarkShape shape, Offset centre, double r) {
+  final double size = math.max(0, r) * _shapeScale[shape]!;
+  final double x = centre.dx;
+  final double y = centre.dy;
+
+  if (size == 0) {
+    return Path();
+  }
+
+  switch (shape) {
+    case NebaMarkShape.circle:
+      return Path()..addOval(Rect.fromCircle(center: centre, radius: size));
+    case NebaMarkShape.square:
+      return Path()..addRect(Rect.fromCircle(center: centre, radius: size));
+    case NebaMarkShape.diamond:
+      return Path()
+        ..moveTo(x, y - size)
+        ..lineTo(x + size, y)
+        ..lineTo(x, y + size)
+        ..lineTo(x - size, y)
+        ..close();
+    case NebaMarkShape.triangle:
+      final Path path = Path();
+
+      for (final double degrees in <double>[0, 120, 240]) {
+        final Offset point = chartPolar(centre, size, degrees);
+
+        if (degrees == 0) {
+          path.moveTo(point.dx, point.dy);
+        } else {
+          path.lineTo(point.dx, point.dy);
+        }
+      }
+
+      return path..close();
+    case NebaMarkShape.cross:
+      final double arm = size / 3;
+
+      return Path()
+        ..moveTo(x - arm, y - size)
+        ..lineTo(x + arm, y - size)
+        ..lineTo(x + arm, y - arm)
+        ..lineTo(x + size, y - arm)
+        ..lineTo(x + size, y + arm)
+        ..lineTo(x + arm, y + arm)
+        ..lineTo(x + arm, y + size)
+        ..lineTo(x - arm, y + size)
+        ..lineTo(x - arm, y + arm)
+        ..lineTo(x - size, y + arm)
+        ..lineTo(x - size, y - arm)
+        ..lineTo(x - arm, y - arm)
+        ..close();
+  }
 }
 
 /// [degrees] clockwise from twelve o'clock, as the radians from three o'clock

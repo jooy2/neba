@@ -394,8 +394,14 @@ class NebaChartLayout {
     required this.format,
     required String Function(double value)? secondFormat,
     this.horizontal = false,
+    this.categoryScale,
   }) : _second = second,
        _secondFormat = secondFormat;
+
+  /// The scale the category axis runs on when it is a second value axis, as
+  /// a scatter's is: React's `xScale: 'value'`. `null` on every chart whose
+  /// categories are columns.
+  final NebaChartScale? categoryScale;
 
   /// The plot's box inside the chart, once the axes have taken their bands.
   final Rect plot;
@@ -508,12 +514,61 @@ class NebaChartLayout {
         : Offset(categoryAt(index), valuePx(value, series));
   }
 
+  /// Where [value] sits along a category axis that runs on numbers, in the
+  /// chart's pixels: across it, or up it on a [horizontal] chart. Only
+  /// meaningful with a [categoryScale].
+  double categoryValuePx(double value) {
+    final double fraction = categoryScale?.fraction(value) ?? 0;
+
+    return horizontal ? plot.top + (1 - fraction) * plot.height : plot.left + fraction * plot.width;
+  }
+
   /// Where series [series]' baseline is: zero, held inside its scale.
   double zeroPxOf([int? series]) {
     final NebaChartScale on = scaleFor(series);
 
     return valuePx(0.clamp(on.min, on.max).toDouble(), series);
   }
+}
+
+/// One mark on a plot whose marks are not arranged in columns: the React
+/// package's `ChartMark`.
+///
+/// A scatter has no shared categories, so there is no column for a pointer
+/// to be in and nothing for a crosshair to drop through: the one question a
+/// reader can be asking is which of these marks. A chart that hands the frame
+/// its marks gets the nearest-mark search, the arrow keys walking them and the
+/// tooltip anchored on them.
+@immutable
+class NebaChartMark {
+  /// Mark [index] of series [series], centred on [centre].
+  const NebaChartMark({
+    required this.series,
+    required this.index,
+    required this.centre,
+    required this.r,
+    this.rx,
+    this.ry,
+  });
+
+  /// Its series' place in the list it was passed in.
+  final int series;
+
+  /// Its own place in that series.
+  final int index;
+
+  /// Its centre, in the chart's pixels.
+  final Offset centre;
+
+  /// How big it is, which widens the hit target with it.
+  final double r;
+
+  /// Its half-width, when it is a box rather than a disc: the pointer is
+  /// then tested against its body rather than its centre.
+  final double? rx;
+
+  /// Its half-height, with [rx]. [rx] when left out.
+  final double? ry;
 }
 
 /// What a chart's painter is handed on every build: the layout, the marks
@@ -526,7 +581,13 @@ class NebaChartMarks<T> {
     required this.traced,
     required this.activeIndex,
     required this.emphasis,
+    this.activeMark,
   });
+
+  /// On a chart that hands the frame its marks, the one the pointer or the
+  /// keys are on. [emphasis] grows a mark by its place in the list the chart
+  /// handed over.
+  final NebaChartMark? activeMark;
 
   /// Where everything goes.
   final NebaChartLayout layout;
@@ -603,6 +664,7 @@ class NebaChartLegendBar extends StatelessWidget {
     this.onHover,
     this.values,
     this.reserve,
+    this.swatch,
     super.key,
   });
 
@@ -640,6 +702,10 @@ class NebaChartLegendBar extends StatelessWidget {
   /// The numbers each row keeps room for, whether or not one is showing.
   final List<List<String>>? reserve;
 
+  /// Draws series [index]'s swatch in [color], for a chart whose marks are not
+  /// all one shape. A rounded square when left out.
+  final Widget Function(int index, Color color)? swatch;
+
   @override
   Widget build(BuildContext context) {
     final bool vertical = options.side == NebaSide.left || options.side == NebaSide.right;
@@ -658,6 +724,7 @@ class NebaChartLegendBar extends StatelessWidget {
             color: color,
             value: values?[index],
             reserve: reserve?[index],
+            mark: swatch?.call(index, colors[index]),
             onToggle: onToggle == null ? null : () => onToggle?.call(index),
             onHover: onHover == null ? null : (bool on) => onHover?.call(on ? index : null),
           ),
@@ -707,6 +774,7 @@ class _LegendEntry extends StatelessWidget {
     required this.reserve,
     required this.onToggle,
     required this.onHover,
+    this.mark,
   });
 
   final String name;
@@ -720,6 +788,7 @@ class _LegendEntry extends StatelessWidget {
   final List<String>? reserve;
   final VoidCallback? onToggle;
   final ValueChanged<bool>? onHover;
+  final Widget? mark;
 
   @override
   Widget build(BuildContext context) {
@@ -753,11 +822,12 @@ class _LegendEntry extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       spacing: 6,
       children: <Widget>[
-        Container(
-          width: 10,
-          height: 10,
-          decoration: BoxDecoration(color: swatch, borderRadius: BorderRadius.circular(3)),
-        ),
+        mark ??
+            Container(
+              width: 10,
+              height: 10,
+              decoration: BoxDecoration(color: swatch, borderRadius: BorderRadius.circular(3)),
+            ),
         Flexible(child: Text(name, maxLines: 1, overflow: TextOverflow.ellipsis, softWrap: false)),
         ?number,
       ],
@@ -1694,6 +1764,12 @@ class NebaCartesianChart<T> extends StatefulWidget {
     this.elevation = 0,
     this.padded = false,
     this.transition,
+    this.valueCategories = false,
+    this.marks,
+    this.markRadius = 24,
+    this.markInset = 0,
+    this.table,
+    this.swatch,
     super.key,
   });
 
@@ -1702,6 +1778,35 @@ class NebaCartesianChart<T> extends StatefulWidget {
 
   /// What each category is called. Points may carry their own `x` instead.
   final List<Object>? categories;
+
+  /// Makes the category axis a second value axis rather than a row of
+  /// columns, the React package's `xScale: 'value'`: each point is placed by
+  /// its own `x` as a number, the axis ticks at rounded numbers, never forced
+  /// through zero, and casts a grid unless `xAxis` says otherwise. A chart
+  /// whose every `x` is off the number line draws its empty state.
+  final bool valueCategories;
+
+  /// Every mark the chart drew, out of what [trace] returned, in the order the
+  /// keys walk them. Given, the pointer reads the nearest mark rather than a
+  /// column, the arrow keys walk this list, the tooltip is anchored on the
+  /// mark and there is no crosshair.
+  final List<NebaChartMark> Function(T traced)? marks;
+
+  /// How far off a mark's edge the pointer still counts as on it, in logical
+  /// pixels: an eight-pixel dot is not something a pointer can be asked to
+  /// land on.
+  final double markRadius;
+
+  /// Room on every side of the plot, for marks drawn from their centre that
+  /// may sit exactly on its corner.
+  final double markInset;
+
+  /// The table under the chart, for a chart whose data is not a grid of
+  /// categories against series. Handed the chart's own [format].
+  final Widget Function(String Function(double value) format)? table;
+
+  /// The legend's swatch, for a chart whose marks are not all one shape.
+  final Widget Function(int index, Color color)? swatch;
 
   /// The category axis.
   final NebaChartAxis? xAxis;
@@ -1821,9 +1926,17 @@ class _ChartData {
     required this.secondFormat,
     required this.described,
     required this.describedSecond,
+    this.categoryScale,
+    this.offTheLine = false,
   });
 
   final List<List<NebaChartValue>> values;
+
+  /// The category axis' own scale, on a chart whose categories are numbers.
+  final NebaChartScale? categoryScale;
+
+  /// Whether that chart has no point on the number line at all.
+  final bool offTheLine;
   final List<List<NebaChartValue>> given;
   final List<bool> visible;
   final List<Color> colors;
@@ -1906,6 +2019,13 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
   int? _pointerSeries;
   bool _focused = false;
 
+  // On a chart that hands over its marks: which of them is active, and the
+  // list the last layout drew, which the pointer and the keys are read
+  // against.
+  int? _mark;
+  List<NebaChartMark> _markList = const <NebaChartMark>[];
+  Object? _markTraced;
+
   _ChartData? _data;
   Object? _dataKey;
   _ChartModel? _model;
@@ -1964,7 +2084,27 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
     _outside.watch(column != null);
   }
 
-  void _clear() => _setActive(null);
+  void _setMark(int? at) {
+    if (at == _mark) {
+      return;
+    }
+
+    setState(() => _mark = at);
+    _emphasise();
+    _outside.watch(at != null);
+  }
+
+  void _clear() {
+    _setMark(null);
+    _setActive(null);
+  }
+
+  /// The active mark, while it is still on the plot.
+  NebaChartMark? get _activeMark {
+    final int? at = _mark;
+
+    return at != null && at < _markList.length ? _markList[at] : null;
+  }
 
   void _emphasise() {
     if (!mounted) {
@@ -1979,12 +2119,55 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
         for (int index = 0; index < count; index++)
           hovered == null || hovered == index ? 1 : chartDimmedOpacity,
       ],
-      active: _column,
+      // A chart with marks grows the one active mark, by its place in the
+      // list; any other grows the markers of the active column.
+      active: widget.marks != null ? _mark : _column,
       duration: nebaDuration(context, NebaScale.duration),
     );
   }
 
   NebaChartTooltipMode get _mode => chartTooltipMode(widget.tooltip);
+
+  /// The mark nearest [local], or `null` when the pointer is near none.
+  ///
+  /// A plain distance sweep: at the sizes a chart in a card is drawn at, and
+  /// run only while a pointer moves over it, a spatial index costs more than
+  /// it saves. The distance is to the mark's edge, zero anywhere inside it,
+  /// so a small mark beside a big one does not take a reading the pointer is
+  /// making on the big one, and inside two overlapping marks the nearer
+  /// centre wins. A mark counts as near within [NebaCartesianChart.markRadius]
+  /// of its edge.
+  int? _nearestMark(Offset local) {
+    int? found;
+    double best = double.infinity;
+    double tie = double.infinity;
+
+    for (int at = 0; at < _markList.length; at++) {
+      final NebaChartMark mark = _markList[at];
+      final double dx = mark.centre.dx - local.dx;
+      final double dy = mark.centre.dy - local.dy;
+      final double toCentre = math.sqrt(dx * dx + dy * dy);
+      final double? rx = mark.rx;
+      final double body;
+
+      if (rx == null) {
+        body = math.max(0, toCentre - mark.r);
+      } else {
+        final double outX = math.max(0, dx.abs() - rx);
+        final double outY = math.max(0, dy.abs() - (mark.ry ?? rx));
+
+        body = math.sqrt(outX * outX + outY * outY);
+      }
+
+      if (body <= widget.markRadius && (body < best || (body == best && toCentre < tie))) {
+        best = body;
+        tie = toCentre;
+        found = at;
+      }
+    }
+
+    return found;
+  }
 
   /// The category nearest [local] along the category axis: a two-pixel line
   /// is not something a pointer can be asked to land on, so a category's
@@ -2082,6 +2265,12 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
       return;
     }
 
+    if (widget.marks != null) {
+      _setMark(_nearestMark(local));
+
+      return;
+    }
+
     final int? next = _indexAt(local);
     final int? series = mode == NebaChartTooltipMode.item && next != null
         ? _nearestSeries(next, widget.horizontal ? local.dx : local.dy)
@@ -2099,9 +2288,13 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
       return KeyEventResult.ignored;
     }
 
-    final int count = data.count;
+    // A chart with marks is walked mark by mark, in the order the data was
+    // given; any other column by column.
+    final bool walksMarks = widget.marks != null;
+    final int count = walksMarks ? _markList.length : data.count;
     final LogicalKeyboardKey key = event.logicalKey;
-    final int? current = _column;
+    final int? current = walksMarks ? _mark : _column;
+    final void Function(int? at) go = walksMarks ? _setMark : _setActive;
 
     if (count == 0) {
       return KeyEventResult.ignored;
@@ -2117,13 +2310,13 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
         : LogicalKeyboardKey.arrowLeft;
 
     if (key == forward) {
-      _setActive(math.min(count - 1, (current ?? -1) + 1));
+      go(math.min(count - 1, (current ?? -1) + 1));
     } else if (key == back) {
-      _setActive(math.max(0, (current ?? count) - 1));
+      go(math.max(0, (current ?? count) - 1));
     } else if (key == LogicalKeyboardKey.home) {
-      _setActive(0);
+      go(0);
     } else if (key == LogicalKeyboardKey.end) {
-      _setActive(count - 1);
+      go(count - 1);
     } else if (key == LogicalKeyboardKey.escape && current != null) {
       _clear();
     } else {
@@ -2151,6 +2344,7 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
       widget.references,
       _visibility.chosen,
       tokens,
+      widget.valueCategories,
     );
     final _ChartData? cached = _data;
 
@@ -2232,6 +2426,26 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
             tickCount: secondaryAxis?.tickCount,
             includeZero: widget.includeZero,
           );
+    // And a second scale of the same kind when the categories are numbers
+    // rather than columns, taken over the shown series and never forced
+    // through zero: a position encodes a place, and cropping slides every
+    // mark by the same amount.
+    final NebaChartAxis? xAxis = widget.xAxis;
+    final ({double min, double max})? spread = widget.valueCategories
+        ? chartCategoryExtent(<List<NebaChartValue>>[
+            for (int index = 0; index < values.length; index++)
+              if (visible[index]) values[index],
+          ], widget.categories)
+        : null;
+    final NebaChartScale? categoryScale = widget.valueCategories
+        ? chartValueScale(
+            spread,
+            min: xAxis?.min,
+            max: xAxis?.max,
+            tickCount: xAxis?.tickCount,
+            includeZero: false,
+          )
+        : null;
     final String Function(Object value, int index)? valueTicks = yAxis?.tickFormat;
     final String Function(Object value, int index)? secondTicks = secondaryAxis?.tickFormat;
     final String Function(Object value, int index)? categoryTicks = widget.xAxis?.tickFormat;
@@ -2265,10 +2479,20 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
           secondTicks?.call(chartNumber(secondScale!.ticks[index]), index) ??
               format(secondScale!.ticks[index]),
       ],
-      categoryTexts: <String>[
-        for (int index = 0; index < labels.length; index++)
-          categoryTicks?.call(labels[index], index) ?? chartCategoryText(labels[index]),
-      ],
+      // The category axis writes its own ticks when it runs on numbers, and
+      // never through `format`, which belongs to the value axis.
+      categoryTexts: categoryScale != null
+          ? <String>[
+              for (int index = 0; index < categoryScale.ticks.length; index++)
+                categoryTicks?.call(chartNumber(categoryScale.ticks[index]), index) ??
+                    nebaFormatCompact(categoryScale.ticks[index]),
+            ]
+          : <String>[
+              for (int index = 0; index < labels.length; index++)
+                categoryTicks?.call(labels[index], index) ?? chartCategoryText(labels[index]),
+            ],
+      categoryScale: categoryScale,
+      offTheLine: widget.valueCategories && spread == null,
       format: format,
       secondFormat: twoAxes ? secondFormat : null,
       described: chartSummarise(<List<NebaChartValue>>[
@@ -2315,6 +2539,7 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
       widget.horizontal,
       widget.headroom,
       widget.bandRatio,
+      widget.markInset,
     );
     final _ChartModel? cached = _model;
 
@@ -2334,6 +2559,8 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
     final NebaChartAxis? bottomAxis = horizontal ? valueAxis : categoryAxis;
     final NebaChartScale scale = data.scale;
     final NebaChartScale? secondScale = data.secondScale;
+    final NebaChartScale? categoryScale = data.categoryScale;
+    final double markInset = widget.markInset;
     final bool valueHidden = valueAxis?.hidden ?? false;
     final bool categoryHidden = categoryAxis?.hidden ?? false;
     final bool secondHidden = secondaryAxis?.hidden ?? false;
@@ -2370,7 +2597,10 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
     // fit; below about four characters that stops helping, and the stride
     // takes over. A row on the left of a horizontal chart is cut to a column.
     final double tiltRoom = math.min(140, plotHeight * 0.4);
-    final bool cutsLabels = horizontal || tilted || slot - 6 >= fontSize * 2.4;
+    // A tick on a category axis that runs on numbers was rounded to be short
+    // already, and half of it is a wrong number rather than a smaller one.
+    final bool cutsLabels =
+        categoryScale == null && (horizontal || tilted || slot - 6 >= fontSize * 2.4);
     final double cutTo = horizontal
         ? 150
         : tilted
@@ -2394,24 +2624,29 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
     // The last label is centred on the last tick, so half of it hangs past
     // the plot; a turned one hangs off one side only. A value axis along the
     // bottom anchors its two end labels inward and needs none of that.
+    // A category axis on numbers anchors its two end labels inward too. A
+    // mark drawn from its centre may sit on the plot's very corner, so
+    // `markInset` is kept clear on every side.
     final double rightPad =
-        (horizontal
+        (horizontal || categoryScale != null
             ? 12
             : tilted
             ? (turn.angle > 0 ? turn.overhang(widestCategory) + 8 : 8)
             : math.max(8, categoryTexts.isNotEmpty ? turn.overhang(widestCategory) : 8)) +
+        markInset +
         (horizontal ? 0 : secondBand);
     final double topPad =
         chartMarkerRadii[size]! +
         4 +
         widget.headroom +
+        markInset +
         (namesLeftAxis || namesSecondAxis ? axisLabelBand + 2 : 0) +
         (horizontal ? secondBand : 0);
     final Rect plot = Rect.fromLTWH(
-      left,
+      left + markInset,
       topPad,
-      math.max(0, width - left - rightPad),
-      math.max(0, plotHeight - topPad - bottom),
+      math.max(0, width - left - markInset - rightPad),
+      math.max(0, plotHeight - topPad - bottom - markInset),
     );
     final TextStyle textStyle = base.copyWith(
       fontSize: fontSize,
@@ -2443,6 +2678,7 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
       textDirection: direction,
       format: data.format,
       secondFormat: data.secondFormat,
+      categoryScale: categoryScale,
     );
 
     final List<Object> chrome = <Object>[];
@@ -2527,16 +2763,26 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
     // left and casts no category gridlines.
     if (!categoryHidden) {
       final double zero = layout.zeroPxOf();
-      final bool categoryGrid = !horizontal && (categoryAxis?.grid ?? false);
+      // A grid in both directions is graph paper, and on a chart of columns
+      // the crosshair already does the vertical rules' job. A category axis
+      // on numbers is the exception: there is no column to be in, and reading
+      // a mark's x off the picture is half of what the reader came for.
+      final bool categoryGrid = !horizontal && (categoryAxis?.grid ?? categoryScale != null);
       final double room = turn.room(widestCategory);
       final int stride = chartTickStride(
         categoryTexts.length,
         layout.categoryLength,
         horizontal ? fontSize * 1.8 : room,
       );
-      final double step = categoryTexts.length > 1
-          ? (layout.categoryPx(1) - layout.categoryPx(0)).abs()
-          : plot.width;
+      // Where label [index] sits along the axis: at its tick on a scale of
+      // numbers, at its category otherwise.
+      double along(int index) {
+        return categoryScale != null
+            ? layout.categoryValuePx(categoryScale.ticks[index])
+            : layout.categoryAt(index);
+      }
+
+      final double step = categoryTexts.length > 1 ? (along(1) - along(0)).abs() : plot.width;
       final bool lastCategory = chartFitsLast(
         categoryTexts.length,
         stride,
@@ -2563,10 +2809,10 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
           continue;
         }
 
-        final double along = layout.categoryAt(index);
+        final double at = along(index);
 
         if (categoryGrid) {
-          chrome.add(categoryRule(along, tokens.chartGrid));
+          chrome.add(categoryRule(at, tokens.chartGrid));
         }
 
         if (labelled) {
@@ -2574,14 +2820,18 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
             horizontal
                 ? NebaChartLabel(
                     text(categoryTexts[index]),
-                    Offset(plot.left - 8, along),
+                    Offset(plot.left - 8, at),
                     anchor: -1,
                     central: true,
                   )
                 : NebaChartLabel(
                     text(categoryTexts[index]),
-                    Offset(along, baseline),
-                    anchor: turn.anchor,
+                    Offset(at, baseline),
+                    // Flat on a scale of numbers, the two end ticks sit on
+                    // the ends of the plot, so their labels are set inward.
+                    anchor: !tilted && categoryScale != null
+                        ? inward(index, categoryTexts.length)
+                        : turn.anchor,
                     central: tilted,
                     angle: turn.angle,
                   ),
@@ -2644,8 +2894,10 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
     // The references, under the marks and over the grid: heavier than a
     // gridline because they carry meaning, dashed and neutral because they
     // are not the reader's data.
-    final double first = widget.inset ? 0 : -0.5;
-    final double last = widget.inset ? count - 1.0 : count - 0.5;
+    // A line's first and last points sit on the plot's edges, a bar's half a
+    // band in from them, and a scale of numbers ends where its ticks do.
+    final double first = categoryScale?.min ?? (widget.inset ? 0 : -0.5);
+    final double last = categoryScale?.max ?? (widget.inset ? count - 1.0 : count - 0.5);
 
     for (final NebaChartReference one in widget.references ?? const <NebaChartReference>[]) {
       final bool onValue = one.axis == NebaChartReferenceAxis.value;
@@ -2659,7 +2911,14 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
 
       bool inside(double number) => onValue || (number >= first && number <= last);
       double clamp(double number) => onValue ? number : number.clamp(first, last).toDouble();
-      double at(double number) => onValue ? layout.valuePx(number) : layout.categoryAt(number);
+      double at(double number) {
+        return onValue
+            ? layout.valuePx(number)
+            : categoryScale != null
+            ? layout.categoryValuePx(number)
+            : layout.categoryAt(number);
+      }
+
       // Which way the rule runs: a number on one axis is drawn across the
       // other, and turning the chart swaps which of the two that is.
       final bool across = onValue ? !horizontal : horizontal;
@@ -2739,7 +2998,16 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
       for (final NebaChartReference one in widget.references ?? const <NebaChartReference>[])
         if (one.label != null) one,
     ];
-    final Object key = (data, caption, widget.xAxis?.label, widget.references);
+    final Widget Function(String Function(double value) format)? own = widget.table;
+    // A chart's own table reads what it traces from, so it is keyed on that
+    // and on the language its headings are in as well.
+    final Object key = (
+      data,
+      caption,
+      widget.xAxis?.label,
+      widget.references,
+      own == null ? null : (widget.traceKey, widget.locale),
+    );
     final Widget? cached = _table;
 
     if (cached != null && key == _tableKey) {
@@ -2753,8 +3021,12 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
 
       final int index = value.round();
 
+      // A point on a scale of numbers is itself, and an index into the
+      // categories on an axis of columns.
       return chartCategoryText(
-        index >= 0 && index < data.labels.length && index == value ? data.labels[index] : value,
+        data.categoryScale == null && index >= 0 && index < data.labels.length && index == value
+            ? data.labels[index]
+            : value,
       );
     }
 
@@ -2762,26 +3034,32 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        NebaChartDataTable(
-          caption: caption,
-          columns: <String>[widget.xAxis?.label ?? '', ...data.names],
-          points: data.given.fold<int>(0, (int sum, List<NebaChartValue> row) => sum + row.length),
-          rows: <List<String>>[
-            for (int index = 0; index < data.labels.length; index++)
-              <String>[
-                chartCategoryText(data.labels[index]),
-                for (int series = 0; series < data.given.length; series++)
-                  if (index < data.given[series].length)
-                    data.given[series][index].label ??
-                        switch (data.given[series][index].value) {
-                          final double value => data.formatFor(series)(value),
-                          null => '',
-                        }
-                  else
-                    '',
-              ],
-          ],
-        ),
+        if (own != null)
+          own(data.format)
+        else
+          NebaChartDataTable(
+            caption: caption,
+            columns: <String>[widget.xAxis?.label ?? '', ...data.names],
+            points: data.given.fold<int>(
+              0,
+              (int sum, List<NebaChartValue> row) => sum + row.length,
+            ),
+            rows: <List<String>>[
+              for (int index = 0; index < data.labels.length; index++)
+                <String>[
+                  chartCategoryText(data.labels[index]),
+                  for (int series = 0; series < data.given.length; series++)
+                    if (index < data.given[series].length)
+                      data.given[series][index].label ??
+                          switch (data.given[series][index].value) {
+                            final double value => data.formatFor(series)(value),
+                            null => '',
+                          }
+                    else
+                      '',
+                ],
+            ],
+          ),
         // The references, for the reader who gets the table instead of the
         // picture: a target drawn across the plot is context the numbers
         // alone do not carry.
@@ -2817,15 +3095,23 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
     final TextDirection direction = Directionality.of(context);
     final NebaChartTooltipMode mode = _mode;
     final NebaChartTooltip options = chartTooltipOptions(widget.tooltip);
-    final bool nothing = data.count == 0 || data.extent == null;
-    final int? column = _column;
+    // A category axis on numbers has one more way to have nothing to draw:
+    // every point placed by something that is not on a number line.
+    final bool nothing = data.count == 0 || data.extent == null || data.offTheLine;
+    final bool walksMarks = widget.marks != null;
+    final NebaChartMark? activeMark = walksMarks && !nothing ? _activeMark : null;
+    final int? column = walksMarks ? activeMark?.index : _column;
     final int? active = column != null && column < data.count && !nothing ? column : null;
 
     final List<NebaChartTooltipItem> readings = active == null
         ? const <NebaChartTooltipItem>[]
         : <NebaChartTooltipItem>[
             for (int series = 0; series < data.values.length; series++)
-              if (data.visible[series] && active < data.values[series].length)
+              // A mark names its own series: two marks at one index are two
+              // unrelated points, not two readings of one category.
+              if (data.visible[series] &&
+                  active < data.values[series].length &&
+                  (activeMark == null || activeMark.series == series))
                 if (data.values[series][active].value case final double value)
                   NebaChartTooltipItem(
                     seriesIndex: series,
@@ -2848,7 +3134,24 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
     final List<NebaChartTooltipItem> items = picked == null
         ? readings
         : <NebaChartTooltipItem>[picked];
-    final String? heading = active == null ? null : chartCategoryText(data.labels[active]);
+    // A mark is titled with its own x, since on a plot with two value axes the
+    // x is data rather than a heading the marks were filed under, and a
+    // number on that axis is written whole rather than compacted.
+    final List<Object>? categories = widget.categories;
+    final Object? markCategory = activeMark == null || active == null
+        ? null
+        : (activeMark.series < data.values.length &&
+                      activeMark.index < data.values[activeMark.series].length
+                  ? data.values[activeMark.series][activeMark.index].x
+                  : null) ??
+              (categories != null && activeMark.index < categories.length
+                  ? categories[activeMark.index]
+                  : activeMark.index);
+    final String? heading = active == null
+        ? null
+        : markCategory is num && data.categoryScale != null
+        ? nebaFormatNumber(markCategory)
+        : chartCategoryText(markCategory ?? data.labels[active]);
 
     // The legend.
     final Object? legend = widget.legend;
@@ -2865,6 +3168,7 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
             color: widget.color,
             onToggle: _toggle,
             onHover: _hoverLegend,
+            swatch: widget.swatch,
             reserve: legendOptions.showValue ? data.reserve : null,
             values: legendOptions.showValue && active != null
                 ? <String?>[
@@ -2901,8 +3205,23 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
         );
         final NebaChartLayout layout = model.layout;
         final T traced = _tracedFor(layout);
+        final List<NebaChartMark> Function(T traced)? marksOf = widget.marks;
+
+        // The marks the pointer and the keys are read against are the ones
+        // this layout drew, taken once per trace.
+        if (marksOf != null && !identical(_markTraced, traced)) {
+          _markList = marksOf(traced);
+          _markTraced = traced;
+        }
+
+        final NebaChartMark? drawnMark = walksMarks ? _activeMark : null;
+        // No crosshair on a chart with marks, whatever mode was asked for: it
+        // would say that these numbers share a column, and there is none.
         final bool crosshair =
-            active != null && mode == NebaChartTooltipMode.category && options.crosshair;
+            !walksMarks &&
+            active != null &&
+            mode == NebaChartTooltipMode.category &&
+            options.crosshair;
         final Size area = Size(width, plotHeight);
         final List<Widget> layers = <Widget>[
           RepaintBoundary(
@@ -2926,6 +3245,7 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
                 traced: traced,
                 activeIndex: active,
                 emphasis: _emphasis,
+                activeMark: drawnMark,
               ),
             ),
           ),
@@ -2935,21 +3255,32 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
           final Rect box = layout.plot;
           // Beside the column at the top of the plot, or, on a chart turned
           // on its side, beside the far end of the first reading in the row.
+          // A mark is anchored on itself.
           final NebaChartTooltipItem first = items.first;
-          final double anchorX = layout.horizontal
+          final double anchorX = drawnMark != null
+              ? drawnMark.centre.dx
+              : layout.horizontal
               ? _spansAt(active, data, layout)[first.seriesIndex]?.$2 ??
                     layout.valuePx(first.value, first.seriesIndex)
               : layout.categoryAt(active);
-          final double anchorY = layout.horizontal ? layout.categoryAt(active) : box.top;
+          final double anchorY = drawnMark != null
+              ? drawnMark.centre.dy
+              : layout.horizontal
+              ? layout.categoryAt(active)
+              : box.top;
           final bool flip =
-              (layout.horizontal
+              (drawnMark != null || layout.horizontal
                   ? (anchorX - box.left) / math.max(1, box.width)
                   : layout.categoryPx(active) / math.max(1, layout.categoryLength)) >
               0.6;
           final Widget panel =
               options.builder?.call(
                 context,
-                NebaChartTooltipContext(index: active, category: data.labels[active], items: items),
+                NebaChartTooltipContext(
+                  index: active,
+                  category: markCategory ?? data.labels[active],
+                  items: items,
+                ),
               ) ??
               NebaChartTooltipPanel(
                 heading: heading ?? '',

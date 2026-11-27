@@ -421,6 +421,10 @@ import 'package:neba_example/demos/rating/icons.dart';
 import 'package:neba_example/demos/rating/precision.dart';
 import 'package:neba_example/demos/rating/readonly.dart';
 import 'package:neba_example/demos/rating/states.dart';
+import 'package:neba_example/demos/scatter_chart/axes.dart';
+import 'package:neba_example/demos/scatter_chart/bubble.dart';
+import 'package:neba_example/demos/scatter_chart/hero.dart';
+import 'package:neba_example/demos/scatter_chart/shape.dart';
 import 'package:neba_example/demos/scroll_area/fade.dart';
 import 'package:neba_example/demos/scroll_area/hero.dart';
 import 'package:neba_example/demos/scroll_area/orientation.dart';
@@ -979,6 +983,10 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'rating/precision': RatingPrecision.new,
   'rating/readonly': RatingReadonly.new,
   'rating/states': RatingStates.new,
+  'scatter-chart/axes': ScatterChartAxes.new,
+  'scatter-chart/bubble': ScatterChartBubble.new,
+  'scatter-chart/hero': ScatterChartHero.new,
+  'scatter-chart/shape': ScatterChartShape.new,
   'scroll-area/fade': ScrollAreaFade.new,
   'scroll-area/hero': ScrollAreaHero.new,
   'scroll-area/orientation': ScrollAreaOrientation.new,
