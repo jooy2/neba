@@ -149,6 +149,11 @@ import 'package:neba_example/demos/number_field/sizes.dart';
 import 'package:neba_example/demos/number_field/states.dart';
 import 'package:neba_example/demos/number_field/steppers.dart';
 import 'package:neba_example/demos/number_field/variants.dart';
+import 'package:neba_example/demos/otp_field/charsets.dart';
+import 'package:neba_example/demos/otp_field/hero.dart';
+import 'package:neba_example/demos/otp_field/lengths.dart';
+import 'package:neba_example/demos/otp_field/sizes.dart';
+import 'package:neba_example/demos/otp_field/states.dart';
 import 'package:neba_example/demos/pagination/hero.dart';
 import 'package:neba_example/demos/pagination/range.dart';
 import 'package:neba_example/demos/pagination/sizes.dart';
@@ -418,6 +423,11 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'number-field/states': NumberFieldStates.new,
   'number-field/steppers': NumberFieldSteppers.new,
   'number-field/variants': NumberFieldVariants.new,
+  'otp-field/charsets': OtpFieldCharsets.new,
+  'otp-field/hero': OtpFieldHero.new,
+  'otp-field/lengths': OtpFieldLengths.new,
+  'otp-field/sizes': OtpFieldSizes.new,
+  'otp-field/states': OtpFieldStates.new,
   'pagination/hero': PaginationHero.new,
   'pagination/range': PaginationRange.new,
   'pagination/sizes': PaginationSizes.new,

@@ -1032,6 +1032,7 @@ class NebaFieldEditable extends StatelessWidget {
     this.typing,
     this.onKeyEvent,
     this.shortcuts,
+    this.drawn = true,
     super.key,
   });
 
@@ -1115,6 +1116,12 @@ class NebaFieldEditable extends StatelessWidget {
   /// Key combinations to act on, with what each does. A bound key is taken.
   final Map<ShortcutActivator, VoidCallback>? shortcuts;
 
+  /// Whether the editable draws its text, its caret and its selection. A
+  /// field that draws them itself, a code field's cells, keeps an editable
+  /// that draws nothing for the keyboard, the platform's autofill and a
+  /// screen reader.
+  final bool drawn;
+
   @override
   Widget build(BuildContext context) {
     final NebaTokens tokens = NebaTheme.of(context);
@@ -1124,11 +1131,12 @@ class NebaFieldEditable extends StatelessWidget {
       key: editableKey,
       controller: controller,
       focusNode: focusNode,
-      style: style,
+      style: drawn ? style : style.copyWith(color: const Color(0x00000000)),
       textAlign: textAlign,
+      showCursor: drawn,
       cursorColor: roles.accent,
       backgroundCursorColor: tokens.mutedFg,
-      selectionColor: roles.softPress,
+      selectionColor: drawn ? roles.softPress : null,
       readOnly: readOnly,
       obscureText: obscureText,
       autocorrect: suggestions,

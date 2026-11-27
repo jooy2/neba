@@ -1,6 +1,7 @@
 ---
 title: OtpField
 order: 20
+flutter: true
 ---
 
 # OtpField
@@ -9,17 +10,41 @@ order: 20
 
 <Demo src="otp-field/hero" />
 
+::: fw react
+
 ```tsx
 import { OtpField } from 'neba';
 
 <OtpField label="Verification code" length={6} groupSize={3} onComplete={(code) => verify(code)} />;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+NebaOtpField(label: const Text('인증 코드'), groupSize: 3, onComplete: verify);
+```
+
+:::
+
 ## Props
 
 <PropsTable name="OtpField" />
 
+::: fw react
+
 나머지 `<div>` 속성은 그대로 칸들의 행에 전달됩니다. `color`·`defaultValue`·`onChange`·`children`은 `<div>`의 것 대신 필드 자신의 것을 씁니다. 값은 `onValueChange`가 알려 주고, 칸은 필드가 `length`에 맞춰 직접 그립니다. 공용 축은 [prop 규약](../../design/prop-conventions)에 있습니다.
+
+:::
+
+::: fw flutter
+
+`label`과 `description`, `error`, `separator`는 위젯이고 보통 `Text`를 넘깁니다. 코드는 `String`입니다. controlled 필드라면 `value`와 `onValueChange`를, 자기 값을 두는 필드라면 `defaultValue`를 주고, 칸은 필드가 `length`에 맞춰 직접 그립니다. `slotLabel`과 `locale`은 없습니다. 화면 낭독기에게 칸들은 필드 하나이고 코드와 그 안의 caret 위치를 함께 읽으므로, 칸마다 이름을 붙일 일이 없습니다. 공용 축은 [prop 규약](../../design/prop-conventions)에 있습니다.
+
+:::
 
 ## 예시
 
@@ -29,7 +54,17 @@ import { OtpField } from 'neba';
 
 <Demo src="otp-field/charsets">
 
+::: fw react
+
 <<< @/.vitepress/demos/otp-field/charsets.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/otp_field/charsets.dart
+
+:::
 
 </Demo>
 
@@ -39,7 +74,17 @@ import { OtpField } from 'neba';
 
 <Demo src="otp-field/lengths">
 
+::: fw react
+
 <<< @/.vitepress/demos/otp-field/lengths.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/otp_field/lengths.dart
+
+:::
 
 </Demo>
 
@@ -49,7 +94,17 @@ import { OtpField } from 'neba';
 
 <Demo src="otp-field/states">
 
+::: fw react
+
 <<< @/.vitepress/demos/otp-field/states.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/otp_field/states.dart
+
+:::
 
 </Demo>
 
@@ -57,11 +112,23 @@ import { OtpField } from 'neba';
 
 <Demo src="otp-field/sizes">
 
+::: fw react
+
 <<< @/.vitepress/demos/otp-field/sizes.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/otp_field/sizes.dart
+
+:::
 
 </Demo>
 
-### 폼 안에서
+### <Fw react="폼 안에서" flutter="onComplete" />
+
+::: fw react
 
 `name`은 값 전체를 그 이름으로 폼에 올립니다. `autoSubmit`은 코드가 완성되는 순간 폼을 제출하며, 필드가 하나뿐인 인증 화면이 원하는 모양입니다.
 
@@ -71,7 +138,24 @@ import { OtpField } from 'neba';
 </form>
 ```
 
+:::
+
+::: fw flutter
+
+`onComplete`는 모든 칸이 차면 그 코드로 호출되며, 코드를 확인할 시점입니다. Flutter 필드에는 제출할 폼이 없어 `name`, `required`, `autoSubmit`도 없습니다. 필드가 하나뿐인 인증 화면은 여기서 코드를 확인합니다.
+
+```dart
+NebaOtpField(
+  label: const Text('인증 코드'),
+  onComplete: (String code) => verify(code),
+)
+```
+
+:::
+
 ## 접근성
+
+::: fw react
 
 - 입력하면 다음 칸으로 넘어가고, Backspace는 앞 글자를 지우며 뒤로 물러나며, 방향키로 행을 오갑니다.
 - 붙여넣은 코드는 어떤 방식으로 붙여넣었든 caret이 있던 자리부터 칸에 나눠 들어갑니다.
@@ -79,3 +163,16 @@ import { OtpField } from 'neba';
 - 값 전체를 담은 클리핑된 input이 폼 제출과 휴대폰 autofill을 맡습니다. `autocomplete="one-time-code"`는 이미 붙어 있습니다.
 - `label`·`description`·`error`가 칸들과 연결되어 있어 셋 다 필드와 함께 읽힙니다.
 - 첫 칸은 `label`로, 나머지 칸은 코드 안의 위치로 이름이 붙습니다. `locale`의 문구로 "6자리 중 2번째"처럼 읽히며, `slotLabel`로 직접 정할 수 있습니다.
+
+:::
+
+::: fw flutter
+
+- 화면 낭독기에게 칸들은 필드 하나입니다. `Text` 라벨이 이름이고, 코드가 값이며(가려 두었다면 점으로 읽힙니다), 몇 칸이 찼는지도 함께 읽히고, `Text`로 된 설명과 오류가 그 뒤에 읽힙니다.
+- 입력하면 다음 칸으로 넘어가고, Backspace는 앞 글자를 지우며 뒤로 물러나고, Delete는 지금 칸의 글자를 지우며, 방향키와 Home, End로 행을 오갑니다.
+- 붙여넣은 코드는 caret이 있는 칸부터 나눠 들어갑니다.
+- 누르면 포인터 밑의 칸으로 가고, 코드 뒤쪽을 누르면 첫 빈 칸으로 갑니다. 그래서 쓰다 만 코드를 중간부터 고쳐 넣을 일이 없습니다.
+- 칸 뒤에 있는 `EditableText` 하나가 코드 전체를 `AutofillHints.oneTimeCode`와 함께 들고 있으므로, 휴대폰이 문자로 온 코드를 제안하고 모든 칸을 한 번에 채웁니다.
+- 필드가 focus를 쥐고 있는 동안 caret이 있는 칸에 ring이 그려집니다. 다음 글자가 어디에 들어갈지 알려 주는 것이 ring이기 때문입니다.
+
+:::
