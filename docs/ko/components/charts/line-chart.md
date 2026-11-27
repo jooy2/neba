@@ -1,6 +1,7 @@
 ---
 title: LineChart
 order: 2
+flutter: true
 ---
 
 # LineChart
@@ -8,6 +9,8 @@ order: 2
 <p class="neba-lede">순서가 있는 category 축 위에 하나 이상의 series를 그립니다. 이웃한 두 점이 서로 무관한 값이 아니라 하나의 연속된 변화일 때 씁니다. 시간에 따른 값이나 구간에 따른 곡선이 그런 경우입니다.</p>
 
 <Demo src="line-chart/hero" />
+
+::: fw react
 
 ```tsx
 import { LineChart } from 'neba';
@@ -22,9 +25,30 @@ import { LineChart } from 'neba';
 />;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+const NebaLineChart(
+  label: '월별 주간 활성 사용자',
+  categories: <Object>['Jan', 'Feb', 'Mar'],
+  series: <NebaChartSeries>[
+    NebaChartSeries(name: 'Web', data: <num>[1820, 1960, 2140]),
+    NebaChartSeries(name: 'Mobile', data: <num>[940, 1120, 1310]),
+  ],
+);
+```
+
+:::
+
 ## 데이터 형식
 
 라이브러리의 모든 차트가 같은 두 prop을 받습니다. 대시보드의 한 타일을 다른 차트로 바꿀 때 데이터를 다시 쓸 필요가 없도록 하기 위해서입니다.
+
+::: fw react
 
 `series`는 `NebaChartSeries`의 배열이고, 항목 하나가 선 하나입니다.
 
@@ -52,13 +76,57 @@ interface NebaChartPoint {
 }
 ```
 
+:::
+
+::: fw flutter
+
+`series`는 `NebaChartSeries`의 리스트이고, 항목 하나가 선 하나입니다.
+
+```dart
+class NebaChartSeries {
+  const NebaChartSeries({
+    required List<Object?> data, // category 순서대로 놓인 값
+    String? name, // 범례·tooltip·표에 쓰이는 이름
+    Object? color, // 팔레트 slot 대신 쓸 NebaColor나 Color
+    bool hidden = false, // 처음엔 숨김. 범례로 다시 켭니다
+    NebaChartSeriesAxis axis = NebaChartSeriesAxis.primary, // 이 series를 재는 값 축
+  });
+}
+```
+
+`data`의 각 값은 `num`이거나 `null`이거나, 점 하나입니다. Dart에는 이를 묶을 union 타입이 없으므로 리스트는 `List<Object?>`이고, 그 밖의 값은 결측으로 읽습니다.
+
+```dart
+class NebaChartPoint {
+  const NebaChartPoint({
+    required double? y, // 값
+    Object? x, // category 축에서의 위치: String, num, DateTime
+    double? z, // 두 번째 크기: bubble의 반지름, 타일의 무게
+    Object? color, // 이 점만 series 색을 덮어쓰는 NebaColor나 Color
+    String? label, // 숫자 대신 tooltip에 쓸 내용
+  });
+}
+```
+
+:::
+
 **`null`은 0이 아니라 결측입니다.** 센서가 꺼져 있던 달과 매출이 0이었던 달은 다른 사실이고, 차트도 다르게 그립니다. `null`에서 선이 끊기고 점은 그리지 않습니다. 다르게 그리고 싶다면 `nulls`로 말하세요.
 
-`categories`는 x 축의 위치 이름입니다. 대신 각 점이 `x`를 직접 들고 있어도 됩니다. 데이터가 이미 갖고 있는 모양을 그대로 쓰면 됩니다.
+`categories`는 x 축의 위치 이름이고, <Fw react="문자열, 숫자, 날짜를" flutter="`String`, `num`, `DateTime`을 담은 `List<Object>`를" /> 받습니다. 대신 각 점이 `x`를 직접 들고 있어도 됩니다. 데이터가 이미 갖고 있는 모양을 그대로 쓰면 됩니다.
 
 <Demo src="line-chart/data">
 
+::: fw react
+
 <<< @/.vitepress/demos/line-chart/data.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/line_chart/data.dart
+
+:::
 
 </Demo>
 
@@ -66,7 +134,17 @@ interface NebaChartPoint {
 
 <PropsTable name="LineChart" />
 
+::: fw react
+
 `<div>`의 native 속성과 [Box](../surfaces/box)의 모든 prop이 그대로 전달됩니다. `variant`의 기본값은 `text`, `padded`는 `false`이므로 [Card](../surfaces/card) 안에 넣어도 표면이 겹치지 않습니다. 자체 표면이 필요하면 `variant="outline"`을 쓰세요. 공용 축은 [prop 규약](../../design/prop-conventions)을 참고하세요.
+
+:::
+
+::: fw flutter
+
+차트는 [Box](../surfaces/box) 위에 놓이고, `variant`·`size`·`color`·`density`·`elevation`·`padded`·`transition`은 그 Box로 전달됩니다. `variant`의 기본값은 `NebaVariant.text`, `padded`는 `false`이므로 [Card](../surfaces/card) 안에 넣어도 표면이 겹치지 않습니다. 자체 표면이 필요하면 `NebaVariant.outline`을 쓰세요. `legend`와 `tooltip`은 `true`, `false`, 또는 옵션 객체를 `Object?`로 받습니다. 차트는 주어진 너비를 채우고, 너비를 주지 않는 Row 안에서는 320 논리 픽셀이 됩니다. 공용 축은 [prop 규약](../../design/prop-conventions)을 참고하세요.
+
+:::
 
 ### NebaChartSeries
 
@@ -104,19 +182,39 @@ interface NebaChartPoint {
 
 <Demo src="line-chart/curve">
 
+::: fw react
+
 <<< @/.vitepress/demos/line-chart/curve.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/line_chart/curve.dart
+
+:::
 
 </Demo>
 
 ### xAxis · yAxis
 
-LineChart는 값 축을 데이터에 맞춰 자릅니다. 선이 나타내는 것은 *위치*이고, 축을 잘라도 모든 점이 같은 만큼 움직이므로 모양이 남기 때문입니다. 0이 축에 있어야 한다면 `yAxis`에 `min: 0`을 넘기세요.
+LineChart는 값 축을 데이터에 맞춰 자릅니다. 선이 나타내는 것은 *위치*이고, 축을 잘라도 모든 점이 같은 만큼 움직이므로 모양이 남기 때문입니다. 0이 축에 있어야 한다면 <Fw react="`yAxis={{ min: 0 }}`를" flutter="`yAxis: NebaChartAxis(min: 0)`을" /> 넘기세요.
 
 `min`·`max`·`tickCount`가 범위를, `tickFormat`이 눈금의 표기를 정합니다. `grid: false`는 격자선을, `hidden`은 축 전체를 없애고 그 자리를 plot에 돌려줍니다.
 
 <Demo src="line-chart/axes">
 
+::: fw react
+
 <<< @/.vitepress/demos/line-chart/axes.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/line_chart/axes.dart
+
+:::
 
 </Demo>
 
@@ -130,7 +228,17 @@ category 축의 라벨을 `-90`도에서 `90`도 사이로 기울입니다. 음�
 
 <Demo src="line-chart/ticks">
 
+::: fw react
+
 <<< @/.vitepress/demos/line-chart/ticks.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/line_chart/ticks.dart
+
+:::
 
 </Demo>
 
@@ -142,15 +250,43 @@ category 축의 라벨을 `-90`도에서 `90`도 사이로 기울입니다. 음�
 - `connect` — 앞뒤를 직선으로 잇습니다. 세상이 아니라 수집 과정 때문에 생긴 빈틈에만 쓰세요. 이어 그린 구간은 차트가 지어낸 값입니다.
 - `zero` — 0으로 읽습니다. 그림이 아니라 데이터를 고쳐 쓰므로 축의 범위에도 0이 들어가고 tooltip과 표도 `0`이라고 말합니다. 없는 행이 정말로 "한 번도 없었다"를 뜻할 때 쓰세요. 이벤트 수는 대개 그렇고, 비율은 결코 그렇지 않습니다.
 
+::: fw react
+
 `connectNulls`는 `connect`의 옛 이름이고 아직 동작합니다. `nulls`를 주지 않았을 때만 읽습니다.
+
+:::
+
+::: fw flutter
+
+Flutter 패키지에는 `connectNulls`가 없습니다. 패키지가 생기기 전에 이미 deprecated였고, `nulls`가 같은 말을 합니다.
+
+:::
 
 <Demo src="line-chart/gaps">
 
+::: fw react
+
 <<< @/.vitepress/demos/line-chart/gaps.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/line_chart/gaps.dart
+
+:::
 
 </Demo>
 
 ### brush
+
+::: fw flutter
+
+Flutter 패키지에는 아직 없습니다. Flutter 차트는 받은 category를 모두 그립니다.
+
+:::
+
+:::: fw react
 
 plot 아래에 series 전체를 담은 띠를 놓고, 그 위의 창을 끌어 어느 구간을 그릴지 고르게 합니다.
 
@@ -166,6 +302,8 @@ plot 너비로는 읽을 수 없을 만큼 긴 series에 씁니다. 1년 치 시
 
 </Demo>
 
+::::
+
 ### secondaryAxis
 
 먼 쪽 가장자리에 그리는 두 번째 값 축입니다. 세로 차트에서는 오른쪽, 옆으로 눕힌 차트에서는 위쪽입니다. `axis: 'secondary'`를 단 series가 이 축으로 측정됩니다. 분리를 켜는 것은 `secondaryAxis`를 주는 일이므로, 축이 하나인 차트에서 `axis`만 단 series는 반쯤 적용되는 대신 그냥 첫 축으로 측정됩니다.
@@ -178,7 +316,17 @@ plot 너비로는 읽을 수 없을 만큼 긴 series에 씁니다. 1년 치 시
 
 <Demo src="line-chart/two-axes">
 
+::: fw react
+
 <<< @/.vitepress/demos/line-chart/two-axes.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/line_chart/two_axes.dart
+
+:::
 
 </Demo>
 
@@ -192,7 +340,17 @@ plot 너비로는 읽을 수 없을 만큼 긴 series에 씁니다. 1년 치 시
 
 <Demo src="line-chart/references">
 
+::: fw react
+
 <<< @/.vitepress/demos/line-chart/references.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/line_chart/references.dart
+
+:::
 
 </Demo>
 
@@ -208,11 +366,29 @@ plot 너비로는 읽을 수 없을 만큼 긴 series에 씁니다. 1년 치 시
 
 <Demo src="line-chart/labels">
 
+::: fw react
+
 <<< @/.vitepress/demos/line-chart/labels.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/line_chart/labels.dart
+
+:::
 
 </Demo>
 
 ### exportable
+
+::: fw flutter
+
+Flutter 패키지에는 아직 없습니다. 같은 숫자는 화면 낭독기를 위해 숨은 표에 들어 있습니다.
+
+:::
+
+:::: fw react
 
 차트의 데이터를 CSV 파일로 쓰는 작은 버튼을 모서리에 답니다. plot 아래 숨은 표가 들고 있는 것과 같은 숫자입니다. 숨은 표가 있는 차트는 모두 받습니다.
 
@@ -226,9 +402,11 @@ plot 너비로는 읽을 수 없을 만큼 긴 series에 씁니다. 1년 치 시
 
 </Demo>
 
+::::
+
 ### legend
 
-범례는 series가 둘 이상이면 자동으로 나타나고, 하나면 나타나지 않습니다. `side`와 `align`이 위치를 정하고, 항목을 클릭하면 해당 series가 숨겨지며 남은 series는 원래 색을 그대로 유지합니다. 새 데이터가 series의 순서를 바꿔도 `name`이 같다면 숨긴 series는 계속 숨겨져 있습니다. `legend={false}`는 범례를 없애고, `interactive: false`는 클릭되지 않는 범례로 만듭니다.
+범례는 series가 둘 이상이면 자동으로 나타나고, 하나면 나타나지 않습니다. `side`와 `align`이 위치를 정하고, 항목을 클릭하면 해당 series가 숨겨지며 남은 series는 원래 색을 그대로 유지합니다. 새 데이터가 series의 순서를 바꿔도 `name`이 같다면 숨긴 series는 계속 숨겨져 있습니다. <Fw react="`legend={false}`는" flutter="`legend: false`는" /> 범례를 없애고, `interactive: false`는 클릭되지 않는 범례로 만듭니다.
 
 범례는 `height` 바깥에 자기 행을 차지하고, 옆에 두면 plot 옆에 자기 열을 차지합니다. 그래서 첫 렌더링 뒤에 범례가 생기는 차트는 그만큼 커지고 주변을 밀어냅니다. series가 차트가 처음 나타난 뒤에 도착하거나, series 하나짜리 차트에 두 번째 series가 더해질 때가 그렇습니다. 숫자를 불러오는 동안에도 `name`과 빈 `data`를 가진 series를 첫 렌더링부터 넘기거나, `legend`를 `true`로 두어 series가 하나일 때도 범례를 그리세요.
 
@@ -236,7 +414,17 @@ plot 너비로는 읽을 수 없을 만큼 긴 series에 씁니다. 1년 치 시
 
 <Demo src="line-chart/legend">
 
+::: fw react
+
 <<< @/.vitepress/demos/line-chart/legend.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/line_chart/legend.dart
+
+:::
 
 </Demo>
 
@@ -244,7 +432,9 @@ plot 너비로는 읽을 수 없을 만큼 긴 series에 씁니다. 1년 치 시
 
 series는 넘긴 순서대로 팔레트 slot을 가져갑니다. 여덟 개의 색이 고정된 순서로 배정되고, 아홉 번째 series부터는 slot이 되풀이되며 개발 빌드에서는 콘솔에 한 번 경고가 나옵니다. 아홉 번째 series는 아홉 번째 색이 아닙니다. 나머지를 "기타" series로 묶거나 차트를 하나 더 그리세요.
 
-`series.color`는 그 slot을 `NebaColor` 이름이나 임의의 CSS 색으로 덮어쓰고, 점의 `color`는 그 점 하나만 덮어씁니다. 색 계열이 무엇을 만족시키도록 만들어졌는지는 [색](../../design/color)에 있습니다.
+`series.color`는 그 slot을 `NebaColor` 이름이나 <Fw react="임의의 CSS 색으로" flutter="임의의 `Color`로" /> 덮어쓰고, 점의 `color`는 그 점 하나만 덮어씁니다. 색 계열이 무엇을 만족시키도록 만들어졌는지는 [색](../../design/color)에 있습니다.
+
+::: fw react
 
 ```tsx
 <LineChart
@@ -255,7 +445,24 @@ series는 넘긴 순서대로 팔레트 slot을 가져갑니다. 여덟 개의 �
 />
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+NebaLineChart(
+  series: <NebaChartSeries>[
+    NebaChartSeries(name: 'Errors', data: errors, color: NebaColor.danger),
+    NebaChartSeries(name: 'Warnings', data: warnings, color: NebaColor.warning),
+  ],
+)
+```
+
+:::
+
 ### format
+
+:::: fw react
 
 `format`은 `Intl.NumberFormat` 옵션을 받아 축과 tooltip, 값 라벨, 표까지 숫자가 나타나는 모든 곳에 적용됩니다. 생략하면 만 이상의 축 눈금은 축약됩니다(`12.4K`).
 
@@ -272,7 +479,29 @@ const day = new Intl.DateTimeFormat('ko-KR', { month: 'short', day: 'numeric', t
 <LineChart locale="ko-KR" categories={dates.map((date) => day.format(date))} … />
 ```
 
+::::
+
+::: fw flutter
+
+`format`은 숫자를 쓰는 함수이고, 축과 tooltip, 값 라벨, 표까지 숫자가 나타나는 모든 곳에 쓰입니다. `num`을 받는데, 정수인 값은 `int`로 받습니다. 생략하면 만 이상의 숫자는 축약하고(`12.4K`), 그 아래는 세 자리마다 쉼표로 묶어 소수점 아래 두 자리까지 씁니다. 위젯 계층에는 `intl`이 없으므로 통화나 다른 언어의 구분 기호는 이 함수로 씁니다.
+
+```dart
+NebaLineChart(format: (num value) => '₩${value.round()}', …)
+```
+
+`DateTime` category는 영어 월 약칭과 일로 씁니다(`Jun 1`). 다르게 쓰려면 `xAxis.tickFormat`을 주세요. `locale`이 정하는 것은 차트가 스스로 쓰는 말뿐입니다. `label`이 없을 때의 이름, 차트를 설명하는 문장, 빈 상태의 문구가 그것입니다.
+
+:::
+
 ### initialWidth
+
+::: fw flutter
+
+해당하는 것이 없습니다. Flutter 차트는 처음 그려지기 전에 레이아웃이 끝나므로, 너비 없이 그려지는 프레임이 없습니다.
+
+:::
+
+:::: fw react
 
 차트는 픽셀 단위로 배치되는데 서버에는 잴 상자가 없습니다. 그래서 서버에서 렌더링한 차트는 페이지가 하이드레이션될 때까지 높이만 맞는 빈 상자이고, 첫 화면에도 크롤러가 읽는 HTML에도 그림이 없습니다. `initialWidth`는 서버에서, 그리고 하이드레이션되는 동안 그림을 그릴 너비(px)입니다. 차트가 자기 상자를 잰 뒤에는 실제 너비로 다시 그립니다.
 
@@ -284,10 +513,27 @@ const day = new Intl.DateTimeFormat('ko-KR', { month: 'short', day: 'numeric', t
 <LineChart initialWidth={720} label="월별 주간 활성 사용자" … />
 ```
 
+::::
+
 ## 접근성
+
+::: fw flutter
+
+- plot은 `label`, 없으면 locale의 일반 명사로 이름 붙인 **이미지 노드 하나**이고, 그 hint는 값의 개수와 범위를 담은 한 문장입니다. `secondaryAxis`가 있으면 그 축의 series는 그 축의 형식으로 쓴 두 번째 문장으로 설명합니다. 그려진 것 자체는 semantics 트리에서 빠집니다.
+- 모든 차트는 데이터를 담은 **표**도 만듭니다. 크기 없이 배치되고 불투명도 0으로 그려지는 Flutter `Table`이며, `label`이 그 caption입니다. 웹에서는 category마다 한 행이고 series 이름을 열 머리글로 가진 표로 읽힙니다. Flutter에는 행 머리글 역할이 없어 category는 평범한 첫 칸이고, 채워지는 중인 표에도 알릴 busy 상태가 없습니다. Android와 iOS에는 표 역할이 없어 칸이 순서대로 읽힙니다. 데이터 점이 500개를 넘으면 행은 첫 프레임 뒤에 쉬는 틈마다 나눠 추가합니다. tooltip에만 있고 표에는 없는 값은 없습니다.
+- plot은 focus를 받습니다. `←`·`→`로 category를 옮기고, `Home`·`End`로 양 끝으로, `Escape`로 해제합니다. 읽고 있는 값은 화면 낭독기가 알리는 live region입니다. 웹에서는 status, Android와 iOS에서는 polite live region입니다.
+- 터치 화면에서는 탭하면 가장 가까운 category의 값이 뜨고 그대로 남습니다. plot 바깥을 탭하면 닫힙니다.
+- 범례는 선택 상태로 어떤 series가 그려지는지를 말하는 버튼의 목록이므로, 그것이 색이 아니라 상태로 표현됩니다. Flutter의 버튼에는 눌림 상태가 없어 가장 가까운 선택 상태를 씁니다.
+- 정체성을 색만으로 전달하지 않습니다. series가 둘 이상이면 범례가 항상 있고, 팔레트의 인접한 색은 protanopia·deuteranopia 시뮬레이션으로 검증되어 있습니다.
+
+:::
+
+:::: fw react
 
 - 모든 차트는 데이터를 **표**로도 렌더링합니다. 화면에는 보이지 않지만 보조 기술에는 노출되며, `label`이 그 표의 caption이자 차트의 접근 가능한 이름이 됩니다. tooltip에만 있고 표에는 없는 값은 없습니다. 데이터 점이 500개를 넘으면 caption과 머리글 행은 바로 쓰고, 행은 차트가 처음 그려진 직후에 조금씩 나눠 추가합니다. 그래서 서버에서 렌더링한 HTML에는 행이 들어가지 않습니다. plot의 설명은 표가 아니라 값의 개수와 범위를 담은 한 문장이라, focus할 때 모든 숫자를 읽지 않습니다. `secondaryAxis`가 있으면 그 축의 series는 그 축의 형식으로 쓴 두 번째 문장으로 설명합니다.
 - plot에 focus할 수 있습니다. `←`·`→`로 category를 옮기고, `Home`·`End`로 양 끝으로, `Escape`로 해제합니다. 포인터 없이도 tooltip에 닿을 수 있습니다.
 - 터치 화면에서는 탭하면 가장 가까운 점의 tooltip이 뜨고 그대로 남습니다. plot 바깥을 탭하면 닫힙니다. tooltip이 있는 모든 차트가 같습니다.
 - 범례는 `aria-pressed`를 가진 버튼의 목록이므로, 어떤 series가 그려지고 있는지가 색이 아니라 상태로 표현됩니다.
 - 정체성을 색만으로 전달하지 않습니다. series가 둘 이상이면 범례가 항상 있고, 팔레트의 인접한 색은 protanopia·deuteranopia 시뮬레이션으로 검증되어 있습니다.
+
+::::

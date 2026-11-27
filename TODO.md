@@ -49,6 +49,7 @@ The six steps of a port are in `packages/flutter/CLAUDE.md`. What the last sessi
 - **A surface that opens over the window** (a drawer, and a dialog after it) opens into the app's root `Overlay` through `NebaModalLayer` in `lib/src/internal/modal.dart`. A `WidgetsApp` with no navigator has no overlay, so the gallery and the sample app wrap their home in `Overlay.wrap`, and a widget test pumps into one. A Flutter preview opens it over its own frame only, which is as tall as the demo, so such a `<Demo>` takes `frameMinHeight`.
 - **A bar held against an edge** takes `NebaPosition` through `lib/src/internal/pinned.dart`, as `NebaToolbar` and `NebaPill` do: a widget cannot stick inside a scroll view it is in without painting under every sibling after it, so `sticky` draws the bar as it looks pinned and a `PinnedHeaderSliver` holds it, and `fixed` lifts it into the nearest overlay through `NebaPortal`. `NebaHeader` and `NebaFooter` should take the same rather than a second answer.
 - **A panel that replays its entrance without being built again** is a `NebaEntrance` with `playsOnBuild: false` and a `trigger` that counts its arrivals, as `NebaHowToSteps` does for each step.
+- **A chart** stands on `lib/src/internal/chart.dart`, `chart_frame.dart` and `chart_line.dart`, the React package's three chart files. A cartesian chart is a `NebaCartesianChart<T>` handed a `trace`, which works the marks out once per layout and again only when its `traceKey` changes, and a `painter`, which paints them on every build and repaints on `NebaChartEmphasis` without a rebuild. The axes, the references and the table are the frame's. What the next charts need from it and it does not have yet: `horizontal` for `NebaBarChart`, which today lays out vertical plots only; a value category axis (React's `xScale: 'value'`) and the nearest-mark search for `NebaScatterChart`; and the `brush` and `exportable` of every cartesian chart, which the line chart pages say are React only for now. Text on a chart is measured by `chartTextWidth`'s estimate, as React measures it, so the two packages make the same decisions about which labels fit.
 - **Checking it.** `flutter analyze` and `flutter test` in `packages/flutter`, in `packages/flutter/example` (every demo in both themes and at a phone's width) and in `examples/flutter` (the sample app, which shows every demo too), `npm run typecheck`, `npm run lint`, `npx prettier . --check` and `npm run build` in `docs` (the build runs the container check), and `npm run flutter:demos -- --force` before looking at a preview. With the browser pane hidden, a preview below the first screen never mounts; open the gallery directly at `/flutter/index.html?demo={key}&theme=dark` on the dev server to see one.
 
 Still open from that session:
@@ -73,6 +74,8 @@ Still open from that session:
 - [ ] **Selection handles and a copy-and-paste toolbar for the fields.** `NebaTextField` leaves `EditableText.selectionControls` null, because both are drawn by Material or Cupertino, which the package does not import. The pointer and the keyboard select and the keyboard copies and pastes, and on the web the browser's own menu does too, but a touch screen shows no handles and no Cut, Copy, Paste or Select all. It wants `TextSelectionControls` of the package's own, a handle and a toolbar on `NebaSheet`, shared by every field that holds an `EditableText`; the gestures in `neba_text_field.dart` would then stop skipping the toolbar.
 
 - [ ] **A Flutter preview that draws Korean, Japanese, Chinese or Arabic fetches its font from Google.** The gallery ships Inter and the engine's Roboto, and for a script those two lack the engine fetches a Noto subset from `fonts.gstatic.com`, which `--no-web-resources-cdn` does not stop: the `avatar` demos' `홍길동` do, and so do the `spoiler/locale` and `empty/locale` demos. The foundation's note that a web build fetches nothing from outside the site holds for Latin text alone. Bundling the subsets the demos need, or pointing the engine's `fontFallbackBaseUrl` at the site, is a decision about what the site serves.
+
+- [ ] **A chart's `brush` and `exportable`.** Neither is in `NebaCartesianChart` yet. The brush is a strip of the whole series under the plot with a window the reader drags, built on `lib/src/internal/drag.dart`; the export has no download to start in Flutter, so its counterpart is probably `onExport` alone, handed the CSV.
 
 - [ ] **Check whether a consumer of `neba/tailwind.css` loses the library's classes.** The docs did: Vite inlined the stylesheet's `@import`, and the `@source '.'` inside it stopped pointing at `src/` (fixed in the docs by naming `packages/react/src`). A consumer who runs Tailwind through `@tailwindcss/postcss` in Vite may meet the same thing; `@tailwindcss/vite` probably does not. Not verified either way.
 
@@ -235,7 +238,7 @@ Demos that wait on a component not ported yet, to be added with it: `carousel/ph
 
 - [x] `NebaStatistic`
 - [x] `NebaSparkline`
-- [ ] `NebaLineChart`
+- [x] `NebaLineChart`
 - [ ] `NebaAreaChart`
 - [ ] `NebaBarChart`
 - [ ] `NebaPieChart`

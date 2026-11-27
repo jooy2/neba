@@ -1176,25 +1176,7 @@ class NebaChartSurface extends StatelessWidget {
         ),
       );
 
-      body = LayoutBuilder(
-        builder: (BuildContext context, BoxConstraints constraints) {
-          final Widget side = ConstrainedBox(
-            constraints: BoxConstraints(
-              maxWidth: constraints.hasBoundedWidth ? constraints.maxWidth * 0.4 : 200,
-            ),
-            child: beside,
-          );
-
-          return Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            textDirection: TextDirection.ltr,
-            spacing: 12,
-            children: left
-                ? <Widget>[side, Expanded(child: plot)]
-                : <Widget>[Expanded(child: plot), side],
-          );
-        },
-      );
+      body = _Beside(legendFirst: left, children: <Widget>[plot, beside]);
     }
 
     return NebaBox(
@@ -1211,6 +1193,124 @@ class NebaChartSurface extends StatelessWidget {
         children: <Widget>[body, ...hidden],
       ),
     );
+  }
+}
+
+/// A plot with a legend beside it: the legend laid out first, at most four
+/// tenths of the width, and the plot given the rest, twelve pixels off.
+///
+/// A render object rather than a row inside a layout builder, so a parent that
+/// measures its children before laying them out, a stretched card in a row,
+/// is answered rather than refused.
+class _Beside extends MultiChildRenderObjectWidget {
+  const _Beside({required this.legendFirst, required super.children});
+
+  /// Whether the legend is on the left.
+  final bool legendFirst;
+
+  @override
+  RenderObject createRenderObject(BuildContext context) => _RenderBeside(legendFirst);
+
+  @override
+  void updateRenderObject(BuildContext context, _RenderBeside renderObject) {
+    renderObject.legendFirst = legendFirst;
+  }
+}
+
+class _BesideData extends ContainerBoxParentData<RenderBox> {}
+
+class _RenderBeside extends RenderBox
+    with
+        ContainerRenderObjectMixin<RenderBox, _BesideData>,
+        RenderBoxContainerDefaultsMixin<RenderBox, _BesideData> {
+  _RenderBeside(this._legendFirst);
+
+  static const double _gap = 12;
+  static const double _share = 0.4;
+
+  bool _legendFirst;
+
+  set legendFirst(bool value) {
+    if (value != _legendFirst) {
+      _legendFirst = value;
+      markNeedsLayout();
+    }
+  }
+
+  RenderBox get _plot => firstChild!;
+
+  RenderBox get _legend => lastChild!;
+
+  @override
+  void setupParentData(RenderObject child) {
+    if (child.parentData is! _BesideData) {
+      child.parentData = _BesideData();
+    }
+  }
+
+  Size _arrange(BoxConstraints constraints, {required bool dry}) {
+    final double width = constraints.hasBoundedWidth ? constraints.maxWidth : 520;
+    final BoxConstraints room = BoxConstraints(maxWidth: width * _share);
+    final Size legend = dry ? _legend.getDryLayout(room) : _layout(_legend, room);
+    final BoxConstraints rest = BoxConstraints.tightFor(
+      width: math.max(0, width - legend.width - _gap),
+    );
+    final Size plot = dry ? _plot.getDryLayout(rest) : _layout(_plot, rest);
+
+    if (!dry) {
+      (_legend.parentData! as _BesideData).offset = Offset(_legendFirst ? 0 : plot.width + _gap, 0);
+      (_plot.parentData! as _BesideData).offset = Offset(_legendFirst ? legend.width + _gap : 0, 0);
+    }
+
+    return constraints.constrain(Size(width, math.max(plot.height, legend.height)));
+  }
+
+  Size _layout(RenderBox child, BoxConstraints constraints) {
+    child.layout(constraints, parentUsesSize: true);
+
+    return child.size;
+  }
+
+  @override
+  void performLayout() {
+    size = _arrange(constraints, dry: false);
+  }
+
+  @override
+  Size computeDryLayout(covariant BoxConstraints constraints) => _arrange(constraints, dry: true);
+
+  @override
+  double computeMinIntrinsicWidth(double height) {
+    return _plot.getMinIntrinsicWidth(height) + _gap + _legend.getMinIntrinsicWidth(height);
+  }
+
+  @override
+  double computeMaxIntrinsicWidth(double height) {
+    return _plot.getMaxIntrinsicWidth(height) + _gap + _legend.getMaxIntrinsicWidth(height);
+  }
+
+  @override
+  double computeMinIntrinsicHeight(double width) {
+    return math.max(
+      _plot.getMinIntrinsicHeight(width),
+      _legend.getMinIntrinsicHeight(width * _share),
+    );
+  }
+
+  @override
+  double computeMaxIntrinsicHeight(double width) {
+    return math.max(
+      _plot.getMaxIntrinsicHeight(width),
+      _legend.getMaxIntrinsicHeight(width * _share),
+    );
+  }
+
+  @override
+  void paint(PaintingContext context, Offset offset) => defaultPaint(context, offset);
+
+  @override
+  bool hitTestChildren(BoxHitTestResult result, {required Offset position}) {
+    return defaultHitTestChildren(result, position: position);
   }
 }
 
@@ -1399,6 +1499,13 @@ class _ChartData {
   final ({int count, String min, String max})? describedSecond;
 
   bool onSecond(int series) => series < second.length && second[series];
+
+  /// The numbers each legend row keeps room for under `showValue`, worked out
+  /// once per change to the data rather than on every move of the pointer.
+  late final List<List<String>> reserve = <List<String>>[
+    for (int series = 0; series < values.length; series++)
+      chartNumberShapes(values[series], formatFor(series)),
+  ];
 
   String Function(double value) formatFor(int series) {
     final String Function(double value)? second = secondFormat;
@@ -2239,7 +2346,7 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
       for (final NebaChartReference one in widget.references ?? const <NebaChartReference>[])
         if (one.label != null) one,
     ];
-    final Object key = (data.given, data.labels, data.names, caption, widget.xAxis?.label, named);
+    final Object key = (data, caption, widget.xAxis?.label, widget.references);
     final Widget? cached = _table;
 
     if (cached != null && key == _tableKey) {
@@ -2373,12 +2480,7 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
             color: widget.color,
             onToggle: _toggle,
             onHover: _hoverLegend,
-            reserve: legendOptions.showValue
-                ? <List<String>>[
-                    for (int series = 0; series < data.values.length; series++)
-                      chartNumberShapes(data.values[series], data.formatFor(series)),
-                  ]
-                : null,
+            reserve: legendOptions.showValue ? data.reserve : null,
             values: legendOptions.showValue && active != null
                 ? <String?>[
                     for (int series = 0; series < data.values.length; series++)

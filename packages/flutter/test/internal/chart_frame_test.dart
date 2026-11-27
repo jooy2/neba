@@ -709,6 +709,61 @@ void main() {
     );
 
     expect(tester.takeException(), isNull);
+
+    await pump(
+      tester,
+      IntrinsicHeight(
+        child: _chart(
+          series: _two,
+          categories: _months,
+          legend: const NebaChartLegend(side: NebaSide.right),
+        ),
+      ),
+    );
+
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('puts a legend on the right beside the plot, and the plot takes the rest', (
+    WidgetTester tester,
+  ) async {
+    await pump(
+      tester,
+      _chart(
+        series: _two,
+        categories: _months,
+        legend: const NebaChartLegend(side: NebaSide.right, align: NebaAlign.start),
+      ),
+    );
+
+    final Rect plot = tester.getRect(find.byType(NebaChartBox));
+    final Rect legend = tester.getRect(find.byType(NebaChartLegendBar));
+
+    expect(legend.left, closeTo(plot.right + 12, 0.01));
+    expect(legend.top, plot.top);
+    expect(plot.width + 12 + legend.width, closeTo(480, 0.01));
+  });
+
+  testWidgets('keeps room for each value under showValue, and writes it at the active column', (
+    WidgetTester tester,
+  ) async {
+    await pump(
+      tester,
+      _chart(series: _two, categories: _months, legend: const NebaChartLegend(showValue: true)),
+    );
+
+    final double before = tester.getSize(find.byType(NebaChartLegendBar)).width;
+
+    _focusOf(tester).requestFocus();
+    await tester.pump();
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+    await tester.pump();
+
+    expect(
+      find.descendant(of: find.byType(NebaChartLegendBar), matching: find.text('1,820')),
+      findsOneWidget,
+    );
+    expect(tester.getSize(find.byType(NebaChartLegendBar)).width, before);
   });
 }
 

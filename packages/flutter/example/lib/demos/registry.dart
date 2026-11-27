@@ -152,6 +152,16 @@ import 'package:neba_example/demos/icon/sizes.dart';
 import 'package:neba_example/demos/icon_button/hero.dart';
 import 'package:neba_example/demos/icon_button/sizes.dart';
 import 'package:neba_example/demos/icon_button/states.dart';
+import 'package:neba_example/demos/line_chart/axes.dart';
+import 'package:neba_example/demos/line_chart/curve.dart';
+import 'package:neba_example/demos/line_chart/data.dart';
+import 'package:neba_example/demos/line_chart/gaps.dart';
+import 'package:neba_example/demos/line_chart/hero.dart';
+import 'package:neba_example/demos/line_chart/labels.dart';
+import 'package:neba_example/demos/line_chart/legend.dart';
+import 'package:neba_example/demos/line_chart/references.dart';
+import 'package:neba_example/demos/line_chart/ticks.dart';
+import 'package:neba_example/demos/line_chart/two_axes.dart';
 import 'package:neba_example/demos/list/dividers.dart';
 import 'package:neba_example/demos/list/hero.dart';
 import 'package:neba_example/demos/list/spacing.dart';
@@ -459,6 +469,16 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'icon/colors': IconColors.new,
   'icon/hero': IconHero.new,
   'icon/sizes': IconSizes.new,
+  'line-chart/axes': LineChartAxes.new,
+  'line-chart/curve': LineChartCurve.new,
+  'line-chart/data': LineChartData.new,
+  'line-chart/gaps': LineChartGaps.new,
+  'line-chart/hero': LineChartHero.new,
+  'line-chart/labels': LineChartLabels.new,
+  'line-chart/legend': LineChartLegend.new,
+  'line-chart/references': LineChartReferences.new,
+  'line-chart/ticks': LineChartTicks.new,
+  'line-chart/two-axes': LineChartTwoAxes.new,
   'list/dividers': ListDividers.new,
   'list/hero': ListHero.new,
   'list/spacing': ListSpacing.new,

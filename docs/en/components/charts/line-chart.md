@@ -1,6 +1,7 @@
 ---
 title: LineChart
 order: 2
+flutter: true
 ---
 
 # LineChart
@@ -8,6 +9,8 @@ order: 2
 <p class="neba-lede">Plots one or more series against an ordered category axis. Reach for it when two neighbouring points are part of one continuous change, such as a value over time or a curve over a range, rather than two separate facts.</p>
 
 <Demo src="line-chart/hero" />
+
+::: fw react
 
 ```tsx
 import { LineChart } from 'neba';
@@ -22,9 +25,30 @@ import { LineChart } from 'neba';
 />;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+const NebaLineChart(
+  label: 'Weekly active users by month',
+  categories: <Object>['Jan', 'Feb', 'Mar'],
+  series: <NebaChartSeries>[
+    NebaChartSeries(name: 'Web', data: <num>[1820, 1960, 2140]),
+    NebaChartSeries(name: 'Mobile', data: <num>[940, 1120, 1310]),
+  ],
+);
+```
+
+:::
+
 ## The data
 
 Every chart in the library takes the same two props, so a dashboard tile can be switched from one chart to another without rewriting its data.
+
+::: fw react
 
 `series` is an array of `NebaChartSeries`. Each entry is one line:
 
@@ -52,13 +76,57 @@ interface NebaChartPoint {
 }
 ```
 
+:::
+
+::: fw flutter
+
+`series` is a list of `NebaChartSeries`. Each entry is one line:
+
+```dart
+class NebaChartSeries {
+  const NebaChartSeries({
+    required List<Object?> data, // the values, in category order
+    String? name, // its name in the legend, tooltip and table
+    Object? color, // a NebaColor or a Color over the palette slot
+    bool hidden = false, // starts hidden; the legend turns it back on
+    NebaChartSeriesAxis axis = NebaChartSeriesAxis.primary, // the value axis it is measured against
+  });
+}
+```
+
+Each value in `data` is a `num`, a `null`, or a point, which Dart has no union type for, so the list is a `List<Object?>` and anything else in it is read as a gap:
+
+```dart
+class NebaChartPoint {
+  const NebaChartPoint({
+    required double? y, // the value
+    Object? x, // its place on the category axis: a String, a num or a DateTime
+    double? z, // a second magnitude: a bubble's radius, a tile's weight
+    Object? color, // a NebaColor or a Color over the series colour for this point
+    String? label, // what the tooltip says instead of the number
+  });
+}
+```
+
+:::
+
 **`null` is a gap, not a zero.** A sensor that was offline and a month with no sales are different facts, and the chart draws them differently: the line breaks at a `null` and the point is not drawn. `nulls` is how a caller says otherwise.
 
-`categories` names the positions along the x axis. Points may carry their own `x` instead: whichever matches the shape the data already has.
+`categories` names the positions along the x axis, as <Fw react="strings, numbers or dates" flutter="a `List<Object>` of `String`, `num` and `DateTime`" />. Points may carry their own `x` instead: whichever matches the shape the data already has.
 
 <Demo src="line-chart/data">
 
+::: fw react
+
 <<< @/.vitepress/demos/line-chart/data.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/line_chart/data.dart
+
+:::
 
 </Demo>
 
@@ -66,7 +134,17 @@ interface NebaChartPoint {
 
 <PropsTable name="LineChart" />
 
+::: fw react
+
 Every native `<div>` attribute passes through, along with every [Box](../surfaces/box) prop. `variant` defaults to `text` and `padded` to `false`, so a chart dropped into a [Card](../surfaces/card) draws no sheet of its own; `variant="outline"` gives it one. See [prop conventions](../../design/prop-conventions) for the shared axes.
+
+:::
+
+::: fw flutter
+
+The chart sits on a [Box](../surfaces/box), and its `variant`, `size`, `color`, `density`, `elevation`, `padded` and `transition` are passed to it. `variant` defaults to `NebaVariant.text` and `padded` to `false`, so a chart dropped into a [Card](../surfaces/card) draws no sheet of its own; `NebaVariant.outline` gives it one. `legend` and `tooltip` take `true`, `false` or their options object, as `Object?`. The chart fills the width it is given, or 320 logical pixels in a row that gives it none. See [prop conventions](../../design/prop-conventions) for the shared axes.
+
+:::
 
 ### NebaChartSeries
 
@@ -104,19 +182,39 @@ Every entry of `references` takes this shape.
 
 <Demo src="line-chart/curve">
 
+::: fw react
+
 <<< @/.vitepress/demos/line-chart/curve.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/line_chart/curve.dart
+
+:::
 
 </Demo>
 
 ### xAxis · yAxis
 
-A line chart crops its value axis to the data, because a line encodes a _position_ and cropping moves every point by the same amount. Pass `yAxis` with a `min` of `0` when zero belongs on the scale.
+A line chart crops its value axis to the data, because a line encodes a _position_ and cropping moves every point by the same amount. Pass <Fw react="`yAxis={{ min: 0 }}`" flutter="`yAxis: NebaChartAxis(min: 0)`" /> when zero belongs on the scale.
 
 `min`, `max` and `tickCount` set the range; `tickFormat` writes each tick; `grid: false` drops the gridlines; `hidden` drops the axis entirely and gives its band back to the plot.
 
 <Demo src="line-chart/axes">
 
+::: fw react
+
 <<< @/.vitepress/demos/line-chart/axes.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/line_chart/axes.dart
+
+:::
 
 </Demo>
 
@@ -130,7 +228,17 @@ Only the category axis reads it, and only where that axis runs along the bottom 
 
 <Demo src="line-chart/ticks">
 
+::: fw react
+
 <<< @/.vitepress/demos/line-chart/ticks.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/line_chart/ticks.dart
+
+:::
 
 </Demo>
 
@@ -142,15 +250,43 @@ What the line does where a value is missing.
 - `connect` — joins the two sides with a straight segment. For a gap that came from the collection rather than from the world; a bridged gap is a value the chart made up.
 - `zero` — reads the gap as a nought. It rewrites the data rather than the drawing, so the axis takes the nought into its range and the tooltip and the table say `0` too. Reach for it when a missing row genuinely means none happened, which is what an event count usually means and what a rate never does.
 
+::: fw react
+
 `connectNulls` is the old spelling of `connect` and still works; it is read only when `nulls` is left out.
+
+:::
+
+::: fw flutter
+
+The Flutter package has no `connectNulls`: it was deprecated before the package existed, and `nulls` says the same thing.
+
+:::
 
 <Demo src="line-chart/gaps">
 
+::: fw react
+
 <<< @/.vitepress/demos/line-chart/gaps.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/line_chart/gaps.dart
+
+:::
 
 </Demo>
 
 ### brush
+
+::: fw flutter
+
+Not in the Flutter package yet. A Flutter chart draws every category it is given.
+
+:::
+
+:::: fw react
 
 A strip under the plot with the whole series on it, and a window the reader drags to choose which part the chart draws.
 
@@ -166,6 +302,8 @@ The window narrows the picture and nothing else: the hidden table and the export
 
 </Demo>
 
+::::
+
 ### secondaryAxis
 
 A second value axis, drawn on the far edge — the right of a vertical chart, the top of one turned on its side. The series that carry `axis: 'secondary'` are measured against it; passing `secondaryAxis` is what turns the split on, so a series asking for it on a chart with one axis is measured on that one rather than half-applied.
@@ -178,7 +316,17 @@ It draws no gridlines of its own. Its range is cut into as many intervals as the
 
 <Demo src="line-chart/two-axes">
 
+::: fw react
+
 <<< @/.vitepress/demos/line-chart/two-axes.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/line_chart/two_axes.dart
+
+:::
 
 </Demo>
 
@@ -192,7 +340,17 @@ The **scale widens to hold them**, so a target above everything measured is stil
 
 <Demo src="line-chart/references">
 
+::: fw react
+
 <<< @/.vitepress/demos/line-chart/references.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/line_chart/references.dart
+
+:::
 
 </Demo>
 
@@ -208,11 +366,29 @@ Each number wears its own series' colour, taken one step toward the page's ink s
 
 <Demo src="line-chart/labels">
 
+::: fw react
+
 <<< @/.vitepress/demos/line-chart/labels.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/line_chart/labels.dart
+
+:::
 
 </Demo>
 
 ### exportable
+
+::: fw flutter
+
+Not in the Flutter package yet. The hidden table holds the same numbers, for a screen reader.
+
+:::
+
+:::: fw react
 
 Adds a small button in the corner that writes the chart's data out as a CSV file — the same numbers the hidden table under the plot holds. Every chart with a hidden table takes it.
 
@@ -226,9 +402,11 @@ The module that writes the file is **fetched when the button is pressed**, so a 
 
 </Demo>
 
+::::
+
 ### legend
 
-The legend appears automatically from two series up and is left off below that. `side` and `align` place it; clicking an entry hides its series, and the survivors keep the colour they had. A hidden series stays hidden when new data puts the series in another order, as long as it keeps its `name`. `legend={false}` removes it, `interactive: false` makes it a key rather than a control.
+The legend appears automatically from two series up and is left off below that. `side` and `align` place it; clicking an entry hides its series, and the survivors keep the colour they had. A hidden series stays hidden when new data puts the series in another order, as long as it keeps its `name`. <Fw react="`legend={false}`" flutter="`legend: false`" /> removes it, `interactive: false` makes it a key rather than a control.
 
 The legend takes a row of its own outside `height`, or a column beside the plot, so a chart that gains its legend after the first render grows by it and moves what is around it. That happens when the series arrive after the chart first appears, or when a second series is added to one. Hand the chart its series from the first render, with their `name`s and an empty `data` while the numbers load, or set `legend` to `true` to draw it for a single series as well.
 
@@ -236,7 +414,17 @@ The legend takes a row of its own outside `height`, or a column beside the plot,
 
 <Demo src="line-chart/legend">
 
+::: fw react
+
 <<< @/.vitepress/demos/line-chart/legend.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/line_chart/legend.dart
+
+:::
 
 </Demo>
 
@@ -244,7 +432,9 @@ The legend takes a row of its own outside `height`, or a column beside the plot,
 
 Series take palette slots in the order they are passed: eight hues, fixed. From a ninth series the slots repeat, and a development build says so once in the console. A ninth series is not a ninth colour; fold the tail into an "Other" series or draw a second chart.
 
-`series.color` overrides the slot with a `NebaColor` family or any CSS colour, and a point's own `color` overrides that for one mark. See [colour](../../design/color) for the ramp and what it is solved for.
+`series.color` overrides the slot with a `NebaColor` family or <Fw react="any CSS colour" flutter="any `Color`" />, and a point's own `color` overrides that for one mark. See [colour](../../design/color) for the ramp and what it is solved for.
+
+::: fw react
 
 ```tsx
 <LineChart
@@ -255,7 +445,24 @@ Series take palette slots in the order they are passed: eight hues, fixed. From 
 />
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+NebaLineChart(
+  series: <NebaChartSeries>[
+    NebaChartSeries(name: 'Errors', data: errors, color: NebaColor.danger),
+    NebaChartSeries(name: 'Warnings', data: warnings, color: NebaColor.warning),
+  ],
+)
+```
+
+:::
+
 ### format
+
+:::: fw react
 
 `format` takes `Intl.NumberFormat` options and applies everywhere a number appears: the axis, the tooltip, the value labels, the table. Without it, axis ticks past ten thousand are compacted (`12.4K`).
 
@@ -272,7 +479,29 @@ const day = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', t
 <LineChart locale="en-US" categories={dates.map((date) => day.format(date))} … />
 ```
 
+::::
+
+::: fw flutter
+
+`format` is a function that writes a number, and it writes it everywhere a number appears: the axis, the tooltip, the value labels, the table. It is handed a `num`, an `int` when the number is whole. Without it, a number past ten thousand is compacted (`12.4K`) and one below is grouped by threes with at most two digits after the point; the widgets layer has no `intl`, so a currency or another language's separators are the function's.
+
+```dart
+NebaLineChart(format: (num value) => '\$${value.round()}', …)
+```
+
+A `DateTime` category is written as its month's short English name and its day, `Jun 1`; `xAxis.tickFormat` writes it any other way. `locale` sets the language of the chart's own words, its name when it has no `label`, the sentence that describes it and its empty state, and nothing else.
+
+:::
+
 ### initialWidth
+
+::: fw flutter
+
+No counterpart: a Flutter chart is laid out before it is first drawn, so there is never a frame without its width.
+
+:::
+
+:::: fw react
 
 A chart is laid out in pixels, and a server has no box to measure, so a server-rendered chart is an empty box of the right height until the page has hydrated: the drawing is not in the first paint or in the HTML a crawler reads. `initialWidth` is a width in pixels to draw at on the server and while the page hydrates. Once the chart has measured its box it is drawn at the real width.
 
@@ -284,10 +513,27 @@ The drawing makes the server's HTML larger, and by how many marks there are: a B
 <LineChart initialWidth={720} label="Weekly active users by month" … />
 ```
 
+::::
+
 ## Accessibility
+
+::: fw flutter
+
+- The plot is **one image node** named by `label`, or by the locale's word for a chart without one, whose hint is one sentence with the number of values and their range. With a `secondaryAxis`, the series on it get a second sentence in that axis' format. What is drawn is left out of the semantics tree.
+- Every chart also builds a **table of its data**: a Flutter `Table` laid out at no size and painted at no opacity, captioned with `label`. On the web it is read as a table, a row per category, with the series' names as column headers; Flutter has no row-header role, so the category is an ordinary first cell, and a table still filling in has no busy state to announce. On Android and iOS there is no table role, and its cells are read in order. Past 500 data points the rows are added in idle slices after the first frame. A tooltip never carries a value that is not also in that table.
+- The plot takes the focus. `←` and `→` step the crosshair between categories, `Home` and `End` jump to the ends, `Escape` clears it, and the reading is a live region a screen reader announces: a status on the web, a polite live region on Android and iOS.
+- On a touch screen a tap shows the reading of the nearest category and keeps it up; a tap anywhere outside the plot puts it down.
+- The legend is a list of buttons whose selected state says which series are drawn, so that is stated rather than implied by colour. Flutter has no pressed state for a button; selected is its nearest.
+- Identity is never carried by colour alone: the legend is always present from two series up, and the palette's adjacent pairs are verified against simulated protanopia and deuteranopia.
+
+:::
+
+:::: fw react
 
 - Every chart renders a **table of its data**, visually hidden and available to assistive technology. `label` becomes its caption and the chart's accessible name. A tooltip never carries a value that is not also in that table. Past 500 data points, the caption and the header row are written at once and the rows are added in small batches just after the chart first draws, so a server-rendered page does not carry them in its HTML. The plot is described by one sentence with the number of values and their range rather than by the table, so a focus does not read every number out. With a `secondaryAxis`, the series on it get a second sentence in that axis' format.
 - The plot is focusable. `←` and `→` step the crosshair between categories, `Home` and `End` jump to the ends, `Escape` clears it, so the tooltip is reachable without a pointer.
 - On a touch screen a tap shows the tooltip of the nearest point and keeps it up; a tap anywhere outside the plot puts it down. The same holds on every chart with a tooltip.
 - The legend is a list of `aria-pressed` buttons, so which series are drawn is stated rather than implied by colour.
 - Identity is never carried by colour alone: the legend is always present from two series up, and the palette's adjacent pairs are verified against simulated protanopia and deuteranopia.
+
+::::
