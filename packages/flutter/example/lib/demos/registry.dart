@@ -119,6 +119,10 @@ import 'package:neba_example/demos/data_list/dividers.dart';
 import 'package:neba_example/demos/data_list/hero.dart';
 import 'package:neba_example/demos/data_list/label_width.dart';
 import 'package:neba_example/demos/data_list/orientation.dart';
+import 'package:neba_example/demos/dialog/controlled.dart';
+import 'package:neba_example/demos/dialog/hero.dart';
+import 'package:neba_example/demos/dialog/scrolling.dart';
+import 'package:neba_example/demos/dialog/sizes.dart';
 import 'package:neba_example/demos/divider/colors.dart';
 import 'package:neba_example/demos/divider/hero.dart';
 import 'package:neba_example/demos/divider/labels.dart';
@@ -485,6 +489,10 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'data-list/hero': DataListHero.new,
   'data-list/label-width': DataListLabelWidth.new,
   'data-list/orientation': DataListOrientation.new,
+  'dialog/controlled': DialogControlled.new,
+  'dialog/hero': DialogHero.new,
+  'dialog/scrolling': DialogScrolling.new,
+  'dialog/sizes': DialogSizes.new,
   'divider/colors': DividerColors.new,
   'divider/hero': DividerHero.new,
   'divider/labels': DividerLabels.new,

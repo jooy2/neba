@@ -45,6 +45,7 @@ export 'src/components/collapsible/neba_collapsible.dart';
 export 'src/components/combobox/neba_combobox.dart';
 export 'src/components/container/neba_container.dart';
 export 'src/components/data_list/neba_data_list.dart';
+export 'src/components/dialog/neba_dialog.dart';
 export 'src/components/divider/neba_divider.dart';
 export 'src/components/drawer/neba_drawer.dart';
 export 'src/components/empty/neba_empty.dart';

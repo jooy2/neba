@@ -5,11 +5,10 @@ import 'dart:math' as math;
 
 import 'package:flutter/widgets.dart';
 
-import 'package:neba/src/components/box/neba_box.dart';
-import 'package:neba/src/internal/hit.dart';
 import 'package:neba/src/internal/messages.dart';
 import 'package:neba/src/internal/modal.dart';
 import 'package:neba/src/internal/sheet_close.dart';
+import 'package:neba/src/internal/sheet_sections.dart';
 import 'package:neba/src/internal/surface.dart';
 import 'package:neba/src/theme/scale.dart';
 import 'package:neba/src/theme/theme.dart';
@@ -221,13 +220,7 @@ class NebaDrawer extends StatefulWidget {
   /// React package's `sheetScrollRoomClasses`: a scroll view clips what is
   /// drawn past it, so the body keeps room inside for a focus ring and a
   /// floated label and takes it back from the space around it.
-  static const Map<NebaSize, (double, double)> scrollRoom = <NebaSize, (double, double)>{
-    NebaSize.xs: (6, 4),
-    NebaSize.sm: (7, 4),
-    NebaSize.md: (8, 4),
-    NebaSize.lg: (8, 4),
-    NebaSize.xl: (9, 4),
-  };
+  static const Map<NebaSize, (double, double)> scrollRoom = NebaSheetSections.scrollRoom;
 
   @override
   State<NebaDrawer> createState() => _NebaDrawerState();
@@ -350,7 +343,7 @@ class _NebaDrawerState extends State<NebaDrawer> {
     final NebaSize size = _size(context);
     final NebaSide side = widget.side;
     final bool along = side == NebaSide.left || side == NebaSide.right;
-    final EdgeInsets screen = widget.safeArea ? _screenPadding(context) : EdgeInsets.zero;
+    final EdgeInsets screen = widget.safeArea ? nebaModalMedia(context).padding : EdgeInsets.zero;
     // The insets of the three edges the panel runs to. The one it faces the
     // page with is never one of them.
     final EdgeInsets insets = switch (side) {
@@ -414,16 +407,6 @@ class _NebaDrawerState extends State<NebaDrawer> {
     return widget.size ?? NebaTheme.defaultsOf(context).size ?? NebaSize.md;
   }
 
-  /// The screen's own insets, from the root overlay the panel is shown in
-  /// rather than from where the drawer was written, which a `SafeArea` above
-  /// it may already have taken them out of.
-  EdgeInsets _screenPadding(BuildContext context) {
-    final OverlayState? overlay = Overlay.maybeOf(context, rootOverlay: true);
-    final MediaQuery? root = overlay?.context.getInheritedWidgetOfExactType<MediaQuery>();
-
-    return root?.data.padding ?? MediaQuery.paddingOf(context);
-  }
-
   /// The sheet and its sections. [fill] is whether the panel has a height of
   /// its own, which the body then takes what is left of; [bounded] is whether
   /// it has a ceiling, which the body otherwise scrolls under; [insets] is the
@@ -440,184 +423,32 @@ class _NebaDrawerState extends State<NebaDrawer> {
     final NebaDensity density = widget.density ?? defaults.density ?? NebaDensity.standard;
     final NebaColorRoles roles = tokens.roles(widget.color);
     final TextScaler scaler = MediaQuery.textScalerOf(context);
-    final double inset = NebaBox.padding[density]![size]!;
-    final double gap = NebaScale.sheetSectionGap[size]!;
-    final double bodySize = NebaScale.sheetBodyText[size]!;
-    final double em = scaler.scale(bodySize);
-    final bool dividers = widget.dividers;
     final bool showClose = widget.showClose ?? _overlay;
 
-    final Widget? title = widget.title;
-    final Widget? description = widget.description;
-    final Widget? body = widget.child;
-    final List<Widget> actions = widget.actions ?? const <Widget>[];
-    final bool hasHeader = title != null || description != null || showClose;
-    final bool hasActions = actions.isNotEmpty;
-    final BorderSide line = BorderSide(color: roles.line);
-    final (double roomTop, double roomBottom) = dividers
-        ? (0.0, 0.0)
-        : NebaDrawer.scrollRoom[size]!;
-
-    Widget? header;
-
-    if (hasHeader) {
-      final double titleSize = NebaScale.sheetTitleText[size]!;
-
-      header = Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: 12,
-        children: <Widget>[
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: NebaScale.sheetHeaderGap[size]!,
-              children: <Widget>[
-                if (title != null)
-                  Semantics(
-                    container: true,
-                    header: true,
-                    headingLevel: widget.headingLevel,
-                    namesRoute: _overlay ? true : null,
-                    child: DefaultTextStyle.merge(
-                      style: TextStyle(
-                        fontSize: titleSize,
-                        height: NebaScale.sheetTitleLeading[size]! / titleSize,
-                        fontWeight: FontWeight.w600,
-                      ),
-                      child: title,
-                    ),
-                  ),
-                if (description != null)
-                  DefaultTextStyle.merge(
-                    style: TextStyle(fontSize: NebaScale.metaText[size], color: tokens.mutedFg),
-                    child: description,
-                  ),
-              ],
-            ),
-          ),
-          if (showClose)
-            NebaSheetClose(
+    final Widget content = NebaSheetSections(
+      size: size,
+      density: density,
+      color: widget.color,
+      title: widget.title,
+      headingLevel: widget.headingLevel,
+      namesRoute: _overlay,
+      description: widget.description,
+      close: showClose
+          ? NebaSheetClose(
               onPressed: _close,
               label:
                   widget.closeLabel ??
                   nebaMessages(context, 'action', locale: widget.locale)['close']!,
-              em: em,
+              em: scaler.scale(NebaScale.sheetBodyText[size]!),
               color: widget.color,
-            ),
-        ],
-      );
-    }
-
-    Widget? scroller;
-
-    if (body != null) {
-      scroller = SingleChildScrollView(
-        padding: dividers
-            ? EdgeInsets.all(inset)
-            : EdgeInsets.fromLTRB(inset, roomTop, inset, roomBottom),
-        child: body,
-      );
-
-      if (dividers && hasHeader) {
-        // A Container, because it adds the line's width to the padding as a
-        // CSS border does, so the line never lies over the scrolled content.
-        scroller = Container(
-          decoration: BoxDecoration(border: Border(top: line)),
-          child: scroller,
-        );
-      }
-    }
-
-    Widget? footer;
-
-    if (hasActions) {
-      footer = Wrap(
-        alignment: WrapAlignment.end,
-        crossAxisAlignment: WrapCrossAlignment.center,
-        spacing: 8,
-        runSpacing: 8,
-        children: actions,
-      );
-    }
-
-    final List<Widget> sections = <Widget>[];
-
-    if (dividers) {
-      // The lines reach both edges, so each section takes the padding on
-      // itself and the sheet gives its own up.
-      if (header != null) {
-        sections.add(Padding(padding: EdgeInsets.all(inset), child: header));
-      }
-
-      if (scroller != null) {
-        sections.add(_flexible(scroller, fill: fill, bounded: bounded));
-      }
-
-      if (footer != null) {
-        sections.add(
-          Container(
-            decoration: BoxDecoration(border: Border(top: line)),
-            padding: EdgeInsets.all(inset),
-            child: footer,
-          ),
-        );
-      }
-    } else {
-      // Space between the sections, less the room the body keeps inside
-      // itself on the side it faces.
-      sections.add(SizedBox(height: header == null && scroller != null ? inset - roomTop : inset));
-
-      if (header != null) {
-        sections.add(
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: inset),
-            child: header,
-          ),
-        );
-
-        if (scroller != null || footer != null) {
-          sections.add(SizedBox(height: scroller != null ? gap - roomTop : gap));
-        }
-      }
-
-      if (scroller != null) {
-        sections.add(_flexible(scroller, fill: fill, bounded: bounded));
-
-        if (footer != null) {
-          sections.add(SizedBox(height: gap - roomBottom));
-        }
-      }
-
-      if (footer != null) {
-        sections.add(
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: inset),
-            child: footer,
-          ),
-        );
-      }
-
-      sections.add(
-        SizedBox(height: footer == null && scroller != null ? inset - roomBottom : inset),
-      );
-    }
-
-    final Widget content = DefaultTextStyle.merge(
-      style: TextStyle(
-        color: tokens.fg,
-        fontSize: bodySize,
-        height: NebaScale.sheetBodyLeading[size]! / bodySize,
-      ),
-      child: NebaHitArea(
-        child: Padding(
-          padding: insets,
-          child: Column(
-            mainAxisSize: fill ? MainAxisSize.max : MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: sections,
-          ),
-        ),
-      ),
+            )
+          : null,
+      actions: widget.actions ?? const <Widget>[],
+      dividers: widget.dividers,
+      fill: fill,
+      bounded: bounded,
+      insets: insets,
+      child: widget.child,
     );
 
     final Radius corner = Radius.circular(widget.rounded ? tokens.radius[size]! : 0);
@@ -651,14 +482,6 @@ class _NebaDrawerState extends State<NebaDrawer> {
         child: Padding(padding: edge, child: content),
       ),
     );
-  }
-
-  Widget _flexible(Widget body, {required bool fill, required bool bounded}) {
-    if (!bounded) {
-      return body;
-    }
-
-    return fill ? Expanded(child: body) : Flexible(child: body);
   }
 }
 

@@ -4,8 +4,8 @@
 /// The React package leaves all of it to Base UI's dialog: the portal, the
 /// focus trap, the inert page, Escape, the press outside and the focus
 /// returned to the trigger. Flutter has the pieces and none of the assembly,
-/// so it is assembled here once, for every surface that is modal: a Drawer
-/// first, and a Dialog, a Confirm and a CommandPalette after it.
+/// so it is assembled here once, for every surface that is modal: a Drawer, a
+/// Dialog and the Confirm drawn on it, and a CommandPalette after them.
 ///
 /// The surface is shown in the app's root overlay, because it is attached to
 /// the window rather than to where it was written, and it is built where it
@@ -21,6 +21,7 @@ import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
+import 'package:neba/src/internal/floating.dart';
 import 'package:neba/src/internal/motion.dart';
 import 'package:neba/src/theme/scale.dart';
 import 'package:neba/src/theme/theme.dart';
@@ -31,6 +32,17 @@ import 'package:neba/src/types.dart';
 /// from `0`, not there, to `1`, there. The surface is laid out against the
 /// whole overlay, so an `Align` places it.
 typedef NebaModalBuilder = Widget Function(BuildContext context, Animation<double> arrival);
+
+/// The window as the root overlay a modal surface opens into sees it: its
+/// size, the system's insets and the keyboard, rather than what is left of
+/// them where the surface was written, which a `SafeArea` above it may
+/// already have taken them out of.
+MediaQueryData nebaModalMedia(BuildContext context) {
+  final OverlayState? overlay = Overlay.maybeOf(context, rootOverlay: true);
+  final MediaQuery? root = overlay?.context.getInheritedWidgetOfExactType<MediaQuery>();
+
+  return root?.data ?? MediaQuery.of(context);
+}
 
 /// A surface shown over the page while [open], with a scrim behind it.
 ///
@@ -51,9 +63,12 @@ class NebaModalLayer extends StatefulWidget {
     this.dismissible = true,
     this.keepMounted = false,
     this.label,
+    this.role = SemanticsRole.dialog,
+    this.initialFocus,
+    this.finalFocus,
     this.child,
     super.key,
-  });
+  }) : assert(role == SemanticsRole.dialog || role == SemanticsRole.alertDialog);
 
   /// Whether the surface is shown. It arrives and leaves over
   /// `NebaScale.duration`, and in no time for a reader who asked for less
@@ -80,6 +95,18 @@ class NebaModalLayer extends StatefulWidget {
   /// The name a screen reader announces for the surface, for one with no
   /// title of its own to name it.
   final String? label;
+
+  /// [SemanticsRole.dialog], or [SemanticsRole.alertDialog] for a question
+  /// that has to be answered before anything else happens.
+  final SemanticsRole role;
+
+  /// What takes the focus when the surface opens, in place of the first
+  /// thing in it that takes the focus.
+  final FocusNode? initialFocus;
+
+  /// Where the focus goes when the surface closes, in place of what held it
+  /// before the surface opened.
+  final FocusNode? finalFocus;
 
   /// What stays where the layer was written: usually what opens it.
   final Widget? child;
@@ -179,12 +206,19 @@ class _NebaModalLayerState extends State<NebaModalLayer> with SingleTickerProvid
       }
 
       _scope.requestFocus();
-      _scope.nextFocus();
+
+      final FocusNode? initial = widget.initialFocus;
+
+      if (initial != null && initial.context != null && initial.canRequestFocus) {
+        initial.requestFocus();
+      } else {
+        _scope.nextFocus();
+      }
     });
   }
 
   void _giveFocusBack() {
-    final FocusNode? target = _returnTo;
+    final FocusNode? target = widget.finalFocus ?? _returnTo;
     _returnTo = null;
 
     if (_scope.hasFocus && target != null && target.context != null && target.canRequestFocus) {
@@ -208,11 +242,16 @@ class _NebaModalLayerState extends State<NebaModalLayer> with SingleTickerProvid
       return const SizedBox.shrink();
     }
 
-    Widget surface = widget.builder(context, _curved);
+    // From the text a portalled surface starts from, not that of the
+    // paragraph its trigger is in.
+    Widget surface = NebaPortalText(child: widget.builder(context, _curved));
+    // A label names the route only with `namesRoute` beside it: on the web
+    // a dialog's own label is its `aria-label` then, and is dropped without.
     surface = Semantics(
       scopesRoute: true,
       explicitChildNodes: true,
-      role: SemanticsRole.dialog,
+      role: widget.role,
+      namesRoute: widget.label == null ? null : true,
       label: widget.label,
       onDismiss: widget.dismissible ? _dismiss : null,
       child: FocusScope(node: _scope, child: surface),

@@ -162,7 +162,14 @@ void main() {
         tester.getSemantics(
           find.ancestor(of: find.text('Body'), matching: find.byType(FocusScope)).first,
         ),
-        matchesSemantics(label: 'Filters', scopesRoute: true, hasDismissAction: true),
+        // Named by itself, which is what makes the label its `aria-label` on
+        // the web.
+        matchesSemantics(
+          label: 'Filters',
+          scopesRoute: true,
+          namesRoute: true,
+          hasDismissAction: true,
+        ),
       );
       semantics.dispose();
     });
