@@ -168,7 +168,23 @@ NebaBox(
 
 눌리는 위젯에는 제공하지 않습니다. [디자인 언어](./design-language)가 포인터 아래에서 컨트롤이 움직이는 것을 금지하는데, 버튼의 `transition`이 정확히 그 동작이 되기 때문입니다.
 
-효과를 스크롤에 맡기는 React의 `timeline`과 `range`는 Flutter에 없고, 다시 재생, trigger, 직접 제어를 맡는 `Animate*` 위젯은 아직 Flutter 패키지에 없습니다.
+처음 빌드 이후의 동작(다시 재생, 스크롤 trigger, hover, 직접 제어)은 [`Animate*` 위젯](../components/transitions/animate-fade)이 맡으며, 어떤 위젯이든 그 안에 감쌀 수 있습니다. 이 위젯들은 다음 설정을 공유하고, 어느 위젯에서나 뜻이 같습니다.
+
+| 설정 | 규칙 |
+| --- | --- |
+| `duration` / `delay` | 언제나 `Duration`입니다 |
+| `curve` | `Curve`입니다. 기본값은 라이브러리의 곡선인 `NebaScale.ease` |
+| `repeat` | 횟수 또는 `double.infinity` |
+| `alternate` | 한 번 걸러 거꾸로 재생해, 반복이 처음으로 튀지 않고 되돌아옵니다 |
+| `mode` | `NebaAnimateMode.enter` 또는 `exit`으로, React의 `in`과 `out`입니다. `exit`은 같은 애니메이션을 거꾸로 재생하고 끝에서 멈춥니다 |
+| `trigger` | `NebaAnimateTrigger.mount`(기본값), `visible`, `hover`, `manual` |
+| `play` | `manual`을 재생합니다. `bool`이나 숫자를 받으며, `false` → `true`가 되거나 숫자가 바뀔 때마다 처음부터 다시 시작합니다 |
+| `once` / `threshold` | `visible`용. 처음 한 번만 재생할지, 화면에 얼마나 들어와야 하는지(창보다 큰 위젯은 창에 대한 비율) |
+| `paused` | 애니메이션을 그 자리에 붙들어 둡니다 |
+| `stagger` / `durationStep` / `reverse` | 효과를 `children` 하나하나에게 차례로 넘깁니다. 자식마다 지연과 재생 시간에 더하는 `Duration`이고, 마지막 자식부터 실행하는 순서입니다 |
+| `timeline` / `range` | `NebaAnimateTimeline.time`(기본값) 또는 `view`. `view`는 `NebaViewRange` 구간에서 스크롤 위치로 효과를 재생합니다 |
+
+위젯은 `child` 하나를 받거나, `children`을 받아 `layoutBuilder`로 배치합니다. `timeline: NebaAnimateTimeline.view`를 쓰면 `duration`, `delay`, `repeat`와 모든 `trigger`가 무시되며, 세로로 스크롤되는 가장 가까운 뷰나 창을 기준으로 잽니다. `transition`은 `timeline`도 `range`도 받지 않습니다.
 
 :::
 

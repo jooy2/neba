@@ -168,7 +168,23 @@ NebaBox(
 
 It is offered on no widget that is pressed. A control that moves under the pointer aiming at it is the one thing the [design language](./design-language) rules out, and a `transition` on a button would be exactly that.
 
-React's `timeline` and `range`, which hand an effect to the scrollbar, have no Flutter counterpart, and the `Animate*` widgets, for a replay, a trigger or your own control, are not in the Flutter package yet.
+Anything past a first build (a replay, a scroll trigger, a hover, your own control) is an [`Animate*` widget](../components/transitions/animate-fade), and any widget can be wrapped in one. They share these settings, which mean the same thing on all of them:
+
+| Setting | The rule |
+| --- | --- |
+| `duration` / `delay` | A `Duration`, always |
+| `curve` | A `Curve`. Defaults to the house one, `NebaScale.ease` |
+| `repeat` | A count, or `double.infinity` |
+| `alternate` | Every other pass runs backwards, so a repeat returns instead of jumping |
+| `mode` | `NebaAnimateMode.enter` or `exit`, React's `in` and `out`. `exit` is the same animation reversed, held at the end |
+| `trigger` | `NebaAnimateTrigger.mount` (default), `visible`, `hover` or `manual` |
+| `play` | Runs a `manual` one: a `bool`, or a number. Each `false` → `true`, or a new number, starts it over |
+| `once` / `threshold` | For `visible`: only the first time, and how much has to be on screen (of the window, for a widget larger than it) |
+| `paused` | Holds the animation where it is |
+| `stagger` / `durationStep` / `reverse` | Hand the effect to each of `children` in turn: a `Duration` added to each one's delay and to its duration, and the order run last-to-first |
+| `timeline` / `range` | `NebaAnimateTimeline.time` (default) or `view`, which drives the effect from the scroll position over a `NebaViewRange` |
+
+A widget takes a `child`, or `children` laid out by `layoutBuilder`. `timeline: NebaAnimateTimeline.view` costs `duration`, `delay`, `repeat` and every `trigger`, and is measured against the nearest scroll view that scrolls down the page, or the window. A `transition` takes neither `timeline` nor `range`.
 
 :::
 

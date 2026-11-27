@@ -25,6 +25,7 @@ library;
 export 'src/components/accordion/neba_accordion.dart';
 export 'src/components/alert/neba_alert.dart';
 export 'src/components/anchor/neba_anchor.dart';
+export 'src/components/animate_fade/neba_animate_fade.dart';
 export 'src/components/app_logo/neba_app_logo.dart';
 export 'src/components/area_chart/neba_area_chart.dart';
 export 'src/components/aspect_ratio/neba_aspect_ratio.dart';

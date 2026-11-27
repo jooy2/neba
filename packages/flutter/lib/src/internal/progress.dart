@@ -313,12 +313,16 @@ double? progressPhase(Duration elapsed, Duration period, {Duration delay = Durat
 }
 
 /// Which span between two of the keyframe [stops] the point [t] of a cycle
-/// is in, and how far through that span it is once the house curve has eased
-/// it.
+/// is in, and how far through that span it is once [curve], the house curve
+/// unless it says, has eased it.
 ///
 /// A CSS animation eases each span between two keyframes on its own rather
 /// than the cycle as a whole, so a pulse that rises and falls eases twice.
-({int span, double t}) progressKeyframe(double t, List<double> stops) {
+({int span, double t}) progressKeyframe(
+  double t,
+  List<double> stops, {
+  Curve curve = NebaScale.ease,
+}) {
   assert(stops.length >= 2);
 
   int span = 0;
@@ -330,7 +334,7 @@ double? progressPhase(Duration elapsed, Duration period, {Duration delay = Durat
   final double width = stops[span + 1] - stops[span];
   final double local = width <= 0 ? 1 : ((t - stops[span]) / width).clamp(0.0, 1.0);
 
-  return (span: span, t: NebaScale.ease.transform(local));
+  return (span: span, t: curve.transform(local));
 }
 
 /// The groove a bar, a meter and a slider cut into the surface they sit on: a

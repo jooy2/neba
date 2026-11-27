@@ -423,8 +423,8 @@ enum NebaAnimation {
 /// pointer aiming at it is what the design language rules out. A reader who
 /// asked the platform for less motion sees the last frame at once.
 ///
-/// React's `timeline` and `range`, which hand the effect to the scrollbar, are
-/// the React package's alone.
+/// React's `timeline` and `range`, which hand the effect to the scroll
+/// position, are taken by the `Animate*` widgets rather than by a transition.
 @immutable
 class NebaTransition {
   /// A fade in.
@@ -598,6 +598,122 @@ class NebaTransition {
       side,
     );
   }
+}
+
+/// What starts an `Animate*` widget's effect: the React package's
+/// `NebaAnimateTrigger`.
+enum NebaAnimateTrigger {
+  /// As soon as it is built. The only one that needs nothing from the caller.
+  mount,
+
+  /// When it is scrolled into view: once, unless `once` is off.
+  visible,
+
+  /// While the pointer is on it, starting over on each entry. Keyboard focus
+  /// inside it counts as the pointer, and on a touch screen a finger down on
+  /// it does.
+  hover,
+
+  /// Never on its own: `play` is what runs it.
+  manual,
+}
+
+/// Whether an effect brings its child in or takes it away: the React
+/// package's `NebaAnimateMode`, whose `'in'` is a reserved word in Dart.
+enum NebaAnimateMode {
+  /// From the effect's start to the widget as it is laid out.
+  enter,
+
+  /// The same run backwards, held at the end, so what left stays gone.
+  exit,
+}
+
+/// What drives an effect's progress: the React package's
+/// `NebaAnimateTimeline`.
+enum NebaAnimateTimeline {
+  /// The clock, which every other timing setting is written against.
+  time,
+
+  /// How far the widget has travelled up through the scroll view it is in.
+  /// Scrolling forwards plays the effect forwards and scrolling back plays it
+  /// back, so `duration`, `delay`, `repeat` and `trigger` no longer apply.
+  view,
+}
+
+/// A stretch of a widget's way up through the scroll view it is in: the
+/// phases CSS names for `animation-range`.
+enum NebaViewPhase {
+  /// From its top edge entering at the bottom of the view to its bottom edge
+  /// leaving at the top.
+  cover,
+
+  /// While it is wholly inside the view, or, when it is taller than the view,
+  /// while it covers all of it.
+  contain,
+
+  /// From its top edge entering at the bottom to the start of [contain].
+  entry,
+
+  /// From the end of [contain] to its bottom edge leaving at the top.
+  exit,
+
+  /// From its top edge entering at the bottom to its bottom edge doing the
+  /// same, whatever its height.
+  entryCrossing,
+
+  /// From its top edge reaching the top of the view to its bottom edge doing
+  /// the same.
+  exitCrossing,
+}
+
+/// The part of a widget's way through the scroll view that a
+/// [NebaAnimateTimeline.view] effect is played over: the React package's
+/// `range`, which CSS writes as `animation-range`.
+///
+/// The default, from the start of [NebaViewPhase.entry] to 45% of
+/// [NebaViewPhase.cover], plays the effect out over the first part of the
+/// widget's way up the screen. Each point is a phase and a fraction of it,
+/// from 0 to 1.
+@immutable
+class NebaViewRange {
+  /// From [start] of [startPhase] to [end] of [endPhase].
+  const NebaViewRange({
+    this.startPhase = NebaViewPhase.entry,
+    this.start = 0,
+    this.endPhase = NebaViewPhase.cover,
+    this.end = 0.45,
+  });
+
+  /// The whole of one [phase], as CSS writes `animation-range: exit`.
+  const NebaViewRange.phase(NebaViewPhase phase)
+    : startPhase = phase,
+      start = 0,
+      endPhase = phase,
+      end = 1;
+
+  /// The phase the effect starts in.
+  final NebaViewPhase startPhase;
+
+  /// How far into [startPhase] the effect starts, from 0 to 1.
+  final double start;
+
+  /// The phase the effect ends in.
+  final NebaViewPhase endPhase;
+
+  /// How far into [endPhase] the effect ends, from 0 to 1.
+  final double end;
+
+  @override
+  bool operator ==(Object other) {
+    return other is NebaViewRange &&
+        other.startPhase == startPhase &&
+        other.start == start &&
+        other.endPhase == endPhase &&
+        other.end == end;
+  }
+
+  @override
+  int get hashCode => Object.hash(startPhase, start, endPhase, end);
 }
 
 /// A point on a scale, and the colour family a reading takes once it has

@@ -278,6 +278,138 @@ void main() {
       await tester.pumpAndSettle();
     });
   });
+
+  group('NebaTiming', () {
+    test('holds the first frame before the delay and the last after the end', () {
+      const NebaTiming timing = NebaTiming(duration: 100, delay: 50);
+
+      expect(timing.at(0), 0);
+      expect(timing.at(100), 0.5);
+      expect(timing.at(1000), 1);
+      expect(timing.end, 150);
+    });
+
+    test('reads an exit backwards, and alternate on top of it', () {
+      const NebaTiming exit = NebaTiming(duration: 100, reversed: true);
+      const NebaTiming both = NebaTiming(duration: 100, repeat: 2, alternate: true, reversed: true);
+
+      expect(exit.at(0), 1);
+      expect(exit.last, 0);
+      expect(both.at(50), 0.5);
+      expect(both.at(150), 0.5);
+      expect(both.at(120), closeTo(0.2, 1e-9));
+      expect(both.last, 1);
+    });
+
+    test('ends a fractional count part of the way through a pass', () {
+      const NebaTiming timing = NebaTiming(duration: 100, repeat: 1.5);
+
+      expect(timing.end, 150);
+      expect(timing.last, 0.5);
+    });
+
+    test('never ends an endless one, and settles every one on a single pass', () {
+      const NebaTiming endless = NebaTiming(duration: 100, repeat: double.infinity);
+
+      expect(endless.end, double.infinity);
+      expect(endless.at(1050), closeTo(0.5, 1e-9));
+      expect(endless.settled, 1);
+      expect(const NebaTiming(duration: 100, reversed: true).settled, 0);
+    });
+
+    test('steps down a stagger, never running for less than nothing', () {
+      const NebaTiming timing = NebaTiming(duration: 100, delay: 10);
+      final NebaTiming third = timing.step(2, stagger: 50, durationStep: -80);
+
+      expect(third.delay, 110);
+      expect(third.duration, 0);
+    });
+  });
+
+  group('nebaViewProgress', () {
+    double at(NebaViewRange range, double top) {
+      return nebaViewProgress(range, top: top, height: 100, extent: 500);
+    }
+
+    test('maps the default range from entering to 45% of the way across', () {
+      const NebaViewRange range = NebaViewRange();
+
+      expect(at(range, 600), 0);
+      expect(at(range, 500), 0);
+      // 45% of cover: 500 - 0.45 × 600.
+      expect(at(range, 230), 1);
+      expect(at(range, 365), closeTo(0.5, 1e-9));
+    });
+
+    test('reads each phase as CSS names it', () {
+      expect(at(const NebaViewRange.phase(NebaViewPhase.cover), 200), 0.5);
+      expect(at(const NebaViewRange.phase(NebaViewPhase.entry), 450), 0.5);
+      expect(at(const NebaViewRange.phase(NebaViewPhase.contain), 200), 0.5);
+      expect(at(const NebaViewRange.phase(NebaViewPhase.exit), -50), 0.5);
+      expect(at(const NebaViewRange.phase(NebaViewPhase.exitCrossing), -50), 0.5);
+      expect(at(const NebaViewRange.phase(NebaViewPhase.entryCrossing), 450), 0.5);
+    });
+
+    test('covers the view while taller than it', () {
+      // Contained, a widget taller than the view runs from its top at the
+      // top of the view to its bottom at the bottom.
+      expect(
+        nebaViewProgress(
+          const NebaViewRange.phase(NebaViewPhase.contain),
+          top: -250,
+          height: 1000,
+          extent: 500,
+        ),
+        0.5,
+      );
+    });
+  });
+
+  group('nebaShownShare', () {
+    testWidgets('measures what is left inside the clips above it and the window', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(
+        host(
+          const Align(
+            alignment: Alignment.topLeft,
+            child: SizedBox(
+              width: 100,
+              height: 100,
+              child: ClipRect(
+                child: OverflowBox(
+                  alignment: Alignment.topLeft,
+                  maxWidth: 200,
+                  child: SizedBox(key: Key('wide'), width: 200, height: 100),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      final RenderBox wide = tester.renderObject<RenderBox>(find.byKey(const Key('wide')));
+      final ({double shown, double room})? share = nebaShownShare(wide);
+
+      expect(share!.shown, closeTo(0.5, 1e-9));
+      expect(share.room, 1);
+    });
+
+    testWidgets('says how much of something taller than the window it can hold', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(
+        host(
+          const SingleChildScrollView(child: SizedBox(key: Key('tall'), width: 100, height: 2400)),
+        ),
+      );
+
+      final RenderBox tall = tester.renderObject<RenderBox>(find.byKey(const Key('tall')));
+
+      expect(nebaShownShare(tall)!.room, 0.25);
+      expect(nebaShownShare(tall)!.shown, 0.25);
+    });
+  });
 }
 
 /// A widget with state of its own, to see that a replay keeps it.

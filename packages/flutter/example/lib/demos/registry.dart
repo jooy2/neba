@@ -18,6 +18,11 @@ import 'package:neba_example/demos/alert/variants.dart';
 import 'package:neba_example/demos/anchor/hero.dart';
 import 'package:neba_example/demos/anchor/rail.dart';
 import 'package:neba_example/demos/anchor/sizes.dart';
+import 'package:neba_example/demos/animate_fade/hero.dart';
+import 'package:neba_example/demos/animate_fade/mode.dart';
+import 'package:neba_example/demos/animate_fade/stagger.dart';
+import 'package:neba_example/demos/animate_fade/timing.dart';
+import 'package:neba_example/demos/animate_fade/triggers.dart';
 import 'package:neba_example/demos/app_logo/artwork.dart';
 import 'package:neba_example/demos/app_logo/hero.dart';
 import 'package:neba_example/demos/app_logo/link.dart';
@@ -418,6 +423,11 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'anchor/hero': AnchorHero.new,
   'anchor/rail': AnchorRail.new,
   'anchor/sizes': AnchorSizes.new,
+  'animate-fade/hero': AnimateFadeHero.new,
+  'animate-fade/mode': AnimateFadeMode.new,
+  'animate-fade/stagger': AnimateFadeStagger.new,
+  'animate-fade/timing': AnimateFadeTiming.new,
+  'animate-fade/triggers': AnimateFadeTriggers.new,
   'app-logo/artwork': AppLogoArtwork.new,
   'app-logo/hero': AppLogoHero.new,
   'app-logo/link': AppLogoLink.new,
