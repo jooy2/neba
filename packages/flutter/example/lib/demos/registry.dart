@@ -85,6 +85,9 @@ import 'package:neba_example/demos/highlight/hero.dart';
 import 'package:neba_example/demos/highlight/matching.dart';
 import 'package:neba_example/demos/highlight/nested.dart';
 import 'package:neba_example/demos/highlight/variants.dart';
+import 'package:neba_example/demos/icon/colors.dart';
+import 'package:neba_example/demos/icon/hero.dart';
+import 'package:neba_example/demos/icon/sizes.dart';
 import 'package:neba_example/demos/icon_button/hero.dart';
 import 'package:neba_example/demos/icon_button/sizes.dart';
 import 'package:neba_example/demos/icon_button/states.dart';
@@ -252,6 +255,9 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'icon-button/hero': IconButtonHero.new,
   'icon-button/sizes': IconButtonSizes.new,
   'icon-button/states': IconButtonStates.new,
+  'icon/colors': IconColors.new,
+  'icon/hero': IconHero.new,
+  'icon/sizes': IconSizes.new,
   'meter/hero': MeterHero.new,
   'meter/sizes': MeterSizes.new,
   'meter/values': MeterValues.new,

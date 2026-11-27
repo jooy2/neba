@@ -114,7 +114,7 @@ Demos that wait on a component not ported yet, to be added with it: `skeleton/sw
 - [x] `NebaBadge`
 - [x] `NebaAvatar`
 - [ ] `NebaAppLogo`
-- [ ] `NebaIcon`
+- [x] `NebaIcon`
 - [ ] `NebaImage`
 - [ ] `NebaGallery`
 - [x] `NebaShortcut`
