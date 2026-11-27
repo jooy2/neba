@@ -22,6 +22,7 @@
 /// ```
 library;
 
+export 'src/components/alert/neba_alert.dart';
 export 'src/components/aspect_ratio/neba_aspect_ratio.dart';
 export 'src/components/avatar/neba_avatar.dart';
 export 'src/components/badge/neba_badge.dart';

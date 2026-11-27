@@ -6,6 +6,11 @@ library;
 
 import 'package:flutter/widgets.dart';
 
+import 'package:neba_example/demos/alert/colors.dart';
+import 'package:neba_example/demos/alert/dismissing.dart';
+import 'package:neba_example/demos/alert/hero.dart';
+import 'package:neba_example/demos/alert/shapes.dart';
+import 'package:neba_example/demos/alert/variants.dart';
 import 'package:neba_example/demos/aspect_ratio/fit.dart';
 import 'package:neba_example/demos/aspect_ratio/hero.dart';
 import 'package:neba_example/demos/aspect_ratio/ratios.dart';
@@ -148,6 +153,11 @@ import 'package:neba_example/demos/visually_hidden/skip_link.dart';
 
 /// The demos, by key.
 const Map<String, Widget Function()> demos = <String, Widget Function()>{
+  'alert/colors': AlertColors.new,
+  'alert/dismissing': AlertDismissing.new,
+  'alert/hero': AlertHero.new,
+  'alert/shapes': AlertShapes.new,
+  'alert/variants': AlertVariants.new,
   'aspect-ratio/fit': AspectRatioFit.new,
   'aspect-ratio/hero': AspectRatioHero.new,
   'aspect-ratio/ratios': AspectRatioRatios.new,
