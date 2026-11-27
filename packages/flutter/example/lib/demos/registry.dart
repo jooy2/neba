@@ -88,6 +88,9 @@ import 'package:neba_example/demos/highlight/variants.dart';
 import 'package:neba_example/demos/icon_button/hero.dart';
 import 'package:neba_example/demos/icon_button/sizes.dart';
 import 'package:neba_example/demos/icon_button/states.dart';
+import 'package:neba_example/demos/meter/hero.dart';
+import 'package:neba_example/demos/meter/sizes.dart';
+import 'package:neba_example/demos/meter/values.dart';
 import 'package:neba_example/demos/panes/fixed.dart';
 import 'package:neba_example/demos/panes/hero.dart';
 import 'package:neba_example/demos/panes/orientation.dart';
@@ -243,6 +246,9 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'icon-button/hero': IconButtonHero.new,
   'icon-button/sizes': IconButtonSizes.new,
   'icon-button/states': IconButtonStates.new,
+  'meter/hero': MeterHero.new,
+  'meter/sizes': MeterSizes.new,
+  'meter/values': MeterValues.new,
   'panes/fixed': PanesFixed.new,
   'panes/hero': PanesHero.new,
   'panes/orientation': PanesOrientation.new,
