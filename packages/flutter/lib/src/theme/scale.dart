@@ -91,7 +91,8 @@ abstract final class NebaScale {
     NebaSize.xl: 10,
   };
 
-  /// Between a field's label, the field under it and the text under that.
+  /// Between a label, the control under it and the text under that: a field's
+  /// parts, and the label above a progress bar and its groove.
   static const Map<NebaSize, double> stackGap = <NebaSize, double>{
     NebaSize.xs: 4,
     NebaSize.sm: 4,

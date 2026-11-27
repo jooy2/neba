@@ -559,3 +559,29 @@ class NebaTransition {
     );
   }
 }
+
+/// A point on a scale, and the colour family a reading takes once it has
+/// reached it: the React package's `NebaThreshold`.
+///
+/// The one place a semantic colour is computed rather than chosen, so that a
+/// `NebaMeter` and a gauge drawing the same reading never disagree about
+/// where amber starts.
+@immutable
+class NebaThreshold {
+  /// The family [color] from [from] up.
+  const NebaThreshold({required this.from, required this.color});
+
+  /// The value from which this family applies, in the reading's own units.
+  final double from;
+
+  /// What the bar, or the arc, turns at and above [from].
+  final NebaColor color;
+
+  @override
+  bool operator ==(Object other) {
+    return other is NebaThreshold && other.from == from && other.color == color;
+  }
+
+  @override
+  int get hashCode => Object.hash(from, color);
+}
