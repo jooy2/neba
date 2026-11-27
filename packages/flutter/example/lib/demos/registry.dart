@@ -46,6 +46,7 @@ import 'package:neba_example/demos/button_group/hero.dart';
 import 'package:neba_example/demos/button_group/orientation.dart';
 import 'package:neba_example/demos/button_group/shared.dart';
 import 'package:neba_example/demos/card/dividers.dart';
+import 'package:neba_example/demos/card/form.dart';
 import 'package:neba_example/demos/card/hero.dart';
 import 'package:neba_example/demos/card/sections.dart';
 import 'package:neba_example/demos/card/sizes.dart';
@@ -63,6 +64,7 @@ import 'package:neba_example/demos/divider/labels.dart';
 import 'package:neba_example/demos/divider/size.dart';
 import 'package:neba_example/demos/divider/vertical.dart';
 import 'package:neba_example/demos/flex/alignment.dart';
+import 'package:neba_example/demos/flex/direction.dart';
 import 'package:neba_example/demos/flex/hero.dart';
 import 'package:neba_example/demos/flex/spacing.dart';
 import 'package:neba_example/demos/grid/alignment.dart';
@@ -108,6 +110,15 @@ import 'package:neba_example/demos/stack/dealt.dart';
 import 'package:neba_example/demos/stack/depth.dart';
 import 'package:neba_example/demos/stack/direction.dart';
 import 'package:neba_example/demos/stack/hero.dart';
+import 'package:neba_example/demos/text_field/controlled.dart';
+import 'package:neba_example/demos/text_field/hero.dart';
+import 'package:neba_example/demos/text_field/icons.dart';
+import 'package:neba_example/demos/text_field/label_placement.dart';
+import 'package:neba_example/demos/text_field/multiline.dart';
+import 'package:neba_example/demos/text_field/shortcuts.dart';
+import 'package:neba_example/demos/text_field/sizes.dart';
+import 'package:neba_example/demos/text_field/states.dart';
+import 'package:neba_example/demos/text_field/variants.dart';
 import 'package:neba_example/demos/toggle/colors.dart';
 import 'package:neba_example/demos/toggle/controlled.dart';
 import 'package:neba_example/demos/toggle/hero.dart';
@@ -169,6 +180,7 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'button/states': ButtonStates.new,
   'button/variants': ButtonVariants.new,
   'card/dividers': CardDividers.new,
+  'card/form': CardForm.new,
   'card/hero': CardHero.new,
   'card/sections': CardSections.new,
   'card/sizes': CardSizes.new,
@@ -186,6 +198,7 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'divider/size': DividerSize.new,
   'divider/vertical': DividerVertical.new,
   'flex/alignment': FlexAlignment.new,
+  'flex/direction': FlexDirection.new,
   'flex/hero': FlexHero.new,
   'flex/spacing': FlexSpacing.new,
   'grid/alignment': GridAlignment.new,
@@ -231,6 +244,15 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'stack/depth': StackDepth.new,
   'stack/direction': StackDirection.new,
   'stack/hero': StackHero.new,
+  'text-field/controlled': TextFieldControlled.new,
+  'text-field/hero': TextFieldHero.new,
+  'text-field/icons': TextFieldIcons.new,
+  'text-field/label-placement': TextFieldLabelPlacement.new,
+  'text-field/multiline': TextFieldMultiline.new,
+  'text-field/shortcuts': TextFieldShortcuts.new,
+  'text-field/sizes': TextFieldSizes.new,
+  'text-field/states': TextFieldStates.new,
+  'text-field/variants': TextFieldVariants.new,
   'toggle-group/full-width': ToggleGroupFullWidth.new,
   'toggle-group/hero': ToggleGroupHero.new,
   'toggle-group/multiple': ToggleGroupMultiple.new,

@@ -57,13 +57,19 @@ NebaFlex(
 
 ### direction
 
-`horizontal`은 row, `vertical`은 column입니다.<Fw react=" breakpoint별 map을 받으므로, 자리가 나면 나란히 놓이고 나기 전에는 위아래로 쌓이는 컨트롤 한 쌍을 만들 수 있습니다." />
+`horizontal`은 row, `vertical`은 column입니다.<Fw react=" breakpoint별 map을 받으므로, 자리가 나면 나란히 놓이고 나기 전에는 위아래로 쌓이는 컨트롤 한 쌍을 만들 수 있습니다." flutter=" 자리가 나면 나란히 놓이고 나기 전에는 위아래로 쌓이는 컨트롤 한 쌍은 창 너비를 breakpoint와 비교해 그에 맞는 direction을 넘겨서 만듭니다." />
 
 <Demo src="flex/direction">
 
 ::: fw react
 
 <<< @/.vitepress/demos/flex/direction.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/flex/direction.dart
 
 :::
 

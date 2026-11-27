@@ -15,6 +15,7 @@ library;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
+import 'package:neba/src/internal/color.dart';
 import 'package:neba/src/internal/interaction.dart';
 import 'package:neba/src/internal/motion.dart';
 import 'package:neba/src/theme/scale.dart';
@@ -38,6 +39,18 @@ class NebaGlowColors {
     final NebaColorRoles roles = tokens.roles(color);
 
     return NebaGlowColors(glow: roles.soft, flash: roles.softPress);
+  }
+
+  /// What a field's shell lights with: half the family's wash, and no flash.
+  ///
+  /// A field is entered rather than pressed, so it takes the spotlight and
+  /// never the afterglow. And it is a thing the pointer passes over on its way
+  /// to putting a caret down: what the reader looks at next is their own text,
+  /// and a bloom at full strength would sit behind it. Half of [roles]' own
+  /// wash rather than a paler token, so a field that turns `danger` the moment
+  /// it is invalid takes the danger light at the same strength.
+  factory NebaGlowColors.field(NebaColorRoles roles) {
+    return NebaGlowColors(glow: mixSrgb(roles.soft, 0.5, transparent), flash: transparent);
   }
 
   /// The spotlight's colour.

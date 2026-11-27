@@ -91,6 +91,15 @@ abstract final class NebaScale {
     NebaSize.xl: 10,
   };
 
+  /// Between a field's label, the field under it and the text under that.
+  static const Map<NebaSize, double> stackGap = <NebaSize, double>{
+    NebaSize.xs: 4,
+    NebaSize.sm: 4,
+    NebaSize.md: 6,
+    NebaSize.lg: 6,
+    NebaSize.xl: 8,
+  };
+
   /// Between the sections of a sheet, and the rows of a vertical option list.
   static const Map<NebaSize, double> sectionGap = <NebaSize, double>{
     NebaSize.xs: 6,

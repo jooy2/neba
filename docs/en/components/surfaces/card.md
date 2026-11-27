@@ -135,4 +135,10 @@ Wrap the `title` in `Semantics(header: true, child: …)` to put the card in the
 
 :::
 
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/card/form.dart
+
+:::
+
 </Demo>

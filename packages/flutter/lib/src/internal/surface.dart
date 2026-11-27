@@ -53,6 +53,7 @@ class NebaSheet extends StatelessWidget {
     this.blur = true,
     this.texture = true,
     this.plateOnTop = false,
+    this.fillDuration,
     this.child,
     super.key,
   });
@@ -88,6 +89,12 @@ class NebaSheet extends StatelessWidget {
   /// otherwise cover the light along the top and the hairline with it.
   final bool plateOnTop;
 
+  /// How long the fill takes to settle, `NebaScale.durationFill` when left
+  /// out. A field answers its focus over `NebaScale.duration` instead, the
+  /// edge's and the ring's, because a fill that took longer would still be
+  /// arriving once the reader had started typing.
+  final Duration? fillDuration;
+
   /// What is on the sheet.
   final Widget? child;
 
@@ -95,7 +102,11 @@ class NebaSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final NebaTokens tokens = NebaTheme.of(context);
     final Duration edgeDuration = nebaDuration(context, NebaScale.duration, instant: pressed);
-    final Duration fillDuration = nebaDuration(context, NebaScale.durationFill, instant: pressed);
+    final Duration fillDuration = nebaDuration(
+      context,
+      this.fillDuration ?? NebaScale.durationFill,
+      instant: pressed,
+    );
     // An edge is a CSS border, which takes a pixel of the box rather than
     // lying over what is in it: content that runs to the edges of an outlined
     // sheet stops inside the hairline.

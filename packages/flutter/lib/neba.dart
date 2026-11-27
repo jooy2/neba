@@ -46,6 +46,7 @@ export 'src/components/segmented_button/neba_segmented_button.dart';
 export 'src/components/show/neba_show.dart';
 export 'src/components/skeleton/neba_skeleton.dart';
 export 'src/components/stack/neba_stack.dart';
+export 'src/components/text_field/neba_text_field.dart';
 export 'src/components/toggle/neba_toggle.dart';
 export 'src/components/toggle_group/neba_toggle_group.dart';
 export 'src/components/typography/neba_typography.dart';

@@ -57,13 +57,19 @@ It draws nothing and takes no `className` or `style`. A child that should take t
 
 ### direction
 
-`horizontal` is a row and `vertical` a column.<Fw react=" It takes a per-breakpoint map, so a pair of controls can sit side by side once there is room and stack before there is." />
+`horizontal` is a row and `vertical` a column.<Fw react=" It takes a per-breakpoint map, so a pair of controls can sit side by side once there is room and stack before there is." flutter=" To set a pair of controls side by side once there is room and stack them before there is, read the window's width against a breakpoint and pass the direction it calls for." />
 
 <Demo src="flex/direction">
 
 ::: fw react
 
 <<< @/.vitepress/demos/flex/direction.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/flex/direction.dart
 
 :::
 
