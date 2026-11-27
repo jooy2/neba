@@ -51,6 +51,19 @@ The six steps of a port are in `packages/flutter/CLAUDE.md`. What the last sessi
 
 Still open from that session:
 
+- [ ] **What the port turned up on the React side.** Each was found by reading the React source or measuring its previews while porting, and the Flutter widget mirrors React until React changes; none is fixed. Decide each in React first, then port the change.
+  - `Switch`: the thumb sits off centre when on. `thumbTravelClasses` computes `100% − 2px − (h − 4)` and ignores the 1-pixel border, so at `md` the thumb is 3 pixels from the start edge off and 5 from the end edge on. The Flutter thumb sits 2 pixels inside the hairline at both ends.
+  - `RadioGroup`: a disabled, chosen radio's dot takes the page's text colour, because `disabledDotClasses` sets none; Checkbox uses `--neba-disabled-fg` for the same state. `Checkbox`: a mixed box does not deepen under the pointer, as a ticked one does.
+  - `Tabs`: with `overflow="wrap"` the indicator is a `rounded-full` box with only a bottom border, so it draws as a curve rather than a line, in `wrappedIndicatorClasses` and in the pre-hydration rule in `styles.css`.
+  - `Meter`: its track and indicator lack the `neba-progress-track` and `neba-progress-indicator` hooks the `forced-colors` block reads, and a non-finite value or an empty range writes "0%" while Base UI draws its own width. `progressFraction` returns `NaN` for a `NaN` max. `ProgressBox`'s page says the plates fill "left to right"; they fill from the start edge.
+  - `Alert` and `Chip`: the × goes from 0.7 to 1 opacity on hover and focus, against the design language's rule that state is never opacity.
+  - `Tooltip`: the default `delay` is 600 ms, against the house rule that a tooltip is instant.
+  - `DataList`: each `<dt>` and `<dd>` carries its own top border, so the hairline breaks at the column gap and the two halves sit at different heights; the `<dt>` and a Timeline's meta set no line height. A bare `TimelineItem` draws a connector into nothing.
+  - `Header`: `align="start"` with no middle slot packs the actions right after the brand, as the `header/measure` demo shows.
+  - `Toast`: `priority` defaults to `low` for every colour, where an Alert takes its role from the colour; and after a dismissing swipe the toast seems to jump back before it fades, since nothing reads `--toast-swipe-movement-*`.
+  - `Panes`: the bar has no `pressTransitionClasses`, so a press is not instant on touch. `ScrollZone`'s `label` props row is stale. A solid `SegmentedButton` glows white on the segments that are not chosen.
+  - Demos and pages: `popover/controlled`'s outside button cannot close an open popover with a pointer (the outside press closes it and the toggle reopens it); `tooltip/grouped`'s icon-only buttons have no `aria-label`; the OtpField page says a click lands on the first empty slot, where Base UI keeps the slot clicked while it is within the code; the DataList lede names `<dt>`/`<dd>`, which only the React half has.
+
 - [ ] **A page whose content is a lazily built list.** `NebaPageLayout` lays its `child` out whole inside the scroll view it owns, as a document is laid out, so a page whose content is a list of thousands of rows builds every row at once. It wants a sliver slot beside `child`, laid out in the band that holds the sidebars beside it.
 
 - [ ] **Selection handles and a copy-and-paste toolbar for the fields.** `NebaTextField` leaves `EditableText.selectionControls` null, because both are drawn by Material or Cupertino, which the package does not import. The pointer and the keyboard select and the keyboard copies and pastes, and on the web the browser's own menu does too, but a touch screen shows no handles and no Cut, Copy, Paste or Select all. It wants `TextSelectionControls` of the package's own, a handle and a toolbar on `NebaSheet`, shared by every field that holds an `EditableText`; the gestures in `neba_text_field.dart` would then stop skipping the toolbar.
