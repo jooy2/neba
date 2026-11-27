@@ -53,6 +53,25 @@ void main() {
     expect(taps, 1);
   });
 
+  // The pointer goes on reporting to the control it went down on, which is no
+  // longer there to hear it.
+  testWidgets('lets go of a press whose control was taken away before the release', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(control());
+    final TestGesture gesture = await tester.startGesture(
+      tester.getCenter(find.byKey(const Key('control'))),
+    );
+    await tester.pump();
+    await tester.pumpWidget(host(const SizedBox()));
+
+    await gesture.moveBy(const Offset(4, 0));
+    await gesture.up();
+
+    expect(tester.takeException(), isNull);
+    expect(taps, 0);
+  });
+
   testWidgets('does not tap when a press is dragged off and released', (WidgetTester tester) async {
     await tester.pumpWidget(control());
     final TestGesture gesture = await tester.startGesture(

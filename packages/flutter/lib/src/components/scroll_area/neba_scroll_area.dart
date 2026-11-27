@@ -6,8 +6,8 @@ import 'package:flutter/widgets.dart';
 
 import 'package:neba/src/internal/focus_ring.dart';
 import 'package:neba/src/internal/messages.dart';
-import 'package:neba/src/internal/motion.dart';
 import 'package:neba/src/internal/scroll_fade.dart';
+import 'package:neba/src/internal/scroll_keys.dart';
 import 'package:neba/src/theme/scale.dart';
 import 'package:neba/src/theme/theme.dart';
 import 'package:neba/src/theme/tokens.dart';
@@ -172,62 +172,7 @@ class _NebaScrollAreaState extends State<NebaScrollArea> {
   }
 
   KeyEventResult _onKey(FocusNode node, KeyEvent event) {
-    if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
-      return KeyEventResult.ignored;
-    }
-
-    final bool rtl = Directionality.of(context) == TextDirection.rtl;
-    final ScrollController? down = _vertical;
-    final ScrollController? across = _horizontal;
-    final ScrollController? either = down ?? across;
-    final LogicalKeyboardKey key = event.logicalKey;
-
-    bool moved = false;
-
-    void by(ScrollController? controller, double Function(ScrollPosition position) delta) {
-      if (controller == null || !controller.hasClients) {
-        return;
-      }
-
-      final ScrollPosition position = controller.position;
-      final double target = (position.pixels + delta(position)).clamp(
-        position.minScrollExtent,
-        position.maxScrollExtent,
-      );
-      final Duration duration = nebaDuration(context, NebaScale.duration);
-
-      if (duration == Duration.zero) {
-        position.jumpTo(target);
-      } else {
-        position.animateTo(target, duration: duration, curve: NebaScale.ease);
-      }
-
-      moved = true;
-    }
-
-    // A line is forty pixels and a page most of the viewport, as a browser
-    // scrolls one; the arrows across follow the reading direction.
-    const double line = 40;
-
-    if (key == LogicalKeyboardKey.arrowDown) {
-      by(down, (_) => line);
-    } else if (key == LogicalKeyboardKey.arrowUp) {
-      by(down, (_) => -line);
-    } else if (key == LogicalKeyboardKey.arrowRight) {
-      by(across, (_) => rtl ? -line : line);
-    } else if (key == LogicalKeyboardKey.arrowLeft) {
-      by(across, (_) => rtl ? line : -line);
-    } else if (key == LogicalKeyboardKey.pageDown) {
-      by(either, (ScrollPosition p) => p.viewportDimension * 0.875);
-    } else if (key == LogicalKeyboardKey.pageUp) {
-      by(either, (ScrollPosition p) => -p.viewportDimension * 0.875);
-    } else if (key == LogicalKeyboardKey.home) {
-      by(either, (ScrollPosition p) => p.minScrollExtent - p.pixels);
-    } else if (key == LogicalKeyboardKey.end) {
-      by(either, (ScrollPosition p) => p.maxScrollExtent - p.pixels);
-    }
-
-    return moved ? KeyEventResult.handled : KeyEventResult.ignored;
+    return nebaScrollKey(context, event, vertical: _vertical, horizontal: _horizontal);
   }
 
   @override

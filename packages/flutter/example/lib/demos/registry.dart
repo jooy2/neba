@@ -81,6 +81,13 @@ import 'package:neba_example/demos/scroll_area/fade.dart';
 import 'package:neba_example/demos/scroll_area/hero.dart';
 import 'package:neba_example/demos/scroll_area/orientation.dart';
 import 'package:neba_example/demos/scroll_area/sizes.dart';
+import 'package:neba_example/demos/scroll_zone/buttons.dart';
+import 'package:neba_example/demos/scroll_zone/hero.dart';
+import 'package:neba_example/demos/scroll_zone/lines.dart';
+import 'package:neba_example/demos/scroll_zone/modes.dart';
+import 'package:neba_example/demos/scroll_zone/placement.dart';
+import 'package:neba_example/demos/scroll_zone/vertical.dart';
+import 'package:neba_example/demos/scroll_zone/wheel.dart';
 import 'package:neba_example/demos/show/hero.dart';
 import 'package:neba_example/demos/show/pair.dart';
 import 'package:neba_example/demos/show/range.dart';
@@ -185,6 +192,13 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'scroll-area/hero': ScrollAreaHero.new,
   'scroll-area/orientation': ScrollAreaOrientation.new,
   'scroll-area/sizes': ScrollAreaSizes.new,
+  'scroll-zone/buttons': ScrollZoneButtons.new,
+  'scroll-zone/hero': ScrollZoneHero.new,
+  'scroll-zone/lines': ScrollZoneLines.new,
+  'scroll-zone/modes': ScrollZoneModes.new,
+  'scroll-zone/placement': ScrollZonePlacement.new,
+  'scroll-zone/vertical': ScrollZoneVertical.new,
+  'scroll-zone/wheel': ScrollZoneWheel.new,
   'show/hero': ShowHero.new,
   'show/pair': ShowPair.new,
   'show/range': ShowRange.new,

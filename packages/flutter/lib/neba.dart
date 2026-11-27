@@ -40,6 +40,7 @@ export 'src/components/panes/neba_panes.dart';
 export 'src/components/portal/neba_portal.dart';
 export 'src/components/provider/neba_provider.dart';
 export 'src/components/scroll_area/neba_scroll_area.dart';
+export 'src/components/scroll_zone/neba_scroll_zone.dart';
 export 'src/components/show/neba_show.dart';
 export 'src/components/stack/neba_stack.dart';
 export 'src/components/toggle/neba_toggle.dart';

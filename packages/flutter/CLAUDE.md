@@ -61,6 +61,7 @@ The React guide states each rule of [the design language](../../docs/ko/design/d
 | `breakpoint.dart` | `nebaShownAt` and `NebaWidthGate`: whether a window width is in a range of breakpoints, and the children a container leaves out because a `NebaShow` among them is hidden. A container that lays out a list of children passes it through `nebaPresentChildren` |
 | `ring.dart` | `NebaRingScope` and `NebaRing`: the ring a ringed pile asks for, drawn by the first widget below it that draws a shape, around that shape. Every widget with a shape of its own wraps it in `NebaRing` |
 | `scroll_fade.dart` | `NebaEdgeFade`: a scrolling box's content masked out at each edge that has more beyond it, for ScrollArea and the Tabs bar |
+| `scroll_keys.dart` | `nebaScrollKey` and `nebaScrollTo`: the keys a focused scroll box answers, Page Up and Down, Home and End included, and the eased step a key or a ScrollZone button scrolls by, for ScrollArea and ScrollZone |
 | `initials.dart` | `initialsOf`: the first character of a name's first word and of its last, for Avatar and AppLogo |
 | `messages.dart` | `NebaLocale`, `registerNebaMessages`, `nebaMessages` and `fillNebaMessage`: the words a widget says on its own behalf, by namespace, in the React package's namespaces |
 | `svg_path.dart`, `glyphs.dart` | The React package's SVG glyphs, read from the same path data: ×, chevron, tick, minus, plus, dot, the turning ring and the severity set, and `NebaSpinner`, the ring turning at 900 milliseconds a turn |

@@ -1,6 +1,7 @@
 ---
 title: ScrollZone
 order: 9
+flutter: true
 ---
 
 # ScrollZone
@@ -8,6 +9,8 @@ order: 9
 <p class="neba-lede">무엇이든 한 방향으로 늘어놓고 그 방향으로 스크롤하는 스트립입니다. 카드나 chip, 아바타, 썸네일이 상자를 가로지르거나 아래로 흐르며, 원하는 만큼의 줄로 놓이고, 휠도 손가락도 없는 포인터를 위한 버튼 한 쌍이 붙습니다.</p>
 
 <Demo src="scroll-zone/hero" minHeight="220" />
+
+::: fw react
 
 ```tsx
 import { ScrollZone } from 'neba';
@@ -19,11 +22,42 @@ import { ScrollZone } from 'neba';
 </ScrollZone>;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+NebaScrollZone(
+  label: 'Continue watching',
+  spacing: 3,
+  children: <Widget>[
+    for (final Show show in shows)
+      SizedBox(width: 160, child: NebaCard(title: Text(show.name))),
+  ],
+);
+```
+
+:::
+
 ## Props
 
 <PropsTable name="ScrollZone" />
 
-나머지 `<div>` 속성과 `ref`는 그대로 루트에 전달됩니다. `scrollerRef`와 `onScroll`은 그 안에서 스크롤되는 상자에 붙습니다. 공용 축(`variant` `size` `color` `density` `orientation`)은 [prop 규약](../../design/prop-conventions)에 있습니다.
+::: fw react
+
+나머지 `<div>` 속성과 `ref`는 그대로 루트에 전달됩니다. `scrollerRef`와 `onScroll`은 그 안에서 스크롤되는 상자에 붙습니다.
+
+:::
+
+::: fw flutter
+
+`className`과 `style`은 받지 않습니다. 내부는 평범한 Flutter 스크롤 뷰라 손가락, 스타일러스, 트랙패드, 관성은 모두 플랫폼의 것 그대로이며, `controller`로 스크롤 위치를 다루고 `onScroll`은 움직일 때마다 호출됩니다. 다른 Flutter 스크롤 뷰처럼 흐르는 방향으로 크기가 묶여야 하므로, `Row` 안의 가로 zone은 `Expanded`로 감쌉니다. 버튼은 둥근 `NebaButton`입니다.
+
+:::
+
+공용 축(`variant` `size` `color` `density` `orientation`)은 [prop 규약](../../design/prop-conventions)에 있습니다.
 
 ## 예시
 
@@ -31,11 +65,21 @@ import { ScrollZone } from 'neba';
 
 `orientation`은 스트립이 흐르는 방향, 곧 스크롤되는 방향을 정합니다. `lines`는 가로 zone이 새 열로 넘어가기 전까지 채우는 줄 수입니다. 두 줄이면 같은 너비에 두 배가 들어가고, 스크롤은 여전히 하나입니다.
 
-`spacing`은 자식 사이의 간격이며, [GridContainer](./grid)와 같은 스케일입니다. `2`는 `0.5rem`입니다.
+`spacing`은 자식 사이의 간격이며, [GridContainer](./grid)와 같은 스케일입니다. `2`는 <Fw react="`0.5rem`입니다" flutter="8 논리 픽셀입니다" />.
 
 <Demo src="scroll-zone/lines" minHeight="220">
 
+::: fw react
+
 <<< @/.vitepress/demos/scroll-zone/lines.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/scroll_zone/lines.dart
+
+:::
 
 </Demo>
 
@@ -45,19 +89,39 @@ import { ScrollZone } from 'neba';
 
 <Demo src="scroll-zone/modes" minHeight="360">
 
+::: fw react
+
 <<< @/.vitepress/demos/scroll-zone/modes.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/scroll_zone/modes.dart
+
+:::
 
 </Demo>
 
 ### buttons
 
-기본값 `auto`는 전부 들어맞을 때에는 둘 다 그리지 않습니다. 끝에 닿으면 갈 곳이 없는 overlay 버튼은 지우고, inline 버튼은 그 자리에 `disabled`로 남깁니다. `always`는 전부 들어맞는 동안에도 첫 페인트부터 둘 다 그리므로, 내용이 나중에 도착하는 스트립에 맞습니다. `none`은 아무것도 그리지 않고 드래그와 방향키, 포인터가 이미 밀 수 있는 것에 맡깁니다.
+기본값 `auto`는 전부 들어맞을 때에는 둘 다 그리지 않습니다. 끝에 닿으면 갈 곳이 없는 overlay 버튼은 지우고, inline 버튼은 그 자리에 `disabled`로 남깁니다. `always`는 전부 들어맞는 동안에도 첫 <Fw react="페인트" flutter="프레임" />부터 둘 다 그리므로, 내용이 나중에 도착하는 스트립에 맞습니다. `none`은 아무것도 그리지 않고 드래그와 방향키, 포인터가 이미 밀 수 있는 것에 맡깁니다.
 
 `snap`은 어떻게 스크롤했든 멈추는 순간 가장 가까운 자식을 시작 가장자리에 맞춥니다.
 
 <Demo src="scroll-zone/buttons" minHeight="260">
 
+::: fw react
+
 <<< @/.vitepress/demos/scroll-zone/buttons.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/scroll_zone/buttons.dart
+
+:::
 
 </Demo>
 
@@ -67,25 +131,57 @@ import { ScrollZone } from 'neba';
 
 inline 버튼은 갈 곳이 없을 때에도 자기 자리를 지키므로, 끝에 닿아도 스트립의 너비가 바뀌지 않습니다.
 
-크기를 재기 전까지, 곧 서버에서 렌더한 페이지의 첫 페인트에서는 inline `auto` ScrollZone이 버튼을 숨긴 채 양쪽 자리를 미리 비워 둡니다. 넘치는 스트립이면 그 자리에 버튼만 나타나고, 들어맞는 스트립이면 자리를 거둬들입니다.
+크기를 재기 전까지, 곧 <Fw react="서버에서 렌더한 페이지의 첫 페인트" flutter="첫 프레임" />에서는 inline `auto` ScrollZone이 버튼을 숨긴 채 양쪽 자리를 미리 비워 둡니다. 넘치는 스트립이면 그 자리에 버튼만 나타나고, 들어맞는 스트립이면 자리를 거둬들입니다.
 
 <Demo src="scroll-zone/placement" minHeight="280">
 
+::: fw react
+
 <<< @/.vitepress/demos/scroll-zone/placement.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/scroll_zone/placement.dart
+
+:::
 
 </Demo>
 
 ### 아래로 흐르게 하기
 
+::: fw react
+
 세로 zone은 스크롤할 높이가 있어야 하고, 그 높이를 컴포넌트에서 받습니다. 루트가 flex 컬럼이고 스크롤 박스가 그것을 채우므로, 높이가 있는 상자 안에서 `className="h-full"` 하나면 충분합니다.
+
+:::
+
+::: fw flutter
+
+세로 zone은 스크롤할 높이가 있어야 합니다. `SizedBox`로 높이를 주거나 `Expanded` 안에 두면, 스트립이 버튼 사이에 남은 높이를 채웁니다.
+
+:::
 
 <Demo src="scroll-zone/vertical" minHeight="260">
 
+::: fw react
+
 <<< @/.vitepress/demos/scroll-zone/vertical.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/scroll_zone/vertical.dart
+
+:::
 
 </Demo>
 
 ### drag
+
+::: fw react
 
 손가락은 이미 스트립을 스크롤합니다. `drag`는 같은 제스처를 마우스와 펜에도 붙이며, 진짜로 끌었을 때 뒤따르는 click은 삼켜지므로 카드 위를 지나 스트립을 당겨도 그 카드가 열리지 않습니다.
 
@@ -95,6 +191,18 @@ inline 버튼은 갈 곳이 없을 때에도 자기 자리를 지키므로, 끝�
 </ScrollZone>
 ```
 
+:::
+
+::: fw flutter
+
+손가락, 스타일러스, 트랙패드는 이미 스트립을 스크롤합니다. `drag`는 같은 제스처를 마우스에도 붙이며, 드래그가 된 누름은 그 아래의 자식에 닿지 않으므로 카드 위를 지나 스트립을 당겨도 그 카드가 열리지 않습니다. 튕기듯 놓은 드래그는 플랫폼의 관성대로 조금 더 흘러갑니다.
+
+```dart
+NebaScrollZone(drag: false, scrollbar: true, children: items);
+```
+
+:::
+
 ### wheel
 
 `wheel`은 가로 스트립 위에서 굴린 마우스 휠을 스트립을 따라가는 이동으로 바꿉니다. 기본값은 꺼짐이며, 세로 zone은 이 prop을 무시합니다.
@@ -103,15 +211,36 @@ inline 버튼은 갈 곳이 없을 때에도 자기 자리를 지키므로, 끝�
 
 <Demo src="scroll-zone/wheel" minHeight="280">
 
+::: fw react
+
 <<< @/.vitepress/demos/scroll-zone/wheel.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/scroll_zone/wheel.dart
+
+:::
 
 </Demo>
 
 ## 접근성
 
+::: fw react
+
 - 내용이 넘치는 동안 스트립은 포커스를 받고 방향키로 스크롤됩니다. 브라우저 자신의 키 처리이므로 RTL에서도 이미 올바릅니다. 내용이 다 들어가는 스트립은 tab stop이 아닙니다.
+
+:::
+
+::: fw flutter
+
+- 내용이 넘치는 동안 스트립은 포커스를 받고, 스트립 방향의 방향키와 Page Up, Page Down, Home, End로 스크롤됩니다. 가로 방향키는 RTL에서 읽는 방향을 따릅니다. 내용이 다 들어가는 스트립은 tab stop이 아닙니다. Tab은 자식을 놓인 순서대로 지나가고, 키보드로 포커스를 받은 자식은 스트립 가장자리에서 떨어지도록 스크롤됩니다.
+
+:::
+
 - `label`이 영역의 이름이며 스크린 리더가 내용보다 먼저 읽습니다. 없으면 locale의 일반 명사가 이름이 되므로 이름이 비지는 않지만, 무엇이 들었는지는 `label`만 말할 수 있습니다.
 - 스크롤 버튼은 이름을 가진 진짜 버튼입니다. `previousLabel` / `nextLabel`, 또는 `locale`이 그 이름을 정합니다.
 - `hold` 모드에서 버튼은 Enter와 Space에도 같은 방식으로 답하며, 키를 누르고 있는 동안 스크롤합니다.
-- 갈 곳이 없는 버튼은 `disabled` 대신 `aria-disabled`로 표시되므로, 끝에 닿게 한 누름 뒤에도 포커스가 버튼에 남습니다. `auto`가 지울 overlay 버튼은 포커스가 떠날 때까지 남아 있습니다.
+- 갈 곳이 없는 버튼은 <Fw react="`disabled` 대신 `aria-disabled`로 표시되므로" flutter="비활성화되지만 포커스 순서에는 남으므로" />, 끝에 닿게 한 누름 뒤에도 포커스가 버튼에 남습니다. `auto`가 지울 overlay 버튼은 포커스가 떠날 때까지 남아 있습니다.
 - 화면 밖으로 나간 항목도 보조 기술에서 숨기지 않습니다. 스크롤하면 닿을 수 있기 때문입니다.

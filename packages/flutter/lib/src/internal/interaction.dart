@@ -140,6 +140,12 @@ class _NebaInteractiveState extends State<NebaInteractive> {
   }
 
   void _setPointerDown(bool down, [Offset? position]) {
+    // A pointer goes on reporting to what it went down on, so a control taken
+    // away mid-press still hears the release.
+    if (!mounted) {
+      return;
+    }
+
     if (position != null) {
       _pointer.value = position;
     }
@@ -198,7 +204,13 @@ class _NebaInteractiveState extends State<NebaInteractive> {
         onPointerDown: enabled
             ? (PointerDownEvent e) => _setPointerDown(true, e.localPosition)
             : null,
-        onPointerMove: enabled ? (PointerMoveEvent e) => _pointer.value = e.localPosition : null,
+        onPointerMove: enabled
+            ? (PointerMoveEvent e) {
+                if (mounted) {
+                  _pointer.value = e.localPosition;
+                }
+              }
+            : null,
         onPointerUp: enabled ? (PointerUpEvent e) => _setPointerDown(false) : null,
         onPointerCancel: enabled ? (PointerCancelEvent e) => _setPointerDown(false) : null,
         // Hover is tracked here rather than through the detector's hover
