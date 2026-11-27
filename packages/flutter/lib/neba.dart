@@ -87,6 +87,7 @@ export 'src/components/overlay/neba_overlay.dart';
 export 'src/components/page_layout/neba_page_layout.dart';
 export 'src/components/pagination/neba_pagination.dart';
 export 'src/components/panes/neba_panes.dart';
+export 'src/components/pie_chart/neba_pie_chart.dart';
 export 'src/components/pill/neba_pill.dart';
 export 'src/components/popconfirm/neba_popconfirm.dart';
 export 'src/components/popover/neba_popover.dart';

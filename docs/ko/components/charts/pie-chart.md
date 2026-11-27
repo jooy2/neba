@@ -1,6 +1,7 @@
 ---
 title: PieChart
 order: 5
+flutter: true
 ---
 
 # PieChart
@@ -8,6 +9,8 @@ order: 5
 <p class="neba-lede">전체에 대한 부분을 원의 조각으로 보여 줍니다. "이 중 하나가 대부분인가?"라는 질문 하나에는 잘 답하고, 그보다 세밀한 것은 막대 차트의 몫입니다.</p>
 
 <Demo src="pie-chart/hero" />
+
+::: fw react
 
 ```tsx
 import { PieChart } from 'neba';
@@ -20,9 +23,28 @@ import { PieChart } from 'neba';
 />;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+const NebaPieChart(
+  label: '유입 경로별 세션',
+  shape: NebaPieShape.donut,
+  categories: <Object>['Organic', 'Direct', 'Paid'],
+  data: <num>[18420, 9260, 6140],
+);
+```
+
+:::
+
 ## 데이터 형식
 
 pie는 series가 하나이므로 series 배열이 아니라 `data`를 직접 받습니다. 여기서 정체성을 갖는 것은 조각이며, 조각 하나하나가 팔레트 slot을 가져가고 범례도 조각을 나열합니다.
+
+::: fw react
 
 `data`는 `NebaChartDatum`의 배열입니다. 숫자이거나 `null`이거나, 이름과 색을 직접 들고 있는 점입니다. `categories`가 조각의 이름을 정하고, 대신 각 점이 `x`를 들고 있어도 됩니다.
 
@@ -37,6 +59,25 @@ pie는 series가 하나이므로 series 배열이 아니라 `data`를 직접 받
 />
 ```
 
+:::
+
+::: fw flutter
+
+`data`는 `List<Object?>`입니다. 각 항목은 `num`이거나 `null`이거나, 이름과 색을 직접 들고 있는 `NebaChartPoint`입니다. `categories`가 조각의 이름을 정하고, 대신 각 점이 `x`를 들고 있어도 됩니다.
+
+```dart
+const NebaPieChart(categories: <Object>['Free', 'Pro', 'Team'], data: <num>[4820, 2140, 890]);
+
+const NebaPieChart(
+  data: <Object>[
+    NebaChartPoint(x: 'Passed', y: 1284, color: NebaColor.success),
+    NebaChartPoint(x: 'Failed', y: 96, color: NebaColor.danger),
+  ],
+);
+```
+
+:::
+
 조각은 넘긴 순서대로 그려지고 다시 정렬되지 않습니다. 색은 `data` 안의 자리를 따르므로, 필터로 하나를 빼면 그 뒤의 조각이 모두 다음 색으로 옮겨 갑니다. 점에 `color`를 직접 주면 색이 고정됩니다.
 
 음수는 조각을 그리지 않고 합계에도 더하지 않습니다. treemap과 마찬가지로 표와 범례에는 남습니다.
@@ -45,17 +86,37 @@ pie는 series가 하나이므로 series 배열이 아니라 `data`를 직접 받
 
 <PropsTable name="PieChart" />
 
+::: fw react
+
 `<div>`의 native 속성과 [Box](../surfaces/box)의 모든 prop이 그대로 전달됩니다. `legend`와 `tooltip`은 [LineChart](./line-chart#props)와 같은 형태를 받습니다. 공용 축은 [prop 규약](../../design/prop-conventions)을 참고하세요.
+
+:::
+
+::: fw flutter
+
+차트는 [LineChart](./line-chart#props)처럼 [Box](../surfaces/box) 위에 놓이고, `legend`와 `tooltip`은 그곳과 같은 형태를 받습니다. `exportable`은 Flutter 패키지에 아직 없습니다. `shape`는 `NebaPieShape`이고, `valueLabels`는 모든 차트가 함께 쓰는 `NebaChartValueLabels`를 받되 pie는 그중 `none`과 `all`만 읽습니다. 공용 축은 [prop 규약](../../design/prop-conventions)을 참고하세요.
+
+:::
 
 ## 예시
 
 ### shape
 
-`pie`는 꽉 찬 원, `donut`은 가운데를 비운 고리입니다. `semi`는 상자 아래쪽에서 반원을 그리므로, 세로보다 가로가 긴 대시보드 타일에 맞습니다.
+<Fw react="`pie`는" flutter="`NebaPieShape.pie`는" /> 꽉 찬 원, `donut`은 가운데를 비운 고리입니다. `semi`는 상자 아래쪽에서 반원을 그리므로, 세로보다 가로가 긴 대시보드 타일에 맞습니다.
 
 <Demo src="pie-chart/shapes">
 
+::: fw react
+
 <<< @/.vitepress/demos/pie-chart/shapes.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/pie_chart/shapes.dart
+
+:::
 
 </Demo>
 
@@ -67,7 +128,17 @@ pie는 series가 하나이므로 series 배열이 아니라 `data`를 직접 받
 
 <Demo src="pie-chart/ring">
 
+::: fw react
+
 <<< @/.vitepress/demos/pie-chart/ring.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/pie_chart/ring.dart
+
+:::
 
 </Demo>
 
@@ -75,13 +146,29 @@ pie는 series가 하나이므로 series 배열이 아니라 `data`를 직접 받
 
 `center`는 `donut`이나 `semi`의 빈 가운데에 그려집니다. 합계나 이 차트가 말하려는 수치 하나를 넣으세요.
 
+::: fw react
+
 ```tsx
 <PieChart shape="donut" center={<Typography level="h4">38.6K</Typography>} … />
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+NebaPieChart(
+  shape: NebaPieShape.donut,
+  center: const NebaTypography('38.6K', level: NebaTypographyLevel.h4),
+  …
+)
+```
+
+:::
+
 ### valueLabels
 
-`all`은 각 조각에 값이 아니라 **비중**을 쓰고, 값은 tooltip에 남습니다. 라벨은 양옆에 여유를 두고 들어갈 만큼 조각이 넓을 때만 그려집니다. 들어가지 않는 라벨은 잘리는 대신 그려지지 않으며, tooltip과 표에는 그대로 남아 있습니다.
+<Fw react="`all`은" flutter="`NebaChartValueLabels.all`은" /> 각 조각에 값이 아니라 **비중**을 쓰고, 값은 tooltip에 남습니다. 라벨은 양옆에 여유를 두고 들어갈 만큼 조각이 넓을 때만 그려집니다. 들어가지 않는 라벨은 잘리는 대신 그려지지 않으며, tooltip과 표에는 그대로 남아 있습니다.
 
 ### 색
 
@@ -89,21 +176,60 @@ pie는 series가 하나이므로 series 배열이 아니라 `data`를 직접 받
 
 <Demo src="pie-chart/colors">
 
+::: fw react
+
 <<< @/.vitepress/demos/pie-chart/colors.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/pie_chart/colors.dart
+
+:::
 
 </Demo>
 
 ### legend · startAngle
 
-범례는 조각이 둘 이상이면 나타나고 기본적으로 클릭할 수 있습니다. 조각의 항목을 클릭하면 그 조각이 빠지고 나머지가 원을 다시 채웁니다. `startAngle`은 12시 방향에서 시계 방향으로 몇 도에서 시작할지를 정합니다.
+범례는 조각이 둘 이상이면 나타나고 기본적으로 <Fw react="클릭할" flutter="누를" /> 수 있습니다. 조각의 항목을 <Fw react="클릭하면" flutter="누르면" /> 그 조각이 빠지고 나머지가 원을 다시 채웁니다. `startAngle`은 12시 방향에서 시계 방향으로 몇 도에서 시작할지를 정합니다.
+
+::: fw react
 
 ```tsx
 <PieChart legend={{ side: 'right', align: 'center' }} startAngle={-30} … />
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+NebaPieChart(
+  legend: const NebaChartLegend(side: NebaSide.right, align: NebaAlign.center),
+  startAngle: -30,
+  …
+)
+```
+
+:::
+
 ## 접근성
+
+::: fw react
 
 - 데이터는 `label`을 caption으로 하는 **화면에 보이지 않는 표**로도 렌더링됩니다. plot 자체의 설명은 값의 개수와 범위를 담은 한 문장이라, focus할 때 표 전체를 읽지 않습니다.
 - plot에 focus할 수 있습니다. `←`·`→`로 조각을 옮기고, `Home`·`End`로 처음과 끝 조각으로 가며, `Escape`로 해제하므로 포인터 없이도 tooltip에 닿을 수 있습니다. 터치 화면에서는 탭한 조각의 tooltip이 plot 바깥을 탭할 때까지 남습니다.
 - `valueLabels="all"`로 쓴 비율은 조각 위에서 가장 잘 읽히는 글자색을 씁니다. `#ffe066`처럼 색을 직접 준 조각은 대비에 따라 검정이나 흰색이 됩니다.
 - 조각은 각각의 테두리가 아니라 표면 색의 간격으로 분리되며, 그 간격은 반지름과 무관하게 화면에서 2px로 유지됩니다.
+
+:::
+
+::: fw flutter
+
+- plot은 `label`로 이름 붙고 값의 개수와 범위를 담은 한 문장으로 설명되는 이미지 노드 하나이고, 데이터는 `label`을 caption으로 하는 숨은 표에 조각마다 한 행씩 있습니다. [LineChart](./line-chart#접근성)와 같으며, Flutter가 그중 무엇을 표현할 수 있고 없는지는 그 문서에 있습니다.
+- plot이 focus를 받습니다. `←`·`→`로 조각을 옮기고, `Home`·`End`로 처음과 끝 조각으로 가며, `Escape`로 해제하고, 옮길 때마다 읽은 값을 알려 줍니다. 터치 화면에서는 탭한 조각의 tooltip이 plot 바깥을 탭할 때까지 남습니다.
+- `NebaChartValueLabels.all`로 쓴 비율은 조각 위에서 가장 잘 읽히는 글자색을 씁니다. `Color(0xFFFFE066)`처럼 `Color`를 직접 준 조각은 대비에 따라 검정이나 흰색이 됩니다.
+- 조각은 각각의 테두리가 아니라 표면 색의 간격으로 분리되며, 그 간격은 반지름과 무관하게 화면에서 2픽셀로 유지됩니다.
+
+:::

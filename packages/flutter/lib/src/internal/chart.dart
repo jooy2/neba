@@ -1005,6 +1005,85 @@ Path chartBarPath(Rect rect, double radius, NebaChartBarEnd end) {
   });
 }
 
+/// [degrees] clockwise from twelve o'clock, as the radians from three o'clock
+/// a canvas measures from.
+///
+/// Twelve o'clock is where a reader starts reading a circle, so every angle a
+/// round chart is given is measured from there, and the offset is applied here
+/// once rather than at every call.
+double _radians(double degrees) => (degrees - 90) * math.pi / 180;
+
+/// The point [degrees] clockwise from twelve o'clock on a circle of [radius]
+/// about [centre].
+Offset chartPolar(Offset centre, double radius, double degrees) {
+  final double angle = _radians(degrees);
+
+  return centre + Offset(math.cos(angle), math.sin(angle)) * radius;
+}
+
+/// A slice of a ring about [centre], from [from] to [to] degrees clockwise
+/// from twelve o'clock, between [inner] and [outer].
+///
+/// An [inner] of zero is a pie's wedge, run in from the centre; anything above
+/// it is a donut's band. A full turn is a whole disc, or a whole ring with the
+/// hole left out, rather than an arc whose two ends meet.
+Path chartArcPath(Offset centre, double outer, double inner, double from, double to) {
+  final Rect rim = Rect.fromCircle(center: centre, radius: outer);
+  final Rect hole = Rect.fromCircle(center: centre, radius: math.max(0, inner));
+
+  if ((to - from).abs() >= 360) {
+    final Path path = Path()..addOval(rim);
+
+    if (inner > 0) {
+      path
+        ..addOval(hole)
+        ..fillType = PathFillType.evenOdd;
+    }
+
+    return path;
+  }
+
+  final double start = _radians(from);
+  final double sweep = (to - from) * math.pi / 180;
+
+  if (inner <= 0) {
+    return Path()
+      ..moveTo(centre.dx, centre.dy)
+      ..arcTo(rim, start, sweep, false)
+      ..close();
+  }
+
+  return Path()
+    ..arcTo(rim, start, sweep, true)
+    ..arcTo(hole, start + sweep, -sweep, false)
+    ..close();
+}
+
+/// The ink a label wears inside a mark filled with the colour of slot
+/// [index], or with [explicit], a mark's own colour.
+///
+/// A palette slot has its answer in the tokens, per theme. A [Color] of the
+/// caller's own is black or white by contrast, because a pale slice is exactly
+/// where a fixed white label disappears. A [NebaColor] family keeps the
+/// surface, which is what the families' accents were made to carry.
+Color chartInkOn(Object? explicit, int index, NebaTokens tokens) {
+  if (explicit is Color) {
+    final double light = luminance(explicit);
+
+    return (light + 0.05) / 0.05 > 1.05 / (light + 0.05)
+        ? const Color(0xFF000000)
+        : const Color(0xFFFFFFFF);
+  }
+
+  if (explicit is NebaColor) {
+    return tokens.surface;
+  }
+
+  final List<NebaInkTone> inks = tokens.chart.seriesInk;
+
+  return tokens.ink(inks[index % inks.length]);
+}
+
 /// Which points of [one] get a value label, decided once for the whole series
 /// rather than asked per point.
 bool Function(int index) chartLabelledPoints(

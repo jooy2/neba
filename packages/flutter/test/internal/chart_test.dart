@@ -506,4 +506,49 @@ void main() {
       expect(chartLabelledPoints(one, NebaChartValueLabels.none)(1), isFalse);
     });
   });
+
+  group('arcs', () {
+    const Offset centre = Offset(100, 100);
+
+    test('measures an angle clockwise from twelve o’clock', () {
+      Offset round(Offset point) => Offset(point.dx.roundToDouble(), point.dy.roundToDouble());
+
+      expect(round(chartPolar(centre, 50, 0)), const Offset(100, 50));
+      expect(round(chartPolar(centre, 50, 90)), const Offset(150, 100));
+      expect(round(chartPolar(centre, 50, 180)), const Offset(100, 150));
+      expect(round(chartPolar(centre, 50, -90)), const Offset(50, 100));
+    });
+
+    test('runs a wedge in to the centre and a band along its hole', () {
+      final Path wedge = chartArcPath(centre, 80, 0, 0, 90);
+      final Path band = chartArcPath(centre, 80, 50, 0, 90);
+
+      expect(wedge.contains(centre + const Offset(5, -5)), isTrue);
+      expect(band.contains(centre + const Offset(5, -5)), isFalse);
+      expect(band.contains(centre + const Offset(45, -45)), isTrue);
+      // Nothing outside the quarter it was asked for.
+      expect(band.contains(centre + const Offset(-45, -45)), isFalse);
+      expect(wedge.getBounds().right, closeTo(180, 0.01));
+    });
+
+    test('draws a full turn as a whole disc, or a ring with its hole left out', () {
+      final Path disc = chartArcPath(centre, 80, 0, -30, 330);
+      final Path ring = chartArcPath(centre, 80, 50, 0, 360);
+
+      expect(disc.contains(centre), isTrue);
+      expect(disc.contains(centre + const Offset(0, -79)), isTrue);
+      expect(ring.contains(centre), isFalse);
+      expect(ring.contains(centre + const Offset(0, -65)), isTrue);
+      expect(ring.contains(centre + const Offset(0, 65)), isTrue);
+    });
+
+    test('writes a label on a slot in its own ink, and on a colour of its own by contrast', () {
+      final NebaTokens tokens = NebaTokens.light();
+
+      expect(chartInkOn(null, 9, tokens), tokens.ink(tokens.chart.seriesInk[1]));
+      expect(chartInkOn(const Color(0xFFFFE066), 0, tokens), const Color(0xFF000000));
+      expect(chartInkOn(const Color(0xFF1E2A5A), 0, tokens), const Color(0xFFFFFFFF));
+      expect(chartInkOn(NebaColor.success, 0, tokens), tokens.surface);
+    });
+  });
 }

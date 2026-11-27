@@ -1338,6 +1338,299 @@ class _RenderBeside extends RenderBox
 }
 
 // ---------------------------------------------------------------------------
+// What every chart with a reading shares, cartesian or not
+// ---------------------------------------------------------------------------
+
+/// Which series the reader has hidden or shown from the legend, against what
+/// each series says of itself.
+///
+/// Remembered by each series' key rather than its index, so a refresh that
+/// brings the same series back in another order keeps the one the reader hid
+/// hidden. A pie's slices are its series here, as they are everywhere else a
+/// legend lists something.
+class NebaChartVisibility {
+  Map<String, bool> _chosen = const <String, bool>{};
+
+  /// What the reader has chosen, by key: a new map each time it changes, so a
+  /// cache can be keyed on it.
+  Map<String, bool> get chosen => _chosen;
+
+  /// Which of [series] are drawn.
+  List<bool> visibleOf(List<NebaChartSeries> series) {
+    final List<String> keys = chartSeriesKeys(series);
+
+    return <bool>[
+      for (int index = 0; index < series.length; index++)
+        _chosen[keys[index]] ?? !series[index].hidden,
+    ];
+  }
+
+  /// Hides series [index] of [series] if it is drawn, and shows it if not.
+  void toggle(List<NebaChartSeries> series, int index) {
+    final List<String> keys = chartSeriesKeys(series);
+
+    if (index < 0 || index >= keys.length) {
+      return;
+    }
+
+    final String key = keys[index];
+
+    _chosen = <String, bool>{..._chosen, key: !(_chosen[key] ?? !series[index].hidden)};
+  }
+}
+
+/// Puts a reading down when a press lands outside the box of [plot]: a finger
+/// cannot leave a plot the way a mouse does, so a tap pins the reading
+/// instead, until a press lands somewhere else.
+class NebaChartPressOutside {
+  /// A watch on presses outside [plot], calling [onPress].
+  NebaChartPressOutside({required this.plot, required this.onPress});
+
+  /// The plot a press has to land outside.
+  final GlobalKey plot;
+
+  /// What a press outside does.
+  final VoidCallback onPress;
+
+  bool _routing = false;
+
+  /// Watches while [on], which is while a reading is up.
+  void watch(bool on) {
+    if (on && !_routing) {
+      _routing = true;
+      GestureBinding.instance.pointerRouter.addGlobalRoute(_onPointer);
+    } else if (!on && _routing) {
+      _routing = false;
+      GestureBinding.instance.pointerRouter.removeGlobalRoute(_onPointer);
+    }
+  }
+
+  /// Stops watching.
+  void dispose() => watch(false);
+
+  void _onPointer(PointerEvent event) {
+    if (event is! PointerDownEvent) {
+      return;
+    }
+
+    final RenderObject? box = plot.currentContext?.findRenderObject();
+
+    if (box is! RenderBox || !box.attached || !box.hasSize) {
+      return;
+    }
+
+    if (!(Offset.zero & box.size).contains(box.globalToLocal(event.position))) {
+      onPress();
+    }
+  }
+}
+
+/// A chart's `legend` argument as its options: `false` is a legend that does
+/// nothing when pressed, for the chart that shows one anyway.
+NebaChartLegend chartLegendOptions(Object? legend) {
+  return legend is NebaChartLegend
+      ? legend
+      : legend == false
+      ? const NebaChartLegend(interactive: false)
+      : const NebaChartLegend();
+}
+
+/// A chart's `tooltip` argument as its options.
+NebaChartTooltip chartTooltipOptions(Object? tooltip) {
+  return tooltip is NebaChartTooltip ? tooltip : const NebaChartTooltip();
+}
+
+/// What a chart's `tooltip` argument uncovers: nothing for `false`, the
+/// category under the pointer unless it says otherwise.
+NebaChartTooltipMode chartTooltipMode(Object? tooltip) {
+  if (tooltip == false) {
+    return NebaChartTooltipMode.none;
+  }
+
+  return tooltip is NebaChartTooltip
+      ? tooltip.mode ?? NebaChartTooltipMode.category
+      : NebaChartTooltipMode.category;
+}
+
+/// The sentence a plot is described by, from the chart's [words]: how many
+/// values there are and between which two they fall, rather than every one of
+/// them, and a second sentence for the series on a second axis.
+String chartSummary(
+  Map<String, String> words,
+  ({int count, String min, String max}) described, [
+  ({int count, String min, String max})? second,
+]) {
+  String sentence(String template, ({int count, String min, String max}) summary) {
+    return fillNebaMessage(template, <String, String>{
+      'count': nebaFormatNumber(summary.count),
+      'min': summary.min,
+      'max': summary.max,
+    });
+  }
+
+  return <String>[
+    sentence(words['summary']!, described),
+    if (second != null && second.count > 0) sentence(words['summarySecondary']!, second),
+  ].join(' ');
+}
+
+/// The plot as a screen reader and the keyboard meet it: one image named by
+/// [label] and described by [hint], a focus stop that walks the readings with
+/// [onKey], ringed while it holds the keyboard focus, and the pointer read by
+/// [onHover] and a touch by [onTouch].
+///
+/// What is drawn under it is left out of the semantics tree: a picture with a
+/// name says what it is of, and the numbers are in the table beside it.
+class NebaChartPlot extends StatelessWidget {
+  /// The plot [child], named [label].
+  const NebaChartPlot({
+    required this.label,
+    required this.focusNode,
+    required this.focusable,
+    required this.focused,
+    required this.color,
+    required this.onKey,
+    required this.onFocusChange,
+    required this.onHover,
+    required this.onLeave,
+    required this.onTouch,
+    required this.child,
+    this.hint,
+    super.key,
+  });
+
+  /// The chart's name.
+  final String label;
+
+  /// The sentence the chart is described by.
+  final String? hint;
+
+  /// The plot's focus.
+  final FocusNode focusNode;
+
+  /// Whether it takes the focus: not while there is nothing to read.
+  final bool focusable;
+
+  /// Whether it holds the focus now, which shows the ring.
+  final bool focused;
+
+  /// The family of the ring.
+  final NebaColor color;
+
+  /// The keys the plot answers.
+  final FocusOnKeyEventCallback onKey;
+
+  /// Called when the plot takes the focus or loses it.
+  final ValueChanged<bool> onFocusChange;
+
+  /// Called with where a mouse is over the plot.
+  final ValueChanged<Offset> onHover;
+
+  /// Called when a mouse leaves the plot.
+  final VoidCallback onLeave;
+
+  /// Called with where a finger went down on the plot: a tap moves nothing,
+  /// so the press itself is what reads, and the reading stays until a press
+  /// lands elsewhere.
+  final ValueChanged<Offset> onTouch;
+
+  /// The drawing.
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final NebaTokens tokens = NebaTheme.of(context);
+
+    return Semantics(
+      container: true,
+      image: true,
+      label: label,
+      hint: hint,
+      child: Focus(
+        focusNode: focusNode,
+        canRequestFocus: focusable,
+        skipTraversal: !focusable,
+        onKeyEvent: onKey,
+        onFocusChange: onFocusChange,
+        child: NebaFocusRing(
+          visible: focused,
+          color: tokens.roles(color).ring,
+          borderRadius: BorderRadius.circular(tokens.radius[NebaSize.xs]!),
+          child: ExcludeSemantics(
+            child: MouseRegion(
+              onHover: (PointerHoverEvent event) => onHover(event.localPosition),
+              onExit: (PointerExitEvent event) {
+                if (event.kind != PointerDeviceKind.touch) {
+                  onLeave();
+                }
+              },
+              child: Listener(
+                behavior: HitTestBehavior.opaque,
+                onPointerDown: (PointerDownEvent event) {
+                  if (event.kind == PointerDeviceKind.touch) {
+                    onTouch(event.localPosition);
+                  }
+                },
+                child: child,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// What a plot holds when there is nothing to draw: [empty], or the locale's
+/// words for it, muted in the middle of the box.
+class NebaChartEmpty extends StatelessWidget {
+  /// The empty state of a chart at [size].
+  const NebaChartEmpty({required this.size, this.empty, this.locale, super.key});
+
+  /// The caller's own empty state.
+  final Widget? empty;
+
+  /// The type on the size ladder.
+  final NebaSize size;
+
+  /// The language of the words, when the caller gave none.
+  final Locale? locale;
+
+  @override
+  Widget build(BuildContext context) {
+    final NebaTokens tokens = NebaTheme.of(context);
+
+    return Center(
+      child: DefaultTextStyle.merge(
+        style: TextStyle(color: tokens.mutedFg, fontSize: NebaScale.metaText[size]),
+        textAlign: TextAlign.center,
+        child: empty ?? Text(nebaMessages(context, 'empty', locale: locale)['title']!),
+      ),
+    );
+  }
+}
+
+/// The reading out loud: a live region beside the picture rather than inside
+/// it, saying the heading and each value as the reading moves.
+class NebaChartStatus extends StatelessWidget {
+  /// A readout of [items] under [heading].
+  const NebaChartStatus({required this.items, this.heading, super.key});
+
+  /// What the reading is of.
+  final String? heading;
+
+  /// The values read.
+  final List<NebaChartTooltipItem> items;
+
+  @override
+  Widget build(BuildContext context) {
+    return NebaVisuallyHidden(
+      child: NebaLiveRegion(role: SemanticsRole.status, child: Text(chartReadout(heading, items))),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Cartesian charts
 // ---------------------------------------------------------------------------
 
@@ -1602,13 +1895,16 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
   final FocusNode _focus = FocusNode(debugLabel: 'NebaChart');
   final GlobalKey _plotKey = GlobalKey();
   late final NebaChartEmphasis _emphasis = NebaChartEmphasis(vsync: this);
+  late final NebaChartPressOutside _outside = NebaChartPressOutside(
+    plot: _plotKey,
+    onPress: _clear,
+  );
+  final NebaChartVisibility _visibility = NebaChartVisibility();
 
-  Map<String, bool> _chosen = <String, bool>{};
   int? _legendHover;
   int? _column;
   int? _pointerSeries;
   bool _focused = false;
-  bool _routing = false;
 
   _ChartData? _data;
   Object? _dataKey;
@@ -1631,7 +1927,7 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
 
   @override
   void dispose() {
-    _unroute();
+    _outside.dispose();
     _model?.dispose();
     _focus.dispose();
     _emphasis.dispose();
@@ -1641,17 +1937,7 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
   // ----- Visibility ----------------------------------------------------------
 
   void _toggle(int index) {
-    final List<String> keys = chartSeriesKeys(widget.series);
-
-    if (index >= keys.length) {
-      return;
-    }
-
-    final String key = keys[index];
-
-    setState(() {
-      _chosen = <String, bool>{..._chosen, key: !(_chosen[key] ?? !widget.series[index].hidden)};
-    });
+    setState(() => _visibility.toggle(widget.series, index));
   }
 
   void _hoverLegend(int? index) {
@@ -1675,12 +1961,7 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
       _pointerSeries = series;
     });
     _emphasise();
-
-    if (column == null) {
-      _unroute();
-    } else {
-      _route();
-    }
+    _outside.watch(column != null);
   }
 
   void _clear() => _setActive(null);
@@ -1703,49 +1984,7 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
     );
   }
 
-  /// A press anywhere outside the plot puts a reading down: a finger cannot
-  /// leave a plot the way a mouse does, so a tap pins the reading instead.
-  void _route() {
-    if (!_routing) {
-      _routing = true;
-      GestureBinding.instance.pointerRouter.addGlobalRoute(_onGlobalPointer);
-    }
-  }
-
-  void _unroute() {
-    if (_routing) {
-      _routing = false;
-      GestureBinding.instance.pointerRouter.removeGlobalRoute(_onGlobalPointer);
-    }
-  }
-
-  void _onGlobalPointer(PointerEvent event) {
-    if (event is! PointerDownEvent) {
-      return;
-    }
-
-    final RenderObject? box = _plotKey.currentContext?.findRenderObject();
-
-    if (box is! RenderBox || !box.attached || !box.hasSize) {
-      return;
-    }
-
-    if (!(Offset.zero & box.size).contains(box.globalToLocal(event.position))) {
-      _clear();
-    }
-  }
-
-  NebaChartTooltipMode get _mode {
-    final Object? tooltip = widget.tooltip;
-
-    if (tooltip == false) {
-      return NebaChartTooltipMode.none;
-    }
-
-    return tooltip is NebaChartTooltip
-        ? tooltip.mode ?? NebaChartTooltipMode.category
-        : NebaChartTooltipMode.category;
-  }
+  NebaChartTooltipMode get _mode => chartTooltipMode(widget.tooltip);
 
   /// The category nearest [local] along the category axis: a two-pixel line
   /// is not something a pointer can be asked to land on, so a category's
@@ -1910,7 +2149,7 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
       widget.yAxis,
       widget.secondaryAxis,
       widget.references,
-      _chosen,
+      _visibility.chosen,
       tokens,
     );
     final _ChartData? cached = _data;
@@ -1922,11 +2161,7 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
     final List<NebaChartSeries> series = widget.zeroGaps
         ? chartZeroGaps(widget.series)
         : widget.series;
-    final List<String> keys = chartSeriesKeys(series);
-    final List<bool> visible = <bool>[
-      for (int index = 0; index < series.length; index++)
-        _chosen[keys[index]] ?? !series[index].hidden,
-    ];
+    final List<bool> visible = _visibility.visibleOf(series);
     final String Function(num value)? own = widget.format;
     final String Function(double value) format = own == null
         ? nebaFormatCompact
@@ -2575,17 +2810,13 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
     final NebaSize size = widget.size ?? defaults.size ?? NebaSize.md;
     final NebaVariant variant = widget.variant ?? defaults.variant ?? NebaVariant.text;
     final Map<String, String> words = nebaMessages(context, 'chart', locale: widget.locale);
-    final Map<String, String> emptyWords = nebaMessages(context, 'empty', locale: widget.locale);
     final _ChartData data = _dataFor(tokens);
     final double plotHeight = widget.height ?? chartPlotHeights[size]!;
     final double fontSize = MediaQuery.textScalerOf(context).scale(chartFontSizes[size]!);
     final TextStyle base = DefaultTextStyle.of(context).style;
     final TextDirection direction = Directionality.of(context);
     final NebaChartTooltipMode mode = _mode;
-    final Object? tooltip = widget.tooltip;
-    final NebaChartTooltip options = tooltip is NebaChartTooltip
-        ? tooltip
-        : const NebaChartTooltip();
+    final NebaChartTooltip options = chartTooltipOptions(widget.tooltip);
     final bool nothing = data.count == 0 || data.extent == null;
     final int? column = _column;
     final int? active = column != null && column < data.count && !nothing ? column : null;
@@ -2621,11 +2852,7 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
 
     // The legend.
     final Object? legend = widget.legend;
-    final NebaChartLegend legendOptions = legend is NebaChartLegend
-        ? legend
-        : legend == false
-        ? const NebaChartLegend(interactive: false)
-        : const NebaChartLegend();
+    final NebaChartLegend legendOptions = chartLegendOptions(legend);
     final bool showLegend = legend == true || (legend != false && widget.series.length > 1);
     final Widget? legendBar = showLegend
         ? NebaChartLegendBar(
@@ -2654,36 +2881,12 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
           )
         : null;
 
-    // The sentence the plot is described by: how many values there are and
-    // between which two they fall, rather than every one of them.
-    final ({int count, String min, String max}) described = data.described;
-    final ({int count, String min, String max})? describedSecond = data.describedSecond;
-    String sentence(String template, ({int count, String min, String max}) summary) {
-      return fillNebaMessage(template, <String, String>{
-        'count': nebaFormatNumber(summary.count),
-        'min': summary.min,
-        'max': summary.max,
-      });
-    }
-
-    final String summary = <String>[
-      sentence(words['summary']!, described),
-      if (describedSecond != null && describedSecond.count > 0)
-        sentence(words['summarySecondary']!, describedSecond),
-    ].join(' ');
-
     final Widget plot = NebaChartBox(
       key: _plotKey,
       height: plotHeight,
       builder: (BuildContext context, double width) {
         if (nothing) {
-          return Center(
-            child: DefaultTextStyle.merge(
-              style: TextStyle(color: tokens.mutedFg, fontSize: NebaScale.metaText[size]),
-              textAlign: TextAlign.center,
-              child: widget.empty ?? Text(emptyWords['title']!),
-            ),
-          );
+          return NebaChartEmpty(empty: widget.empty, size: size, locale: widget.locale);
         }
 
         final _ChartModel model = _modelFor(
@@ -2769,51 +2972,27 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
       },
     );
 
-    final BorderRadius ringRadius = BorderRadius.circular(tokens.radius[NebaSize.xs]!);
-    final Widget readable = Semantics(
-      container: true,
-      image: true,
-      label: widget.label ?? words['label'],
-      hint: nothing ? null : summary,
-      child: Focus(
-        focusNode: _focus,
-        canRequestFocus: !nothing,
-        skipTraversal: nothing,
-        onKeyEvent: _onKey,
-        onFocusChange: (bool focused) {
-          setState(() => _focused = focused);
+    final Widget readable = NebaChartPlot(
+      label: widget.label ?? words['label']!,
+      // How many values there are and between which two they fall, rather
+      // than every one of them.
+      hint: nothing ? null : chartSummary(words, data.described, data.describedSecond),
+      focusNode: _focus,
+      focusable: !nothing,
+      focused: _focused,
+      color: widget.color,
+      onKey: _onKey,
+      onFocusChange: (bool focused) {
+        setState(() => _focused = focused);
 
-          if (!focused) {
-            _clear();
-          }
-        },
-        child: NebaFocusRing(
-          visible: _focused,
-          color: tokens.roles(widget.color).ring,
-          borderRadius: ringRadius,
-          child: ExcludeSemantics(
-            child: MouseRegion(
-              onHover: (PointerHoverEvent event) => _read(event.localPosition),
-              onExit: (PointerExitEvent event) {
-                if (event.kind != PointerDeviceKind.touch) {
-                  _clear();
-                }
-              },
-              child: Listener(
-                behavior: HitTestBehavior.opaque,
-                // A tap moves nothing, so the press itself is what reads the
-                // point, and it stays read until a press lands elsewhere.
-                onPointerDown: (PointerDownEvent event) {
-                  if (event.kind == PointerDeviceKind.touch) {
-                    _read(event.localPosition);
-                  }
-                },
-                child: plot,
-              ),
-            ),
-          ),
-        ),
-      ),
+        if (!focused) {
+          _clear();
+        }
+      },
+      onHover: _read,
+      onLeave: _clear,
+      onTouch: _read,
+      child: plot,
     );
 
     return NebaChartSurface(
@@ -2831,13 +3010,7 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
       transition: widget.transition,
       hidden: <Widget>[
         if (!nothing) _tableFor(data, widget.label),
-        if (mode != NebaChartTooltipMode.none)
-          NebaVisuallyHidden(
-            child: NebaLiveRegion(
-              role: SemanticsRole.status,
-              child: Text(chartReadout(heading, items)),
-            ),
-          ),
+        if (mode != NebaChartTooltipMode.none) NebaChartStatus(heading: heading, items: items),
       ],
     );
   }

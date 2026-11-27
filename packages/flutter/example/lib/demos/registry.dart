@@ -293,6 +293,10 @@ import 'package:neba_example/demos/panes/fixed.dart';
 import 'package:neba_example/demos/panes/hero.dart';
 import 'package:neba_example/demos/panes/orientation.dart';
 import 'package:neba_example/demos/panes/sizing.dart';
+import 'package:neba_example/demos/pie_chart/colors.dart';
+import 'package:neba_example/demos/pie_chart/hero.dart';
+import 'package:neba_example/demos/pie_chart/ring.dart';
+import 'package:neba_example/demos/pie_chart/shapes.dart';
 import 'package:neba_example/demos/pill/expandable.dart';
 import 'package:neba_example/demos/pill/hero.dart';
 import 'package:neba_example/demos/pill/slots.dart';
@@ -732,6 +736,10 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'panes/hero': PanesHero.new,
   'panes/orientation': PanesOrientation.new,
   'panes/sizing': PanesSizing.new,
+  'pie-chart/colors': PieChartColors.new,
+  'pie-chart/hero': PieChartHero.new,
+  'pie-chart/ring': PieChartRing.new,
+  'pie-chart/shapes': PieChartShapes.new,
   'pill/expandable': PillExpandable.new,
   'pill/hero': PillHero.new,
   'pill/slots': PillSlots.new,
