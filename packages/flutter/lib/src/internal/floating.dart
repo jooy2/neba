@@ -1267,10 +1267,13 @@ class _NebaFloatingState extends State<NebaFloating> with SingleTickerProviderSt
       popup = MouseRegion(opaque: false, onEnter: _enterPopup, onExit: _exitPopup, child: popup);
     }
 
-    // Tab leaves a popup the way it came in unless the popup holds it.
+    // Tab leaves a popup the way it came in unless the popup holds it, and
+    // passes a closing one by: it is on its way out, and focusing it as a
+    // scope would land on whatever in it last had the focus.
     _popupScope.traversalEdgeBehavior = widget.modal == NebaModal.off
         ? TraversalEdgeBehavior.parentScope
         : TraversalEdgeBehavior.closedLoop;
+    _popupScope.skipTraversal = !open;
     popup = FocusScope(
       node: _popupScope,
       child: _NebaFloatingScope(

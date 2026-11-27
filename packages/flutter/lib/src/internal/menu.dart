@@ -283,6 +283,11 @@ void nebaMenuMoveOn(FocusNode? from, {required bool forward}) {
       return;
     }
 
+    // Traversal starts from the focus its scope holds, which has to be the
+    // trigger by now rather than the row the menu closed on.
+    from.requestFocus();
+    FocusManager.instance.applyFocusChangesIfNeeded();
+
     if (forward) {
       from.nextFocus();
     } else {

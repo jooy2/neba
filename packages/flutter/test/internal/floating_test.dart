@@ -297,4 +297,35 @@ void main() {
       expect(kept, 0);
     });
   });
+
+  testWidgets('leaves a closing popup out of the focus order while it fades', (
+    WidgetTester tester,
+  ) async {
+    Widget scene({required bool open}) {
+      return host(
+        Overlay.wrap(
+          child: Center(
+            child: NebaFloating(
+              open: open,
+              onOpenChange: (bool open, NebaFloatingReason reason) {},
+              popup: const Focus(child: SizedBox(key: Key('popup'), width: 40, height: 40)),
+              child: const SizedBox(width: 40, height: 20),
+            ),
+          ),
+        ),
+      );
+    }
+
+    await tester.pumpWidget(scene(open: true));
+    await tester.pump();
+
+    FocusScopeNode scope() => FocusScope.of(tester.element(find.byKey(const Key('popup'))));
+    expect(scope().skipTraversal, isFalse);
+
+    await tester.pumpWidget(scene(open: false));
+    await tester.pump(const Duration(milliseconds: 40));
+
+    expect(find.byKey(const Key('popup')), findsOneWidget);
+    expect(scope().skipTraversal, isTrue);
+  });
 }

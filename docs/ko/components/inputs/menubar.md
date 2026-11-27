@@ -1,6 +1,7 @@
 ---
 title: Menubar
 order: 29
+flutter: true
 ---
 
 # Menubar
@@ -8,6 +9,8 @@ order: 29
 <p class="neba-lede">File, Edit, View처럼 애플리케이션 상단에 놓이는 단어의 띠이고, 각각이 메뉴를 엽니다. 하나가 열린 뒤에는 띠 위를 지나가면 방금 있던 메뉴가 닫히는 대신 옆 메뉴로 넘어갑니다.</p>
 
 <Demo src="menubar/hero" />
+
+::: fw react
 
 ```tsx
 import { Menubar, MenubarMenu, MenuItem, MenuSeparator } from 'neba';
@@ -21,11 +24,44 @@ import { Menubar, MenubarMenu, MenuItem, MenuSeparator } from 'neba';
 </Menubar>;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+NebaMenubar(
+  children: <Widget>[
+    NebaMenubarMenu(
+      label: const Text('File'),
+      children: <Widget>[
+        NebaMenuItem(onPressed: create, shortcut: const Text('⌘N'), child: const Text('New file')),
+        const NebaMenuSeparator(),
+        NebaMenuItem(onPressed: open, child: const Text('Open…')),
+      ],
+    ),
+  ],
+);
+```
+
+:::
+
 ## Props
 
 <PropsTable name="Menubar" />
 
+::: fw react
+
 `<div>`의 모든 속성이 `color`를 제외하고 그대로 전달됩니다.
+
+:::
+
+::: fw flutter
+
+`semanticLabel`은 `aria-label`처럼 screen reader에게 바의 이름을 알려 줍니다. 각 메뉴의 popup은 [Menu](./menu)와 마찬가지로 앱의 루트 `Overlay`에 그려집니다.
+
+:::
 
 자기 표면은 그리지 않습니다. 메뉴 바는 [Toolbar](../surfaces/toolbar)나 [WindowPane](../surfaces/window-pane)의 타이틀 바, [Header](../layout/header)처럼 무언가 _위에_ 놓입니다. 이미 시트 위에 있는 띠 아래에 시트를 한 장 더 깔면 시트가 둘이 됩니다.
 
@@ -45,9 +81,19 @@ Menu가 담을 수 있는 것은 바 위의 메뉴도 담을 수 있습니다. �
 
 각 단계에서 컨트롤 높이보다 한 칸 아래인 자기만의 사다리를 씁니다. 메뉴 바는 버튼의 행이 아니라 단어의 띠이고, 대개 이미 높이를 가진 무언가 안에 놓이기 때문입니다.
 
-<Demo src="menubar/sizes">
+<Demo src="menubar/sizes" minHeight="200">
+
+::: fw react
 
 <<< @/.vitepress/demos/menubar/sizes.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/menubar/sizes.dart
+
+:::
 
 </Demo>
 
@@ -55,9 +101,19 @@ Menu가 담을 수 있는 것은 바 위의 메뉴도 담을 수 있습니다. �
 
 `vertical`은 단어를 세로로 쌓고, 방향키도 그 방향을 따르며, 각 메뉴는 단어 아래가 아니라 바의 inline 끝 쪽 옆으로 열립니다.
 
-<Demo src="menubar/orientation">
+<Demo src="menubar/orientation" minHeight="160">
+
+::: fw react
 
 <<< @/.vitepress/demos/menubar/orientation.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/menubar/orientation.dart
+
+:::
 
 </Demo>
 
@@ -65,12 +121,28 @@ Menu가 담을 수 있는 것은 바 위의 메뉴도 담을 수 있습니다. �
 
 <Demo src="menubar/window">
 
+::: fw react
+
 <<< @/.vitepress/demos/menubar/window.tsx
+
+:::
 
 </Demo>
 
 ## 접근성
 
+::: fw react
+
 - `role="menubar"`로 렌더링되고, 각 단어는 메뉴를 소유한 `menuitem`이 됩니다.
 - 바 전체가 하나의 tab stop입니다. 방향키로 단어 사이와 행 안쪽을 오갈 수 있고, typeahead도 양쪽에서 동작합니다.
 - 한 페이지에 바가 둘 이상이면 `aria-label`을 주세요.
+
+:::
+
+::: fw flutter
+
+- screen reader에게 바는 메뉴 바로, 각 단어는 메뉴가 펼쳐졌는지 알리는 메뉴 항목으로 읽힙니다.
+- 바 전체가 focus 순서에서 한 자리이며, 그 자리는 마지막으로 focus를 받은 단어입니다. 바를 따라가는 방향키는 단어 사이를 옮겨 다니며 비활성 단어를 건너뛰고, 바를 가로지르는 방향키는 첫 행에서 메뉴를 엽니다. 열린 메뉴 안에서 바를 따라가는 방향키를 누르면 옆 메뉴로 넘어갑니다. typeahead는 단어에도 행에도 동작합니다. Escape는 메뉴를 닫고 focus를 그 단어로 돌려주며, Tab은 메뉴를 닫고 바 다음으로 넘어갑니다.
+- 한 페이지에 바가 둘 이상이면 `semanticLabel`을 주세요.
+
+:::
