@@ -9,7 +9,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
-import 'package:neba/src/components/button/neba_button.dart';
+import 'package:neba/src/components/icon_button/neba_icon_button.dart';
 import 'package:neba/src/internal/breakpoint.dart';
 import 'package:neba/src/internal/focus_ring.dart';
 import 'package:neba/src/internal/glyphs.dart';
@@ -894,11 +894,7 @@ class _Lane extends StatelessWidget {
   }
 }
 
-/// A scroll button: a `NebaButton` around a chevron, round.
-///
-/// The radius ladder is pinned to half the control height for this one
-/// button, as the React package's IconButton pins its own, so the button's
-/// ring and press follow the disc.
+/// A scroll button: a `NebaIconButton` around a chevron.
 class _ScrollButton extends StatelessWidget {
   const _ScrollButton({
     required this.variant,
@@ -922,37 +918,22 @@ class _ScrollButton extends StatelessWidget {
   final VoidCallback onPressed;
   final int turns;
 
-  /// The round ladder per set of tokens, so a rebuild is handed the same
-  /// object rather than a new derivation.
-  static final Expando<NebaTokens> _round = Expando<NebaTokens>('round tokens');
-
   @override
   Widget build(BuildContext context) {
-    final NebaTokens tokens = NebaTheme.of(context);
-
-    return NebaTheme(
-      tokens: _round[tokens] ??= tokens.copyWith(
-        radius: <NebaSize, double>{
-          for (final NebaSize step in NebaSize.values) step: NebaScale.controlHeight[step]! / 2,
-        },
-      ),
-      defaults: NebaTheme.defaultsOf(context),
-      child: NebaButton(
-        onPressed: onPressed,
-        variant: variant,
-        size: size,
-        color: color,
-        density: density,
-        elevation: 1,
-        // Disabled rather than gone while it has nowhere to go, and still in
-        // the focus order, so the press that reached the end leaves the focus
-        // on it.
-        disabled: !available,
-        focusableWhenDisabled: true,
-        semanticLabel: label,
-        focusNode: focusNode,
-        startIcon: RotatedBox(quarterTurns: turns, child: NebaGlyph(NebaGlyphs.chevron)),
-      ),
+    return NebaIconButton(
+      onPressed: onPressed,
+      variant: variant,
+      size: size,
+      color: color,
+      density: density,
+      elevation: 1,
+      // Disabled rather than gone while it has nowhere to go, and still in the
+      // focus order, so the press that reached the end leaves the focus on it.
+      disabled: !available,
+      focusableWhenDisabled: true,
+      label: label,
+      focusNode: focusNode,
+      icon: RotatedBox(quarterTurns: turns, child: NebaGlyph(NebaGlyphs.chevron)),
     );
   }
 }
