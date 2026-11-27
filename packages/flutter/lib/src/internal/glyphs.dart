@@ -165,6 +165,27 @@ abstract final class NebaGlyphs {
     ),
   ];
 
+  /// A filled star: a point a rating has given.
+  static final List<NebaGlyphPart> star = <NebaGlyphPart>[
+    const NebaGlyphPart.fill(
+      'M8 1.4 9.71 5.65 14.28 5.96 10.76 8.9 11.88 13.34 8 10.9 4.12 13.34 5.24 8.9 1.72 5.96 6.29 5.65Z',
+    ),
+    const NebaGlyphPart.stroke(
+      'M8 1.4 9.71 5.65 14.28 5.96 10.76 8.9 11.88 13.34 8 10.9 4.12 13.34 5.24 8.9 1.72 5.96 6.29 5.65Z',
+      width: 1,
+      join: StrokeJoin.round,
+    ),
+  ];
+
+  /// An outlined star: a point a rating has not given.
+  static final List<NebaGlyphPart> starOutline = <NebaGlyphPart>[
+    const NebaGlyphPart.stroke(
+      'M8 1.4 9.71 5.65 14.28 5.96 10.76 8.9 11.88 13.34 8 10.9 4.12 13.34 5.24 8.9 1.72 5.96 6.29 5.65Z',
+      width: 1.25,
+      join: StrokeJoin.round,
+    ),
+  ];
+
   /// The neutral severity: a note.
   static final List<NebaGlyphPart> note = <NebaGlyphPart>[
     NebaGlyphPart.stroke(_circle(8, 8, 6.25)),

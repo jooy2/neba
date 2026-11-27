@@ -162,7 +162,7 @@ Demos that wait on a component not ported yet, to be added with it: `meter/thres
 - [ ] `NebaTransfer`
 - [ ] `NebaTreeSelect`
 - [ ] `NebaPagination`
-- [ ] `NebaRating`
+- [x] `NebaRating`
 - [ ] `NebaColorPicker`
 - [ ] `NebaCalendar`
 - [ ] `NebaDatePicker`
