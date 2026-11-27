@@ -517,7 +517,7 @@ class NebaFloatingHover {
 /// counts as inside it. It never slides or scales: a floating surface
 /// arrives in opacity only.
 ///
-/// The popup is laid out no wider than the overlay less [nebaCollisionPadding]
+/// The popup is laid out no wider than the overlay less [padding]
 /// on each side, and as tall as it needs; it starts from the text style a
 /// portal would, the app's family at the body weight, not that of the
 /// paragraph its trigger is in.
@@ -549,6 +549,9 @@ class NebaFloating extends StatefulWidget {
     this.enabled = true,
     this.width = NebaFloatingWidth.content,
     this.maxHeight,
+    this.anchor,
+    this.padding = nebaCollisionPadding,
+    this.inTabOrder = true,
     super.key,
   });
 
@@ -634,6 +637,22 @@ class NebaFloating extends StatefulWidget {
   /// says there is beside the trigger, so a long list scrolls inside the
   /// overlay rather than running off it. `null` lets it be as tall as it needs.
   final double? maxHeight;
+
+  /// The widget the popup is placed against, in place of [child]: one part
+  /// of the trigger, as a navigation menu's one panel hangs off whichever of
+  /// its words is open while the whole row counts as the trigger. Left out,
+  /// or not laid out, the popup is placed against [child].
+  final GlobalKey? anchor;
+
+  /// How far the popup keeps from the overlay's edges: Base UI's
+  /// `collisionPadding`.
+  final double padding;
+
+  /// Whether the open popup is a stop of its own in the Tab order of the page
+  /// around it. A navigation menu's panel is not: its word moves the focus
+  /// into it and back out by hand, as if the panel came right after the word,
+  /// where the page's order would reach it wherever it happens to be drawn.
+  final bool inTabOrder;
 
   @override
   State<NebaFloating> createState() => _NebaFloatingState();
@@ -771,7 +790,7 @@ class _NebaFloatingState extends State<NebaFloating> with SingleTickerProviderSt
   // nothing, so the focus given back to the trigger is not disturbed.
   void _traversable(bool value) {
     _popupScope
-      ..skipTraversal = !value
+      ..skipTraversal = !value || !widget.inTabOrder
       ..descendantsAreTraversable = value;
   }
 
@@ -1255,10 +1274,7 @@ class _NebaFloatingState extends State<NebaFloating> with SingleTickerProviderSt
   }
 
   Widget _buildOverlay(BuildContext context, OverlayChildLayoutInfo info) {
-    final Rect anchor = MatrixUtils.transformRect(
-      info.childPaintTransform,
-      Offset.zero & info.childSize,
-    );
+    final Rect anchor = _anchorRect(info);
     final bool open = widget.open;
 
     Widget popup = KeyedSubtree(key: _popupKey, child: widget.popup);
@@ -1273,7 +1289,7 @@ class _NebaFloatingState extends State<NebaFloating> with SingleTickerProviderSt
     _popupScope.traversalEdgeBehavior = widget.modal == NebaModal.off
         ? TraversalEdgeBehavior.parentScope
         : TraversalEdgeBehavior.closedLoop;
-    _popupScope.skipTraversal = !open;
+    _popupScope.skipTraversal = !open || !widget.inTabOrder;
     popup = FocusScope(
       node: _popupScope,
       child: _NebaFloatingScope(
@@ -1292,6 +1308,7 @@ class _NebaFloatingState extends State<NebaFloating> with SingleTickerProviderSt
       arrow: widget.arrow,
       width: widget.width,
       maxHeight: widget.maxHeight,
+      padding: widget.padding,
       child: popup,
     );
 
@@ -1325,6 +1342,31 @@ class _NebaFloatingState extends State<NebaFloating> with SingleTickerProviderSt
     }
 
     return layer;
+  }
+
+  // The trigger's box in the overlay, or the box of the part of it [anchor]
+  // names. The overlay child is laid out after the trigger, so everything in
+  // the trigger already has its place.
+  Rect _anchorRect(OverlayChildLayoutInfo info) {
+    final Rect whole = MatrixUtils.transformRect(
+      info.childPaintTransform,
+      Offset.zero & info.childSize,
+    );
+    final RenderObject? part = widget.anchor?.currentContext?.findRenderObject();
+    final RenderObject? trigger = _triggerKey.currentContext?.findRenderObject();
+
+    if (part is! RenderBox ||
+        trigger is! RenderBox ||
+        !part.attached ||
+        !trigger.attached ||
+        !part.hasSize) {
+      return whole;
+    }
+
+    return MatrixUtils.transformRect(
+      info.childPaintTransform.multiplied(part.getTransformTo(trigger)),
+      Offset.zero & part.size,
+    );
   }
 }
 
@@ -1428,6 +1470,7 @@ class _FloatingLayout extends SingleChildRenderObjectWidget {
     required this.arrow,
     required this.width,
     required this.maxHeight,
+    required this.padding,
     required Widget super.child,
   });
 
@@ -1440,6 +1483,7 @@ class _FloatingLayout extends SingleChildRenderObjectWidget {
   final NebaFloatingArrow? arrow;
   final NebaFloatingWidth width;
   final double? maxHeight;
+  final double padding;
 
   @override
   _RenderFloatingLayout createRenderObject(BuildContext context) {
@@ -1453,6 +1497,7 @@ class _FloatingLayout extends SingleChildRenderObjectWidget {
       arrow: arrow,
       width: width,
       maxHeight: maxHeight,
+      padding: padding,
     );
   }
 
@@ -1467,7 +1512,8 @@ class _FloatingLayout extends SingleChildRenderObjectWidget {
       ..textDirection = textDirection
       ..arrow = arrow
       ..width = width
-      ..maxHeight = maxHeight;
+      ..maxHeight = maxHeight
+      ..padding = padding;
   }
 }
 
@@ -1482,6 +1528,7 @@ class _RenderFloatingLayout extends RenderShiftedBox {
     required NebaFloatingArrow? arrow,
     required NebaFloatingWidth width,
     required double? maxHeight,
+    required double padding,
   }) : _anchor = anchor,
        _side = side,
        _align = align,
@@ -1491,6 +1538,7 @@ class _RenderFloatingLayout extends RenderShiftedBox {
        _arrow = arrow,
        _width = width,
        _maxHeight = maxHeight,
+       _padding = padding,
        super(null);
 
   Rect _anchor;
@@ -1565,6 +1613,14 @@ class _RenderFloatingLayout extends RenderShiftedBox {
     }
   }
 
+  double _padding;
+  set padding(double value) {
+    if (value != _padding) {
+      _padding = value;
+      markNeedsLayout();
+    }
+  }
+
   List<Offset>? _wedge;
 
   @override
@@ -1581,7 +1637,7 @@ class _RenderFloatingLayout extends RenderShiftedBox {
       return;
     }
 
-    final double widest = math.max(0, size.width - 2 * nebaCollisionPadding);
+    final double widest = math.max(0, size.width - 2 * _padding);
     final double anchorWidth = math.min(_anchor.width, widest);
     final double? tallest = _maxHeight == null
         ? null
@@ -1592,6 +1648,7 @@ class _RenderFloatingLayout extends RenderShiftedBox {
               bounds: size,
               side: _side,
               sideOffset: _sideOffset,
+              padding: _padding,
             ),
           );
 
@@ -1616,6 +1673,7 @@ class _RenderFloatingLayout extends RenderShiftedBox {
       textDirection: _textDirection,
       sideOffset: _sideOffset,
       alignOffset: _alignOffset,
+      padding: _padding,
       arrow: _arrow,
     );
 

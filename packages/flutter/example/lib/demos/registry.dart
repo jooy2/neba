@@ -347,6 +347,10 @@ import 'package:neba_example/demos/mockup/screen.dart';
 import 'package:neba_example/demos/mockup/scroll.dart';
 import 'package:neba_example/demos/mockup/system_ui.dart';
 import 'package:neba_example/demos/mockup/wallpaper.dart';
+import 'package:neba_example/demos/navigation_menu/columns.dart';
+import 'package:neba_example/demos/navigation_menu/header.dart';
+import 'package:neba_example/demos/navigation_menu/hero.dart';
+import 'package:neba_example/demos/navigation_menu/orientation.dart';
 import 'package:neba_example/demos/number_field/format.dart';
 import 'package:neba_example/demos/number_field/hero.dart';
 import 'package:neba_example/demos/number_field/label_placement.dart';
@@ -890,6 +894,10 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'mockup/scroll': MockupScroll.new,
   'mockup/system-ui': MockupSystemUi.new,
   'mockup/wallpaper': MockupWallpaper.new,
+  'navigation-menu/columns': NavigationMenuColumns.new,
+  'navigation-menu/header': NavigationMenuHeader.new,
+  'navigation-menu/hero': NavigationMenuHero.new,
+  'navigation-menu/orientation': NavigationMenuOrientation.new,
   'number-field/format': NumberFieldFormat.new,
   'number-field/hero': NumberFieldHero.new,
   'number-field/label-placement': NumberFieldLabelPlacement.new,

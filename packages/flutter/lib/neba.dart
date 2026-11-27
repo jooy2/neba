@@ -93,6 +93,7 @@ export 'src/components/menu/neba_menu.dart';
 export 'src/components/menubar/neba_menubar.dart';
 export 'src/components/meter/neba_meter.dart';
 export 'src/components/mockup/neba_mockup.dart';
+export 'src/components/navigation_menu/neba_navigation_menu.dart';
 export 'src/components/number_field/neba_number_field.dart';
 export 'src/components/otp_field/neba_otp_field.dart';
 export 'src/components/overlay/neba_overlay.dart';

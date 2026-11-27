@@ -328,4 +328,66 @@ void main() {
     expect(find.byKey(const Key('popup')), findsOneWidget);
     expect(scope().skipTraversal, isTrue);
   });
+
+  testWidgets('places the popup against the part of the trigger it names', (
+    WidgetTester tester,
+  ) async {
+    final GlobalKey part = GlobalKey();
+
+    await tester.pumpWidget(
+      host(
+        Overlay.wrap(
+          child: Center(
+            child: NebaFloating(
+              open: true,
+              onOpenChange: (bool open, NebaFloatingReason reason) {},
+              anchor: part,
+              sideOffset: 4,
+              popup: const SizedBox(key: Key('popup'), width: 40, height: 40),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  const SizedBox(width: 200, height: 20),
+                  SizedBox(key: part, width: 60, height: 30),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    final Rect popup = tester.getRect(find.byKey(const Key('popup')));
+    final Rect named = tester.getRect(find.byKey(part));
+
+    expect(popup.top, named.bottom + 4);
+    expect(popup.center.dx, named.center.dx);
+  });
+
+  testWidgets('keeps an open popup out of the Tab order when asked to', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      host(
+        Overlay.wrap(
+          child: Center(
+            child: NebaFloating(
+              open: true,
+              onOpenChange: (bool open, NebaFloatingReason reason) {},
+              inTabOrder: false,
+              popup: const Focus(child: SizedBox(key: Key('popup'), width: 40, height: 40)),
+              child: const SizedBox(width: 40, height: 20),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    final FocusScopeNode scope = FocusScope.of(tester.element(find.byKey(const Key('popup'))));
+    expect(scope.skipTraversal, isTrue);
+    // Its own contents still take the focus and walk among themselves.
+    expect(scope.descendantsAreTraversable, isTrue);
+  });
 }
