@@ -157,20 +157,25 @@ enum NebaLabelPlacement {
   float,
 }
 
-/// How a bar sits in the page's scroll, spelled the way CSS spells it. A
-/// Header and a Footer read it.
+/// How a bar sits against the edge of what it is in, spelled the way CSS
+/// spells `position`.
 ///
-/// Flutter has no `position`, so the page scroll that gives it its meaning is
-/// a `NebaPageLayout`'s: a bar it was handed is held at its edge or scrolls
-/// away, and a bar anywhere else is a box like any other.
+/// A Header and a Footer read it inside a `NebaPageLayout`, whose page scroll
+/// gives it its meaning. A Toolbar and a Pill read it on their own, where a
+/// widget is laid out where its parent puts it: [sticky] draws the bar as it
+/// is drawn once held, for a scroll view to hold it, and only [fixed] moves
+/// anything.
 enum NebaPosition {
-  /// In the flow, scrolling away with the content.
+  /// In place, scrolling away with what is around it.
   static,
 
-  /// In the flow until it reaches the edge, then held there.
+  /// Held against its edge once it reaches it: by a page layout's scroll, or,
+  /// for a bar on its own, by a `PinnedHeaderSliver` in a `CustomScrollView`
+  /// or the end of a `Column` around an `Expanded` scroll view.
   sticky,
 
-  /// Held at the edge, with its room reserved by the layout around it.
+  /// Held at the edge: a page layout reserves its room, and a bar on its own
+  /// is drawn in the nearest `Overlay`, taking no room where it was written.
   fixed,
 }
 

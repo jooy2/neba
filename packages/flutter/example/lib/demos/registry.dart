@@ -271,6 +271,9 @@ import 'package:neba_example/demos/toggle_group/multiple.dart';
 import 'package:neba_example/demos/toggle_group/orientation.dart';
 import 'package:neba_example/demos/toggle_group/variants.dart';
 import 'package:neba_example/demos/tokens/palette.dart';
+import 'package:neba_example/demos/toolbar/density.dart';
+import 'package:neba_example/demos/toolbar/hero.dart';
+import 'package:neba_example/demos/toolbar/sticky.dart';
 import 'package:neba_example/demos/tooltip/grouped.dart';
 import 'package:neba_example/demos/tooltip/hero.dart';
 import 'package:neba_example/demos/tooltip/sides.dart';
@@ -548,6 +551,9 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'toggle/sizes': ToggleSizes.new,
   'toggle/variants': ToggleVariants.new,
   'tokens/palette': TokensPalette.new,
+  'toolbar/density': ToolbarDensity.new,
+  'toolbar/hero': ToolbarHero.new,
+  'toolbar/sticky': ToolbarSticky.new,
   'tooltip/grouped': TooltipGrouped.new,
   'tooltip/hero': TooltipHero.new,
   'tooltip/sides': TooltipSides.new,
