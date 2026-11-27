@@ -178,7 +178,7 @@ Demos that wait on a component not ported yet, to be added with it: `how-to-step
 - [x] `NebaTimeline`
 - [x] `NebaBreadcrumb`
 - [x] `NebaAnchor`
-- [ ] `NebaTreeView`
+- [x] `NebaTreeView`
 - [x] `NebaVisuallyHidden`
 
 ### Inputs (36)

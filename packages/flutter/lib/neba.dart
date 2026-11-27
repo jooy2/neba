@@ -126,6 +126,7 @@ export 'src/components/toggle/neba_toggle.dart';
 export 'src/components/toggle_group/neba_toggle_group.dart';
 export 'src/components/toolbar/neba_toolbar.dart';
 export 'src/components/tooltip/neba_tooltip.dart';
+export 'src/components/tree_view/neba_tree_view.dart';
 export 'src/components/typography/neba_typography.dart';
 export 'src/components/visually_hidden/neba_visually_hidden.dart';
 export 'src/theme/scale.dart';

@@ -463,6 +463,11 @@ import 'package:neba_example/demos/toolbar/sticky.dart';
 import 'package:neba_example/demos/tooltip/grouped.dart';
 import 'package:neba_example/demos/tooltip/hero.dart';
 import 'package:neba_example/demos/tooltip/sides.dart';
+import 'package:neba_example/demos/tree_view/hero.dart';
+import 'package:neba_example/demos/tree_view/lines.dart';
+import 'package:neba_example/demos/tree_view/navigation.dart';
+import 'package:neba_example/demos/tree_view/selection.dart';
+import 'package:neba_example/demos/tree_view/variants.dart';
 import 'package:neba_example/demos/typography/clamp.dart';
 import 'package:neba_example/demos/typography/colors.dart';
 import 'package:neba_example/demos/typography/hero.dart';
@@ -929,6 +934,11 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'tooltip/grouped': TooltipGrouped.new,
   'tooltip/hero': TooltipHero.new,
   'tooltip/sides': TooltipSides.new,
+  'tree-view/hero': TreeViewHero.new,
+  'tree-view/lines': TreeViewLines.new,
+  'tree-view/navigation': TreeViewNavigation.new,
+  'tree-view/selection': TreeViewSelection.new,
+  'tree-view/variants': TreeViewVariants.new,
   'typography/clamp': TypographyClamp.new,
   'typography/colors': TypographyColors.new,
   'typography/hero': TypographyHero.new,
