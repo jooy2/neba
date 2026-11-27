@@ -310,7 +310,7 @@ Some components have no single Flutter equivalent of what they are on the web, a
 - [x] `NebaAnimateTyping`
 - [x] `NebaAnimateScramble`
 - [x] `NebaAnimateCounter`
-- [ ] `NebaAnimateLighting`
+- [x] `NebaAnimateLighting`
 - [ ] `NebaAnimateMarquee`
 - [ ] `NebaAnimateHeadline`
 

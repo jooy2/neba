@@ -1,6 +1,7 @@
 ---
 title: AnimateLighting
 order: 9
+flutter: true
 ---
 
 # AnimateLighting
@@ -8,6 +9,8 @@ order: 9
 <p class="neba-lede">무언가의 바깥을 도는 빛입니다. 광채가 내용 위가 아니라 뒤에 있으므로, 감싼 것이 그려지는 방식을 하나도 바꾸지 않으면서 그것을 표시합니다.</p>
 
 <Demo src="animate-lighting/hero" />
+
+::: fw react
 
 ```tsx
 import { AnimateLighting } from 'neba';
@@ -17,11 +20,29 @@ import { AnimateLighting } from 'neba';
 </AnimateLighting>;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+const NebaAnimateLighting(
+  size: NebaSize.md,
+  child: NebaCard(
+    title: Text('4,281개 행 분석 중'),
+    child: Text('보통 1분쯤 걸립니다.'),
+  ),
+);
+```
+
+:::
+
 ## Props
 
 <PropsTable name="AnimateLighting" />
 
-나머지 `<div>` 속성은 모두 루트로 전달됩니다. 모든 `Animate*`가 공유하는 설정은 [Prop 규약](../../design/prop-conventions)에 있습니다.
+<Fw react="나머지 `<div>` 속성은 모두 루트로 전달됩니다." flutter="`child` 하나를 감싸고 그 크기를 그대로 가집니다. 빛은 자리를 차지하지 않고 가장자리 바깥으로 그려집니다." /> 모든 `Animate*`가 공유하는 설정은 [Prop 규약](../../design/prop-conventions)에 있습니다.
 
 `size`는 안에 든 것의 반경과 맞아야 합니다. 광채는 래퍼 자신의 모서리를 따라가므로, `xs` Lighting 안에 `lg` 카드를 넣으면 카드가 이미 깎아 낸 네 모서리에서 빛이 삐져나옵니다.
 
@@ -29,31 +50,61 @@ import { AnimateLighting } from 'neba';
 
 ### color와 glow
 
-`color`는 여섯 의미론적 색 중 하나입니다. `glow`는 대신 CSS 색상을 받아, 상태가 아니라 장식으로서의 빛을 만듭니다.
+`color`는 여섯 의미론적 색 중 하나입니다. `glow`는 대신 <Fw react="CSS 색상을" flutter="`Color`를" /> 받아, 상태가 아니라 장식으로서의 빛을 만듭니다.
 
 <Demo src="animate-lighting/colors">
 
+::: fw react
+
 <<< @/.vitepress/demos/animate-lighting/colors.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/animate_lighting/colors.dart
+
+:::
 
 </Demo>
 
 ### arc, spread, blur
 
-`arc`는 한 번에 밝아지는 윤곽의 길이를 도로 정합니다. 작으면 스치고 지나가는 불꽃, 크면 훑고 지나가는 빛입니다. `spread`는 내용 바깥으로 빛이 얼마나 번지는지, `blur`는 얼마나 부드러운지입니다. `0`이면 빛이 아니라 도형처럼 읽힙니다.
+`arc`는 한 번에 밝아지는 윤곽의 길이를 도로 정합니다. 작으면 스치고 지나가는 불꽃, 크면 훑고 지나가는 빛입니다. `spread`는 내용 바깥으로 빛이 얼마나 번지는지, `blur`는 얼마나 부드러운지입니다<Fw flutter=". 둘 다 단위는 논리 픽셀입니다" />. `0`이면 빛이 아니라 도형처럼 읽힙니다.
 
 <Demo src="animate-lighting/shape">
 
+::: fw react
+
 <<< @/.vitepress/demos/animate-lighting/shape.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/animate_lighting/shape.dart
+
+:::
 
 </Demo>
 
 ### trigger="hover"
 
-무한히 반복하는 효과에 `hover`를 걸면 포인터가 올라가 있는 동안 재생되고 떠나면 멈춥니다. 키보드 focus도 포인터로 세므로 마우스 없이도 닿습니다.
+무한히 반복하는 효과에 `hover`를 걸면 포인터가 올라가 있는 동안 재생되고 떠나면 멈춥니다. 키보드 focus도 포인터로 세므로 마우스 없이도 닿습니다<Fw flutter=". 터치 화면에서는 손가락도 포인터로 셉니다" />.
 
 <Demo src="animate-lighting/hover">
 
+::: fw react
+
 <<< @/.vitepress/demos/animate-lighting/hover.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/animate_lighting/hover.dart
+
+:::
 
 </Demo>
 
