@@ -329,6 +329,9 @@ import 'package:neba_example/demos/image/preview.dart';
 import 'package:neba_example/demos/image/protect.dart';
 import 'package:neba_example/demos/image/rotate.dart';
 import 'package:neba_example/demos/image/watermark.dart';
+import 'package:neba_example/demos/inline_citation/color.dart';
+import 'package:neba_example/demos/inline_citation/hero.dart';
+import 'package:neba_example/demos/inline_citation/preview.dart';
 import 'package:neba_example/demos/line_chart/axes.dart';
 import 'package:neba_example/demos/line_chart/curve.dart';
 import 'package:neba_example/demos/line_chart/data.dart';
@@ -486,6 +489,9 @@ import 'package:neba_example/demos/slider/marks.dart';
 import 'package:neba_example/demos/slider/range.dart';
 import 'package:neba_example/demos/slider/sizes.dart';
 import 'package:neba_example/demos/slider/vertical.dart';
+import 'package:neba_example/demos/sources/folding.dart';
+import 'package:neba_example/demos/sources/hero.dart';
+import 'package:neba_example/demos/sources/variant.dart';
 import 'package:neba_example/demos/sparkline/gaps.dart';
 import 'package:neba_example/demos/sparkline/hero.dart';
 import 'package:neba_example/demos/sparkline/shapes.dart';
@@ -918,6 +924,9 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'image/protect': ImageProtect.new,
   'image/rotate': ImageRotate.new,
   'image/watermark': ImageWatermark.new,
+  'inline-citation/color': InlineCitationColor.new,
+  'inline-citation/hero': InlineCitationHero.new,
+  'inline-citation/preview': InlineCitationPreview.new,
   'line-chart/axes': LineChartAxes.new,
   'line-chart/curve': LineChartCurve.new,
   'line-chart/data': LineChartData.new,
@@ -1075,6 +1084,9 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'slider/range': SliderRange.new,
   'slider/sizes': SliderSizes.new,
   'slider/vertical': SliderVertical.new,
+  'sources/folding': SourcesFolding.new,
+  'sources/hero': SourcesHero.new,
+  'sources/variant': SourcesVariant.new,
   'sparkline/gaps': SparklineGaps.new,
   'sparkline/hero': SparklineHero.new,
   'sparkline/shapes': SparklineShapes.new,
