@@ -1,6 +1,7 @@
 ---
 title: AnimateFloat
 order: 9
+flutter: true
 ---
 
 # AnimateFloat
@@ -8,6 +9,8 @@ order: 9
 <p class="neba-lede">도착할 곳 없이 천천히 떠다닙니다. 일러스트나 떠 있는 카드, 히어로 위의 마크처럼 페이지에 고정되어 있지 않은 것에 쓰며, 페이지가 열려 있는 동안 계속됩니다.</p>
 
 <Demo src="animate-float/hero" />
+
+::: fw react
 
 ```tsx
 import { AnimateFloat } from 'neba';
@@ -17,25 +20,47 @@ import { AnimateFloat } from 'neba';
 </AnimateFloat>;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+const NebaAnimateFloat(child: NebaCard(child: Text('페이지에 고정되어 있지 않습니다.')));
+```
+
+:::
+
 ## Props
 
 <PropsTable name="AnimateFloat" />
 
-나머지 `<div>` 속성은 루트로 그대로 전달됩니다. 모든 `Animate*`가 공유하는 설정은 [prop 규약](../../design/prop-conventions)에 있습니다.
+<Fw react="나머지 `<div>` 속성은 루트로 그대로 전달됩니다." flutter="`child` 하나를 감싸거나, `children`을 `layoutBuilder`로 배치합니다." /> 모든 `Animate*`가 공유하는 설정은 [prop 규약](../../design/prop-conventions)에 있습니다.
 
 무한히 반복하며 양 끝에서 방향을 돌리므로 되돌아 튀는 프레임이 없습니다. `mode`는 없습니다. 표류에는 거꾸로 돌릴 방향이 없습니다.
 
-`transform`이 아니라 `translate`라서, 요소에 이미 걸린 scale이나 rotate와 합성됩니다.
+<Fw react="`transform`이 아니라 `translate`라서, 요소에 이미 걸린 scale이나 rotate와 합성됩니다." flutter="레이아웃이 놓은 위젯 위에 그리는 이동이라서, 위젯에 이미 걸린 scale이나 rotate와 합성됩니다." />
 
 ## 예시
 
 ### from과 distance
 
-`from`은 떠 가는 방향이고 `distance`는 얼마나 가는지입니다. CSS 길이나 픽셀 숫자를 받습니다. 일부러 짧습니다. 1cm를 넘어가면 쉬고 있는 것이 아니라 움직이는 것으로 읽히기 시작합니다.
+`from`은 떠 가는 방향이고 `distance`는 얼마나 가는지입니다. <Fw react="CSS 길이나 픽셀 숫자를 받습니다." flutter="논리 픽셀 수를 받습니다." /> 일부러 짧습니다. 1cm를 넘어가면 쉬고 있는 것이 아니라 움직이는 것으로 읽히기 시작합니다.
 
 <Demo src="animate-float/distance" minHeight="300">
 
+::: fw react
+
 <<< @/.vitepress/demos/animate-float/distance.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/animate_float/distance.dart
+
+:::
 
 </Demo>
 
@@ -45,7 +70,7 @@ import { AnimateFloat } from 'neba';
 
 ### paused
 
-`paused`는 언마운트 없이 표류를 그 자리에 붙들어 둡니다.
+`paused`는 <Fw react="언마운트" flutter="트리에서 빼는 일" /> 없이 표류를 그 자리에 붙들어 둡니다.
 
 ## 접근성
 
