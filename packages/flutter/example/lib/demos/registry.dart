@@ -242,6 +242,17 @@ import 'package:neba_example/demos/icon/sizes.dart';
 import 'package:neba_example/demos/icon_button/hero.dart';
 import 'package:neba_example/demos/icon_button/sizes.dart';
 import 'package:neba_example/demos/icon_button/states.dart';
+import 'package:neba_example/demos/image/filter.dart';
+import 'package:neba_example/demos/image/fit.dart';
+import 'package:neba_example/demos/image/frame.dart';
+import 'package:neba_example/demos/image/hero.dart';
+import 'package:neba_example/demos/image/letterbox.dart';
+import 'package:neba_example/demos/image/placeholder.dart';
+import 'package:neba_example/demos/image/position.dart';
+import 'package:neba_example/demos/image/preview.dart';
+import 'package:neba_example/demos/image/protect.dart';
+import 'package:neba_example/demos/image/rotate.dart';
+import 'package:neba_example/demos/image/watermark.dart';
 import 'package:neba_example/demos/line_chart/axes.dart';
 import 'package:neba_example/demos/line_chart/curve.dart';
 import 'package:neba_example/demos/line_chart/data.dart';
@@ -689,6 +700,17 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'icon/colors': IconColors.new,
   'icon/hero': IconHero.new,
   'icon/sizes': IconSizes.new,
+  'image/filter': ImageFilter.new,
+  'image/fit': ImageFit.new,
+  'image/frame': ImageFrame.new,
+  'image/hero': ImageHero.new,
+  'image/letterbox': ImageLetterbox.new,
+  'image/placeholder': ImagePlaceholder.new,
+  'image/position': ImagePosition.new,
+  'image/preview': ImagePreview.new,
+  'image/protect': ImageProtect.new,
+  'image/rotate': ImageRotate.new,
+  'image/watermark': ImageWatermark.new,
   'line-chart/axes': LineChartAxes.new,
   'line-chart/curve': LineChartCurve.new,
   'line-chart/data': LineChartData.new,
