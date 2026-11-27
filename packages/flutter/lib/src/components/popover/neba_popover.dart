@@ -159,6 +159,10 @@ class NebaPopover extends StatefulWidget {
 class _NebaPopoverState extends State<NebaPopover> {
   late bool _open = widget.defaultOpen;
 
+  /// The trigger, which a modal popover's barrier lets the pointer through
+  /// to, so a second press on it closes the popover as Base UI's does.
+  final GlobalKey _triggerKey = GlobalKey();
+
   bool get _isOpen => widget.open ?? _open;
 
   void _change(bool open, NebaFloatingReason reason) {
@@ -247,11 +251,15 @@ class _NebaPopoverState extends State<NebaPopover> {
       openOnPress: true,
       moveFocus: true,
       modal: widget.modal,
+      barrierCutout: _triggerKey,
       intentionalOutsidePress: widget.modal != NebaModal.trapFocus,
       popup: popup,
       // One node, so the trigger says it is expanded as `aria-expanded` does.
       child: MergeSemantics(
-        child: Semantics(expanded: open, child: widget.trigger ?? const SizedBox.shrink()),
+        child: Semantics(
+          expanded: open,
+          child: KeyedSubtree(key: _triggerKey, child: widget.trigger ?? const SizedBox.shrink()),
+        ),
       ),
     );
   }

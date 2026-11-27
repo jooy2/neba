@@ -573,6 +573,22 @@ void main() {
       expect(find.byType(NebaFloatingSheet), findsNothing);
     });
 
+    testWidgets('closes on a second press on its trigger through the barrier', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(
+        scene(NebaPopover(trigger: share(), modal: NebaModal.on, title: const Text('Share'))),
+      );
+
+      await tester.tap(find.text('Share').first);
+      await settle(tester);
+      expect(find.byType(NebaFloatingSheet), findsOneWidget);
+
+      await tester.tap(find.text('Share').first);
+      await settle(tester);
+      expect(find.byType(NebaFloatingSheet), findsNothing);
+    });
+
     testWidgets('leaves the page behind pressable when it only traps the focus', (
       WidgetTester tester,
     ) async {
