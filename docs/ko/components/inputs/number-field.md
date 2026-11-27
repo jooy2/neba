@@ -1,6 +1,7 @@
 ---
 title: NumberField
 order: 13
+flutter: true
 ---
 
 # NumberField
@@ -9,19 +10,45 @@ order: 13
 
 <Demo src="number-field/hero" />
 
+::: fw react
+
 ```tsx
 import { NumberField } from 'neba';
 
 <NumberField label="좌석" defaultValue={3} min={1} max={20} />;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+NebaNumberField(label: const Text('좌석'), defaultValue: 3, min: 1, max: 20);
+```
+
+:::
+
 ## Props
 
 <PropsTable name="NumberField" />
 
+::: fw react
+
 `<div>`의 native 속성은 root로 전달됩니다. 다만 `aria-label`과 `aria-labelledby`는 `<input>`의 이름이 됩니다. `color`와 `defaultValue`만 위 표와 이름이 겹쳐 제외됩니다.
 
 `value`의 타입은 `number | null`이며 `null`이 비어 있음을 뜻합니다. 파싱해야 하는 문자열이 아닙니다.
+
+:::
+
+::: fw flutter
+
+`value`의 타입은 `double?`이고 `null`이 비어 있음을 뜻합니다. `onValueChange`와 함께 주면 controlled 필드가 되고, 주지 않으면 필드가 `defaultValue`에서 시작하는 자기 숫자를 둡니다. controlled 필드의 `value`가 `null`이 되면 필드가 비워집니다. `label`과 `description`, `error`, `startIcon`, `endIcon`은 위젯이고 보통 `Text`를 넘깁니다.
+
+`name`과 `required`는 없습니다. Flutter 필드에는 그 값을 제출할 폼이 없기 때문입니다. `incrementLabel`, `decrementLabel`, `locale`도 없습니다. 화면 낭독기에게 stepper는 이름을 가진 버튼이 아니라 필드의 increase·decrease 동작이고, 숫자는 `format`이 씁니다. 라벨이 없는 필드의 이름은 `semanticLabel`로 붙입니다.
+
+:::
 
 shell은 [TextField](./text-field)와 동일하므로 같은 `size`의 필드와 한 줄에 놓을 수 있습니다.
 
@@ -29,31 +56,63 @@ shell은 [TextField](./text-field)와 동일하므로 같은 `size`의 필드와
 
 ### steppers
 
-`end`는 필드 오른쪽에 증감 버튼을 모아 놓습니다. `split`은 숫자 양옆에 마이너스와 플러스를 두어 눌러서 맞추는 수량에 적합합니다. `none`은 버튼을 없애고 키보드 입력만 남깁니다.
+`end`는 필드 끝쪽에 증감 버튼을 모아 놓습니다. `split`은 숫자 양옆에 마이너스와 플러스를 두어 눌러서 맞추는 수량에 적합합니다. `none`은 버튼을 없애고 키보드 입력만 남깁니다. stepper를 누르고 있으면 같은 걸음을 되풀이합니다.
 
 <Demo src="number-field/steppers">
 
+::: fw react
+
 <<< @/.vitepress/demos/number-field/steppers.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/number_field/steppers.dart
+
+:::
 
 </Demo>
 
 ### step · largeStep · smallStep
 
-방향키는 `step`만큼, Shift와 함께 누르면 `largeStep`만큼, Alt와 함께 누르면 `smallStep`만큼 값을 움직입니다. `snapOnStep`은 그 결과를 `step`의 배수에 맞춥니다.
+방향키는 `step`만큼, Shift와 함께 누르면 `largeStep`만큼, Alt와 함께 누르면 `smallStep`만큼 값을 움직입니다. `snapOnStep`은 그 결과를 `step`의 배수에 맞춥니다. 필드에 `min`과 `max`가 있으면 Home과 End가 그 값으로 보냅니다.
 
 ### wheel
 
-`wheel`은 숫자 위에서 굴린 마우스 휠을 한 step으로 바꿉니다. 기본값은 켜짐이며, `wheel={false}`로 끕니다.
+`wheel`은 숫자 위에서 굴린 마우스 휠을 한 step으로 바꿉니다. 기본값은 켜짐이며, <Fw react="wheel={false}" flutter="wheel: false" code />로 끕니다.
 
 두 조건이 모두 맞아야 동작합니다. 필드가 포커스를 쥐고 있고, 포인터가 숫자 위에 있어야 합니다. 그래서 캐럿을 두지 않은 필드 위에서는 페이지가 평소대로 스크롤되고, 휠을 가져가는 것은 필드를 다루는 동안뿐입니다. 포인터가 얹힌 채로도 계속 스크롤되어야 하는 곳에 든 필드라면 꺼 두세요.
 
-### format과 locale
+### <Fw react="format과 locale" flutter="format과 parse" />
+
+::: fw react
 
 `format`은 `Intl.NumberFormatOptions`입니다. 필드가 `$1,240`이나 `7.5%`를 보여 주더라도 `value`는 `1240`, `0.075`로 유지됩니다.
 
+:::
+
+::: fw flutter
+
+`format`은 값을 받아 글자로 쓰는 함수이고, `parse`는 그 반대 방향입니다. 앱이 이미 쓰는 formatter로 필드가 `$1,240`이나 `7.5%`를 보여 주더라도 `value`는 `1240`, `0.075`로 유지됩니다.
+
+`format`이 없으면 숫자를 꾸밈없이 씁니다. 소수점은 점이고 소수는 세 자리까지이며 자릿수 구분 기호는 넣지 않습니다. `parse`가 없으면 숫자와 점 하나, 앞의 부호만 읽고 나머지, 곧 자릿수 쉼표나 통화 기호, 단위는 건너뜁니다. 그래서 소수점을 쉼표로 쓰거나 백분율을 쓰는 `format`에는 짝이 되는 `parse`가 필요합니다. 입력할 수 있는 글자는 숫자와 점, 쉼표, 공백, 범위가 0 아래로 내려갈 때의 부호, 그리고 `format`이 쓰는 글자입니다.
+
+:::
+
 <Demo src="number-field/format">
 
+::: fw react
+
 <<< @/.vitepress/demos/number-field/format.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/number_field/format.dart
+
+:::
 
 </Demo>
 
@@ -61,27 +120,57 @@ shell은 [TextField](./text-field)와 동일하므로 같은 `size`의 필드와
 
 <Demo src="number-field/variants">
 
+::: fw react
+
 <<< @/.vitepress/demos/number-field/variants.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/number_field/variants.dart
+
+:::
 
 </Demo>
 
 ### size
 
-stepper는 `em` 단위로 그려지므로 숫자 크기를 따라갑니다. 같은 `size`의 [Button](./button) · [TextField](./text-field) · [Select](./select)와 높이가 맞습니다.
+stepper는 숫자의 글자 크기를 기준으로 그려지므로 숫자 크기를 따라갑니다. 같은 `size`의 [Button](./button) · [TextField](./text-field) · [Select](./select)와 높이가 맞습니다.
 
 <Demo src="number-field/sizes">
 
+::: fw react
+
 <<< @/.vitepress/demos/number-field/sizes.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/number_field/sizes.dart
+
+:::
 
 </Demo>
 
 ### labelPlacement
 
-`notch`와 `float`는 [TextField](./text-field#labelplacement)와 같게 동작합니다. `float` 라벨은 필드가 focus를 받거나 숫자를 가질 때까지 필드 안에 있습니다. `startIcon`과 `steppers="split"`은 라벨이 내려앉을 자리를 차지하므로, 둘 중 하나가 있으면 라벨은 노치에 머뭅니다.
+`notch`와 `float`는 [TextField](./text-field#labelplacement)와 같게 동작합니다. `float` 라벨은 필드가 focus를 받거나 숫자를 가질 때까지 필드 안에 있습니다. `startIcon`과 <Fw react="steppers=&quot;split&quot;" flutter="NebaNumberFieldSteppers.split" code />은 라벨이 내려앉을 자리를 차지하므로, 둘 중 하나가 있으면 라벨은 노치에 머뭅니다.
 
 <Demo src="number-field/label-placement">
 
+::: fw react
+
 <<< @/.vitepress/demos/number-field/label-placement.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/number_field/label_placement.dart
+
+:::
 
 </Demo>
 
@@ -91,11 +180,23 @@ stepper는 `em` 단위로 그려지므로 숫자 크기를 따라갑니다. 같�
 
 <Demo src="number-field/states">
 
+::: fw react
+
 <<< @/.vitepress/demos/number-field/states.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/number_field/states.dart
+
+:::
 
 </Demo>
 
 ### shortcuts
+
+::: fw react
 
 `shortcuts`는 키 조합에서 할 일로 가는 map이고, 조합은 [Shortcut](../display/shortcut)이 그리는 표기 그대로 씁니다. `Mod`는 Mac에서 Command, 그 밖에서는 Control이며 modifier는 정확히 일치해야 하므로 `Enter`와 `Mod+Enter`가 함께 발동하는 일은 없습니다.
 
@@ -107,7 +208,28 @@ root가 아니라 `<input>`에 붙는다는 점이 여기서는 중요합니다.
 
 대신 `preventDefault`를 해 주지는 않습니다. `ArrowUp`에 건 shortcut은 실행되고 **동시에** 값도 한 칸 올라갑니다. 그러지 않아야 한다면 핸들러에서 직접 막으세요.
 
-### classNames
+:::
+
+::: fw flutter
+
+`shortcuts`는 `ShortcutActivator`에서 할 일로 가는 map이고, [TextField](./text-field#shortcuts)처럼 필드가 focus를 쥔 동안 묶입니다. modifier는 정확히 일치해야 합니다.
+
+```dart
+NebaNumberField(
+  label: const Text('수량'),
+  shortcuts: <ShortcutActivator, VoidCallback>{
+    const SingleActivator(LogicalKeyboardKey.enter): commit,
+  },
+)
+```
+
+묶인 키는 필드로 가지 않습니다. 다만 값을 움직이는 키는 예외여서, 위쪽 방향키에 건 binding은 실행되고 **그다음에** 값도 한 칸 올라갑니다.
+
+:::
+
+### <Fw react="classNames" flutter="style" />
+
+::: fw react
 
 `className`은 루트(라벨과 shell, 그 아래 두 줄을 담는 열)에 붙고, `<input>` 자체는 `classNames.control`로 갑니다.
 
@@ -117,10 +239,37 @@ root가 아니라 `<input>`에 붙는다는 점이 여기서는 중요합니다.
 
 slot은 `label`, `shell`, `control`, `description`, `error`, `stepper`입니다. `stepper`는 증가·감소 버튼을 따로 두지 않고 하나로 받습니다. 서로 다르게 생긴 stepper 한 쌍을 만들려는 사람은 없기 때문입니다. 넘긴 class가 컴포넌트 자신의 class와 어떻게 겨루는지는 [prop 규약](../../design/prop-conventions)을 보세요.
 
+:::
+
+::: fw flutter
+
+`style`은 필드 안 숫자에 덮어씌우는 스타일이며 React의 `classNames.control`에 해당합니다. style이 따로 정하지 않으면 숫자는 고정폭 숫자로 그려집니다. 라벨과 설명, 오류는 위젯이므로 각자 스타일을 받습니다.
+
+```dart
+NebaNumberField(label: const Text('좌석'), style: const TextStyle(fontWeight: FontWeight.w600))
+```
+
+:::
+
 ## 접근성
+
+::: fw react
 
 - 보이는 컨트롤은 `inputmode="numeric"`과 `aria-roledescription`을 가진 텍스트 입력이고, 그 옆에 `min` · `max` · `step`을 들고 있는 hidden `<input type="number">`가 폼 제출과 브라우저 검증을 담당합니다. 이렇게 나뉘어 있어 보이는 필드가 `$1,240` 같은 서식을 표시할 수 있습니다.
 - `label`이 accessible name이 되고, stepper 버튼의 이름은 `incrementLabel`과 `decrementLabel`이 정합니다.
 - stepper는 tab 순서에서 빠져 있습니다. 필드의 방향키가 같은 일을 합니다.
 - `min`이나 `max`에 도달한 stepper는 `disabled`가 됩니다.
 - 두 스테퍼의 접근성 이름은 `locale`이 정합니다. BCP 47 문자열을 넘기면 숫자와 버튼이 같은 언어로 읽힙니다.
+
+:::
+
+::: fw flutter
+
+- 화면 낭독기에게 필드는 노드 하나입니다. `Text` 라벨이 이름이고, 필드의 글이 값이며, `Text`로 된 설명과 오류가 그 뒤에 읽힙니다.
+- stepper는 따로 노드가 되지 않습니다. stepper가 하는 일은 필드의 increase·decrease 동작이고, 이 동작은 한 걸음 뒤에 쓰일 숫자도 함께 알리므로 사용자는 화면 낭독기의 조절 제스처로 값을 바꿉니다.
+- stepper는 focus 순서에서 빠져 있습니다. 필드의 방향키가 같은 일을 합니다.
+- `min`이나 `max`에 도달한 stepper는 회색이 되고, 그쪽 방향의 동작도 함께 사라집니다.
+- 마우스로 stepper를 누르면 캐럿이 필드로 들어갑니다. 손가락으로 누를 때는 들어가지 않으므로 값을 살짝 바꾸려다 화면 키보드가 올라오지 않습니다.
+- 터치 화면에는 숫자 키보드가 뜨고, 범위가 0 아래로 내려갈 때는 부호 키도 함께 나옵니다.
+
+:::

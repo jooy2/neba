@@ -142,6 +142,13 @@ import 'package:neba_example/demos/list/variants.dart';
 import 'package:neba_example/demos/meter/hero.dart';
 import 'package:neba_example/demos/meter/sizes.dart';
 import 'package:neba_example/demos/meter/values.dart';
+import 'package:neba_example/demos/number_field/format.dart';
+import 'package:neba_example/demos/number_field/hero.dart';
+import 'package:neba_example/demos/number_field/label_placement.dart';
+import 'package:neba_example/demos/number_field/sizes.dart';
+import 'package:neba_example/demos/number_field/states.dart';
+import 'package:neba_example/demos/number_field/steppers.dart';
+import 'package:neba_example/demos/number_field/variants.dart';
 import 'package:neba_example/demos/pagination/hero.dart';
 import 'package:neba_example/demos/pagination/range.dart';
 import 'package:neba_example/demos/pagination/sizes.dart';
@@ -404,6 +411,13 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'meter/hero': MeterHero.new,
   'meter/sizes': MeterSizes.new,
   'meter/values': MeterValues.new,
+  'number-field/format': NumberFieldFormat.new,
+  'number-field/hero': NumberFieldHero.new,
+  'number-field/label-placement': NumberFieldLabelPlacement.new,
+  'number-field/sizes': NumberFieldSizes.new,
+  'number-field/states': NumberFieldStates.new,
+  'number-field/steppers': NumberFieldSteppers.new,
+  'number-field/variants': NumberFieldVariants.new,
   'pagination/hero': PaginationHero.new,
   'pagination/range': PaginationRange.new,
   'pagination/sizes': PaginationSizes.new,

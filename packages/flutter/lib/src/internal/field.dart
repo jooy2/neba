@@ -13,6 +13,10 @@
 ///   the field holds the focus.
 /// - [NebaFieldWidth], how wide a field is when it is not told to stretch.
 /// - [NebaFieldSemantics], what a screen reader hears of the column.
+/// - [NebaFieldEditable], the [EditableText] a field types into, with its
+///   placeholder, its typing mark and its key bindings, set in
+///   [nebaFieldTextStyle]; and [NebaFieldGestures], the presses on the shell
+///   that put the caret in it.
 ///
 /// A field's height is a floor rather than a fixed row: a control the library
 /// draws the contents of is exactly as tall as the ladder says, but a field
@@ -24,6 +28,8 @@ library;
 
 import 'dart:math' as math;
 
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
@@ -34,6 +40,7 @@ import 'package:neba/src/internal/focus_ring.dart';
 import 'package:neba/src/internal/glow.dart';
 import 'package:neba/src/internal/ink.dart';
 import 'package:neba/src/internal/interaction.dart';
+import 'package:neba/src/internal/motion.dart';
 import 'package:neba/src/internal/notch.dart';
 import 'package:neba/src/internal/surface.dart';
 import 'package:neba/src/theme/scale.dart';
@@ -337,6 +344,8 @@ class NebaFieldShell extends StatefulWidget {
     this.typing,
     this.notch,
     this.cursor = MouseCursor.defer,
+    this.paddingStart,
+    this.paddingEnd,
     super.key,
   });
 
@@ -377,6 +386,14 @@ class NebaFieldShell extends StatefulWidget {
 
   /// The pointer's cursor over the shell.
   final MouseCursor cursor;
+
+  /// The inline padding before the control, [density]'s when left out. A
+  /// control that brings its own padding, a number field's steppers, takes
+  /// less on its side.
+  final double? paddingStart;
+
+  /// The inline padding after the control, [density]'s when left out.
+  final double? paddingEnd;
 
   @override
   State<NebaFieldShell> createState() => _NebaFieldShellState();
@@ -501,9 +518,11 @@ class _NebaFieldShellState extends State<NebaFieldShell> {
               // `border-box` is: an outline field is as tall as a solid one.
               constraints: BoxConstraints(minHeight: NebaScale.controlHeight[size]! - 2 * border),
               child: Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: NebaScale.paddingX[widget.density]![size]!,
-                  vertical: widget.multiline ? nebaFieldMultilinePad[size]! : 0,
+                padding: EdgeInsetsDirectional.only(
+                  start: widget.paddingStart ?? NebaScale.paddingX[widget.density]![size]!,
+                  end: widget.paddingEnd ?? NebaScale.paddingX[widget.density]![size]!,
+                  top: widget.multiline ? nebaFieldMultilinePad[size]! : 0,
+                  bottom: widget.multiline ? nebaFieldMultilinePad[size]! : 0,
                 ),
                 child: Align(
                   alignment: widget.multiline
@@ -947,5 +966,355 @@ class RenderNebaFieldWidth extends RenderBox
     if (field != null) {
       visitor(field);
     }
+  }
+}
+
+/// The style a field's control is set in: the control's text and line at
+/// [size], in the page's text colour or the disabled one, with [style] laid
+/// over it.
+TextStyle nebaFieldTextStyle(
+  BuildContext context, {
+  required NebaTokens tokens,
+  required NebaSize size,
+  required bool disabled,
+  TextStyle? style,
+}) {
+  final double text = NebaScale.controlText[size]!;
+
+  return DefaultTextStyle.of(context).style
+      .merge(
+        TextStyle(
+          fontSize: text,
+          height: NebaScale.controlLeading[size]! / text,
+          leadingDistribution: TextLeadingDistribution.even,
+          color: disabled ? tokens.disabledFg : tokens.fg,
+        ),
+      )
+      .merge(style);
+}
+
+/// The [EditableText] a field types into, with what every field puts around
+/// it: the placeholder behind it while it is empty, the [NebaFieldTypingMark]
+/// that puts the shell's light out, a key handler of the field's own and the
+/// caller's key bindings.
+///
+/// The caret is in the field's accent and the selection in its pressed wash.
+/// The gestures are the shell's, so the editable takes no pointer itself, and
+/// there are no selection handles and no copy-and-paste toolbar: both are
+/// drawn by Material or Cupertino, which the package does not import. The
+/// pointer and the keyboard still select, and on the web the browser's own
+/// menu still copies and pastes.
+class NebaFieldEditable extends StatelessWidget {
+  /// The editable for a field.
+  const NebaFieldEditable({
+    required this.editableKey,
+    required this.controller,
+    required this.focusNode,
+    required this.style,
+    required this.roles,
+    this.empty = true,
+    this.readOnly = false,
+    this.obscureText = false,
+    this.suggestions,
+    this.multiline = false,
+    this.rows = 1,
+    this.textAlign = TextAlign.start,
+    this.keyboardType,
+    this.textInputAction,
+    this.autofocus = false,
+    this.autofillHints = const <String>[],
+    this.inputFormatters,
+    this.onChanged,
+    this.onSubmitted,
+    this.selectionEnabled = true,
+    this.placeholder,
+    this.placeholderHidden = false,
+    this.typing,
+    this.onKeyEvent,
+    this.shortcuts,
+    super.key,
+  });
+
+  /// The editable's key, which the shell's gestures reach it through.
+  final GlobalKey<EditableTextState> editableKey;
+
+  /// The text.
+  final TextEditingController controller;
+
+  /// The field's focus node.
+  final FocusNode focusNode;
+
+  /// What the text is set in, from [nebaFieldTextStyle].
+  final TextStyle style;
+
+  /// The field's colour family, for the caret and the selection.
+  final NebaColorRoles roles;
+
+  /// Whether the field holds no text, which shows the [placeholder].
+  final bool empty;
+
+  /// Shows its text but takes none.
+  final bool readOnly;
+
+  /// Draws every character as a dot.
+  final bool obscureText;
+
+  /// Whether the keyboard may correct the text and suggest words: not for an
+  /// obscured text, a number or a code. Defaults to whether the text is
+  /// shown.
+  final bool? suggestions;
+
+  /// Takes more than one line, and grows as the text does.
+  final bool multiline;
+
+  /// How many lines a [multiline] editable shows at least.
+  final int rows;
+
+  /// Where the text sits along the line.
+  final TextAlign textAlign;
+
+  /// The keyboard a touch screen shows. Defaults to text, or multiline text.
+  final TextInputType? keyboardType;
+
+  /// What the keyboard's action key says and does.
+  final TextInputAction? textInputAction;
+
+  /// Whether the editable takes the focus when it is first built.
+  final bool autofocus;
+
+  /// What the platform may fill the field with.
+  final Iterable<String>? autofillHints;
+
+  /// Formatters applied to the text as it is typed.
+  final List<TextInputFormatter>? inputFormatters;
+
+  /// Called with the text each time the reader changes it.
+  final ValueChanged<String>? onChanged;
+
+  /// Called with the text when the reader submits it from the keyboard.
+  final ValueChanged<String>? onSubmitted;
+
+  /// Whether the pointer and the keyboard may select the text.
+  final bool selectionEnabled;
+
+  /// What shows while the field is [empty].
+  final String? placeholder;
+
+  /// Whether the placeholder is faded out, as it is under a `float` label at
+  /// rest, which is where the placeholder would be.
+  final bool placeholderHidden;
+
+  /// Set on every key pressed in the editable; `null` for a field that is
+  /// not lit.
+  final ValueNotifier<bool>? typing;
+
+  /// The field's own answer to a key, asked after the editable and before
+  /// [shortcuts]: a number field's steps.
+  final FocusOnKeyEventCallback? onKeyEvent;
+
+  /// Key combinations to act on, with what each does. A bound key is taken.
+  final Map<ShortcutActivator, VoidCallback>? shortcuts;
+
+  @override
+  Widget build(BuildContext context) {
+    final NebaTokens tokens = NebaTheme.of(context);
+    final bool suggestions = this.suggestions ?? !obscureText;
+
+    Widget editable = EditableText(
+      key: editableKey,
+      controller: controller,
+      focusNode: focusNode,
+      style: style,
+      textAlign: textAlign,
+      cursorColor: roles.accent,
+      backgroundCursorColor: tokens.mutedFg,
+      selectionColor: roles.softPress,
+      readOnly: readOnly,
+      obscureText: obscureText,
+      autocorrect: suggestions,
+      enableSuggestions: suggestions,
+      keyboardType: keyboardType ?? (multiline ? TextInputType.multiline : TextInputType.text),
+      textInputAction: textInputAction,
+      maxLines: multiline ? null : 1,
+      minLines: multiline ? rows : null,
+      autofocus: autofocus,
+      autofillHints: autofillHints,
+      inputFormatters: inputFormatters,
+      onChanged: onChanged,
+      onSubmitted: onSubmitted,
+      // The gestures are the field's, over its whole shell.
+      rendererIgnoresPointer: true,
+      enableInteractiveSelection: selectionEnabled,
+      selectionControls: null,
+    );
+
+    final String? placeholder = this.placeholder;
+
+    if (placeholder != null && empty) {
+      editable = Stack(
+        children: <Widget>[
+          Positioned.fill(
+            child: IgnorePointer(
+              child: ExcludeSemantics(
+                child: TweenAnimationBuilder<Color?>(
+                  tween: ColorTween(
+                    end: placeholderHidden ? tokens.mutedFg.withValues(alpha: 0) : tokens.mutedFg,
+                  ),
+                  duration: nebaDuration(context, NebaScale.duration),
+                  curve: NebaScale.ease,
+                  builder: (BuildContext context, Color? color, Widget? _) {
+                    return Text(
+                      placeholder,
+                      style: style.copyWith(color: color),
+                      textAlign: textAlign,
+                      maxLines: multiline ? null : 1,
+                      softWrap: multiline,
+                      overflow: multiline ? TextOverflow.clip : TextOverflow.ellipsis,
+                    );
+                  },
+                ),
+              ),
+            ),
+          ),
+          editable,
+        ],
+      );
+    }
+
+    final ValueNotifier<bool>? typing = this.typing;
+
+    if (typing != null) {
+      editable = NebaFieldTypingMark(typing: typing, child: editable);
+    }
+
+    final FocusOnKeyEventCallback? onKeyEvent = this.onKeyEvent;
+
+    if (onKeyEvent != null) {
+      editable = Focus(
+        canRequestFocus: false,
+        skipTraversal: true,
+        includeSemantics: false,
+        onKeyEvent: onKeyEvent,
+        child: editable,
+      );
+    }
+
+    final Map<ShortcutActivator, VoidCallback>? shortcuts = this.shortcuts;
+
+    if (shortcuts != null && shortcuts.isNotEmpty) {
+      editable = CallbackShortcuts(bindings: shortcuts, child: editable);
+    }
+
+    return editable;
+  }
+}
+
+/// The gestures of a field's [EditableText] in the widgets layer, over its
+/// whole shell, without the selection toolbar.
+///
+/// Two of the stock gestures show the toolbar, and an editable builds the
+/// overlay it would draw that toolbar in when a selection lands on it before
+/// it has the focus. An overlay needs an `Overlay` above it, which a bare
+/// `WidgetsApp` and a widget test do not have. So these gestures put the focus
+/// in the field before they move the selection, and never ask for a toolbar.
+class NebaFieldGestures extends TextSelectionGestureDetectorBuilder {
+  /// The gestures of the field [delegate] describes.
+  NebaFieldGestures({required super.delegate});
+
+  /// [shell] with these gestures over it, or out of the focus order while
+  /// [disabled].
+  ///
+  /// A press anywhere on the shell, padding included, puts the caret in the
+  /// field, and a press on the shell is not a press outside it.
+  Widget wrap(Widget shell, {required bool disabled}) {
+    if (disabled) {
+      return ExcludeFocus(child: shell);
+    }
+
+    return TextFieldTapRegion(
+      child: buildGestureDetector(behavior: HitTestBehavior.translucent, child: shell),
+    );
+  }
+
+  /// Puts the focus in the field now rather than at the end of the event.
+  void _focus() {
+    final EditableTextState? editable = delegate.editableTextKey.currentState;
+
+    if (editable != null && !editable.widget.focusNode.hasFocus) {
+      editable.requestKeyboard();
+      FocusManager.instance.applyFocusChangesIfNeeded();
+    }
+  }
+
+  @override
+  void onTapDown(TapDragDownDetails details) {
+    switch (defaultTargetPlatform) {
+      // On a desktop the caret lands on the press.
+      case TargetPlatform.linux:
+      case TargetPlatform.macOS:
+      case TargetPlatform.windows:
+        _focus();
+      case TargetPlatform.android:
+      case TargetPlatform.fuchsia:
+      case TargetPlatform.iOS:
+        break;
+    }
+
+    super.onTapDown(details);
+  }
+
+  @override
+  void onSingleTapUp(TapDragUpDetails details) {
+    if (delegate.selectionEnabled) {
+      switch (defaultTargetPlatform) {
+        // On a touch screen the caret lands on the release.
+        case TargetPlatform.android:
+        case TargetPlatform.fuchsia:
+          _focus();
+          renderEditable.selectPosition(cause: SelectionChangedCause.tap);
+        case TargetPlatform.iOS:
+          _focus();
+          switch (details.kind) {
+            case PointerDeviceKind.touch:
+            case PointerDeviceKind.unknown:
+              renderEditable.selectWordEdge(cause: SelectionChangedCause.tap);
+            case PointerDeviceKind.mouse:
+            case PointerDeviceKind.trackpad:
+            case PointerDeviceKind.stylus:
+            case PointerDeviceKind.invertedStylus:
+              renderEditable.selectPosition(cause: SelectionChangedCause.tap);
+          }
+        case TargetPlatform.linux:
+        case TargetPlatform.macOS:
+        case TargetPlatform.windows:
+          break;
+      }
+    }
+
+    editableText.requestKeyboard();
+  }
+
+  @override
+  void onSecondaryTap() {
+    // There is no context menu to open, so a secondary press only focuses.
+    _focus();
+  }
+
+  @override
+  void onDoubleTapDown(TapDragDownDetails details) {
+    _focus();
+    super.onDoubleTapDown(details);
+  }
+
+  @override
+  void onDragSelectionStart(TapDragStartDetails details) {
+    _focus();
+    super.onDragSelectionStart(details);
+  }
+
+  @override
+  void onSingleLongTapStart(LongPressStartDetails details) {
+    _focus();
+    super.onSingleLongTapStart(details);
   }
 }

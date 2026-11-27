@@ -1,5 +1,6 @@
 /// The wheel over a strip, turned onto the axis the strip runs along: the
-/// React package's `src/internal/wheel.ts`.
+/// React package's `src/internal/wheel.ts`; and the wheel over a focused
+/// number field, which steps it, as Base UI's `allowWheelScrub` does.
 ///
 /// A mouse has one wheel and it points down the page, which is the one axis a
 /// horizontal strip does not run along, so a shelf of cards or a tab bar with
@@ -85,4 +86,35 @@ int? nebaStripWheel(
   final bool rtl = horizontal && textDirection == TextDirection.rtl;
 
   return (rtl ? -along : along).sign.toInt();
+}
+
+/// Answers a wheel [event] over a field that steps, a number field holding
+/// the focus, by calling [step] with `1` for a wheel rolled up and `-1` for
+/// one rolled down, and claims it so nothing behind the field scrolls.
+///
+/// Call it from a `Listener`'s `onPointerSignal` around the number, once the
+/// field knows the focus is in it: a field nobody has put the caret in leaves
+/// the page its scroll. [step] runs only if the field wins the event, which
+/// the deepest listener under the pointer does.
+///
+/// A wheel held with Ctrl is a zoom and is left alone. With Shift held, a
+/// wheel the platform has already turned sideways still steps, by its
+/// sideways travel; without it, a sideways swipe is not a step.
+void nebaFieldWheel(PointerSignalEvent event, ValueChanged<int> step) {
+  if (event is! PointerScrollEvent || HardwareKeyboard.instance.isControlPressed) {
+    return;
+  }
+
+  final Offset delta = event.scrollDelta;
+  final bool shift = HardwareKeyboard.instance.isShiftPressed;
+  final bool sideways = delta.dx.abs() > delta.dy.abs();
+  final double along = shift && sideways ? delta.dx : delta.dy;
+
+  if (along == 0 || (!shift && sideways)) {
+    return;
+  }
+
+  GestureBinding.instance.pointerSignalResolver.register(event, (PointerSignalEvent event) {
+    step(along > 0 ? -1 : 1);
+  });
 }

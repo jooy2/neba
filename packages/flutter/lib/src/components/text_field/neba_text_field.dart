@@ -3,15 +3,12 @@ library;
 
 import 'dart:ui' show SemanticsValidationResult;
 
-import 'package:flutter/foundation.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 import 'package:neba/src/internal/field.dart';
 import 'package:neba/src/internal/glyphs.dart';
-import 'package:neba/src/internal/motion.dart';
 import 'package:neba/src/internal/notch.dart';
 import 'package:neba/src/theme/scale.dart';
 import 'package:neba/src/theme/theme.dart';
@@ -218,7 +215,7 @@ class _NebaTextFieldState extends State<NebaTextField>
     implements TextSelectionGestureDetectorBuilderDelegate {
   final GlobalKey<EditableTextState> _editableKey = GlobalKey<EditableTextState>();
   final ValueNotifier<bool> _typing = ValueNotifier<bool>(false);
-  late final _FieldGestures _gestures = _FieldGestures(delegate: this);
+  late final NebaFieldGestures _gestures = NebaFieldGestures(delegate: this);
   TextEditingController? _ownController;
   FocusNode? _ownNode;
   bool _empty = true;
@@ -352,38 +349,30 @@ class _NebaTextFieldState extends State<NebaTextField>
       placeholder: widget.placeholder,
     );
 
-    final double text = NebaScale.controlText[size]!;
-    final TextStyle style = DefaultTextStyle.of(context).style
-        .merge(
-          TextStyle(
-            fontSize: text,
-            height: NebaScale.controlLeading[size]! / text,
-            leadingDistribution: TextLeadingDistribution.even,
-            color: disabled ? tokens.disabledFg : tokens.fg,
-          ),
-        )
-        .merge(widget.style);
+    final TextStyle style = nebaFieldTextStyle(
+      context,
+      tokens: tokens,
+      size: size,
+      disabled: disabled,
+      style: widget.style,
+    );
 
     Widget control(bool focused) {
       final int? maxLength = widget.maxLength;
-      Widget editable = EditableText(
-        key: _editableKey,
+
+      return NebaFieldEditable(
+        editableKey: _editableKey,
         controller: _controller,
         focusNode: _node,
         style: style,
-        cursorColor: roles.accent,
-        backgroundCursorColor: tokens.mutedFg,
-        selectionColor: roles.softPress,
+        roles: roles,
+        empty: _empty,
         readOnly: readOnly,
         obscureText: widget.obscureText,
-        autocorrect: !widget.obscureText,
-        enableSuggestions: !widget.obscureText,
-        keyboardType:
-            widget.keyboardType ??
-            (widget.multiline ? TextInputType.multiline : TextInputType.text),
+        multiline: widget.multiline,
+        rows: widget.rows,
+        keyboardType: widget.keyboardType,
         textInputAction: widget.textInputAction,
-        maxLines: widget.multiline ? null : 1,
-        minLines: widget.multiline ? widget.rows : null,
         autofocus: widget.autofocus,
         autofillHints: widget.autofillHints,
         inputFormatters: <TextInputFormatter>[
@@ -392,63 +381,14 @@ class _NebaTextFieldState extends State<NebaTextField>
         ],
         onChanged: widget.onChanged,
         onSubmitted: widget.onSubmitted,
-        // The gestures are the field's, over its whole shell.
-        rendererIgnoresPointer: true,
-        enableInteractiveSelection: selectionEnabled,
-        // No selection handles and no copy-and-paste toolbar: both are drawn
-        // by Material or Cupertino, which the package does not import. The
-        // pointer and the keyboard still select, and on the web the
-        // browser's own menu still copies and pastes.
-        selectionControls: null,
-      );
-
-      final String? placeholder = widget.placeholder;
-
-      if (placeholder != null && _empty) {
+        selectionEnabled: selectionEnabled,
+        placeholder: widget.placeholder,
         // Under a float label at rest the placeholder is the label's place,
         // so it shows only once the label has moved up.
-        final bool hidden = rests && !focused;
-
-        editable = Stack(
-          children: <Widget>[
-            Positioned.fill(
-              child: IgnorePointer(
-                child: ExcludeSemantics(
-                  child: TweenAnimationBuilder<Color?>(
-                    tween: ColorTween(
-                      end: hidden ? tokens.mutedFg.withValues(alpha: 0) : tokens.mutedFg,
-                    ),
-                    duration: nebaDuration(context, NebaScale.duration),
-                    curve: NebaScale.ease,
-                    builder: (BuildContext context, Color? color, Widget? _) {
-                      return Text(
-                        placeholder,
-                        style: style.copyWith(color: color),
-                        maxLines: widget.multiline ? null : 1,
-                        softWrap: widget.multiline,
-                        overflow: widget.multiline ? TextOverflow.clip : TextOverflow.ellipsis,
-                      );
-                    },
-                  ),
-                ),
-              ),
-            ),
-            editable,
-          ],
-        );
-      }
-
-      if (lit) {
-        editable = NebaFieldTypingMark(typing: _typing, child: editable);
-      }
-
-      final Map<ShortcutActivator, VoidCallback>? shortcuts = widget.shortcuts;
-
-      if (shortcuts != null && shortcuts.isNotEmpty) {
-        editable = CallbackShortcuts(bindings: shortcuts, child: editable);
-      }
-
-      return editable;
+        placeholderHidden: rests && !focused,
+        typing: lit ? _typing : null,
+        shortcuts: widget.shortcuts,
+      );
     }
 
     Widget content(BuildContext context, bool focused) {
@@ -498,16 +438,7 @@ class _NebaTextFieldState extends State<NebaTextField>
       builder: content,
     );
 
-    shell = disabled
-        ? ExcludeFocus(child: shell)
-        // A press anywhere on the shell, padding included, puts the caret in
-        // the field, and a press on the shell is not a press outside it.
-        : TextFieldTapRegion(
-            child: _gestures.buildGestureDetector(
-              behavior: HitTestBehavior.translucent,
-              child: shell,
-            ),
-          );
+    shell = _gestures.wrap(shell, disabled: disabled);
 
     final int? maxLength = widget.maxLength;
 
@@ -551,99 +482,5 @@ class _NebaTextFieldState extends State<NebaTextField>
         ),
       ),
     );
-  }
-}
-
-/// The gestures of an [EditableText] in the widgets layer, without the
-/// selection toolbar.
-///
-/// Two of the stock gestures show the toolbar, and an editable builds the
-/// overlay it would draw that toolbar in when a selection lands on it before
-/// it has the focus. An overlay needs an `Overlay` above it, which a bare
-/// `WidgetsApp` and a widget test do not have. So these gestures put the focus
-/// in the field before they move the selection, and never ask for a toolbar.
-class _FieldGestures extends TextSelectionGestureDetectorBuilder {
-  _FieldGestures({required super.delegate});
-
-  /// Puts the focus in the field now rather than at the end of the event.
-  void _focus() {
-    final EditableTextState? editable = delegate.editableTextKey.currentState;
-
-    if (editable != null && !editable.widget.focusNode.hasFocus) {
-      editable.requestKeyboard();
-      FocusManager.instance.applyFocusChangesIfNeeded();
-    }
-  }
-
-  @override
-  void onTapDown(TapDragDownDetails details) {
-    switch (defaultTargetPlatform) {
-      // On a desktop the caret lands on the press.
-      case TargetPlatform.linux:
-      case TargetPlatform.macOS:
-      case TargetPlatform.windows:
-        _focus();
-      case TargetPlatform.android:
-      case TargetPlatform.fuchsia:
-      case TargetPlatform.iOS:
-        break;
-    }
-
-    super.onTapDown(details);
-  }
-
-  @override
-  void onSingleTapUp(TapDragUpDetails details) {
-    if (delegate.selectionEnabled) {
-      switch (defaultTargetPlatform) {
-        // On a touch screen the caret lands on the release.
-        case TargetPlatform.android:
-        case TargetPlatform.fuchsia:
-          _focus();
-          renderEditable.selectPosition(cause: SelectionChangedCause.tap);
-        case TargetPlatform.iOS:
-          _focus();
-          switch (details.kind) {
-            case PointerDeviceKind.touch:
-            case PointerDeviceKind.unknown:
-              renderEditable.selectWordEdge(cause: SelectionChangedCause.tap);
-            case PointerDeviceKind.mouse:
-            case PointerDeviceKind.trackpad:
-            case PointerDeviceKind.stylus:
-            case PointerDeviceKind.invertedStylus:
-              renderEditable.selectPosition(cause: SelectionChangedCause.tap);
-          }
-        case TargetPlatform.linux:
-        case TargetPlatform.macOS:
-        case TargetPlatform.windows:
-          break;
-      }
-    }
-
-    editableText.requestKeyboard();
-  }
-
-  @override
-  void onSecondaryTap() {
-    // There is no context menu to open, so a secondary press only focuses.
-    _focus();
-  }
-
-  @override
-  void onDoubleTapDown(TapDragDownDetails details) {
-    _focus();
-    super.onDoubleTapDown(details);
-  }
-
-  @override
-  void onDragSelectionStart(TapDragStartDetails details) {
-    _focus();
-    super.onDragSelectionStart(details);
-  }
-
-  @override
-  void onSingleLongTapStart(LongPressStartDetails details) {
-    _focus();
-    super.onSingleLongTapStart(details);
   }
 }
