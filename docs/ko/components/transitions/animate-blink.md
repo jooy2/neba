@@ -1,6 +1,7 @@
 ---
 title: AnimateBlink
 order: 9
+flutter: true
 ---
 
 # AnimateBlink
@@ -8,6 +9,8 @@ order: 9
 <p class="neba-lede">완전한 불투명도와 정해진 바닥값 사이를 오가며 맥동하는 효과입니다. 주기가 대칭이므로 몇 번을 반복하든 시작한 자리에서 끝납니다.</p>
 
 <Demo src="animate-blink/hero" />
+
+::: fw react
 
 ```tsx
 import { AnimateBlink } from 'neba';
@@ -19,11 +22,26 @@ import { AnimateBlink } from 'neba';
 </AnimateBlink>;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+const NebaAnimateBlink(
+  min: 0.35,
+  child: NebaChip(color: NebaColor.danger, variant: NebaVariant.solid, child: Text('녹화 중')),
+);
+```
+
+:::
+
 ## Props
 
 <PropsTable name="AnimateBlink" />
 
-나머지 `<div>` 속성은 모두 루트로 전달됩니다. 모든 `Animate*`가 공유하는 설정은 [Prop 규약](../../design/prop-conventions)에 있습니다.
+<Fw react="나머지 `<div>` 속성은 모두 루트로 전달됩니다." flutter="`child` 하나를 감싸거나, `children`을 `layoutBuilder`로 배치합니다." /> 모든 `Animate*`가 공유하는 설정은 [Prop 규약](../../design/prop-conventions)에 있습니다.
 
 `mode`는 없습니다. 주기가 양쪽 방향으로 같으므로 거꾸로 재생한다는 말에 담길 뜻이 없습니다.
 
@@ -35,7 +53,17 @@ import { AnimateBlink } from 'neba';
 
 <Demo src="animate-blink/floor">
 
+::: fw react
+
 <<< @/.vitepress/demos/animate-blink/floor.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/animate_blink/floor.dart
+
+:::
 
 </Demo>
 
@@ -45,19 +73,45 @@ import { AnimateBlink } from 'neba';
 
 <Demo src="animate-blink/counted">
 
+::: fw react
+
 <<< @/.vitepress/demos/animate-blink/counted.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/animate_blink/counted.dart
+
+:::
 
 </Demo>
 
 ### paused
 
-`paused`는 깜빡임이 어디까지 진행됐든 완전히 불투명한 상태로 멈춥니다. 실시간 표시를 unmount하지 않고 멈추는 방법이며, 다시 풀면 처음부터 시작합니다.
+`paused`는 깜빡임이 어디까지 진행됐든 완전히 불투명한 상태로 멈춥니다. 실시간 표시를 <Fw react="unmount하지" flutter="트리에서 빼지" /> 않고 멈추는 방법이며, 다시 풀면 처음부터 시작합니다.
+
+::: fw react
 
 ```tsx
 <AnimateBlink paused={!recording} min={0.35}>
   <Chip color="danger">녹화 중</Chip>
 </AnimateBlink>
 ```
+
+:::
+
+::: fw flutter
+
+```dart
+NebaAnimateBlink(
+  paused: !recording,
+  min: 0.35,
+  child: const NebaChip(color: NebaColor.danger, child: Text('녹화 중')),
+);
+```
+
+:::
 
 ### stagger
 
@@ -66,7 +120,7 @@ import { AnimateBlink } from 'neba';
 ## 접근성
 
 - 축소된 모션 설정에서는 애니메이션이 마지막 프레임으로 바로 넘어가고, 내용은 완전한 불투명도로 놓입니다.
-- `duration`은 깜박임 한 번의 길이이며, 334ms보다 짧으면 334ms로 올립니다. 1초에 세 번 넘게 깜박이면 발작을 일으킬 수 있기 때문입니다. `transition="blink"`와 깜박이는 `AnimateSplit`에도 같은 하한이 적용됩니다.
+- `duration`은 깜박임 한 번의 길이이며, 334ms보다 짧으면 334ms로 올립니다. 1초에 세 번 넘게 깜박이면 발작을 일으킬 수 있기 때문입니다. <Fw react='`transition="blink"`와' flutter="`NebaTransition.blink`와" /> 깜박이는 `AnimateSplit`에도 같은 하한이 적용됩니다.
 - 그래서 깜박임이 메시지를 혼자 지고 있어서는 안 됩니다. 말로도 하세요. "녹화 중"이라고 적힌 `Chip`은 맥동하든 하지 않든 그렇게 말합니다.
 - 읽고 있는 페이지의 한구석에서 멈추지 않고 움직이는 것은 이 라이브러리가 다른 곳에서는 거부하는 종류의 모션입니다. 정말로 살아 있는 상태에만 쓰고, 그 상태가 끝나면 멈추세요.
 - 5초 넘게 계속 움직이므로 페이지에 멈출 방법이 있어야 합니다. 옆에 일시정지 버튼을 두고 그 상태를 `paused`에 연결하세요. 움직임이 거슬리는 독자 대부분은 모션 감소 설정을 켜 두지 않으므로 그 설정만으로는 부족합니다.
