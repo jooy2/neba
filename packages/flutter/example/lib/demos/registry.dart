@@ -26,6 +26,9 @@ import 'package:neba_example/demos/animate_fade/triggers.dart';
 import 'package:neba_example/demos/animate_grow/hero.dart';
 import 'package:neba_example/demos/animate_grow/origin.dart';
 import 'package:neba_example/demos/animate_grow/settling.dart';
+import 'package:neba_example/demos/animate_slide/distance.dart';
+import 'package:neba_example/demos/animate_slide/edges.dart';
+import 'package:neba_example/demos/animate_slide/hero.dart';
 import 'package:neba_example/demos/animate_zoom/hero.dart';
 import 'package:neba_example/demos/animate_zoom/strength.dart';
 import 'package:neba_example/demos/animate_zoom/visible.dart';
@@ -437,6 +440,9 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'animate-grow/hero': AnimateGrowHero.new,
   'animate-grow/origin': AnimateGrowOrigin.new,
   'animate-grow/settling': AnimateGrowSettling.new,
+  'animate-slide/distance': AnimateSlideDistance.new,
+  'animate-slide/edges': AnimateSlideEdges.new,
+  'animate-slide/hero': AnimateSlideHero.new,
   'animate-zoom/hero': AnimateZoomHero.new,
   'animate-zoom/strength': AnimateZoomStrength.new,
   'animate-zoom/visible': AnimateZoomVisible.new,

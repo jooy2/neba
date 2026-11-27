@@ -1,6 +1,7 @@
 ---
 title: AnimateSlide
 order: 9
+flutter: true
 ---
 
 # AnimateSlide
@@ -8,6 +9,8 @@ order: 9
 <p class="neba-lede">한쪽 변에서 미끄러져 들어오는 효과입니다. 기본 이동 거리가 요소 자신의 크기이므로 정확히 화면 밖에서 출발하며, 있어서는 안 될 자리에 반쯤 그려지는 일이 없습니다.</p>
 
 <Demo src="animate-slide/hero" />
+
+::: fw react
 
 ```tsx
 import { AnimateSlide } from 'neba';
@@ -19,11 +22,28 @@ import { AnimateSlide } from 'neba';
 </div>;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+const ClipRect(
+  child: NebaAnimateSlide(
+    from: NebaSide.left,
+    child: NebaAlert(color: NebaColor.success, title: Text('초대를 보냈습니다')),
+  ),
+);
+```
+
+:::
+
 ## Props
 
 <PropsTable name="AnimateSlide" />
 
-나머지 `<div>` 속성은 모두 루트로 전달됩니다. 모든 `Animate*`가 공유하는 설정은 [Prop 규약](../../design/prop-conventions)에 있습니다.
+<Fw react="나머지 `<div>` 속성은 모두 루트로 전달됩니다." flutter="`child` 하나를 감싸거나, `children`을 `layoutBuilder`로 배치합니다." /> 모든 `Animate*`가 공유하는 설정은 [Prop 규약](../../design/prop-conventions)에 있습니다.
 
 ## 예시
 
@@ -31,35 +51,79 @@ import { AnimateSlide } from 'neba';
 
 어느 변에서 들어오는지 정하며, `top`, `right`, `bottom`, `left`를 받습니다. 라이브러리의 다른 곳에서 `NebaSide`가 그렇듯 논리적이 아니라 물리적입니다. 위에서 내려오는 패널은 어떤 쓰기 방향에서도 위에서 내려옵니다.
 
-`overflow: hidden`인 상자 안에 넣으면 그 상자의 변 뒤에서 패널이 나타나는 효과가 됩니다.
+<Fw react="`overflow: hidden`인 상자" flutter="`ClipRect`" /> 안에 넣으면 그 상자의 변 뒤에서 패널이 나타나는 효과가 됩니다.
 
 <Demo src="animate-slide/edges">
 
+::: fw react
+
 <<< @/.vitepress/demos/animate-slide/edges.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/animate_slide/edges.dart
+
+:::
 
 </Demo>
 
 ### distance
 
+::: fw react
+
 CSS 길이 또는 픽셀 수입니다. 기본값 `'100%'`는 요소 자신의 너비 또는 높이입니다. 짧은 거리는 등장이 아니라 살짝 미는 정도이고, 그런 것을 목록 전체에 하나씩 걸고 싶다면 [AnimateAppear](./animate-appear)를 쓰세요.
 
 도착하기 전까지 기본값은 요소를 자기 너비나 높이만큼 제자리 밖에 두므로, 컨테이너 바깥으로 나갈 수 있습니다. 휴대폰에서는 오른쪽에서 들어오는 슬라이드가 그동안 페이지 폭을 넓힙니다. `overflow: hidden`인 상자로 감싸면 안쪽에 머뭅니다.
 
+:::
+
+::: fw flutter
+
+논리 픽셀 수입니다. 기본값처럼 생략하면 위젯 자신의 너비 또는 높이입니다. 짧은 거리는 등장이 아니라 살짝 미는 정도이고, 그런 것을 목록 전체에 하나씩 걸고 싶다면 `children`과 `stagger`를 주세요.
+
+도착하기 전까지 기본값은 위젯을 자기 너비나 높이만큼 제자리 밖에, 그 자리에 있는 것 위로 그립니다. 그 자리에 배치하는 것이 아니라 그리기만 하므로 페이지 폭을 넓히지는 않고, `ClipRect`로 감싸면 안쪽에 머뭅니다.
+
+:::
+
 <Demo src="animate-slide/distance">
 
+::: fw react
+
 <<< @/.vitepress/demos/animate-slide/distance.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/animate_slide/distance.dart
+
+:::
 
 </Demo>
 
 ### mode
 
-`out`은 왔던 길로 되돌려 보내고 화면 밖에서 멈춥니다.
+<Fw react="`out`은" flutter="`NebaAnimateMode.exit`은" /> 왔던 길로 되돌려 보내고 화면 밖에서 멈춥니다.
+
+::: fw react
 
 ```tsx
 <AnimateSlide mode="out" from="right">
   <Toolbar>…</Toolbar>
 </AnimateSlide>
 ```
+
+:::
+
+::: fw flutter
+
+```dart
+NebaAnimateSlide(mode: NebaAnimateMode.exit, from: NebaSide.right, child: toolbar);
+```
+
+:::
 
 ### stagger
 
@@ -68,4 +132,4 @@ CSS 길이 또는 픽셀 수입니다. 기본값 `'100%'`는 요소 자신의 �
 ## 접근성
 
 - 축소된 모션 설정에서는 애니메이션이 마지막 프레임으로 바로 넘어가고, 내용은 제자리에 그냥 있거나 나가는 중이었다면 사라집니다.
-- 요소는 `translate`로 움직이므로 재생되는 동안 페이지의 레이아웃이 다시 계산되지 않고, 아래의 어떤 것도 밀려나지 않습니다.
+- 요소는 <Fw react="`translate`로" flutter="레이아웃 위에 그리는 이동으로" /> 움직이므로 재생되는 동안 페이지의 레이아웃이 다시 계산되지 않고, 아래의 어떤 것도 밀려나지 않습니다.
