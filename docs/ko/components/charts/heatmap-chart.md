@@ -1,6 +1,7 @@
 ---
 title: HeatmapChart
 order: 8
+flutter: true
 ---
 
 # HeatmapChart
@@ -8,6 +9,8 @@ order: 8
 <p class="neba-lede">셀마다 하나의 크기를 재는 대신 색으로 나타내는 차트입니다. 같은 아이디어를 두 형태로 그립니다. category 축 두 개와 숫자 하나를 위한 grid, 그리고 pie가 담기에는 조각이 너무 많은 전체와 부분을 위한 treemap입니다.</p>
 
 <Demo src="heatmap-chart/hero" />
+
+::: fw react
 
 ```tsx
 import { HeatmapChart } from 'neba';
@@ -22,6 +25,25 @@ import { HeatmapChart } from 'neba';
 />;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+const NebaHeatmapChart(
+  label: '시간대·요일별 세션',
+  categories: <Object>['00', '06', '12', '18'],
+  series: <NebaChartSeries>[
+    NebaChartSeries(name: 'Mon', data: <num>[4, 24, 51, 18]),
+    NebaChartSeries(name: 'Tue', data: <num>[3, 27, 55, 20]),
+  ],
+);
+```
+
+:::
+
 ## 데이터 형식
 
 `series`의 형태는 모든 차트가 공유합니다. 전체 정의는 [LineChart](./line-chart#데이터-형식)에 있습니다. 여기서 series 하나는 grid의 **행**입니다. treemap은 모든 series의 타일을 크기에 따라 한데 배치하므로, 거기서 series는 타일을 한곳에 모으지 않고 표에서 이름을 붙이는 역할만 합니다. `y`가 크기, `x`가 열 또는 타일의 이름입니다.
@@ -34,7 +56,17 @@ import { HeatmapChart } from 'neba';
 
 <PropsTable name="HeatmapChart" />
 
+::: fw react
+
 `<div>`의 native 속성과 [Box](../surfaces/box)의 모든 prop이 그대로 전달됩니다. 공용 축은 [prop 규약](../../design/prop-conventions)을 참고하세요.
+
+:::
+
+::: fw flutter
+
+차트는 [LineChart](./line-chart#props)처럼 [Box](../surfaces/box) 위에 놓입니다. `shape`는 `NebaHeatmapShape`, `scale`은 `NebaHeatmapScale`입니다. `valueLabels`는 `NebaChartValueLabels`이며 그중 `none`과 `all`만 읽고, `legend`는 `true`, `false` 또는 `NebaChartLegend`이며 그중 `side`와 `align`만 읽습니다. `exportable`은 Flutter 패키지에 아직 없습니다. 공용 축은 [prop 규약](../../design/prop-conventions)을 참고하세요.
+
+:::
 
 ## 예시
 
@@ -46,7 +78,17 @@ treemap에는 축이 없고 이름이 타일 안에 직접 적힙니다. 음수�
 
 <Demo src="heatmap-chart/treemap">
 
+::: fw react
+
 <<< @/.vitepress/demos/heatmap-chart/treemap.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/heatmap_chart/treemap.dart
+
+:::
 
 </Demo>
 
@@ -58,19 +100,39 @@ treemap에는 축이 없고 이름이 타일 안에 직접 적힙니다. 음수�
 
 <Demo src="heatmap-chart/diverging">
 
+::: fw react
+
 <<< @/.vitepress/demos/heatmap-chart/diverging.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/heatmap_chart/diverging.dart
+
+:::
 
 </Demo>
 
 ### valueLabels · min · max
 
-`valueLabels="all"`은 각 값을 셀 위에 씁니다. 글자가 양옆 여백과 함께 들어갈 만큼 셀이 클 때만이고, 들어가지 않는 라벨은 잘리는 대신 생략됩니다. 채워진 셀 안의 라벨은 그 아래 스텝에서 잉크를 고르므로 램프의 양쪽 끝 모두에서 읽힙니다.
+<Fw react='`valueLabels="all"`은' flutter="`NebaChartValueLabels.all`은" /> 각 값을 셀 위에 씁니다. 글자가 양옆 여백과 함께 들어갈 만큼 셀이 클 때만이고, 들어가지 않는 라벨은 잘리는 대신 생략됩니다. 채워진 셀 안의 라벨은 그 아래 스텝에서 잉크를 고르므로 램프의 양쪽 끝 모두에서 읽힙니다.
 
 `min`·`max`는 스케일을 고정합니다. 생략하면 양 끝이 데이터에서 오므로, 서로 다른 데이터의 두 차트는 같은 범위를 줘야 비교할 수 있습니다. sequential 스케일에서 값이 모두 같으면 나눌 범위가 없으므로, 0 이하는 가장 연한 단계, 0보다 크면 가장 진한 단계가 됩니다.
 
 <Demo src="heatmap-chart/labels">
 
+::: fw react
+
 <<< @/.vitepress/demos/heatmap-chart/labels.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/heatmap_chart/labels.dart
+
+:::
 
 </Demo>
 
@@ -84,18 +146,40 @@ treemap에는 축이 없고 이름이 타일 안에 직접 적힙니다. 음수�
 
 <Demo src="heatmap-chart/axes">
 
+::: fw react
+
 <<< @/.vitepress/demos/heatmap-chart/axes.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/heatmap_chart/axes.dart
+
+:::
 
 </Demo>
 
 ### legend
 
-범례는 swatch 목록이 아니라 양 끝에 값이 붙은 스케일 막대입니다. `diverging`에서는 막대 가운데 아래에 midpoint를 씁니다. `legend={false}`로 끄고, `legend`의 `side`로 옮깁니다.
+범례는 swatch 목록이 아니라 양 끝에 값이 붙은 스케일 막대입니다. `diverging`에서는 막대 가운데 아래에 midpoint를 씁니다. <Fw react="`legend={false}`로" flutter="`legend: false`로" /> 끄고, `legend`의 `side`로 옮깁니다.
 
-막대는 값의 범위를 알 데이터가 있을 때만 그려지고, `height` 바깥에 자기 자리를 차지합니다. `side`로 옮기지 않았다면 plot 아래의 한 행입니다. 그래서 데이터를 불러오는 동안 빈 상태로 렌더링한 heatmap은 데이터가 도착할 때 그 행만큼 커지고, 아래에 있는 것을 밀어냅니다. 차트가 처음 나타나는 렌더링에서 데이터를 함께 넘기거나, 그 행까지 포함한 `min-height`를 컨테이너에 주어 자리를 비워 두세요.
+막대는 값의 범위를 알 데이터가 있을 때만 그려지고, `height` 바깥에 자기 자리를 차지합니다. `side`로 옮기지 않았다면 plot 아래의 한 행입니다. 그래서 데이터를 불러오는 동안 빈 상태로 렌더링한 heatmap은 데이터가 도착할 때 그 행만큼 커지고, 아래에 있는 것을 밀어냅니다. 차트가 처음 나타나는 <Fw react="렌더링에서" flutter="빌드에서" /> 데이터를 함께 넘기거나, 그 행까지 포함한 <Fw react="`min-height`를" flutter="`minHeight`를" /> 컨테이너에 주어 자리를 비워 두세요.
 
 ## 접근성
+
+::: fw react
 
 - 데이터는 `label`을 caption으로 하는 **화면에 보이지 않는 표**로도 렌더링됩니다. series 하나가 한 행, category 하나가 한 열입니다. treemap의 열은 그룹들이 쓰는 모든 타일 이름이고, 값은 저마다 자기 이름 열에 들어갑니다. 셀이 500개를 넘으면 caption과 머리글 행은 바로 쓰고, 행은 차트가 처음 그려진 직후에 조금씩 나눠 추가합니다. 그래서 서버에서 렌더링한 HTML에는 행이 들어가지 않습니다. plot 자체의 설명은 값의 개수와 범위를 담은 한 문장이라, focus할 때 표 전체를 읽지 않습니다.
 - plot에 focus할 수 있습니다. grid에서는 `←`·`→`가 행 순서로 셀을 옮기고 `↑`·`↓`가 열을 유지한 채 행을 바꿉니다. treemap에서는 어느 화살표든 가장 큰 타일부터 작은 타일 순으로 옮깁니다. `Escape`로 tooltip을 해제합니다. 터치 화면에서는 탭한 셀의 tooltip이 plot 바깥을 탭할 때까지 남습니다.
 - 스케일 범례가 범위의 양 끝을 숫자로 알려 주므로, 램프를 눈으로만 읽어야 하는 경우는 없습니다.
+
+:::
+
+::: fw flutter
+
+- plot은 문장 하나로 설명되는 이미지 노드 하나이고, 데이터는 `label`을 caption으로 하는 숨은 표에 있습니다. [LineChart](./line-chart#접근성)와 같으며, Flutter가 그중 무엇을 표현할 수 있고 없는지는 그 문서에 있습니다. 여기서는 series 하나가 한 행, category 하나가 한 열입니다. treemap의 열은 그룹들이 쓰는 모든 타일 이름이고, 값은 저마다 자기 이름 열에 들어갑니다. 셀이 500개를 넘으면 행은 첫 프레임 뒤 한가한 틈에 나눠 채웁니다.
+- plot이 focus를 받습니다. grid에서는 `←`·`→`가 행 순서로 셀을 옮기고 `↑`·`↓`가 열을 유지한 채 행을 바꿉니다. treemap에서는 어느 화살표든 가장 큰 타일부터 작은 타일 순으로 옮깁니다. `Escape`로 해제하며, 옮길 때마다 읽은 값을 알려 줍니다. 터치 화면에서는 탭한 셀의 값이 plot 바깥을 탭할 때까지 남습니다.
+- 스케일 범례가 범위의 양 끝을 숫자로 알려 주므로, 램프를 눈으로만 읽어야 하는 경우는 없습니다.
+
+:::

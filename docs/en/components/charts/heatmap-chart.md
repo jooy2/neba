@@ -1,6 +1,7 @@
 ---
 title: HeatmapChart
 order: 8
+flutter: true
 ---
 
 # HeatmapChart
@@ -8,6 +9,8 @@ order: 8
 <p class="neba-lede">A magnitude per cell, coloured rather than measured. Two shapes of one idea: a grid, for two categorical axes and one number; and a treemap, for parts of a whole with more parts than a pie can hold.</p>
 
 <Demo src="heatmap-chart/hero" />
+
+::: fw react
 
 ```tsx
 import { HeatmapChart } from 'neba';
@@ -22,6 +25,25 @@ import { HeatmapChart } from 'neba';
 />;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+const NebaHeatmapChart(
+  label: 'Sessions by hour and weekday',
+  categories: <Object>['00', '06', '12', '18'],
+  series: <NebaChartSeries>[
+    NebaChartSeries(name: 'Mon', data: <num>[4, 24, 51, 18]),
+    NebaChartSeries(name: 'Tue', data: <num>[3, 27, 55, 20]),
+  ],
+);
+```
+
+:::
+
 ## The data
 
 The `series` shape is the one every chart shares: see [LineChart](./line-chart#the-data) for the full definition. Here a series is a **row** of the grid. A treemap packs every series' tiles together by size, so there a series names its tiles in the table rather than keeping them in one place. `y` is the magnitude, and `x` names the column or the tile.
@@ -34,7 +56,17 @@ The scale runs across every cell in the chart rather than per row, so a colour m
 
 <PropsTable name="HeatmapChart" />
 
+::: fw react
+
 Every native `<div>` attribute passes through, along with every [Box](../surfaces/box) prop. See [prop conventions](../../design/prop-conventions) for the shared axes.
+
+:::
+
+::: fw flutter
+
+The chart sits on a [Box](../surfaces/box), as a [LineChart](./line-chart#props) does. `shape` is a `NebaHeatmapShape` and `scale` a `NebaHeatmapScale`; `valueLabels` is a `NebaChartValueLabels`, of which `none` and `all` are read; `legend` is `true`, `false` or a `NebaChartLegend`, of which `side` and `align` are read. `exportable` is not in the Flutter package yet. See [prop conventions](../../design/prop-conventions) for the shared axes.
+
+:::
 
 ## Examples
 
@@ -46,7 +78,17 @@ A treemap has no axes (every tile is named on its own face), and a negative valu
 
 <Demo src="heatmap-chart/treemap">
 
+::: fw react
+
 <<< @/.vitepress/demos/heatmap-chart/treemap.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/heatmap_chart/treemap.dart
+
+:::
 
 </Demo>
 
@@ -58,19 +100,39 @@ Reach for `diverging` only when there is a real zero to diverge about. Neither r
 
 <Demo src="heatmap-chart/diverging">
 
+::: fw react
+
 <<< @/.vitepress/demos/heatmap-chart/diverging.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/heatmap_chart/diverging.dart
+
+:::
 
 </Demo>
 
 ### valueLabels · min · max
 
-`valueLabels="all"` writes each value on its cell, where the cell is big enough for the text with room either side; a label that does not fit is dropped rather than clipped. Inside a filled cell the label picks its ink from the step underneath it, so it stays readable at both ends of the ramp.
+<Fw react='`valueLabels="all"`' flutter="`NebaChartValueLabels.all`" /> writes each value on its cell, where the cell is big enough for the text with room either side; a label that does not fit is dropped rather than clipped. Inside a filled cell the label picks its ink from the step underneath it, so it stays readable at both ends of the ramp.
 
 `min` and `max` pin the scale. Left out, the ends come from the data, so two charts of different data are comparable only once they are given the same bounds. On a sequential scale whose values are all the same there is no range to spread, so zero or less takes the lightest step and anything above zero the darkest.
 
 <Demo src="heatmap-chart/labels">
 
+::: fw react
+
 <<< @/.vitepress/demos/heatmap-chart/labels.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/heatmap_chart/labels.dart
+
+:::
 
 </Demo>
 
@@ -84,18 +146,40 @@ A `treemap` names its tiles on their own faces and reads neither axis.
 
 <Demo src="heatmap-chart/axes">
 
+::: fw react
+
 <<< @/.vitepress/demos/heatmap-chart/axes.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/heatmap_chart/axes.dart
+
+:::
 
 </Demo>
 
 ### legend
 
-The legend is a scale bar with its two ends labelled, not a list of swatches. On a `diverging` scale the midpoint is named under the middle of the bar. `legend={false}` leaves it off, and `legend`'s own `side` moves it.
+The legend is a scale bar with its two ends labelled, not a list of swatches. On a `diverging` scale the midpoint is named under the middle of the bar. <Fw react="`legend={false}`" flutter="`legend: false`" /> leaves it off, and `legend`'s own `side` moves it.
 
-The bar is drawn only once there is data to scale, and it takes room of its own outside `height`: a row under the plot, unless `side` puts it elsewhere. A heatmap rendered empty while its data loads therefore grows by that row when the data arrives, and moves whatever is under it. Give the chart its data in the render it first appears in, or keep the room on the container, with a `min-height` that includes the row.
+The bar is drawn only once there is data to scale, and it takes room of its own outside `height`: a row under the plot, unless `side` puts it elsewhere. A heatmap rendered empty while its data loads therefore grows by that row when the data arrives, and moves whatever is under it. Give the chart its data in the <Fw react="render" flutter="build" /> it first appears in, or keep the room on the container, with a <Fw react="`min-height`" flutter="`minHeight`" /> that includes the row.
 
 ## Accessibility
+
+::: fw react
 
 - The data is also rendered as a **visually hidden table**, captioned with `label`, one row per series and one column per category. A treemap's columns are every tile name its groups use, and each value sits under its own name. Past 500 cells, the caption and the header row are written at once and the rows are added in small batches just after the chart first draws, so a server-rendered page does not carry them in its HTML. The plot itself is described by one sentence with the number of values and their range, so a focus does not read the table out.
 - The plot is focusable. On a grid `←` / `→` walk the cells row by row and `↑` / `↓` keep the column and change the row; on a treemap every arrow walks the tiles from the largest to the smallest. `Escape` clears the tooltip. On a touch screen a tap keeps a cell's tooltip up until a tap lands outside the plot.
 - The scale legend gives the two ends of the range as numbers, so the ramp never has to be read by eye alone.
+
+:::
+
+::: fw flutter
+
+- The plot is one image node described by a sentence, and the data is a hidden table captioned with `label`, as on a [LineChart](./line-chart#accessibility), which says what Flutter can and cannot express of it. Here it has one row per series and one column per category; a treemap's columns are every tile name its groups use, and each value sits under its own name. Past 500 cells the rows are added in idle slices after the first frame.
+- The plot takes the focus. On a grid `←` / `→` walk the cells row by row and `↑` / `↓` keep the column and change the row; on a treemap every arrow walks the tiles from the largest to the smallest. `Escape` clears the reading, and the reading is announced as it moves. On a touch screen a tap keeps a cell's reading up until a tap lands outside the plot.
+- The scale legend gives the two ends of the range as numbers, so the ramp never has to be read by eye alone.
+
+:::

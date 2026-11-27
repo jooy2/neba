@@ -82,6 +82,7 @@ export 'src/components/gauge_chart/neba_gauge_chart.dart';
 export 'src/components/grid/neba_grid.dart';
 export 'src/components/grid_container/neba_grid_container.dart';
 export 'src/components/header/neba_header.dart';
+export 'src/components/heatmap_chart/neba_heatmap_chart.dart';
 export 'src/components/highlight/neba_highlight.dart';
 export 'src/components/hover_card/neba_hover_card.dart';
 export 'src/components/how_to_steps/neba_how_to_steps.dart';

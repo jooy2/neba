@@ -280,6 +280,11 @@ import 'package:neba_example/demos/header/align.dart';
 import 'package:neba_example/demos/header/hero.dart';
 import 'package:neba_example/demos/header/measure.dart';
 import 'package:neba_example/demos/header/variant.dart';
+import 'package:neba_example/demos/heatmap_chart/axes.dart';
+import 'package:neba_example/demos/heatmap_chart/diverging.dart';
+import 'package:neba_example/demos/heatmap_chart/hero.dart';
+import 'package:neba_example/demos/heatmap_chart/labels.dart';
+import 'package:neba_example/demos/heatmap_chart/treemap.dart';
 import 'package:neba_example/demos/highlight/hero.dart';
 import 'package:neba_example/demos/highlight/matching.dart';
 import 'package:neba_example/demos/highlight/nested.dart';
@@ -842,6 +847,11 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'header/hero': HeaderHero.new,
   'header/measure': HeaderMeasure.new,
   'header/variant': HeaderVariant.new,
+  'heatmap-chart/axes': HeatmapChartAxes.new,
+  'heatmap-chart/diverging': HeatmapChartDiverging.new,
+  'heatmap-chart/hero': HeatmapChartHero.new,
+  'heatmap-chart/labels': HeatmapChartLabels.new,
+  'heatmap-chart/treemap': HeatmapChartTreemap.new,
   'highlight/hero': HighlightHero.new,
   'highlight/matching': HighlightMatching.new,
   'highlight/nested': HighlightNested.new,

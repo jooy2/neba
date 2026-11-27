@@ -1246,6 +1246,157 @@ Path chartRingPath(Offset centre, double radius, double from, double to) {
   return Path()..arcTo(circle, start, (to - from) * math.pi / 180, true);
 }
 
+// ---------------------------------------------------------------------------
+// Magnitude colour
+// ---------------------------------------------------------------------------
+
+/// How many steps each magnitude ramp has, [NebaChartPalette.sequential] and
+/// [NebaChartPalette.diverging].
+const int chartRampSteps = 5;
+
+/// The step of a magnitude ramp [value] lands on, from `0` to
+/// `chartRampSteps - 1`, between [min] and [max].
+///
+/// A diverging scale is read from its [midpoint] rather than from its
+/// bottom, so the distance either side of it is what is scaled, by the larger
+/// of the two arms: a set running from −2 to +40 does not paint every
+/// negative the deepest step. A sequential one with nothing to spread is read
+/// against zero, so a week of zeros is the palest step and not the peak.
+int chartRampStep(
+  double value,
+  double min,
+  double max, {
+  required bool diverging,
+  double midpoint = 0,
+}) {
+  if (diverging) {
+    final double reach = math.max((max - midpoint).abs(), (midpoint - min).abs());
+
+    if (!(reach > 0)) {
+      return 2;
+    }
+
+    final double share = (value - midpoint) / reach;
+
+    // Two steps each side of the neutral, which is the middle one.
+    return (2 + (share * 2).round()).clamp(0, 4);
+  }
+
+  final double span = max - min;
+
+  if (!(span > 0)) {
+    return value > 0 ? chartRampSteps - 1 : 0;
+  }
+
+  return ((value - min) / span * chartRampSteps).floor().clamp(0, chartRampSteps - 1);
+}
+
+// ---------------------------------------------------------------------------
+// Treemap
+// ---------------------------------------------------------------------------
+
+/// A squarified treemap: [values] as boxes in a [width] by [height] box whose
+/// areas are their shares, laid out as close to square as they can be got,
+/// each with the index of the value it came from.
+///
+/// Squarified rather than sliced, so twenty values do not end in slivers a
+/// pixel wide whose area cannot be read: a row is filled along the box's
+/// shorter side for as long as its worst aspect ratio improves (Bruls,
+/// Huizing and van Wijk). The tiles come back largest first; a negative or a
+/// zero value has no area and no tile.
+List<({int index, Rect rect})> chartSquarify(List<double> values, double width, double height) {
+  final double total = values.fold<double>(0, (double sum, double one) => sum + math.max(0, one));
+
+  if (!(total > 0) || width <= 0 || height <= 0) {
+    return const <({int index, Rect rect})>[];
+  }
+
+  final double scale = width * height / total;
+  final List<({int index, double area})> items = <({int index, double area})>[
+    for (int index = 0; index < values.length; index++)
+      if (math.max(0, values[index]) * scale > 0)
+        (index: index, area: math.max(0, values[index]) * scale),
+  ];
+
+  // Sorted with the index as the tie-break, since a Dart sort is not stable.
+  items.sort((({int index, double area}) a, ({int index, double area}) b) {
+    final int byArea = b.area.compareTo(a.area);
+
+    return byArea != 0 ? byArea : a.index.compareTo(b.index);
+  });
+
+  final List<({int index, Rect rect})> tiles = <({int index, Rect rect})>[];
+  double x = 0;
+  double y = 0;
+  double boxWidth = width;
+  double boxHeight = height;
+  List<({int index, double area})> row = <({int index, double area})>[];
+
+  // The worst aspect ratio in a row laid along the current short side.
+  double worst(List<({int index, double area})> candidate) {
+    final double side = math.min(boxWidth, boxHeight);
+    final double sum = candidate.fold<double>(0, (double total, ({int index, double area}) one) {
+      return total + one.area;
+    });
+
+    if (!(sum > 0) || !(side > 0)) {
+      return double.infinity;
+    }
+
+    final double biggest = candidate.first.area;
+    final double smallest = candidate.last.area;
+
+    return math.max(side * side * biggest / (sum * sum), sum * sum / (side * side * smallest));
+  }
+
+  void place() {
+    final double sum = row.fold<double>(0, (double total, ({int index, double area}) one) {
+      return total + one.area;
+    });
+    final double side = math.min(boxWidth, boxHeight);
+    final double thickness = side > 0 ? sum / side : 0;
+    final bool across = boxWidth >= boxHeight;
+    double along = 0;
+
+    for (final ({int index, double area}) one in row) {
+      final double length = thickness > 0 ? one.area / thickness : 0;
+
+      tiles.add((
+        index: one.index,
+        rect: across
+            ? Rect.fromLTWH(x, y + along, thickness, length)
+            : Rect.fromLTWH(x + along, y, length, thickness),
+      ));
+      along += length;
+    }
+
+    if (across) {
+      x += thickness;
+      boxWidth -= thickness;
+    } else {
+      y += thickness;
+      boxHeight -= thickness;
+    }
+
+    row = <({int index, double area})>[];
+  }
+
+  for (final ({int index, double area}) one in items) {
+    if (row.isEmpty || worst(<({int index, double area})>[...row, one]) <= worst(row)) {
+      row.add(one);
+    } else {
+      place();
+      row.add(one);
+    }
+  }
+
+  if (row.isNotEmpty) {
+    place();
+  }
+
+  return tiles;
+}
+
 /// The ink a label wears inside a mark filled with the colour of slot
 /// [index], or with [explicit], a mark's own colour.
 ///

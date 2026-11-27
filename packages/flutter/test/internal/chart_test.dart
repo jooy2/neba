@@ -626,4 +626,49 @@ void main() {
       expect(chartMarkPath(NebaMarkShape.cross, centre, 0).getBounds().isEmpty, isTrue);
     });
   });
+
+  group('magnitudes', () {
+    test('puts the ends of a range on the palest and the deepest step', () {
+      expect(chartRampStep(0, 0, 100, diverging: false), 0);
+      expect(chartRampStep(100, 0, 100, diverging: false), 4);
+      expect(chartRampStep(39, 0, 100, diverging: false), 1);
+    });
+
+    test('reads a range with nothing to spread against zero', () {
+      expect(chartRampStep(0, 0, 0, diverging: false), 0);
+      expect(chartRampStep(5, 5, 5, diverging: false), 4);
+    });
+
+    test('scales a diverging value by the longer arm, about its midpoint', () {
+      expect(chartRampStep(-2, -2, 40, diverging: true), 2);
+      expect(chartRampStep(40, -2, 40, diverging: true), 4);
+      expect(chartRampStep(0, 0, 100, diverging: true, midpoint: 50), 0);
+      expect(chartRampStep(50, 0, 100, diverging: true, midpoint: 50), 2);
+    });
+
+    test('packs tiles whose areas are their shares, largest first, into the whole box', () {
+      final List<({int index, Rect rect})> tiles = chartSquarify(
+        <double>[1, 3, 0, -2, 2],
+        300,
+        200,
+      );
+      double area(Rect rect) => rect.width * rect.height;
+
+      expect(tiles.map((({int index, Rect rect}) tile) => tile.index), <int>[1, 4, 0]);
+      expect(
+        tiles.fold<double>(0, (double sum, ({int index, Rect rect}) tile) => sum + area(tile.rect)),
+        closeTo(300 * 200, 1e-6),
+      );
+      expect(area(tiles[0].rect) / area(tiles[2].rect), closeTo(3, 1e-9));
+
+      for (final ({int index, Rect rect}) tile in tiles) {
+        expect(
+          const Rect.fromLTWH(0, 0, 300, 200).inflate(1e-9).contains(tile.rect.topLeft),
+          isTrue,
+        );
+      }
+
+      expect(chartSquarify(<double>[0, -1], 300, 200), isEmpty);
+    });
+  });
 }
