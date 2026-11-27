@@ -10,7 +10,17 @@ aside: false
 
 <Demo src="concepts/landing" min-height="640px" />
 
+::: fw react
+
 소스는 `docs/.vitepress/demos/concepts/landing.tsx` 한 파일입니다. 화면에 있는 것은 전부 Neba 컴포넌트이고, 컴포넌트인 척하는 맨 `div`는 없습니다.
+
+:::
+
+::: fw flutter
+
+소스는 `packages/flutter/example/lib/demos/concepts/landing.dart` 한 파일이며, 같은 화면을 Neba 위젯으로 만들었습니다. Flutter의 grid는 breakpoint 맵을 받지 않으므로, 화면 너비를 한 번 읽어 768픽셀 이상이면 React 페이지의 `md`처럼 span을 고릅니다. 헤더의 링크는 바의 가운데를 나눠 쓰다가 자리가 모자라면 가로로 스크롤되고, 비교 표는 휴대폰에서 가로로 스크롤됩니다.
+
+:::
 
 ## 무엇으로 만들었는지
 

@@ -305,7 +305,7 @@ Every component arrives with its own widget tests in phase 2. This phase is the 
 
 ## 4. The sample app's tests
 
-- [ ] The screens of a real app in `examples/flutter`, mirroring the documentation's concept screens: a settings screen, a dashboard and a sign-up flow, each built only out of Neba widgets.
+- [ ] The screens of a real app in `examples/flutter`, mirroring the documentation's concept screens: a landing page, a dashboard and a sign-up flow, each built only out of Neba widgets. The landing page is the gallery's `concepts/landing`, which the sample app lists with every other demo and the Examples page previews; the dashboard waits on `NebaDateRangePicker`, and the sign-up flow on `NebaDatePicker` and `NebaFilePicker`.
 - [ ] A host test that lays out every demo at 360×640, 390×844 and 834×1194 and fails on an overflow, an exception or an asset path that only a website can resolve.
 - [ ] Integration flows through those screens, with screenshots saved by the binding, and a script that pulls them off a simulator, an emulator or a device.
 - [ ] The flows on an iOS simulator booted with `xcrun simctl boot` (no Simulator window) and on an Android emulator started with `-no-window`, in both themes.

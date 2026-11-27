@@ -10,7 +10,17 @@ aside: false
 
 <Demo src="concepts/landing" min-height="640px" />
 
+::: fw react
+
 The source is one file: `docs/.vitepress/demos/concepts/landing.tsx`. Everything on the page is a Neba component; nothing is a bare `div` dressed up as one.
+
+:::
+
+::: fw flutter
+
+The source is one file: `packages/flutter/example/lib/demos/concepts/landing.dart`, the same screen built out of Neba widgets. The Flutter grid takes no breakpoint map, so the page reads the window's width once and picks the spans from it, from 768 pixels up as the React page's `md`; the links in the header share the bar's middle and scroll sideways when it is too narrow for them, and the comparison table scrolls sideways on a phone.
+
+:::
 
 ## What it is made of
 
