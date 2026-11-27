@@ -185,6 +185,10 @@ import 'package:neba_example/demos/switch/hero.dart';
 import 'package:neba_example/demos/switch/placement.dart';
 import 'package:neba_example/demos/switch/sizes.dart';
 import 'package:neba_example/demos/switch/states.dart';
+import 'package:neba_example/demos/table/columns.dart';
+import 'package:neba_example/demos/table/empty.dart';
+import 'package:neba_example/demos/table/hero.dart';
+import 'package:neba_example/demos/table/rows.dart';
 import 'package:neba_example/demos/tabs/align.dart';
 import 'package:neba_example/demos/tabs/hero.dart';
 import 'package:neba_example/demos/tabs/icons.dart';
@@ -409,6 +413,10 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'switch/placement': SwitchPlacement.new,
   'switch/sizes': SwitchSizes.new,
   'switch/states': SwitchStates.new,
+  'table/columns': TableColumns.new,
+  'table/empty': TableEmpty.new,
+  'table/hero': TableHero.new,
+  'table/rows': TableRows.new,
   'tabs/align': TabsAlign.new,
   'tabs/hero': TabsHero.new,
   'tabs/icons': TabsIcons.new,

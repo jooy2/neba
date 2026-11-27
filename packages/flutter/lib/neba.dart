@@ -65,6 +65,7 @@ export 'src/components/skeleton/neba_skeleton.dart';
 export 'src/components/stack/neba_stack.dart';
 export 'src/components/statistic/neba_statistic.dart';
 export 'src/components/switch/neba_switch.dart';
+export 'src/components/table/neba_table.dart';
 export 'src/components/tabs/neba_tabs.dart';
 export 'src/components/text_field/neba_text_field.dart';
 export 'src/components/text_link/neba_text_link.dart';
