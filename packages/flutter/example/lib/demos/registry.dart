@@ -72,6 +72,10 @@ import 'package:neba_example/demos/grid/spans.dart';
 import 'package:neba_example/demos/icon_button/hero.dart';
 import 'package:neba_example/demos/icon_button/sizes.dart';
 import 'package:neba_example/demos/icon_button/states.dart';
+import 'package:neba_example/demos/panes/fixed.dart';
+import 'package:neba_example/demos/panes/hero.dart';
+import 'package:neba_example/demos/panes/orientation.dart';
+import 'package:neba_example/demos/panes/sizing.dart';
 import 'package:neba_example/demos/portal/hero.dart';
 import 'package:neba_example/demos/scroll_area/fade.dart';
 import 'package:neba_example/demos/scroll_area/hero.dart';
@@ -170,6 +174,10 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'icon-button/hero': IconButtonHero.new,
   'icon-button/sizes': IconButtonSizes.new,
   'icon-button/states': IconButtonStates.new,
+  'panes/fixed': PanesFixed.new,
+  'panes/hero': PanesHero.new,
+  'panes/orientation': PanesOrientation.new,
+  'panes/sizing': PanesSizing.new,
   'portal/hero': PortalHero.new,
   'scroll-area/fade': ScrollAreaFade.new,
   'scroll-area/hero': ScrollAreaHero.new,

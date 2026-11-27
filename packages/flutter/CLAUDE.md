@@ -39,7 +39,7 @@ The React guide states each rule of [the design language](../../docs/ko/design/d
 - **Elevation `0` is no shadow at all**, and `NebaTokens.elevation(level)` is the only shadow there is: neutral, never tinted with the control's colour, with the CSS blur converted to Flutter's by `shadowBlurRadius`.
 - **Translucency is a `BackdropFilter`** with `NebaTokens.blurSigma` and `saturation`, over the sheet colour the tokens give. A sheet or fill is mixed into `NebaTokens.backing`, never written with a bare alpha, so `withReducedTransparency` makes every one of them opaque at once; a high-contrast setting on the platform asks for exactly that.
 - **No dark bottom bevel.** The plate is the top light edge and the full white hairline, `plateTop` and `plateEdge`, and there is no plate at all on a checkbox, a radio or a switch.
-- **The focus ring shows for keyboard focus only**, as `:focus-visible` does, and a ring never changes the widget's size.
+- **The focus ring shows for keyboard focus only**, as `:focus-visible` does, and a ring never changes the widget's size. So a control never takes the focus on a press, even where the browser would: a mouse leaves Flutter's highlight mode alone, and on a desktop that mode shows a ring for any focus, so a handle that took it on a press stayed ringed after every drag.
 - **Don't express state with opacity.** A disabled control takes `disabledBg`, `disabledFg` and `disabledBorder`.
 
 ## Internal modules
@@ -52,6 +52,7 @@ The React guide states each rule of [the design language](../../docs/ko/design/d
 | `motion.dart` | `nebaDuration`: zero on a press and for a reader who asked for less motion |
 | `surface.dart` | `NebaSheet`: the blur and saturation behind, the fill, the grain, the 148° sheen, the plate, the edge and the elevation shadow, with the plate drawn over the content for a sheet a picture fills (`plateOnTop`); and `tintPlate`, the opaque bed of a `text` mark that may land on any sheet |
 | `interaction.dart` | `NebaInteractive`: hover, press on the pointer going down, keyboard focus, Enter and Space, and the pointer's position as a listenable. `focusable` keeps a busy or read-only control in the focus order while it takes no input |
+| `drag.dart` | `NebaDragRegion`: a pointer drag with the press claimed at once (`eager`, a handle's `touch-action: none`) or past the slop, its travel from the press in the region's own pixels, so a scaled ancestor needs nothing divided, and an end a release or a cancel reports and a disposal does not. Every widget that drags something stands on it |
 | `glow.dart` | `NebaGlow`: the 88-pixel spotlight and the 72-pixel afterglow, and which colours a variant lights with |
 | `focus_ring.dart` | `NebaFocusRing`: two pixels, two pixels off, eased in colour and never in width |
 | `ink.dart` | `NebaInk`: a label's and an icon's colour, eased with the fill |

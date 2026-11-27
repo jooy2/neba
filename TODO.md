@@ -12,7 +12,7 @@ The port lives on the branch **`flutter-port`**, pushed to GitHub and not merged
 
 The last commit of that session is the `NebaButtonGroup` port, after `NebaChip`, `NebaAvatar` and `NebaCard`. What comes next, in order:
 
-1. The rest of the layout group (`NebaScrollZone`, `NebaPanes`, `NebaPortal`, the page shell).
+1. The rest of the layout group (`NebaScrollZone`, the page shell).
 2. The inputs, in the order of section 2, `NebaIconButton` first. `NebaToggle` and `NebaToggleGroup` read the same `NebaButtonGroupScope` and lay out on the same `NebaJoinedRun` that `NebaButtonGroup` does.
 
 To set up a machine (Flutter 3.50.1 stable and Node 26 were used; the package floor is Flutter 3.41):
@@ -89,7 +89,7 @@ Demos that wait on a component not ported yet, to be added with it: `flex/direct
 - [x] `NebaAspectRatio`
 - [x] `NebaScrollArea`
 - [ ] `NebaScrollZone`
-- [ ] `NebaPanes`
+- [x] `NebaPanes`
 - [x] `NebaPortal`
 - [ ] `NebaPageLayout`
 - [ ] `NebaHeader`
