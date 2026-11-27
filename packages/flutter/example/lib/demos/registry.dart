@@ -153,6 +153,14 @@ import 'package:neba_example/demos/collapsible/mounting.dart';
 import 'package:neba_example/demos/collapsible/slots.dart';
 import 'package:neba_example/demos/collapsible/trigger.dart';
 import 'package:neba_example/demos/collapsible/variants.dart';
+import 'package:neba_example/demos/color_picker/alpha.dart';
+import 'package:neba_example/demos/color_picker/field.dart';
+import 'package:neba_example/demos/color_picker/format.dart';
+import 'package:neba_example/demos/color_picker/hero.dart';
+import 'package:neba_example/demos/color_picker/inline.dart';
+import 'package:neba_example/demos/color_picker/label_placement.dart';
+import 'package:neba_example/demos/color_picker/sizes.dart';
+import 'package:neba_example/demos/color_picker/swatches.dart';
 import 'package:neba_example/demos/combobox/custom.dart';
 import 'package:neba_example/demos/combobox/hero.dart';
 import 'package:neba_example/demos/combobox/label_placement.dart';
@@ -703,6 +711,14 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'collapsible/slots': CollapsibleSlots.new,
   'collapsible/trigger': CollapsibleTrigger.new,
   'collapsible/variants': CollapsibleVariants.new,
+  'color-picker/alpha': ColorPickerAlpha.new,
+  'color-picker/field': ColorPickerField.new,
+  'color-picker/format': ColorPickerFormat.new,
+  'color-picker/hero': ColorPickerHero.new,
+  'color-picker/inline': ColorPickerInline.new,
+  'color-picker/label-placement': ColorPickerLabelPlacement.new,
+  'color-picker/sizes': ColorPickerSizes.new,
+  'color-picker/swatches': ColorPickerSwatches.new,
   'combobox/custom': ComboboxCustom.new,
   'combobox/hero': ComboboxHero.new,
   'combobox/label-placement': ComboboxLabelPlacement.new,

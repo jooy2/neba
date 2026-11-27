@@ -80,4 +80,149 @@ void main() {
   test('measures contrast the way WCAG does', () {
     expect(contrastRatio(white, const Color(0xFF000000)), closeTo(21, 1e-6));
   });
+
+  // What a ColorPicker computes with, the React package's color.test.ts. The
+  // invariant it is built around is that HSV never leaves: a round trip
+  // through RGB loses the hue of every grey.
+  group('the picker conversions', () {
+    test('round-trip a colour through RGB and back', () {
+      final ({int r, int g, int b}) rgb = hsvToRgb(const NebaHsv(210, 60, 80));
+      final NebaHsv back = rgbToHsv(rgb.r, rgb.g, rgb.b);
+
+      expect(back.h, closeTo(210, 0.5));
+      expect(back.s, closeTo(60, 0.5));
+      expect(back.v, closeTo(80, 0.5));
+    });
+
+    test('lose the hue of a grey, which is why HSV never leaves', () {
+      final NebaHsv black = rgbToHsv(0, 0, 0);
+
+      expect(black.s, 0);
+      expect(black.v, 0);
+
+      final ({int r, int g, int b}) dark = hsvToRgb(const NebaHsv(275, 0, 0));
+
+      expect(rgbToHsv(dark.r, dark.g, dark.b).h, isNot(275));
+    });
+
+    test('read the three primaries at the hues they are', () {
+      expect(rgbToHsv(255, 0, 0).h, closeTo(0, 1e-5));
+      expect(rgbToHsv(0, 255, 0).h, closeTo(120, 1e-5));
+      expect(rgbToHsv(0, 0, 255).h, closeTo(240, 1e-5));
+    });
+
+    test('round-trip through HSL as well', () {
+      final ({double h, double s, double l}) hsl = rgbToHsl(40, 160, 210);
+      final ({int r, int g, int b}) back = hslToRgb(hsl.h, hsl.s, hsl.l);
+
+      expect(back, (r: 40, g: 160, b: 210));
+    });
+
+    test('hold the ends of the value axis', () {
+      expect(hsvToRgb(const NebaHsv(0, 0, 100)), (r: 255, g: 255, b: 255));
+      expect(hsvToRgb(const NebaHsv(0, 100, 0)), (r: 0, g: 0, b: 0));
+    });
+  });
+
+  group('parseCssColor', () {
+    test('reads a hex colour, with or without the hash, long or short', () {
+      expect(parseCssColor('#ff0000')?.hsv.h, closeTo(0, 1e-5));
+      expect(parseCssColor('ff0000')?.hsv.h, closeTo(0, 1e-5));
+      expect(parseCssColor('#f00'), parseCssColor('#ff0000'));
+    });
+
+    test('reads an eight-digit hex as a colour with an alpha', () {
+      expect(parseCssColor('#ff000080')?.alpha, closeTo(0.5, 0.01));
+    });
+
+    test('reads the functional forms', () {
+      expect(parseCssColor('rgb(255, 0, 0)')?.hsv.h, closeTo(0, 1e-5));
+      expect(parseCssColor('rgba(255, 0, 0, 0.5)')?.alpha, closeTo(0.5, 1e-5));
+      expect(parseCssColor('hsl(120, 100%, 50%)')?.hsv.h, closeTo(120, 1e-5));
+      expect(parseCssColor('rgb(255 0 0 / .5)')?.alpha, closeTo(0.5, 1e-5));
+    });
+
+    test('reads an rgb channel written as a percentage as a share of 255', () {
+      final NebaColorValue red = parseCssColor('rgb(100% 0% 0%)')!;
+
+      expect(formatCssColor(red.hsv, red.alpha, NebaColorFormat.hex), '#ff0000');
+
+      final NebaColorValue mixed = parseCssColor('rgba(50%, 128, 0%, 50%)')!;
+
+      expect(formatCssColor(mixed.hsv, 1, NebaColorFormat.hex), '#808000');
+      expect(mixed.alpha, closeTo(0.5, 1e-5));
+    });
+
+    test('does not care about case or surrounding space', () {
+      expect(parseCssColor('  #FF0000  ')?.hsv.h, closeTo(0, 1e-5));
+      expect(parseCssColor('RGB(255, 0, 0)')?.hsv.h, closeTo(0, 1e-5));
+    });
+
+    test('answers null for something it does not read', () {
+      expect(parseCssColor(''), isNull);
+      expect(parseCssColor('rebeccapurple'), isNull);
+      expect(parseCssColor('rgb(1, 2)'), isNull);
+      expect(parseCssColor('rgb(a, b, c)'), isNull);
+      expect(parseCssColor('not a colour'), isNull);
+      expect(parseCssColor('#12'), isNull);
+    });
+  });
+
+  group('formatCssColor', () {
+    const NebaHsv red = NebaHsv(0, 100, 100);
+
+    test('writes each of the three notations', () {
+      expect(formatCssColor(red, 1, NebaColorFormat.hex), '#ff0000');
+      expect(formatCssColor(red, 1, NebaColorFormat.rgb), 'rgb(255, 0, 0)');
+      expect(formatCssColor(red, 1, NebaColorFormat.hsl), 'hsl(0, 100%, 50%)');
+    });
+
+    test('writes the alpha only when there is one, to two decimals at most', () {
+      expect(formatCssColor(red, 0.5, NebaColorFormat.hex), '#ff000080');
+      expect(formatCssColor(red, 0.5, NebaColorFormat.rgb), 'rgba(255, 0, 0, 0.5)');
+      expect(formatCssColor(red, 0.5, NebaColorFormat.hsl), 'hsla(0, 100%, 50%, 0.5)');
+      expect(formatCssColor(red, 0.333, NebaColorFormat.rgb), 'rgba(255, 0, 0, 0.33)');
+      expect(formatCssColor(red, 0, NebaColorFormat.rgb), 'rgba(255, 0, 0, 0)');
+    });
+
+    test('round-trips back through the parser', () {
+      for (final NebaColorFormat format in NebaColorFormat.values) {
+        final String written = formatCssColor(const NebaHsv(210, 60, 80), 1, format);
+        final NebaColorValue read = parseCssColor(written)!;
+
+        expect(formatCssColor(read.hsv, read.alpha, format), written);
+      }
+    });
+  });
+
+  group('rgbToHex and hsvColor', () {
+    test('pad a single digit and clamp a channel out of range', () {
+      expect(rgbToHex(1, 2, 3), '#010203');
+      expect(rgbToHex(300, -20, 0), '#ff0000');
+    });
+
+    test('paint the colour at its alpha', () {
+      expect(hsvColor(const NebaHsv(0, 100, 100)), near(0xFFFF0000));
+      expect(hsvColor(const NebaHsv(0, 100, 100), 0.4).a, closeTo(0.4, 1e-6));
+    });
+  });
+
+  group('readableInk', () {
+    const Color black = Color(0xFF000000);
+
+    test('puts a dark tick on a light colour and a light one on a dark colour', () {
+      expect(readableInk(const NebaHsv(60, 100, 100)), black);
+      expect(readableInk(const NebaHsv(220, 100, 25)), white);
+    });
+
+    // Halfway is the wrong place for the crossover: a mid grey, an orange and
+    // a green read under 3:1 in white and far better in black.
+    test('chooses whichever ink contrasts more on a mid-tone swatch', () {
+      for (final String hex in <String>['#9ca3af', '#f97316', '#22c55e']) {
+        expect(readableInk(parseCssColor(hex)!.hsv), black, reason: hex);
+      }
+
+      expect(readableInk(parseCssColor('#2563eb')!.hsv), white);
+    });
+  });
 }

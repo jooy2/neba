@@ -56,6 +56,7 @@ export 'src/components/checkbox_group/neba_checkbox_group.dart';
 export 'src/components/chip/neba_chip.dart';
 export 'src/components/code_block/neba_code_block.dart';
 export 'src/components/collapsible/neba_collapsible.dart';
+export 'src/components/color_picker/neba_color_picker.dart';
 export 'src/components/combobox/neba_combobox.dart';
 export 'src/components/command_palette/neba_command_palette.dart';
 export 'src/components/confirm/neba_confirm.dart';

@@ -48,7 +48,7 @@ The React guide states each rule of [the design language](../../docs/ko/design/d
 
 | Module | What it holds |
 | --- | --- |
-| `color.dart` | `oklch()`, `color-mix()` in sRGB and OKLab, the CSS shadow blur, WCAG contrast |
+| `color.dart` | `oklch()`, `color-mix()` in sRGB and OKLab, the CSS shadow blur, WCAG contrast; and what a ColorPicker computes with, the React package's `internal/color.ts`: `NebaHsv` and `NebaColorValue`, HSV, RGB and HSL and the conversions between them, `parseCssColor` and `formatCssColor` in the three `NebaColorFormat`s, `hsvColor` to paint with, `readableInk`, the hue spectrum and the default swatches |
 | `motion.dart` | `nebaDuration`: zero on a press and for a reader who asked for less motion |
 | `surface.dart` | `NebaSheet`: the blur and saturation behind, the fill, the grain, the 148° sheen, the plate, the edge and the elevation shadow, with the plate drawn over the content for a sheet a picture fills (`plateOnTop`) and a `fillDuration` for a field, which answers its focus at the edge's pace; `tintPlate`, the opaque bed of a `text` mark that may land on any sheet; and `paintPlate` and `strokeInside`, the plate and the 1-pixel edge on their own, for a widget that paints a small plate itself |
 | `interaction.dart` | `NebaInteractive`: hover, press on the pointer going down, keyboard focus, Enter and Space, and the pointer's position as a listenable. `focusable` keeps a busy or read-only control in the focus order while it takes no input, and `activatesOnSpace: false` leaves Space to scroll the page, as a link does |
