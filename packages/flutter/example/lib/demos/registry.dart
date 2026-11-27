@@ -36,6 +36,7 @@ import 'package:neba_example/demos/animate_reveal/sides.dart';
 import 'package:neba_example/demos/animate_rotate/hero.dart';
 import 'package:neba_example/demos/animate_rotate/origin.dart';
 import 'package:neba_example/demos/animate_rotate/spin.dart';
+import 'package:neba_example/demos/animate_shake/hero.dart';
 import 'package:neba_example/demos/animate_slide/distance.dart';
 import 'package:neba_example/demos/animate_slide/edges.dart';
 import 'package:neba_example/demos/animate_slide/hero.dart';
@@ -460,6 +461,7 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'animate-rotate/hero': AnimateRotateHero.new,
   'animate-rotate/origin': AnimateRotateOrigin.new,
   'animate-rotate/spin': AnimateRotateSpin.new,
+  'animate-shake/hero': AnimateShakeHero.new,
   'animate-slide/distance': AnimateSlideDistance.new,
   'animate-slide/edges': AnimateSlideEdges.new,
   'animate-slide/hero': AnimateSlideHero.new,
