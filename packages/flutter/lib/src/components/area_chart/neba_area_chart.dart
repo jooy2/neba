@@ -152,27 +152,13 @@ class NebaAreaChart extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool full = stacked == NebaChartStacking.full;
     final bool stacks = stacked != NebaChartStacking.off;
-    final NebaChartAxis? given = yAxis;
-    // A share of a hundred, unless the caller said otherwise about any of it.
-    final NebaChartAxis? valueAxis = full
-        ? NebaChartAxis(
-            hidden: given?.hidden ?? false,
-            label: given?.label,
-            grid: given?.grid,
-            min: given?.min ?? 0,
-            max: given?.max ?? 100,
-            tickCount: given?.tickCount,
-            tickFormat: given?.tickFormat ?? _percent,
-            tickAngle: given?.tickAngle ?? 0,
-            thickness: given?.thickness,
-          )
-        : given;
 
     return NebaCartesianChart<NebaLineTrace>(
       series: series,
       categories: categories,
       xAxis: xAxis,
-      yAxis: valueAxis,
+      // A share of a hundred, unless the caller said otherwise about any of it.
+      yAxis: full ? chartShareAxis(yAxis) : yAxis,
       secondaryAxis: secondaryAxis,
       references: references,
       stacked: stacks,
@@ -218,5 +204,3 @@ class NebaAreaChart extends StatelessWidget {
     );
   }
 }
-
-String _percent(Object value, int index) => '$value%';

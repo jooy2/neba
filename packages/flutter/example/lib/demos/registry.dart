@@ -68,6 +68,10 @@ import 'package:neba_example/demos/badge/hero.dart';
 import 'package:neba_example/demos/badge/placement.dart';
 import 'package:neba_example/demos/badge/sizes.dart';
 import 'package:neba_example/demos/badge/variants.dart';
+import 'package:neba_example/demos/bar_chart/hero.dart';
+import 'package:neba_example/demos/bar_chart/negative.dart';
+import 'package:neba_example/demos/bar_chart/orientation.dart';
+import 'package:neba_example/demos/bar_chart/stacked.dart';
 import 'package:neba_example/demos/blockquote/attribution.dart';
 import 'package:neba_example/demos/blockquote/colors.dart';
 import 'package:neba_example/demos/blockquote/hero.dart';
@@ -503,6 +507,10 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'badge/placement': BadgePlacement.new,
   'badge/sizes': BadgeSizes.new,
   'badge/variants': BadgeVariants.new,
+  'bar-chart/hero': BarChartHero.new,
+  'bar-chart/negative': BarChartNegative.new,
+  'bar-chart/orientation': BarChartOrientation.new,
+  'bar-chart/stacked': BarChartStacked.new,
   'blockquote/attribution': BlockquoteAttribution.new,
   'blockquote/colors': BlockquoteColors.new,
   'blockquote/hero': BlockquoteHero.new,

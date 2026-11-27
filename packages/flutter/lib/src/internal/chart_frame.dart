@@ -368,7 +368,10 @@ void chartPaintRule(Canvas canvas, Offset from, Offset to, Color color, {bool so
 /// consulted, and what a chart's marks are traced from.
 ///
 /// One object for as long as nothing in it changes, so the marks traced from
-/// it hold while the pointer moves.
+/// it hold while the pointer moves. A [horizontal] layout runs the categories
+/// down the plot and the values across it; every method here answers in the
+/// chart's own pixels either way, so a mark asks where a value is rather than
+/// which way the chart is turned.
 class NebaChartLayout {
   /// A layout of [values] in [plot].
   NebaChartLayout({
@@ -390,6 +393,7 @@ class NebaChartLayout {
     required this.textDirection,
     required this.format,
     required String Function(double value)? secondFormat,
+    this.horizontal = false,
   }) : _second = second,
        _secondFormat = secondFormat;
 
@@ -416,6 +420,10 @@ class NebaChartLayout {
   /// Whether the categories sit on their ticks, as a line's do, rather than
   /// in the middle of a band, as a bar's do.
   final bool inset;
+
+  /// Whether the categories run down the plot and the values across it, as
+  /// on a bar chart turned on its side.
+  final bool horizontal;
 
   /// How many categories there are.
   final int count;
@@ -464,25 +472,40 @@ class NebaChartLayout {
     return series != null && onSecond(series) && second != null ? second : scale;
   }
 
-  /// Where category [index] sits along the plot, from its start: on its tick
-  /// when [inset], in the middle of its band otherwise. A fraction of an
-  /// index is a place between two categories.
+  /// How long the category axis is: the plot's width, or its height on a
+  /// [horizontal] chart.
+  double get categoryLength => horizontal ? plot.height : plot.width;
+
+  /// Where category [index] sits along the category axis, from the plot's
+  /// start: on its tick when [inset], in the middle of its band otherwise. A
+  /// fraction of an index is a place between two categories.
   double categoryPx(num index) {
     if (!inset) {
       return band.step * (index + 0.5);
     }
 
-    return count <= 1 ? plot.width / 2 : plot.width * index / (count - 1);
+    return count <= 1 ? categoryLength / 2 : categoryLength * index / (count - 1);
   }
 
-  /// Where [value] of series [series] sits down the chart.
+  /// Where [value] of series [series] sits along the value axis, in the
+  /// chart's pixels: down the chart, or across it on a [horizontal] one.
   double valuePx(double value, [int? series]) {
-    return plot.top + (1 - scaleFor(series).fraction(value)) * plot.height;
+    final double fraction = scaleFor(series).fraction(value);
+
+    return horizontal ? plot.left + fraction * plot.width : plot.top + (1 - fraction) * plot.height;
+  }
+
+  /// Where category [index] sits in the chart's pixels: across it, or down it
+  /// on a [horizontal] chart.
+  double categoryAt(num index) {
+    return (horizontal ? plot.top : plot.left) + categoryPx(index);
   }
 
   /// Category [index] at [value] of series [series], in the chart's pixels.
   Offset point(int index, double value, [int? series]) {
-    return Offset(plot.left + categoryPx(index), valuePx(value, series));
+    return horizontal
+        ? Offset(valuePx(value, series), categoryAt(index))
+        : Offset(categoryAt(index), valuePx(value, series));
   }
 
   /// Where series [series]' baseline is: zero, held inside its scale.
@@ -1318,6 +1341,24 @@ class _RenderBeside extends RenderBox
 // Cartesian charts
 // ---------------------------------------------------------------------------
 
+/// The value axis of a chart stacked to full: from 0 to 100, its ticks
+/// written as a percentage, unless [given] says otherwise about any of it.
+NebaChartAxis chartShareAxis(NebaChartAxis? given) {
+  return NebaChartAxis(
+    hidden: given?.hidden ?? false,
+    label: given?.label,
+    grid: given?.grid,
+    min: given?.min ?? 0,
+    max: given?.max ?? 100,
+    tickCount: given?.tickCount,
+    tickFormat: given?.tickFormat ?? _percent,
+    tickAngle: given?.tickAngle ?? 0,
+    thickness: given?.thickness,
+  );
+}
+
+String _percent(Object value, int index) => '$value%';
+
 /// The frame of a chart with two axes: the axes and the grid, the crosshair,
 /// the legend, the tooltip and the table, with the marks left to the chart.
 ///
@@ -1343,6 +1384,7 @@ class NebaCartesianChart<T> extends StatefulWidget {
     this.zeroGaps = false,
     this.includeZero = true,
     this.inset = false,
+    this.horizontal = false,
     this.headroom = 0,
     this.bandRatio = 1,
     this.height,
@@ -1394,6 +1436,15 @@ class NebaCartesianChart<T> extends StatefulWidget {
 
   /// Whether the categories sit on their ticks rather than between them.
   final bool inset;
+
+  /// Runs the categories down the plot and the values across it.
+  ///
+  /// `xAxis` is still the category axis and `yAxis` the value axis: turning a
+  /// chart on its side changes the drawing, not what the caller's data means,
+  /// so it must not move their axis options from one argument to the other.
+  /// Where each axis is drawn is what changes, and the arrow keys that walk
+  /// the categories become up and down.
+  final bool horizontal;
 
   /// Extra room above the plot, for labels riding the marks.
   final double headroom;
@@ -1696,18 +1747,20 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
         : NebaChartTooltipMode.category;
   }
 
-  /// The category nearest [local] along the plot: a two-pixel line is not
-  /// something a pointer can be asked to land on, so a category's column is
-  /// its whole step.
+  /// The category nearest [local] along the category axis: a two-pixel line
+  /// is not something a pointer can be asked to land on, so a category's
+  /// column is its whole step.
   int? _indexAt(Offset local) {
     final NebaChartLayout? layout = _model?.layout;
 
-    if (layout == null || layout.count == 0 || layout.plot.width <= 0) {
+    if (layout == null || layout.count == 0 || layout.categoryLength <= 0) {
       return null;
     }
 
-    final double along = local.dx - layout.plot.left;
-    final double length = layout.plot.width;
+    final double along = layout.horizontal
+        ? local.dy - layout.plot.top
+        : local.dx - layout.plot.left;
+    final double length = layout.categoryLength;
     final int count = layout.count;
 
     if (along < -layout.band.step || along > length + layout.band.step) {
@@ -1721,18 +1774,15 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
     return raw.clamp(0, count - 1);
   }
 
-  /// In item mode, the series whose mark at column [index] is nearest [at],
-  /// down the plot. A tie goes to the series passed first.
-  int? _nearestSeries(int index, double at) {
-    final _ChartData? data = _data;
-    final NebaChartLayout? layout = _model?.layout;
-
-    if (data == null || layout == null) {
-      return null;
-    }
-
-    int? found;
-    double best = double.infinity;
+  /// Where each of the shown series' values at column [index] is drawn along
+  /// the value axis, as the pixels of the end nearer zero and the far one, by
+  /// series. Unstacked that is the value itself; stacked, a segment starts
+  /// where the one before it of the same sign ends, so two segments of 10 are
+  /// drawn from 0 to 10 and from 10 to 20 rather than both at 10. Each on its
+  /// own series' scale.
+  Map<int, (double, double)> _spansAt(int index, _ChartData data, NebaChartLayout layout) {
+    final bool stacked = widget.stacked || widget.stackedFull;
+    final Map<int, (double, double)> spans = <int, (double, double)>{};
     double above = 0;
     double below = 0;
 
@@ -1744,7 +1794,6 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
         continue;
       }
 
-      final bool stacked = widget.stacked || widget.stackedFull;
       final double from = !stacked ? value : (value < 0 ? below : above);
       final double to = !stacked ? value : from + value;
 
@@ -1754,13 +1803,33 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
         above = to;
       }
 
-      final double a = layout.valuePx(from, series);
-      final double b = layout.valuePx(to, series);
+      spans[series] = (layout.valuePx(from, series), layout.valuePx(to, series));
+    }
+
+    return spans;
+  }
+
+  /// In item mode, the series whose mark at column [index] is nearest [at], a
+  /// point along the value axis. Nothing inside a segment counts as a
+  /// distance, and a tie goes to the series passed first.
+  int? _nearestSeries(int index, double at) {
+    final _ChartData? data = _data;
+    final NebaChartLayout? layout = _model?.layout;
+
+    if (data == null || layout == null) {
+      return null;
+    }
+
+    int? found;
+    double best = double.infinity;
+
+    for (final MapEntry<int, (double, double)> span in _spansAt(index, data, layout).entries) {
+      final (double a, double b) = span.value;
       final double distance = math.max(0, math.max(math.min(a, b) - at, at - math.max(a, b)));
 
       if (distance < best) {
         best = distance;
-        found = series;
+        found = span.key;
       }
     }
 
@@ -1776,7 +1845,7 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
 
     final int? next = _indexAt(local);
     final int? series = mode == NebaChartTooltipMode.item && next != null
-        ? _nearestSeries(next, local.dy)
+        ? _nearestSeries(next, widget.horizontal ? local.dx : local.dy)
         : null;
 
     _setActive(next, series: series);
@@ -1799,9 +1868,18 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
       return KeyEventResult.ignored;
     }
 
-    if (key == LogicalKeyboardKey.arrowRight) {
+    // The keys follow the category axis: across a vertical chart, down one
+    // turned on its side.
+    final LogicalKeyboardKey forward = widget.horizontal
+        ? LogicalKeyboardKey.arrowDown
+        : LogicalKeyboardKey.arrowRight;
+    final LogicalKeyboardKey back = widget.horizontal
+        ? LogicalKeyboardKey.arrowUp
+        : LogicalKeyboardKey.arrowLeft;
+
+    if (key == forward) {
       _setActive(math.min(count - 1, (current ?? -1) + 1));
-    } else if (key == LogicalKeyboardKey.arrowLeft) {
+    } else if (key == back) {
       _setActive(math.max(0, (current ?? count) - 1));
     } else if (key == LogicalKeyboardKey.home) {
       _setActive(0);
@@ -1999,6 +2077,7 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
       base,
       direction,
       widget.inset,
+      widget.horizontal,
       widget.headroom,
       widget.bandRatio,
     );
@@ -2008,9 +2087,16 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
       return cached;
     }
 
+    final bool horizontal = widget.horizontal;
     final NebaChartAxis? valueAxis = widget.yAxis;
     final NebaChartAxis? categoryAxis = widget.xAxis;
     final NebaChartAxis? secondaryAxis = widget.secondaryAxis;
+    // Which axis is drawn on which edge. `xAxis` is the category axis and
+    // `yAxis` the value axis in both orientations; turning the chart moves
+    // where they are drawn, and the band and the name on an edge belong to
+    // whichever axis is on it.
+    final NebaChartAxis? leftAxis = horizontal ? categoryAxis : valueAxis;
+    final NebaChartAxis? bottomAxis = horizontal ? valueAxis : categoryAxis;
     final NebaChartScale scale = data.scale;
     final NebaChartScale? secondScale = data.secondScale;
     final bool valueHidden = valueAxis?.hidden ?? false;
@@ -2028,25 +2114,33 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
     final double widestTick = widest(data.tickTexts);
     final double widestSecondTick = widest(data.secondTickTexts);
     final double axisLabelBand = fontSize + 6;
+    // The far edge's ticks: on the right of a vertical chart, along the top of
+    // one turned on its side.
     final double secondBand = secondScale != null && !secondHidden
-        ? secondaryAxis?.thickness ?? widestSecondTick + 10
+        ? secondaryAxis?.thickness ?? (horizontal ? fontSize + 12 : widestSecondTick + 10)
         : 0;
-    final bool namesLeftAxis = valueAxis?.label != null && !valueHidden;
+    final bool namesLeftAxis = leftAxis?.label != null && !(leftAxis?.hidden ?? false);
     final bool namesSecondAxis =
         secondScale != null && secondaryAxis?.label != null && !secondHidden;
+    // Only a category axis along the bottom turns its labels: a horizontal
+    // chart gives each name a row of its own on the left already.
     final NebaChartTurn turn = chartTurnedAxis(
-      categoryHidden ? 0 : categoryAxis?.tickAngle ?? 0,
+      horizontal || categoryHidden ? 0 : categoryAxis?.tickAngle ?? 0,
       fontSize,
     );
     final bool tilted = turn.tilted;
     final double valueBand = valueHidden ? 0 : widestTick + 10;
-    final double slot = (width - valueBand - 16) / math.max(1, count);
+    final double slot = (width - (horizontal ? 0 : valueBand) - 16) / math.max(1, count);
     // Cut a long name to its slot rather than dropping labels until the rest
     // fit; below about four characters that stops helping, and the stride
-    // takes over.
+    // takes over. A row on the left of a horizontal chart is cut to a column.
     final double tiltRoom = math.min(140, plotHeight * 0.4);
-    final bool cutsLabels = tilted || slot - 6 >= fontSize * 2.4;
-    final double cutTo = tilted ? turn.cut(tiltRoom) : slot - 6;
+    final bool cutsLabels = horizontal || tilted || slot - 6 >= fontSize * 2.4;
+    final double cutTo = horizontal
+        ? 150
+        : tilted
+        ? turn.cut(tiltRoom)
+        : slot - 6;
     final List<String> categoryTexts = cutsLabels
         ? <String>[
             for (final String text in data.categoryTexts) chartTruncate(text, cutTo, fontSize),
@@ -2054,23 +2148,30 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
         : data.categoryTexts;
     final double widestCategory = widest(categoryTexts);
     final double labelDepth = turn.depth(widestCategory);
-    final double bottomBand = categoryHidden
-        ? 0
-        : labelDepth + 12 + (categoryAxis?.label != null ? axisLabelBand : 0);
-    final double left = valueAxis?.thickness ?? valueBand;
-    final double bottom = categoryAxis?.thickness ?? bottomBand;
+    final double leftBand = horizontal ? (categoryHidden ? 0 : widestCategory + 10) : valueBand;
+    final double bottomBand = horizontal
+        ? (valueHidden ? 0 : fontSize + 12 + (valueAxis?.label != null ? axisLabelBand : 0))
+        : (categoryHidden
+              ? 0
+              : labelDepth + 12 + (categoryAxis?.label != null ? axisLabelBand : 0));
+    final double left = leftAxis?.thickness ?? leftBand;
+    final double bottom = bottomAxis?.thickness ?? bottomBand;
     // The last label is centred on the last tick, so half of it hangs past
-    // the plot; a turned one hangs off one side only.
+    // the plot; a turned one hangs off one side only. A value axis along the
+    // bottom anchors its two end labels inward and needs none of that.
     final double rightPad =
-        (tilted
+        (horizontal
+            ? 12
+            : tilted
             ? (turn.angle > 0 ? turn.overhang(widestCategory) + 8 : 8)
             : math.max(8, categoryTexts.isNotEmpty ? turn.overhang(widestCategory) : 8)) +
-        secondBand;
+        (horizontal ? 0 : secondBand);
     final double topPad =
         chartMarkerRadii[size]! +
         4 +
         widget.headroom +
-        (namesLeftAxis || namesSecondAxis ? axisLabelBand + 2 : 0);
+        (namesLeftAxis || namesSecondAxis ? axisLabelBand + 2 : 0) +
+        (horizontal ? secondBand : 0);
     final Rect plot = Rect.fromLTWH(
       left,
       topPad,
@@ -2092,10 +2193,11 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
       secondScale: secondScale,
       second: data.second,
       inset: widget.inset,
+      horizontal: horizontal,
       count: count,
       band: NebaChartBand(
         widget.inset ? math.max(1, count - 1) : count,
-        plot.width,
+        horizontal ? plot.height : plot.width,
         widget.bandRatio,
       ),
       categories: data.labels,
@@ -2114,50 +2216,89 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
       return chartTextPainter(value, style ?? textStyle, direction);
     }
 
+    // A rule across the plot at [along] on the value axis: a horizontal line
+    // on a vertical chart, a vertical one on a chart turned on its side.
+    _Rule valueRule(double along, Color color, {bool solid = true}) {
+      return horizontal
+          ? _Rule(Offset(along, plot.top), Offset(along, plot.bottom), color, solid: solid)
+          : _Rule(Offset(plot.left, along), Offset(plot.right, along), color, solid: solid);
+    }
+
+    // The same, at [along] on the category axis.
+    _Rule categoryRule(double along, Color color, {bool solid = true}) {
+      return horizontal
+          ? _Rule(Offset(plot.left, along), Offset(plot.right, along), color, solid: solid)
+          : _Rule(Offset(along, plot.top), Offset(along, plot.bottom), color, solid: solid);
+    }
+
+    // The anchor of a label on an axis along the bottom or the top: the two
+    // end labels are set inward rather than centred on the ends of the plot,
+    // which is cheaper than a margin nothing else would use.
+    int inward(int index, int count) => index == 0 ? 1 : (index == count - 1 ? -1 : 0);
+
     // The value axis' gridlines, and its labels beside them. A gridline is
     // drawn at every tick, and the labels are thinned: a line with no number
-    // on it is still a line the eye can measure against.
+    // on it is still a line the eye can measure against. Laid across the
+    // bottom, the labels need a stride of their own: five stacked numbers
+    // never touch, and five laid across a narrow card read as one long one.
     final bool grid = (valueAxis?.grid ?? true) && !valueHidden;
     final int ticks = scale.ticks.length;
-    final int valueStride = chartTickStride(ticks, plot.height, fontSize * 2);
+    final int valueStride = chartTickStride(
+      ticks,
+      horizontal ? plot.width : plot.height,
+      horizontal ? math.max(widestTick, 1) + 16 : fontSize * 2,
+    );
     final double valueStep = ticks > 1
         ? (layout.valuePx(scale.ticks[1]) - layout.valuePx(scale.ticks[0])).abs()
         : plot.height;
-    final bool lastValue = chartFitsLast(ticks, valueStride, valueStep, fontSize * 1.6);
+    final bool lastValue = chartFitsLast(
+      ticks,
+      valueStride,
+      valueStep,
+      horizontal
+          ? chartTextWidth(data.tickTexts.isEmpty ? '' : data.tickTexts.last, fontSize)
+          : fontSize * 1.6,
+    );
 
     for (int index = 0; index < ticks; index++) {
       final double tick = scale.ticks[index];
       final double along = layout.valuePx(tick);
 
       if (grid) {
-        chrome.add(
-          _Rule(
-            Offset(plot.left, along),
-            Offset(plot.right, along),
-            tick.abs() < 1e-9 ? tokens.chartBaseline : tokens.chartGrid,
-          ),
-        );
+        chrome.add(valueRule(along, tick.abs() < 1e-9 ? tokens.chartBaseline : tokens.chartGrid));
       }
 
       if (!valueHidden && chartShowsTick(index, ticks, valueStride, roomForLast: lastValue)) {
         chrome.add(
-          NebaChartLabel(
-            text(data.tickTexts[index]),
-            Offset(plot.left - 8, along),
-            anchor: -1,
-            central: true,
-          ),
+          horizontal
+              ? NebaChartLabel(
+                  text(data.tickTexts[index]),
+                  Offset(along, plot.bottom + fontSize + 6),
+                  anchor: inward(index, ticks),
+                )
+              : NebaChartLabel(
+                  text(data.tickTexts[index]),
+                  Offset(plot.left - 8, along),
+                  anchor: -1,
+                  central: true,
+                ),
         );
       }
     }
 
     // The category axis. Its rule sits at the baseline rather than at the
-    // bottom of the plot: with negative values those are not the same line.
+    // edge of the plot: with negative values those are not the same line. A
+    // chart turned on its side writes each name on a row of its own on the
+    // left and casts no category gridlines.
     if (!categoryHidden) {
       final double zero = layout.zeroPxOf();
-      final bool categoryGrid = categoryAxis?.grid ?? false;
+      final bool categoryGrid = !horizontal && (categoryAxis?.grid ?? false);
       final double room = turn.room(widestCategory);
-      final int stride = chartTickStride(categoryTexts.length, plot.width, room);
+      final int stride = chartTickStride(
+        categoryTexts.length,
+        layout.categoryLength,
+        horizontal ? fontSize * 1.8 : room,
+      );
       final double step = categoryTexts.length > 1
           ? (layout.categoryPx(1) - layout.categoryPx(0)).abs()
           : plot.width;
@@ -2165,11 +2306,15 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
         categoryTexts.length,
         stride,
         step,
-        tilted ? room : chartTextWidth(categoryTexts.isEmpty ? '' : categoryTexts.last, fontSize),
+        horizontal
+            ? fontSize * 1.8
+            : tilted
+            ? room
+            : chartTextWidth(categoryTexts.isEmpty ? '' : categoryTexts.last, fontSize),
       );
       final double baseline = plot.bottom + turn.offset;
 
-      chrome.add(_Rule(Offset(plot.left, zero), Offset(plot.right, zero), tokens.chartAxis));
+      chrome.add(valueRule(zero, tokens.chartAxis));
 
       for (int index = 0; index < categoryTexts.length; index++) {
         final bool labelled = chartShowsTick(
@@ -2183,29 +2328,37 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
           continue;
         }
 
-        final double along = plot.left + layout.categoryPx(index);
+        final double along = layout.categoryAt(index);
 
         if (categoryGrid) {
-          chrome.add(_Rule(Offset(along, plot.top), Offset(along, plot.bottom), tokens.chartGrid));
+          chrome.add(categoryRule(along, tokens.chartGrid));
         }
 
         if (labelled) {
           chrome.add(
-            NebaChartLabel(
-              text(categoryTexts[index]),
-              Offset(along, baseline),
-              anchor: turn.anchor,
-              central: tilted,
-              angle: turn.angle,
-            ),
+            horizontal
+                ? NebaChartLabel(
+                    text(categoryTexts[index]),
+                    Offset(plot.left - 8, along),
+                    anchor: -1,
+                    central: true,
+                  )
+                : NebaChartLabel(
+                    text(categoryTexts[index]),
+                    Offset(along, baseline),
+                    anchor: turn.anchor,
+                    central: tilted,
+                    angle: turn.angle,
+                  ),
           );
         }
       }
     }
 
-    // The second value axis, on the far edge. It casts no gridlines: its
-    // scale is cut into as many intervals as the first, so each of its ticks
-    // sits on a rule already there.
+    // The second value axis, on the far edge: the right of a vertical chart,
+    // the top of one turned on its side. It casts no gridlines: its scale is
+    // cut into as many intervals as the first, so each of its ticks sits on a
+    // rule already there.
     if (secondScale != null && !secondHidden) {
       final int ticks = secondScale.ticks.length;
 
@@ -2214,16 +2367,21 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
           continue;
         }
 
-        final double along =
-            plot.top + (1 - secondScale.fraction(secondScale.ticks[index])) * plot.height;
+        final double fraction = secondScale.fraction(secondScale.ticks[index]);
 
         chrome.add(
-          NebaChartLabel(
-            text(data.secondTickTexts[index]),
-            Offset(plot.right + 8, along),
-            anchor: 1,
-            central: true,
-          ),
+          horizontal
+              ? NebaChartLabel(
+                  text(data.secondTickTexts[index]),
+                  Offset(plot.left + fraction * plot.width, plot.top - 8),
+                  anchor: inward(index, ticks),
+                )
+              : NebaChartLabel(
+                  text(data.secondTickTexts[index]),
+                  Offset(plot.right + 8, plot.top + (1 - fraction) * plot.height),
+                  anchor: 1,
+                  central: true,
+                ),
         );
       }
 
@@ -2234,11 +2392,11 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
 
     // The axis names: the left axis' above the plot where the plot starts, and
     // the bottom axis' under its labels at the far end.
-    if (valueAxis?.label case final String name when !valueHidden) {
+    if (leftAxis?.label case final String name when !(leftAxis?.hidden ?? false)) {
       chrome.add(NebaChartLabel(text(name, named), Offset(plot.left, fontSize + 2), anchor: 1));
     }
 
-    if (categoryAxis?.label case final String name when !categoryHidden) {
+    if (bottomAxis?.label case final String name when !(bottomAxis?.hidden ?? false)) {
       chrome.add(
         NebaChartLabel(
           text(name, named),
@@ -2266,8 +2424,10 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
 
       bool inside(double number) => onValue || (number >= first && number <= last);
       double clamp(double number) => onValue ? number : number.clamp(first, last).toDouble();
-      double at(double number) =>
-          onValue ? layout.valuePx(number) : plot.left + layout.categoryPx(number);
+      double at(double number) => onValue ? layout.valuePx(number) : layout.categoryAt(number);
+      // Which way the rule runs: a number on one axis is drawn across the
+      // other, and turning the chart swaps which of the two that is.
+      final bool across = onValue ? !horizontal : horizontal;
 
       final double from = at(clamp(one.value));
       final double? end = to == null ? null : at(clamp(to));
@@ -2278,7 +2438,7 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
       if (end != null) {
         chrome.add(
           _Wash(
-            onValue
+            across
                 ? Rect.fromLTWH(plot.left, near, plot.width, far - near)
                 : Rect.fromLTWH(near, plot.top, far - near, plot.height),
             mixOklab(ink, 0.12, transparent),
@@ -2291,12 +2451,10 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
           continue;
         }
 
-        final double along = at(edge);
-
         chrome.add(
           onValue
-              ? _Rule(Offset(plot.left, along), Offset(plot.right, along), ink, solid: one.solid)
-              : _Rule(Offset(along, plot.top), Offset(along, plot.bottom), ink, solid: one.solid),
+              ? valueRule(at(edge), ink, solid: one.solid)
+              : categoryRule(at(edge), ink, solid: one.solid),
         );
       }
 
@@ -2304,8 +2462,8 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
         chrome.add(
           NebaChartLabel(
             text(name, named.copyWith(color: ink)),
-            onValue ? Offset(plot.right - 4, near - 5) : Offset(near + 4, plot.top + fontSize),
-            anchor: onValue ? -1 : 1,
+            across ? Offset(plot.right - 4, near - 5) : Offset(near + 4, plot.top + fontSize),
+            anchor: across ? -1 : 1,
           ),
         );
       }
@@ -2551,9 +2709,10 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
             CustomPaint(
               size: area,
               painter: _CrosshairPainter(
-                layout.plot.left + layout.categoryPx(active),
+                layout.categoryAt(active),
                 layout.plot,
                 tokens.chartBaseline,
+                horizontal: layout.horizontal,
               ),
             ),
           CustomPaint(
@@ -2570,9 +2729,20 @@ class _NebaCartesianChartState<T> extends State<NebaCartesianChart<T>>
         ];
 
         if (active != null && items.isNotEmpty && mode != NebaChartTooltipMode.none) {
-          final double anchorX = layout.plot.left + layout.categoryPx(active);
-          final double anchorY = layout.plot.top;
-          final bool flip = layout.categoryPx(active) / math.max(1, layout.plot.width) > 0.6;
+          final Rect box = layout.plot;
+          // Beside the column at the top of the plot, or, on a chart turned
+          // on its side, beside the far end of the first reading in the row.
+          final NebaChartTooltipItem first = items.first;
+          final double anchorX = layout.horizontal
+              ? _spansAt(active, data, layout)[first.seriesIndex]?.$2 ??
+                    layout.valuePx(first.value, first.seriesIndex)
+              : layout.categoryAt(active);
+          final double anchorY = layout.horizontal ? layout.categoryAt(active) : box.top;
+          final bool flip =
+              (layout.horizontal
+                  ? (anchorX - box.left) / math.max(1, box.width)
+                  : layout.categoryPx(active) / math.max(1, layout.categoryLength)) >
+              0.6;
           final Widget panel =
               options.builder?.call(
                 context,
@@ -2698,22 +2868,31 @@ class _ChromePainter extends CustomPainter {
   bool shouldRepaint(_ChromePainter oldDelegate) => !identical(oldDelegate.model, model);
 }
 
-/// The line dropped through the plot at the active category.
+/// The line dropped through the plot at the active category, across it on a
+/// chart turned on its side.
 class _CrosshairPainter extends CustomPainter {
-  const _CrosshairPainter(this.x, this.plot, this.color);
+  const _CrosshairPainter(this.along, this.plot, this.color, {required this.horizontal});
 
-  final double x;
+  final double along;
   final Rect plot;
   final Color color;
+  final bool horizontal;
 
   @override
   void paint(Canvas canvas, Size size) {
-    chartPaintRule(canvas, Offset(x, plot.top), Offset(x, plot.bottom), color);
+    if (horizontal) {
+      chartPaintRule(canvas, Offset(plot.left, along), Offset(plot.right, along), color);
+    } else {
+      chartPaintRule(canvas, Offset(along, plot.top), Offset(along, plot.bottom), color);
+    }
   }
 
   @override
   bool shouldRepaint(_CrosshairPainter oldDelegate) {
-    return oldDelegate.x != x || oldDelegate.plot != plot || oldDelegate.color != color;
+    return oldDelegate.along != along ||
+        oldDelegate.plot != plot ||
+        oldDelegate.color != color ||
+        oldDelegate.horizontal != horizontal;
   }
 }
 
