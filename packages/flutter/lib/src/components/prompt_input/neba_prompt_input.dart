@@ -510,11 +510,15 @@ class _NebaPromptInputState extends State<NebaPromptInput>
       child: Row(
         spacing: 8,
         children: <Widget>[
-          if (widget.start.isNotEmpty)
-            Flexible(
+          // The start group has all the room the end leaves, so it gives way
+          // only once its own controls no longer fit, and the end is pushed
+          // over by what is left rather than sharing it.
+          Expanded(
+            child: Align(
+              alignment: AlignmentDirectional.centerStart,
               child: Row(mainAxisSize: MainAxisSize.min, spacing: 4, children: widget.start),
             ),
-          const Spacer(),
+          ),
           if (widget.end.isNotEmpty)
             Row(mainAxisSize: MainAxisSize.min, spacing: 4, children: widget.end),
           button,

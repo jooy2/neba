@@ -127,6 +127,35 @@ void main() {
       );
     });
 
+    testWidgets('gives the start group all the room the end leaves', (WidgetTester tester) async {
+      double? room;
+
+      await pump(
+        tester,
+        NebaPromptInput(
+          start: <Widget>[
+            Flexible(
+              child: LayoutBuilder(
+                builder: (BuildContext context, BoxConstraints constraints) {
+                  room = constraints.maxWidth;
+
+                  return const SizedBox(height: 1);
+                },
+              ),
+            ),
+          ],
+          end: const <Widget>[SizedBox(width: 40, height: 1)],
+        ),
+      );
+
+      // Everything between the start of the row and the button but the end
+      // group and the two gaps either side of it.
+      final double across =
+          tester.getTopLeft(button()).dx - tester.getTopLeft(find.byType(LayoutBuilder)).dx;
+
+      expect(room, closeTo(across - 8 - 40 - 8, 0.01));
+    });
+
     testWidgets('rounds its corners one step past a field of its size', (
       WidgetTester tester,
     ) async {
