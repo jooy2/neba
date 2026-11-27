@@ -59,7 +59,7 @@ The shared axes are described under [prop conventions](../../design/prop-convent
 
 The layout owns the scroll view, so `child` is laid out at its natural height inside it, as content in a page is: put the page's widgets in, not a scroll view of their own. `controller` reaches what scrolls.
 
-Only the `header` and the `footer` handed to it are its bars. It reads the `position` of a [Header](./header) or a [Footer](./footer) it was handed directly; a header wrapped in a widget of your own is held at the top as a sticky one is, and a footer wrapped in one scrolls with the page as a static one does. A Header or a Footer anywhere else, such as an article's own, is a bar of that part and leaves the layout alone.
+Only the `header` and the `footer` handed to it are its bars. It reads the `position` of a [Header](./header), a [Footer](./footer) or a [BottomNavigation](../inputs/bottom-navigation) it was handed directly; a header wrapped in a widget of your own is held at the top as a sticky one is, and a footer wrapped in one scrolls with the page as a static one does. A Header or a Footer anywhere else, such as an article's own, is a bar of that part and leaves the layout alone.
 
 The child is the main region, and the skip link moves the focus to it. Flutter has no ids, so there is no `mainId` and no `mainProps`. A layout inside another layout's content is not a second main region unless `main` says so, and a layout that is not the page, such as a preview, passes `main: false`.
 

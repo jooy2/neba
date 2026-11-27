@@ -47,6 +47,11 @@ import 'package:neba_example/demos/blockquote/attribution.dart';
 import 'package:neba_example/demos/blockquote/colors.dart';
 import 'package:neba_example/demos/blockquote/hero.dart';
 import 'package:neba_example/demos/blockquote/variants.dart';
+import 'package:neba_example/demos/bottom_navigation/appearance.dart';
+import 'package:neba_example/demos/bottom_navigation/hero.dart';
+import 'package:neba_example/demos/bottom_navigation/labels.dart';
+import 'package:neba_example/demos/bottom_navigation/links.dart';
+import 'package:neba_example/demos/bottom_navigation/pinned.dart';
 import 'package:neba_example/demos/box/colors.dart';
 import 'package:neba_example/demos/box/elevation.dart';
 import 'package:neba_example/demos/box/hero.dart';
@@ -422,6 +427,11 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'blockquote/colors': BlockquoteColors.new,
   'blockquote/hero': BlockquoteHero.new,
   'blockquote/variants': BlockquoteVariants.new,
+  'bottom-navigation/appearance': BottomNavigationAppearance.new,
+  'bottom-navigation/hero': BottomNavigationHero.new,
+  'bottom-navigation/labels': BottomNavigationLabels.new,
+  'bottom-navigation/links': BottomNavigationLinks.new,
+  'bottom-navigation/pinned': BottomNavigationPinned.new,
   'box/colors': BoxColors.new,
   'box/elevation': BoxElevation.new,
   'box/hero': BoxHero.new,

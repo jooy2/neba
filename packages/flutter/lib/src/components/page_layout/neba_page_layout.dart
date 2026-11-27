@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 
+import 'package:neba/src/components/bottom_navigation/neba_bottom_navigation.dart';
 import 'package:neba/src/components/footer/neba_footer.dart';
 import 'package:neba/src/components/header/neba_header.dart';
 import 'package:neba/src/components/sidebar/neba_sidebar.dart';
@@ -117,8 +118,9 @@ class NebaPageLayout extends StatefulWidget {
   /// is held there as a sticky header is.
   final Widget? header;
 
-  /// The sheet at the end, usually a `NebaFooter`. The layout reads its
-  /// `position` to decide whether it holds it at the bottom; anything else
+  /// The sheet at the end, usually a `NebaFooter`, or the
+  /// `NebaBottomNavigation` of an app. The layout reads the `position` of
+  /// either to decide whether it holds it at the bottom; anything else
   /// scrolls with the page as a static footer does.
   final Widget? footer;
 
@@ -281,7 +283,9 @@ class _NebaPageLayoutState extends State<NebaPageLayout> {
     final bool contentHeader = header != null && !fullHeader;
     final bool contentFooter = footer != null && !fullFooter;
     final bool headerPinned = header is! NebaHeader || header.position != NebaPosition.static;
-    final bool footerPinned = footer is NebaFooter && footer.position != NebaPosition.static;
+    final bool footerPinned =
+        (footer is NebaFooter && footer.position != NebaPosition.static) ||
+        (footer is NebaBottomNavigation && footer.position != NebaPosition.static);
 
     final bool startColumn = _isColumn(widget.sidebar);
     final bool endColumn = _isColumn(widget.endSidebar);

@@ -59,7 +59,7 @@ children은 실제 `<main>` 안에 놓입니다. `mainId`가 그 요소의 id이
 
 스크롤 뷰는 레이아웃이 가지므로 `child`는 페이지 속 내용처럼 그 안에서 자기 높이대로 배치됩니다. 스크롤 뷰가 아니라 페이지를 이루는 위젯을 넣으세요. 스크롤되는 것은 `controller`로 다룹니다.
 
-레이아웃의 바는 넘겨받은 `header`와 `footer`뿐입니다. 바로 넘겨받은 [Header](./header)와 [Footer](./footer)는 `position`을 읽고, 직접 만든 위젯으로 감싼 header는 sticky header처럼 위에 붙잡으며, 그렇게 감싼 footer는 static footer처럼 페이지와 함께 스크롤합니다. 글 자체의 것처럼 다른 곳에 있는 Header나 Footer는 그 부분의 바이며 레이아웃에 영향을 주지 않습니다.
+레이아웃의 바는 넘겨받은 `header`와 `footer`뿐입니다. 바로 넘겨받은 [Header](./header)와 [Footer](./footer), [BottomNavigation](../inputs/bottom-navigation)은 `position`을 읽고, 직접 만든 위젯으로 감싼 header는 sticky header처럼 위에 붙잡으며, 그렇게 감싼 footer는 static footer처럼 페이지와 함께 스크롤합니다. 글 자체의 것처럼 다른 곳에 있는 Header나 Footer는 그 부분의 바이며 레이아웃에 영향을 주지 않습니다.
 
 child는 main 영역이고, skip link는 focus를 그리로 옮깁니다. Flutter에는 id가 없으므로 `mainId`와 `mainProps`도 없습니다. 다른 레이아웃의 본문 안에 있는 레이아웃은 `main`으로 따로 정하지 않으면 두 번째 main 영역이 되지 않으며, 미리보기처럼 페이지 자체가 아닌 레이아웃은 `main: false`를 넘깁니다.
 

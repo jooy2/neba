@@ -395,6 +395,35 @@ void main() {
       expect(rectOf(tester, NebaFooter).bottom, 600);
     });
 
+    testWidgets('holds a bottom navigation at the bottom, and lets a static one scroll', (
+      WidgetTester tester,
+    ) async {
+      Widget layout(NebaPosition position) {
+        return NebaPageLayout(
+          footer: NebaBottomNavigation<String>(
+            position: position,
+            children: const <NebaBottomNavigationItem<String>>[
+              NebaBottomNavigationItem<String>(value: 'home', child: Text('Home')),
+            ],
+          ),
+          child: page(2000),
+        );
+      }
+
+      Rect bar() => tester.getRect(find.byType(NebaBottomNavigation<String>));
+
+      await pumpWindow(tester, layout(NebaPosition.fixed));
+      expect(bar().bottom, 600);
+
+      await tester.drag(find.text('Top'), const Offset(0, -500));
+      await tester.pump();
+      expect(bar().bottom, 600);
+
+      await pumpWindow(tester, layout(NebaPosition.static));
+      expect(bar().top, tester.getRect(find.byKey(const Key('page'))).bottom);
+      expect(bar().top, greaterThan(600));
+    });
+
     testWidgets('lets a column that does not hold its place scroll with the page', (
       WidgetTester tester,
     ) async {

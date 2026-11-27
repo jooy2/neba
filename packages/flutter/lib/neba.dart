@@ -31,6 +31,7 @@ export 'src/components/aspect_ratio/neba_aspect_ratio.dart';
 export 'src/components/avatar/neba_avatar.dart';
 export 'src/components/badge/neba_badge.dart';
 export 'src/components/blockquote/neba_blockquote.dart';
+export 'src/components/bottom_navigation/neba_bottom_navigation.dart';
 export 'src/components/box/neba_box.dart';
 export 'src/components/breadcrumb/neba_breadcrumb.dart';
 export 'src/components/button/neba_button.dart';

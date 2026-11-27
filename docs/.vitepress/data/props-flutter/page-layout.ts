@@ -12,8 +12,8 @@ export default {
     from('PageLayout', 'footer', {
       type: `${WIDGET}?`,
       description: {
-        ko: '끝의 시트. 보통 NebaFooter이며, 레이아웃은 그 position을 읽습니다. 다른 위젯은 static footer처럼 페이지와 함께 스크롤됩니다',
-        en: 'The sheet at the end, usually a NebaFooter, whose position the layout reads. Anything else scrolls with the page as a static footer does'
+        ko: '끝의 시트. 보통 NebaFooter이거나 앱의 NebaBottomNavigation이며, 레이아웃은 둘 다 그 position을 읽습니다. 다른 위젯은 static footer처럼 페이지와 함께 스크롤됩니다',
+        en: 'The sheet at the end, usually a NebaFooter, or the NebaBottomNavigation of an app; the layout reads the position of either. Anything else scrolls with the page as a static footer does'
       }
     }),
     from('PageLayout', 'sidebar', { type: `${WIDGET}?` }),

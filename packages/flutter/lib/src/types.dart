@@ -161,11 +161,11 @@ enum NebaLabelPlacement {
 /// How a bar sits against the edge of what it is in, spelled the way CSS
 /// spells `position`.
 ///
-/// A Header and a Footer read it inside a `NebaPageLayout`, whose page scroll
-/// gives it its meaning. A Toolbar and a Pill read it on their own, where a
-/// widget is laid out where its parent puts it: [sticky] draws the bar as it
-/// is drawn once held, for a scroll view to hold it, and only [fixed] moves
-/// anything.
+/// A Header, a Footer and a BottomNavigation read it inside a
+/// `NebaPageLayout`, whose page scroll gives it its meaning. A Toolbar and a
+/// Pill read it on their own, where a widget is laid out where its parent puts
+/// it: [sticky] draws the bar as it is drawn once held, for a scroll view to
+/// hold it, and only [fixed] moves anything.
 enum NebaPosition {
   /// In place, scrolling away with what is around it.
   static,
