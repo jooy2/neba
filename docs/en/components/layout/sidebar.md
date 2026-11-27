@@ -89,7 +89,17 @@ Lets the reader drag the inner edge. `minWidth` and `maxWidth` bound it, `onResi
 
 <Demo src="sidebar/resizable" minHeight="300">
 
+::: fw react
+
 <<< @/.vitepress/demos/sidebar/resizable.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/sidebar/resizable.dart
+
+:::
 
 </Demo>
 
@@ -99,7 +109,17 @@ Lets the reader drag the inner edge. `minWidth` and `maxWidth` bound it, `onResi
 
 <Demo src="sidebar/sides" minHeight="300">
 
+::: fw react
+
 <<< @/.vitepress/demos/sidebar/sides.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/sidebar/sides.dart
+
+:::
 
 </Demo>
 

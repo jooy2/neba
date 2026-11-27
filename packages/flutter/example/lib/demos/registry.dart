@@ -270,6 +270,9 @@ import 'package:neba_example/demos/show/hero.dart';
 import 'package:neba_example/demos/show/pair.dart';
 import 'package:neba_example/demos/show/range.dart';
 import 'package:neba_example/demos/show/transparent.dart';
+import 'package:neba_example/demos/sidebar/hero.dart';
+import 'package:neba_example/demos/sidebar/resizable.dart';
+import 'package:neba_example/demos/sidebar/sides.dart';
 import 'package:neba_example/demos/skeleton/hero.dart';
 import 'package:neba_example/demos/skeleton/lines.dart';
 import 'package:neba_example/demos/skeleton/shapes.dart';
@@ -623,6 +626,9 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'show/pair': ShowPair.new,
   'show/range': ShowRange.new,
   'show/transparent': ShowTransparent.new,
+  'sidebar/hero': SidebarHero.new,
+  'sidebar/resizable': SidebarResizable.new,
+  'sidebar/sides': SidebarSides.new,
   'skeleton/hero': SkeletonHero.new,
   'skeleton/lines': SkeletonLines.new,
   'skeleton/shapes': SkeletonShapes.new,
