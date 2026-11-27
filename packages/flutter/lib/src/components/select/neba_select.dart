@@ -11,6 +11,7 @@ import 'package:flutter/widgets.dart';
 import 'package:neba/src/internal/button_group.dart';
 import 'package:neba/src/internal/disclosure.dart';
 import 'package:neba/src/internal/field.dart';
+import 'package:neba/src/internal/fieldset.dart';
 import 'package:neba/src/internal/floating.dart';
 import 'package:neba/src/internal/glyphs.dart';
 import 'package:neba/src/internal/listbox.dart';
@@ -203,6 +204,9 @@ class NebaSelect<T> extends StatefulWidget {
 }
 
 class _NebaSelectState<T> extends State<NebaSelect<T>> {
+  /// Its own `disabled`, or that of a disabled `NebaFieldset` around it.
+  bool get _disabled => nebaFieldsetDisabled(context, widget.disabled);
+
   final NebaTypeahead _typeahead = NebaTypeahead();
   final FocusNode _listNode = FocusNode(debugLabel: 'NebaSelect list');
   FocusNode? _ownNode;
@@ -226,7 +230,7 @@ class _NebaSelectState<T> extends State<NebaSelect<T>> {
 
   // A read-only select still opens, so its options can be read; it is the
   // value that is locked, as Base UI's is.
-  bool get _readOnly => widget.readOnly && !widget.disabled;
+  bool get _readOnly => widget.readOnly && !_disabled;
 
   @override
   void initState() {
@@ -308,7 +312,7 @@ class _NebaSelectState<T> extends State<NebaSelect<T>> {
   }
 
   void _setOpen(bool open, {int? highlight}) {
-    if (open == _isOpen || (open && widget.disabled)) {
+    if (open == _isOpen || (open && _disabled)) {
       return;
     }
 
@@ -332,7 +336,7 @@ class _NebaSelectState<T> extends State<NebaSelect<T>> {
   void _choose(int index) {
     final NebaSelectOption<T> option = widget.items[index];
 
-    if (option.disabled || widget.disabled || _readOnly) {
+    if (option.disabled || _disabled || _readOnly) {
       return;
     }
 
@@ -403,7 +407,7 @@ class _NebaSelectState<T> extends State<NebaSelect<T>> {
   }
 
   KeyEventResult _onKey(FocusNode node, KeyEvent event) {
-    if (event is KeyUpEvent || widget.disabled) {
+    if (event is KeyUpEvent || _disabled) {
       return KeyEventResult.ignored;
     }
 
@@ -519,7 +523,7 @@ class _NebaSelectState<T> extends State<NebaSelect<T>> {
     final NebaDensity density = widget.density ?? defaults.density ?? NebaDensity.standard;
     final NebaLabelPlacement placement =
         widget.labelPlacement ?? defaults.labelPlacement ?? NebaLabelPlacement.top;
-    final bool disabled = widget.disabled;
+    final bool disabled = _disabled;
     final bool readOnly = widget.readOnly && !disabled;
     final bool invalid = widget.invalid ?? widget.error != null;
     final NebaColorRoles roles = tokens.roles(

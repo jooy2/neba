@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
 import 'package:neba/src/internal/button_group.dart';
+import 'package:neba/src/internal/fieldset.dart';
 import 'package:neba/src/internal/focus_ring.dart';
 import 'package:neba/src/internal/glow.dart';
 import 'package:neba/src/internal/glyphs.dart';
@@ -134,7 +135,8 @@ class NebaButton extends StatelessWidget {
     final NebaElevation elevation = this.elevation ?? group?.elevation ?? 0;
     final NebaColorRoles roles = tokens.roles(color);
 
-    final bool isDisabled = (disabled ?? group?.disabled ?? false) || onPressed == null;
+    final bool isDisabled =
+        nebaFieldsetDisabled(context, disabled ?? group?.disabled) || onPressed == null;
     // Loading and read-only stop the press without changing how the button is
     // drawn at rest; disabled changes both.
     final bool inert = loading || readOnly;

@@ -8,6 +8,7 @@ import 'package:flutter/widgets.dart';
 
 import 'package:neba/src/internal/choice.dart';
 import 'package:neba/src/internal/field.dart';
+import 'package:neba/src/internal/fieldset.dart';
 import 'package:neba/src/internal/focus_ring.dart';
 import 'package:neba/src/internal/interaction.dart';
 import 'package:neba/src/internal/motion.dart';
@@ -142,12 +143,15 @@ class NebaSwitch extends StatefulWidget {
 }
 
 class _NebaSwitchState extends State<NebaSwitch> {
+  /// Its own `disabled`, or that of a disabled `NebaFieldset` around it.
+  bool get _disabled => nebaFieldsetDisabled(context, widget.disabled);
+
   late bool _checked = widget.defaultChecked;
 
   bool get _on => widget.checked ?? _checked;
 
   void _toggle() {
-    if (widget.disabled || widget.readOnly) {
+    if (_disabled || widget.readOnly) {
       return;
     }
 
@@ -165,7 +169,7 @@ class _NebaSwitchState extends State<NebaSwitch> {
     final NebaTokens tokens = NebaTheme.of(context);
     final NebaDefaults defaults = NebaTheme.defaultsOf(context);
     final NebaSize size = widget.size ?? defaults.size ?? NebaSize.md;
-    final bool disabled = widget.disabled;
+    final bool disabled = _disabled;
     final bool readOnly = widget.readOnly && !disabled;
     final bool invalid = widget.invalid ?? widget.error != null;
     // Invalid repoints the whole family at danger, so the track, the ring and

@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
 import 'package:neba/src/internal/button_group.dart';
+import 'package:neba/src/internal/fieldset.dart';
 import 'package:neba/src/internal/focus_ring.dart';
 import 'package:neba/src/internal/glow.dart';
 import 'package:neba/src/internal/ink.dart';
@@ -148,7 +149,10 @@ class _NebaToggleState extends State<NebaToggle> {
   }
 
   bool get _disabled {
-    return widget.disabled ?? NebaButtonGroupScope.maybeOf(context)?.disabled ?? false;
+    return nebaFieldsetDisabled(
+      context,
+      widget.disabled ?? NebaButtonGroupScope.maybeOf(context)?.disabled,
+    );
   }
 
   /// Hands the group this toggle's focus node, so the arrow keys can reach it.

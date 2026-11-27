@@ -190,6 +190,10 @@ import 'package:neba_example/demos/empty/size.dart';
 import 'package:neba_example/demos/empty/table.dart';
 import 'package:neba_example/demos/empty/title.dart';
 import 'package:neba_example/demos/empty/variants.dart';
+import 'package:neba_example/demos/fieldset/disabled.dart';
+import 'package:neba_example/demos/fieldset/hero.dart';
+import 'package:neba_example/demos/fieldset/sizes.dart';
+import 'package:neba_example/demos/fieldset/spacing.dart';
 import 'package:neba_example/demos/flex/alignment.dart';
 import 'package:neba_example/demos/flex/direction.dart';
 import 'package:neba_example/demos/flex/hero.dart';
@@ -666,6 +670,10 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'empty/table': EmptyTable.new,
   'empty/title': EmptyTitle.new,
   'empty/variants': EmptyVariants.new,
+  'fieldset/disabled': FieldsetDisabled.new,
+  'fieldset/hero': FieldsetHero.new,
+  'fieldset/sizes': FieldsetSizes.new,
+  'fieldset/spacing': FieldsetSpacing.new,
   'flex/alignment': FlexAlignment.new,
   'flex/direction': FlexDirection.new,
   'flex/hero': FlexHero.new,

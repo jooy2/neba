@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 import 'package:neba/src/internal/field.dart';
+import 'package:neba/src/internal/fieldset.dart';
 import 'package:neba/src/internal/glyphs.dart';
 import 'package:neba/src/internal/notch.dart';
 import 'package:neba/src/theme/scale.dart';
@@ -213,6 +214,9 @@ class NebaTextField extends StatefulWidget {
 
 class _NebaTextFieldState extends State<NebaTextField>
     implements TextSelectionGestureDetectorBuilderDelegate {
+  /// Its own `disabled`, or that of a disabled `NebaFieldset` around it.
+  bool get _disabled => nebaFieldsetDisabled(context, widget.disabled);
+
   final GlobalKey<EditableTextState> _editableKey = GlobalKey<EditableTextState>();
   final ValueNotifier<bool> _typing = ValueNotifier<bool>(false);
   late final NebaFieldGestures _gestures = NebaFieldGestures(delegate: this);
@@ -234,7 +238,7 @@ class _NebaTextFieldState extends State<NebaTextField>
   bool get forcePressEnabled => false;
 
   @override
-  bool get selectionEnabled => !widget.disabled && !(widget.readOnly && widget.obscureText);
+  bool get selectionEnabled => !_disabled && !(widget.readOnly && widget.obscureText);
 
   @override
   void initState() {
@@ -323,7 +327,7 @@ class _NebaTextFieldState extends State<NebaTextField>
     final NebaDensity density = widget.density ?? defaults.density ?? NebaDensity.standard;
     final NebaLabelPlacement placement =
         widget.labelPlacement ?? defaults.labelPlacement ?? NebaLabelPlacement.top;
-    final bool disabled = widget.disabled;
+    final bool disabled = _disabled;
     final bool readOnly = widget.readOnly && !disabled;
     final bool lit = !disabled && !readOnly;
     final bool invalid = widget.invalid ?? widget.error != null;

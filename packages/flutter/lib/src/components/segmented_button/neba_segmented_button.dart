@@ -8,6 +8,7 @@ import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
+import 'package:neba/src/internal/fieldset.dart';
 import 'package:neba/src/internal/focus_ring.dart';
 import 'package:neba/src/internal/glow.dart';
 import 'package:neba/src/internal/ink.dart';
@@ -124,6 +125,9 @@ class NebaSegmentedButton<T> extends StatefulWidget {
 }
 
 class _NebaSegmentedButtonState<T> extends State<NebaSegmentedButton<T>> {
+  /// Its own `disabled`, or that of a disabled `NebaFieldset` around it.
+  bool get _disabled => nebaFieldsetDisabled(context, widget.disabled);
+
   late T? _value = widget.defaultValue;
 
   /// One focus node per segment, by index, made as a segment first needs one
@@ -169,10 +173,10 @@ class _NebaSegmentedButtonState<T> extends State<NebaSegmentedButton<T>> {
     return null;
   }
 
-  bool _off(int index) => widget.disabled || widget.children[index].disabled;
+  bool _off(int index) => _disabled || widget.children[index].disabled;
 
   void _chooseAt(int index) {
-    if (widget.disabled || widget.readOnly || index >= widget.children.length || _off(index)) {
+    if (_disabled || widget.readOnly || index >= widget.children.length || _off(index)) {
       return;
     }
 
@@ -301,7 +305,7 @@ class _NebaSegmentedButtonState<T> extends State<NebaSegmentedButton<T>> {
     final NebaDensity density = widget.density ?? defaults.density ?? NebaDensity.standard;
     final NebaElevation elevation = widget.elevation ?? 0;
     final NebaColorRoles roles = tokens.roles(color);
-    final bool disabled = widget.disabled;
+    final bool disabled = _disabled;
     final bool solid = variant == NebaVariant.solid;
 
     final int? chosen = _indexOf(_current);

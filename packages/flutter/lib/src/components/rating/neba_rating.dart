@@ -7,6 +7,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
+import 'package:neba/src/internal/fieldset.dart';
 import 'package:neba/src/internal/focus_ring.dart';
 import 'package:neba/src/internal/glyphs.dart';
 import 'package:neba/src/internal/messages.dart';
@@ -107,6 +108,9 @@ class NebaRating extends StatefulWidget {
 }
 
 class _NebaRatingState extends State<NebaRating> {
+  /// Its own `disabled`, or that of a disabled `NebaFieldset` around it.
+  bool get _disabled => nebaFieldsetDisabled(context, widget.disabled);
+
   late double _own = widget.defaultValue;
   double? _hovered;
   bool _focused = false;
@@ -133,7 +137,7 @@ class _NebaRatingState extends State<NebaRating> {
     ];
   }
 
-  bool get _interactive => !widget.readOnly && !widget.disabled;
+  bool get _interactive => !widget.readOnly && !_disabled;
 
   void _change(double next) {
     if (widget.value == null) {
@@ -215,7 +219,7 @@ class _NebaRatingState extends State<NebaRating> {
     final int steps = (1 / step).round();
     final double value = _value;
     final double shown = math.max(0, math.min(stars.toDouble(), _hovered ?? value));
-    final bool disabled = widget.disabled;
+    final bool disabled = _disabled;
     final bool readOnly = widget.readOnly;
     final Color fill = disabled ? tokens.disabledFg : roles.fill;
     final Color empty = disabled

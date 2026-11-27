@@ -13,6 +13,7 @@ import 'package:neba/src/components/chip/neba_chip.dart';
 import 'package:neba/src/internal/button_group.dart';
 import 'package:neba/src/internal/disclosure.dart';
 import 'package:neba/src/internal/field.dart';
+import 'package:neba/src/internal/fieldset.dart';
 import 'package:neba/src/internal/floating.dart';
 import 'package:neba/src/internal/focus_ring.dart';
 import 'package:neba/src/internal/glyphs.dart';
@@ -359,6 +360,9 @@ class _Entry<T> {
 
 class _NebaComboboxState<T> extends State<NebaCombobox<T>>
     implements TextSelectionGestureDetectorBuilderDelegate {
+  /// Its own `disabled`, or that of a disabled `NebaFieldset` around it.
+  bool get _disabled => nebaFieldsetDisabled(context, widget.disabled);
+
   final GlobalKey<EditableTextState> _editableKey = GlobalKey<EditableTextState>();
   final ValueNotifier<bool> _typing = ValueNotifier<bool>(false);
   late final NebaFieldGestures _gestures = NebaFieldGestures(delegate: this, onTap: _openFromTap);
@@ -390,7 +394,7 @@ class _NebaComboboxState<T> extends State<NebaCombobox<T>>
 
   bool get _isOpen => widget.open ?? _open;
 
-  bool get _locked => widget.disabled || widget.readOnly;
+  bool get _locked => _disabled || widget.readOnly;
 
   List<T> get _chosen {
     if (widget.multiple) {
@@ -409,7 +413,7 @@ class _NebaComboboxState<T> extends State<NebaCombobox<T>>
   bool get forcePressEnabled => false;
 
   @override
-  bool get selectionEnabled => !widget.disabled;
+  bool get selectionEnabled => !_disabled;
 
   @override
   void initState() {
@@ -564,7 +568,7 @@ class _NebaComboboxState<T> extends State<NebaCombobox<T>>
   void _setOpen(bool open, {int? highlight, bool keepHighlight = false}) {
     // A read-only combobox still opens, so its options can be read; it is the
     // value that is locked, as Base UI's is.
-    if (open == _isOpen || (open && widget.disabled)) {
+    if (open == _isOpen || (open && _disabled)) {
       return;
     }
 
@@ -891,7 +895,7 @@ class _NebaComboboxState<T> extends State<NebaCombobox<T>>
 
     final HardwareKeyboard keyboard = HardwareKeyboard.instance;
 
-    if (widget.disabled ||
+    if (_disabled ||
         keyboard.isControlPressed ||
         keyboard.isMetaPressed ||
         keyboard.isAltPressed ||
@@ -1013,7 +1017,7 @@ class _NebaComboboxState<T> extends State<NebaCombobox<T>>
         widget.labelPlacement ?? defaults.labelPlacement ?? NebaLabelPlacement.top;
     final Locale? locale = widget.locale ?? defaults.locale;
     final Map<String, String> messages = nebaMessages(context, 'combobox', locale: locale);
-    final bool disabled = widget.disabled;
+    final bool disabled = _disabled;
     final bool readOnly = widget.readOnly && !disabled;
     final bool lit = !disabled && !readOnly;
     final bool invalid = widget.invalid ?? widget.error != null;

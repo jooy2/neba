@@ -11,6 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 import 'package:neba/src/internal/field.dart';
+import 'package:neba/src/internal/fieldset.dart';
 import 'package:neba/src/internal/focus_ring.dart';
 import 'package:neba/src/internal/ink.dart';
 import 'package:neba/src/internal/surface.dart';
@@ -231,6 +232,9 @@ class NebaOtpField extends StatefulWidget {
 }
 
 class _NebaOtpFieldState extends State<NebaOtpField> {
+  /// Its own `disabled`, or that of a disabled `NebaFieldset` around it.
+  bool get _disabled => nebaFieldsetDisabled(context, widget.disabled);
+
   final GlobalKey<EditableTextState> _editableKey = GlobalKey<EditableTextState>();
   final ValueNotifier<bool> _caretOn = ValueNotifier<bool>(true);
   late final _OtpEdits _edits = _OtpEdits(_edit);
@@ -476,7 +480,7 @@ class _NebaOtpFieldState extends State<NebaOtpField> {
 
   /// What the editable shows after the platform edited it into [next].
   TextEditingValue _edit(TextEditingValue next) {
-    if (widget.disabled || widget.readOnly) {
+    if (_disabled || widget.readOnly) {
       return _shown();
     }
 
@@ -610,7 +614,7 @@ class _NebaOtpFieldState extends State<NebaOtpField> {
   }
 
   KeyEventResult _handleKey(FocusNode node, KeyEvent event) {
-    if (event is KeyUpEvent || widget.disabled) {
+    if (event is KeyUpEvent || _disabled) {
       return KeyEventResult.ignored;
     }
 
@@ -662,7 +666,7 @@ class _NebaOtpFieldState extends State<NebaOtpField> {
   /// A press on cell [index]: the caret goes there, or to the first empty
   /// cell when the press is past the code.
   void _press(int index) {
-    if (widget.disabled) {
+    if (_disabled) {
       return;
     }
 
@@ -685,7 +689,7 @@ class _NebaOtpFieldState extends State<NebaOtpField> {
     final NebaVariant variant = widget.variant ?? defaults.variant ?? NebaVariant.outline;
     final NebaSize size = widget.size ?? defaults.size ?? NebaSize.md;
     final NebaDensity density = widget.density ?? defaults.density ?? NebaDensity.standard;
-    final bool disabled = widget.disabled;
+    final bool disabled = _disabled;
     final bool readOnly = widget.readOnly && !disabled;
     final bool invalid = widget.invalid ?? widget.error != null;
     final NebaColorRoles roles = tokens.roles(

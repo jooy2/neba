@@ -10,6 +10,7 @@ import 'package:flutter/widgets.dart';
 
 import 'package:neba/src/internal/choice.dart';
 import 'package:neba/src/internal/field.dart';
+import 'package:neba/src/internal/fieldset.dart';
 import 'package:neba/src/theme/scale.dart';
 import 'package:neba/src/theme/theme.dart';
 import 'package:neba/src/theme/tokens.dart';
@@ -135,6 +136,9 @@ class _Option<T> {
 }
 
 class _NebaRadioGroupState<T> extends State<NebaRadioGroup<T>> {
+  /// Its own `disabled`, or that of a disabled `NebaFieldset` around it.
+  bool get _disabled => nebaFieldsetDisabled(context, widget.disabled);
+
   late T? _value = widget.defaultValue;
 
   /// Every option, by its focus node. Read when a key is pressed and when the
@@ -146,7 +150,7 @@ class _NebaRadioGroupState<T> extends State<NebaRadioGroup<T>> {
   T? get _current => widget.value ?? _value;
 
   void _choose(T value) {
-    if (widget.disabled || value == _current) {
+    if (_disabled || value == _current) {
       return;
     }
 
@@ -268,7 +272,7 @@ class _NebaRadioGroupState<T> extends State<NebaRadioGroup<T>> {
       value: _current,
       size: size,
       roles: roles,
-      disabled: widget.disabled,
+      disabled: _disabled,
       readOnly: widget.readOnly,
       choose: _choose,
       register: _register,
@@ -287,7 +291,7 @@ class _NebaRadioGroupState<T> extends State<NebaRadioGroup<T>> {
             size: size,
             semantics: semantics,
             errorColor: roles.accent,
-            disabled: widget.disabled,
+            disabled: _disabled,
             label: widget.label,
             description: widget.description,
             error: widget.error,

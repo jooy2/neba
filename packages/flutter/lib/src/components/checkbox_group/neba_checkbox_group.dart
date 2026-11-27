@@ -8,6 +8,7 @@ import 'package:flutter/widgets.dart';
 import 'package:neba/src/internal/checkbox_group.dart';
 import 'package:neba/src/internal/choice.dart';
 import 'package:neba/src/internal/field.dart';
+import 'package:neba/src/internal/fieldset.dart';
 import 'package:neba/src/theme/theme.dart';
 import 'package:neba/src/theme/tokens.dart';
 import 'package:neba/src/types.dart';
@@ -132,6 +133,9 @@ class NebaCheckboxGroup extends StatefulWidget {
 }
 
 class _NebaCheckboxGroupState extends State<NebaCheckboxGroup> {
+  /// Its own `disabled`, or that of a disabled `NebaFieldset` around it.
+  bool get _setDisabled => nebaFieldsetDisabled(context, widget.disabled);
+
   late List<String> _value = List<String>.of(widget.defaultValue);
 
   /// The options the reader last left, by ticking them one at a time, which
@@ -231,7 +235,7 @@ class _NebaCheckboxGroupState extends State<NebaCheckboxGroup> {
       size: size,
       color: color,
       invalid: invalid,
-      disabled: widget.disabled,
+      disabled: _setDisabled,
       readOnly: widget.readOnly,
       value: _current,
       allValues: widget.allValues,
@@ -254,7 +258,7 @@ class _NebaCheckboxGroupState extends State<NebaCheckboxGroup> {
             size: size,
             semantics: semantics,
             errorColor: roles.accent,
-            disabled: widget.disabled,
+            disabled: _setDisabled,
             label: widget.label,
             description: widget.description,
             error: widget.error,

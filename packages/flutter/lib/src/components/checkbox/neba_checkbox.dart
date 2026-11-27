@@ -8,6 +8,7 @@ import 'package:flutter/widgets.dart';
 import 'package:neba/src/internal/checkbox_group.dart';
 import 'package:neba/src/internal/choice.dart';
 import 'package:neba/src/internal/field.dart';
+import 'package:neba/src/internal/fieldset.dart';
 import 'package:neba/src/theme/scale.dart';
 import 'package:neba/src/theme/theme.dart';
 import 'package:neba/src/theme/tokens.dart';
@@ -126,6 +127,9 @@ class NebaCheckbox extends StatefulWidget {
 }
 
 class _NebaCheckboxState extends State<NebaCheckbox> {
+  /// Its own `disabled`, or that of a disabled `NebaFieldset` around it.
+  bool get _disabled => nebaFieldsetDisabled(context, widget.disabled);
+
   late bool _checked = widget.defaultChecked;
   NebaCheckboxGroupScope? _group;
   String? _registered;
@@ -165,7 +169,7 @@ class _NebaCheckboxState extends State<NebaCheckbox> {
 
     _group = group;
     _registered = value;
-    group.register(value, disabled: widget.disabled || group.disabled);
+    group.register(value, disabled: _disabled || group.disabled);
   }
 
   void _unregister() {
@@ -204,7 +208,7 @@ class _NebaCheckboxState extends State<NebaCheckbox> {
   void _toggle() {
     final NebaCheckboxGroupScope? group = context
         .getInheritedWidgetOfExactType<NebaCheckboxGroupScope>();
-    final bool disabled = widget.disabled || (group?.disabled ?? false);
+    final bool disabled = _disabled || (group?.disabled ?? false);
     final bool readOnly = widget.readOnly ?? group?.readOnly ?? false;
 
     if (disabled || readOnly) {
@@ -231,7 +235,7 @@ class _NebaCheckboxState extends State<NebaCheckbox> {
     final NebaCheckboxGroupScope? group = NebaCheckboxGroupScope.maybeOf(context);
     final NebaSize size = widget.size ?? group?.size ?? defaults.size ?? NebaSize.md;
     final NebaColor color = widget.color ?? group?.color ?? NebaColor.primary;
-    final bool disabled = widget.disabled || (group?.disabled ?? false);
+    final bool disabled = _disabled || (group?.disabled ?? false);
     final bool readOnly = !disabled && (widget.readOnly ?? group?.readOnly ?? false);
     final bool invalid = widget.invalid ?? widget.error != null;
     // Invalid repoints the whole family at danger, so the fill, the ring and

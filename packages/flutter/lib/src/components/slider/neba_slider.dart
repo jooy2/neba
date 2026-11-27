@@ -11,6 +11,7 @@ import 'package:flutter/widgets.dart';
 
 import 'package:neba/src/internal/drag.dart';
 import 'package:neba/src/internal/field.dart';
+import 'package:neba/src/internal/fieldset.dart';
 import 'package:neba/src/internal/focus_ring.dart';
 import 'package:neba/src/internal/format.dart';
 import 'package:neba/src/internal/motion.dart';
@@ -300,6 +301,9 @@ class NebaSlider extends StatefulWidget {
 }
 
 class _NebaSliderState extends State<NebaSlider> {
+  /// Its own `disabled`, or that of a disabled `NebaFieldset` around it.
+  bool get _disabled => nebaFieldsetDisabled(context, widget.disabled);
+
   final GlobalKey _strip = GlobalKey(debugLabel: 'NebaSlider strip');
   final List<FocusNode> _nodes = <FocusNode>[];
 
@@ -467,7 +471,7 @@ class _NebaSliderState extends State<NebaSlider> {
   }
 
   KeyEventResult _handleKey(int index, KeyEvent event) {
-    if (event is KeyUpEvent || widget.disabled) {
+    if (event is KeyUpEvent || _disabled) {
       return KeyEventResult.ignored;
     }
 
@@ -540,7 +544,7 @@ class _NebaSliderState extends State<NebaSlider> {
     final Size? size = _stripSize;
     final bool vertical = widget.orientation == NebaOrientation.vertical;
 
-    if (widget.disabled || size == null) {
+    if (_disabled || size == null) {
       return false;
     }
 
@@ -629,7 +633,7 @@ class _NebaSliderState extends State<NebaSlider> {
       _moved = null;
     });
 
-    if (moved != null && !widget.disabled) {
+    if (moved != null && !_disabled) {
       _commit(moved);
     }
   }
@@ -642,7 +646,7 @@ class _NebaSliderState extends State<NebaSlider> {
 
     // A slider turned off mid-drag stops following the pointer, as Base UI
     // stops listening.
-    if (held == null || held >= values.length || extent <= 0 || widget.disabled) {
+    if (held == null || held >= values.length || extent <= 0 || _disabled) {
       return;
     }
 
@@ -703,7 +707,7 @@ class _NebaSliderState extends State<NebaSlider> {
     final NebaColorRoles roles = tokens.roles(widget.color ?? NebaColor.primary);
     final bool vertical = widget.orientation == NebaOrientation.vertical;
     final bool rtl = Directionality.of(context) == TextDirection.rtl;
-    final bool disabled = widget.disabled;
+    final bool disabled = _disabled;
     final List<double> values = _current;
     final int count = values.length;
     final String Function(int index)? named = widget.thumbSemanticLabel;
