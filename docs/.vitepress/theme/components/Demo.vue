@@ -137,6 +137,13 @@ const frameFloor = computed(() =>
 );
 
 const host = ref(null);
+/*
+ * What is measured and observed for "near the screen". Not the React mount
+ * point: a Flutter reader's preview hides that with `display: none` once the
+ * gallery has the demo, and a hidden element never intersects anything, so a
+ * preview below the first screen never mounted.
+ */
+const canvas = ref(null);
 const open = ref(false);
 let root = null;
 let observer = null;
@@ -201,7 +208,7 @@ async function mountReact() {
 
 /** Whether the mount point is on screen, or close enough to count. */
 function isNear() {
-  const { top, bottom } = host.value.getBoundingClientRect();
+  const { top, bottom } = canvas.value.getBoundingClientRect();
 
   return top < window.innerHeight + MOUNT_MARGIN && bottom > -MOUNT_MARGIN;
 }
@@ -312,7 +319,7 @@ onMounted(() => {
     { rootMargin: `${MOUNT_MARGIN}px 0px` }
   );
 
-  observer.observe(host.value);
+  observer.observe(canvas.value);
 });
 
 onBeforeUnmount(() => {
@@ -334,6 +341,7 @@ onBeforeUnmount(() => {
 <template>
   <div class="neba-demo" :class="{ 'neba-demo--plain': plain, 'vp-raw': raw }">
     <div
+      ref="canvas"
       class="neba-demo-canvas"
       :class="{ 'neba-demo-canvas--frame': useFrame }"
       :data-align="align"
@@ -383,6 +391,7 @@ onBeforeUnmount(() => {
         class="neba-scope neba-demo-mount"
         :style="{ minHeight: reserve }"
       />
+      <div v-if="useFrame && !frameUrl" class="neba-demo-mount" :style="{ minHeight: reserve }" />
       <iframe
         v-if="useFrame && frameUrl"
         ref="frame"
