@@ -1,12 +1,4 @@
-import {
-  densityRow,
-  from,
-  renamed,
-  sizeRow,
-  variantRow,
-  WIDGET,
-  type PropRow
-} from './shared';
+import { densityRow, from, renamed, sizeRow, variantRow, WIDGET, type PropRow } from './shared';
 
 export default {
   Badge: [
