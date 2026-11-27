@@ -1,6 +1,7 @@
 ---
 title: Anchor
 order: 21
+flutter: true
 ---
 
 # Anchor
@@ -8,6 +9,8 @@ order: 21
 <p class="neba-lede">지금 읽고 있는 페이지의 제목 목록이고, 독자가 있는 위치가 표시됩니다. 진짜 fragment 링크라서 추적이 동작하든 말든 해당 제목으로 이동합니다.</p>
 
 <Demo src="anchor/hero" raw />
+
+::: fw react
 
 ```tsx
 import { Anchor } from 'neba';
@@ -20,11 +23,38 @@ import { Anchor } from 'neba';
 />;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+NebaAnchor(
+  items: <NebaAnchorItem>[
+    NebaAnchorItem(target: installKey, label: const Text('Install')),
+    NebaAnchorItem(target: setupKey, label: const Text('Setup'), depth: 1),
+  ],
+);
+```
+
+:::
+
 ## Props
 
 <PropsTable name="Anchor" />
 
+::: fw react
+
 `<nav>`의 모든 속성이 `color`와 `children`을 제외하고 그대로 전달됩니다.
+
+:::
+
+::: fw flutter
+
+제목은 `id`가 아니라 그 위젯의 `GlobalKey`로 가리키고, 목록은 제목들이 들어 있는 스크롤 뷰, 즉 그려진 첫 제목을 감싼 가장 가까운 스크롤 뷰를 따라갑니다. 행을 누르면 그 뷰를 스크롤합니다.
+
+:::
 
 ### AnchorItem
 
@@ -32,9 +62,9 @@ import { Anchor } from 'neba';
 
 ## 예시
 
-### activeHref와 onActiveChange
+### <Fw react="activeHref와" flutter="activeTarget과" /> onActiveChange
 
-그냥 두면 목록이 스크롤을 추적합니다. 표시되는 행은 상단선을 지나간 마지막 제목이며, 이 규칙은 아래로 내려갈 때만큼 위로 올라갈 때도 올바르게 읽힙니다. 스크롤이 맨 아래에 닿으면 마지막 제목이 표시됩니다. 스크롤할 것이 없는 페이지는 첫 제목에서 시작합니다. `activeHref`를 주면 어느 행을 표시할지 직접 정합니다. 추적은 계속되므로 `onActiveChange`는 여전히 독자가 있는 제목을 알려 주며, 보통 `activeHref`는 그 값으로 정합니다.
+그냥 두면 목록이 스크롤을 추적합니다. 표시되는 행은 상단선을 지나간 마지막 제목이며, 이 규칙은 아래로 내려갈 때만큼 위로 올라갈 때도 올바르게 읽힙니다. 스크롤이 맨 아래에 닿으면 마지막 제목이 표시됩니다. 스크롤할 것이 없는 페이지는 첫 제목에서 시작합니다. <Fw react="`activeHref`를" flutter="`activeTarget`을" /> 주면 어느 행을 표시할지 직접 정합니다. 추적은 계속되므로 `onActiveChange`는 여전히 독자가 있는 제목을 알려 주며, 보통 <Fw react="`activeHref`는" flutter="`activeTarget`은" /> 그 값으로 정합니다.
 
 첫 제목에 닿기 전, 즉 독자가 아직 그 위에 있는 동안에는 아무것도 표시되지 않습니다.
 
@@ -42,13 +72,33 @@ import { Anchor } from 'neba';
 
 scrollport 상단에서 얼마나 내려온 지점을 "제목에 도달했다"고 볼지 정합니다. sticky header의 높이를 넣으세요. 그러지 않으면 바에 가려진 제목이 표시되는 일이 없습니다.
 
+::: fw react
+
 문서 전체가 스크롤되는 페이지에서 행을 누르면 브라우저가 직접 제목으로 이동하고, 이때는 `offset`을 읽지 않습니다. 제목이 바 아래에 오게 하려면 페이지에 같은 높이의 `scroll-padding-top`을 주세요.
 
+:::
+
+::: fw flutter
+
+행을 누르면 제목이 뷰 상단에서 `offset`만큼 아래, 즉 고정된 바 밑에 오도록 그 뷰를 스크롤합니다.
+
+:::
+
 ### container
+
+::: fw react
 
 문서가 아닌 다른 것이 스크롤될 때 그 요소입니다. 예를 들어 `scroll="content"`인 [PageLayout](../layout/page-layout)이 페이지를 담는 요소입니다.
 
 `container`를 주면 행이 브라우저의 fragment 점프 대신 그 컨테이너를 직접 스크롤합니다. 브라우저에 맡기면 상자를 스크롤한 다음 그 상자를 보이게 하려고 페이지까지 스크롤하고, `offset`이 말하는 바 아래로 제목이 들어가 버립니다. URL의 fragment는 건드리지 않습니다. 호출자가 스크롤하는 상자 안의 제목은 호출자의 앱 어딘가에 있는 것이니까요. `container`가 없으면 클릭은 예전처럼 브라우저의 몫입니다.
+
+:::
+
+::: fw flutter
+
+`container`는 없습니다. 목록이 제목들의 key로 그것이 들어 있는 스크롤 뷰를 찾고, 행을 누르면 그 뷰를 스크롤합니다. 지연 생성되는 목록에서 아직 그려지지 않은 제목은 잴 위치가 없어서, 그려질 때까지 표시되지 않습니다.
+
+:::
 
 ### rail
 
@@ -56,7 +106,17 @@ scrollport 상단에서 얼마나 내려온 지점을 "제목에 도달했다"�
 
 <Demo src="anchor/rail">
 
+::: fw react
+
 <<< @/.vitepress/demos/anchor/rail.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/anchor/rail.dart
+
+:::
 
 </Demo>
 
@@ -64,13 +124,35 @@ scrollport 상단에서 얼마나 내려온 지점을 "제목에 도달했다"�
 
 <Demo src="anchor/sizes">
 
+::: fw react
+
 <<< @/.vitepress/demos/anchor/sizes.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/anchor/sizes.dart
+
+:::
 
 </Demo>
 
 ## 접근성
 
+::: fw react
+
 - 진짜 `<a href="#…">`로 이루어진 진짜 `<nav>`입니다. JavaScript가 꺼져 있어도 동작하고, 스크린 리더가 불러오는 링크 목록에 들어갑니다.
 - 표시된 행에는 `aria-current="location"`이 붙습니다. 링크 묶음 안에서 독자가 있는 위치를 뜻하는 값입니다.
 - `<nav>`의 이름은 `locale`이나 `label`에서 옵니다.
 - `id`가 없는 제목은 추적할 수 없고, 그 행은 아무 데도 가지 않는 링크가 됩니다.
+
+:::
+
+::: fw flutter
+
+- 목록은 `locale`의 언어로 쓴 기본 이름(한국어로는 "이 페이지의 내용"), 또는 `semanticLabel`을 이름으로 가진 하나의 노드이고, 행마다 링크가 하나씩 들어 있습니다.
+- 표시된 행은 선택된 상태가 됩니다. Flutter semantics에서 `aria-current="location"`에 가장 가까운 표현입니다.
+- 어떤 위젯에도 붙지 않은 key의 제목은 추적할 수 없고, 그 행은 아무 데도 스크롤하지 않습니다.
+
+:::

@@ -15,6 +15,9 @@ import 'package:neba_example/demos/alert/dismissing.dart';
 import 'package:neba_example/demos/alert/hero.dart';
 import 'package:neba_example/demos/alert/shapes.dart';
 import 'package:neba_example/demos/alert/variants.dart';
+import 'package:neba_example/demos/anchor/hero.dart';
+import 'package:neba_example/demos/anchor/rail.dart';
+import 'package:neba_example/demos/anchor/sizes.dart';
 import 'package:neba_example/demos/app_logo/artwork.dart';
 import 'package:neba_example/demos/app_logo/hero.dart';
 import 'package:neba_example/demos/app_logo/link.dart';
@@ -236,6 +239,9 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'alert/hero': AlertHero.new,
   'alert/shapes': AlertShapes.new,
   'alert/variants': AlertVariants.new,
+  'anchor/hero': AnchorHero.new,
+  'anchor/rail': AnchorRail.new,
+  'anchor/sizes': AnchorSizes.new,
   'app-logo/artwork': AppLogoArtwork.new,
   'app-logo/hero': AppLogoHero.new,
   'app-logo/link': AppLogoLink.new,
