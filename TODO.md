@@ -202,7 +202,7 @@ Demos that wait on a component not ported yet, to be added with it: `carousel/ph
 - [ ] `NebaDateRangePicker`
 - [x] `NebaBottomNavigation`
 - [ ] `NebaFloatingBottomNavigation`
-- [ ] `NebaFloatingActionButton`
+- [x] `NebaFloatingActionButton`
 
 ### Feedback (14)
 

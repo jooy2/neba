@@ -152,6 +152,11 @@ import 'package:neba_example/demos/flex/alignment.dart';
 import 'package:neba_example/demos/flex/direction.dart';
 import 'package:neba_example/demos/flex/hero.dart';
 import 'package:neba_example/demos/flex/spacing.dart';
+import 'package:neba_example/demos/floating_action_button/appearance.dart';
+import 'package:neba_example/demos/floating_action_button/corners.dart';
+import 'package:neba_example/demos/floating_action_button/dial.dart';
+import 'package:neba_example/demos/floating_action_button/extended.dart';
+import 'package:neba_example/demos/floating_action_button/hero.dart';
 import 'package:neba_example/demos/footer/hero.dart';
 import 'package:neba_example/demos/footer/measure.dart';
 import 'package:neba_example/demos/footer/variant.dart';
@@ -532,6 +537,11 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'flex/direction': FlexDirection.new,
   'flex/hero': FlexHero.new,
   'flex/spacing': FlexSpacing.new,
+  'floating-action-button/appearance': FloatingActionButtonAppearance.new,
+  'floating-action-button/corners': FloatingActionButtonCorners.new,
+  'floating-action-button/dial': FloatingActionButtonDial.new,
+  'floating-action-button/extended': FloatingActionButtonExtended.new,
+  'floating-action-button/hero': FloatingActionButtonHero.new,
   'footer/hero': FooterHero.new,
   'footer/measure': FooterMeasure.new,
   'footer/variant': FooterVariant.new,

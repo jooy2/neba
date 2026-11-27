@@ -1,6 +1,7 @@
 ---
 title: FloatingActionButton
 order: 23
+flutter: true
 ---
 
 # FloatingActionButton
@@ -9,11 +10,30 @@ order: 23
 
 <Demo src="floating-action-button/hero" minHeight="220" />
 
+::: fw react
+
 ```tsx
 import { FloatingActionButton } from 'neba';
 
 <FloatingActionButton icon={<PencilIcon />} label="새 글" onClick={compose} />;
 ```
+
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+Stack(
+  children: <Widget>[
+    page,
+    NebaFloatingActionButton(icon: pencilIcon, label: '새 글', onPressed: compose),
+  ],
+);
+```
+
+:::
 
 ## Props
 
@@ -21,7 +41,17 @@ import { FloatingActionButton } from 'neba';
 
 <PropsTable name="FloatingAction" />
 
+::: fw react
+
 나머지 `<div>` 속성은 루트로, 나머지 `<button>` 속성은 각 액션으로 전달됩니다. `onClick`, `className`, `style`은 버튼 자신의 것이고, `style`을 줘도 버튼의 둥근 모서리는 유지됩니다. 모서리에 고정된 상자의 클래스는 `classNames.frame`으로 넘깁니다.
+
+:::
+
+::: fw flutter
+
+액션은 `NebaFloatingAction`의 목록인 `children`입니다. `onPressed`도 액션도 없으면 모든 Flutter 버튼처럼 비활성이고, 액션이 있으면 누름이 다이얼을 여므로 `onPressed`는 넘기지 않아도 됩니다. Flutter 버튼에는 받을 클래스가 없으므로 `classNames`는 없습니다.
+
+:::
 
 공통 축(`variant` `size` `color` `density` `elevation` `corner`)의 의미는 [Prop 규약](../../design/prop-conventions)에 있습니다.
 
@@ -29,13 +59,23 @@ import { FloatingActionButton } from 'neba';
 
 ### 액션 펼치기
 
-자식으로 `FloatingAction`을 넣으면 버튼은 다이얼이 됩니다. 누르거나 마우스를 올리면 액션들이 펼쳐지고, 글리프는 ×로 바뀝니다. 각 액션의 이름은 옆의 로젠지에 그려집니다.
+<Fw react="자식으로 `FloatingAction`을" flutter="`children`으로 `NebaFloatingAction`을" /> 넣으면 버튼은 다이얼이 됩니다. 누르거나 마우스를 올리면 액션들이 펼쳐지고, 글리프는 ×로 바뀝니다. 각 액션의 이름은 옆의 로젠지에 그려집니다.
 
 `closeOnAction`은 액션을 누른 뒤 다이얼을 닫을지, `showLabels`는 이름을 그릴지, `openOnHover`는 마우스가 머무를 때 열지를 정합니다.
 
 <Demo src="floating-action-button/dial" minHeight="300">
 
+::: fw react
+
 <<< @/.vitepress/demos/floating-action-button/dial.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/floating_action_button/dial.dart
+
+:::
 
 </Demo>
 
@@ -45,19 +85,51 @@ import { FloatingActionButton } from 'neba';
 
 <Demo src="floating-action-button/extended" minHeight="120">
 
+::: fw react
+
 <<< @/.vitepress/demos/floating-action-button/extended.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/floating_action_button/extended.dart
+
+:::
 
 </Demo>
 
 ### position, corner, offset
 
+::: fw react
+
 `position`은 기본이 `fixed`로 창의 모서리에 고정합니다. `absolute`는 가장 가까운 positioned 조상의 모서리에 고정하므로 카드나 지도, Mockup의 화면 안에 넣을 때 쓰고, `static`은 흐름 안으로 되돌립니다.
+
+:::
+
+::: fw flutter
+
+Flutter에는 창을 기준으로 고정하는 배치가 없습니다. Flutter의 화면은 `Stack`이고, Material `Scaffold`도 자기 floating 버튼을 본문 위의 `Stack`에 얹습니다. 그래서 `position`이 `static`이 아니면 버튼은 받은 공간 전체를 차지하고 그 모서리에 앉습니다. 버튼이 떠 있을 화면이나 영역 위의 `Stack`에 넣으세요. 버튼 옆을 누르면 아래에 있는 것이 그대로 눌립니다. overlay에는 넣지 않습니다. 거기에 두면 다음 route 위에도, 화면이 연 dialog 위에도 남기 때문입니다.
+
+기본값인 `fixed`와 `sticky`는 모서리가 닿은 두 가장자리의 시스템 inset, 곧 휴대폰의 홈 인디케이터와 가로로 들었을 때의 노치를 피합니다. `absolute`는 카드나 지도, 미리보기처럼 화면 가장자리에 닿지 않는 영역용이라 inset을 더하지 않습니다. `static`은 버튼만 남겨 줄이나 toolbar에 넣을 때, 그리고 `Scaffold`의 `floatingActionButton`처럼 위치를 스스로 정하는 자리에 넣을 때 씁니다.
+
+:::
 
 `corner`는 네 모서리 중 하나, `offset`은 양쪽 가장자리에서의 거리입니다. 액션이 펼쳐지는 방향은 `corner`에서 따라오며 `direction`으로 뒤집을 수 있습니다.
 
 <Demo src="floating-action-button/corners" minHeight="340">
 
+::: fw react
+
 <<< @/.vitepress/demos/floating-action-button/corners.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/floating_action_button/corners.dart
+
+:::
 
 </Demo>
 
@@ -67,13 +139,25 @@ import { FloatingActionButton } from 'neba';
 
 <Demo src="floating-action-button/appearance" minHeight="260">
 
+::: fw react
+
 <<< @/.vitepress/demos/floating-action-button/appearance.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/floating_action_button/appearance.dart
+
+:::
 
 </Demo>
 
 ### 제어하기
 
 `open`을 넘기면 다이얼은 자체 상태를 갖지 않습니다.
+
+::: fw react
 
 ```tsx
 const [open, setOpen] = useState(false);
@@ -83,10 +167,41 @@ const [open, setOpen] = useState(false);
 </FloatingActionButton>;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+NebaFloatingActionButton(
+  label: '공유',
+  open: open,
+  onOpenChange: (bool next) => setState(() => open = next),
+  children: const <NebaFloatingAction>[
+    NebaFloatingAction(icon: linkIcon, label: '링크 복사'),
+  ],
+);
+```
+
+:::
+
 ## 접근성
+
+::: fw react
 
 - `label`은 필수입니다. 그림만으로 된 버튼은 접근성 이름이 아예 없습니다.
 - 액션이 있으면 버튼에 `aria-expanded`와, 펼쳐진 묶음을 가리키는 `aria-controls`가 붙습니다. `role="menu"`는 아닙니다. 메뉴는 세트 전체에 tab 정지점 하나와 방향키 이동, typeahead를 약속하고, 그것이 필요하면 [Menu](./menu)가 그것입니다.
 - 액션들은 버튼 바로 다음 순서의 평범한 버튼이므로 tab으로 닿습니다.
 - Escape는 다이얼을 닫고 focus를 버튼으로 되돌립니다. 바깥을 누르면 닫힙니다.
 - 액션 옆 로젠지는 `aria-hidden`입니다. 같은 문자열이 이미 버튼의 이름이므로 두 번 읽히지 않게 합니다.
+
+:::
+
+::: fw flutter
+
+- `label`은 필수입니다. 그림만으로 된 버튼은 이름이 아예 없습니다.
+- 액션이 있으면 screen reader가 버튼이 펼쳐졌는지를 듣습니다. 메뉴는 아닙니다. 메뉴는 세트 전체에 focus 정지점 하나와 방향키 이동, typeahead를 약속하고, 그것이 필요하면 [Menu](./menu)가 그것입니다.
+- 액션들은 다이얼이 어느 쪽으로 펼쳐지든 버튼 바로 다음 focus 순서에 오는 평범한 버튼입니다.
+- Escape는 focus가 어디에 있든 다이얼을 닫고, focus가 버튼이나 액션에 있었으면 버튼으로 되돌립니다. 바깥을 눌러도 닫히고, 액션을 눌러도 닫히며, 그 액션이 focus를 갖고 있었으면 focus는 버튼으로 돌아갑니다.
+- 액션 옆 로젠지는 읽히지 않습니다. 같은 말이 이미 액션의 이름이므로 두 번 읽히지 않게 합니다.
+
+:::

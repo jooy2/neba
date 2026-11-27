@@ -52,6 +52,7 @@ export 'src/components/divider/neba_divider.dart';
 export 'src/components/drawer/neba_drawer.dart';
 export 'src/components/empty/neba_empty.dart';
 export 'src/components/flex/neba_flex.dart';
+export 'src/components/floating_action_button/neba_floating_action_button.dart';
 export 'src/components/footer/neba_footer.dart';
 export 'src/components/grid/neba_grid.dart';
 export 'src/components/grid_container/neba_grid_container.dart';
