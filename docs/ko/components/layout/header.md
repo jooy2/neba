@@ -52,7 +52,7 @@ NebaHeader(
 
 ::: fw flutter
 
-세 자리는 목록이며 각각 하나의 줄로 놓이므로, 로고와 이름이나 버튼 두 개를 따로 감쌀 필요가 없습니다. `maxWidth`는 사다리의 한 단계나 직접 준 폭인 `NebaMeasure`를 받고, breakpoint별 map은 받지 않습니다. 공통 축은 [prop 규칙](../../design/prop-conventions)에서 설명합니다.
+세 자리는 목록이며 각각 하나의 줄로 놓이므로, 로고와 이름이나 버튼 두 개를 따로 감쌀 필요가 없습니다. 창 폭 때문에 숨은 [Show](./show)와 열어 줄 drawer가 없는 [SidebarTrigger](./sidebar#sidebartrigger)는 `display: none`이 flex 줄에서 요소를 빼듯 자리에서 간격째 빠집니다. `maxWidth`는 사다리의 한 단계나 직접 준 폭인 `NebaMeasure`를 받고, breakpoint별 map은 받지 않습니다. 공통 축은 [prop 규칙](../../design/prop-conventions)에서 설명합니다.
 
 혼자서도 다른 상자처럼 바로 동작합니다. [PageLayout](./page-layout)의 `header`로 넘기면 페이지가 스크롤되는 동안 레이아웃이 위에 붙잡아 두는 바가 되고, 자리를 지키는 [Sidebar](./sidebar)는 그 아래에서 시작합니다. React 패키지에는 없는 `safeArea`는 시트를 상태 표시줄과 노치 아래까지 깔아 둔 채 그 위의 내용만 비켜 세웁니다. inset을 어떻게 나누는지는 PageLayout의 Safe area 절에 있습니다.
 

@@ -5,6 +5,7 @@ import 'package:flutter/semantics.dart';
 import 'package:flutter/widgets.dart';
 
 import 'package:neba/src/components/box/neba_box.dart';
+import 'package:neba/src/internal/breakpoint.dart';
 import 'package:neba/src/internal/page_layout.dart';
 import 'package:neba/src/theme/theme.dart';
 import 'package:neba/src/theme/tokens.dart';
@@ -15,7 +16,9 @@ import 'package:neba/src/types.dart';
 ///
 /// Each slot is a row of its own, so a logo and a name, or a pair of buttons,
 /// need no wrapper; the three are spaced about twice as far apart as what is
-/// inside one, so each reads as a region. A slot given nothing builds nothing.
+/// inside one, so each reads as a region. A slot given nothing builds nothing,
+/// and a `NebaShow` the window's width hides, or a `NebaSidebarTrigger` with
+/// no drawer to open, is left out of its slot, gap and all.
 ///
 /// The sheet spans the width it is given and carries a hairline along its
 /// bottom edge, against the content passing under it. On a phone it keeps
@@ -152,12 +155,16 @@ class NebaHeader extends StatelessWidget {
     final double slotGap = slotGaps[size]!;
     final EdgeInsets screen = safeArea ? MediaQuery.paddingOf(context) : EdgeInsets.zero;
 
+    // A child the window's width hides, a `NebaShow` or a `NebaSidebarTrigger`
+    // with no drawer to open, is left out of its slot, gap and all, as CSS
+    // leaves out `display: none`. The slot itself is still there, as the
+    // React package's wrapper is.
     Widget slot(List<Widget> items, MainAxisAlignment alignment) {
       return Row(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: alignment,
         spacing: slotGap,
-        children: items,
+        children: nebaPresentChildren(context, items),
       );
     }
 
@@ -187,7 +194,7 @@ class NebaHeader extends StatelessWidget {
                       ? MainAxisAlignment.end
                       : MainAxisAlignment.start,
                   spacing: slotGap,
-                  children: children,
+                  children: nebaPresentChildren(context, children),
                 ),
               ),
       if (actions.isNotEmpty)

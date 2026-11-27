@@ -52,7 +52,7 @@ It works on its own. Inside a [PageLayout](./page-layout) it also registers itse
 
 ::: fw flutter
 
-The three slots are lists, each laid out as a row of its own, so a logo and a name or a pair of buttons need no wrapper. `maxWidth` takes a `NebaMeasure`, a step of the ladder or a width of your own, and no per-breakpoint map. The shared axes are described under [prop conventions](../../design/prop-conventions).
+The three slots are lists, each laid out as a row of its own, so a logo and a name or a pair of buttons need no wrapper. A [Show](./show) the window's width hides and a [SidebarTrigger](./sidebar#sidebartrigger) with no drawer to open are left out of their slot, gap and all, as `display: none` leaves an element out of a flex row. `maxWidth` takes a `NebaMeasure`, a step of the ladder or a width of your own, and no per-breakpoint map. The shared axes are described under [prop conventions](../../design/prop-conventions).
 
 It works on its own, as a bar like any other box. As the `header` of a [PageLayout](./page-layout) it is the bar the layout holds at the top while the page scrolls, and a [Sidebar](./sidebar) that holds its place starts under it. `safeArea`, which the React package does not have, keeps what is on the bar clear of the status bar and a notch, with the sheet running under them; the layout's Safe areas section says how the insets are shared out.
 

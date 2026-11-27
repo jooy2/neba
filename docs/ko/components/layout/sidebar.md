@@ -73,7 +73,7 @@ NebaSidebar(label: '목차', child: navigation);
 
 ::: fw flutter
 
-[IconButton](../inputs/icon-button)이며, `onPressed`는 누름이 drawer를 열거나 닫은 뒤에 호출됩니다. 열 대상이 있으려면 PageLayout 안에 있어야 하며, 밖에서는 아무것도 빌드하지 않고 안에서도 breakpoint 이상에서는 아무것도 빌드하지 않습니다.
+[IconButton](../inputs/icon-button)이며, `onPressed`는 누름이 drawer를 열거나 닫은 뒤에 호출됩니다. 열 대상이 있으려면 PageLayout 안에 있어야 하며, 밖에서는 아무것도 빌드하지 않고 안에서도 breakpoint 이상에서는 아무것도 빌드하지 않습니다. 이때 [Header](./header)는 이 버튼을 자리에서 간격째 뺍니다.
 
 :::
 

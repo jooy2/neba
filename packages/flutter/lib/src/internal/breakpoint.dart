@@ -24,8 +24,12 @@ bool nebaShownAt(double width, {NebaBreakpoint? above, NebaBreakpoint? below}) {
 
 /// A widget whose children are there at some window widths and not at others.
 abstract interface class NebaWidthGate {
-  /// Whether the widget is shown at a window [width].
-  bool shownAt(double width);
+  /// Whether the widget is shown in the window [context] is laid out in.
+  ///
+  /// [context] is the container's, which sees the same window and the same
+  /// inherited widgets the gate's own would: a gate whose breakpoint is a
+  /// layout's, as a sidebar trigger's is, reads it there.
+  bool shownIn(BuildContext context);
 }
 
 /// [children] without the ones a [NebaWidthGate] hides at the window's width.
@@ -38,10 +42,8 @@ List<Widget> nebaPresentChildren(BuildContext context, List<Widget> children) {
     return children;
   }
 
-  final double width = MediaQuery.sizeOf(context).width;
-
   return <Widget>[
     for (final Widget child in children)
-      if (child is! NebaWidthGate || (child as NebaWidthGate).shownAt(width)) child,
+      if (child is! NebaWidthGate || (child as NebaWidthGate).shownIn(context)) child,
   ];
 }

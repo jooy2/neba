@@ -110,7 +110,7 @@ NebaShow(above: NebaBreakpoint.md, child: sidebar);
 
 ::: fw flutter
 
-보이는 NebaShow는 자식을 그 자리에서 바로 빌드하고 사이에 아무것도 두지 않습니다. 그래서 [GridContainer](./grid)와 [Grid](./grid) 사이의 NebaShow는 셀을 셀로 남겨 둡니다. 숨겨져 있는 동안에는 `NebaFlex`와 `NebaGridContainer`가 아예 빼고 배치하므로 셀도 간격도 차지하지 않습니다. Flutter의 `Row`와 `Column`은 그 빈 상자에도 다른 자식처럼 간격을 줍니다.
+보이는 NebaShow는 자식을 그 자리에서 바로 빌드하고 사이에 아무것도 두지 않습니다. 그래서 [GridContainer](./grid)와 [Grid](./grid) 사이의 NebaShow는 셀을 셀로 남겨 둡니다. 숨겨져 있는 동안에는 `NebaFlex`, `NebaGridContainer`, [Header](./header)의 슬롯이 아예 빼고 배치하므로 셀도 간격도 차지하지 않습니다. Flutter의 `Row`와 `Column`은 그 빈 상자에도 다른 자식처럼 간격을 줍니다.
 
 :::
 

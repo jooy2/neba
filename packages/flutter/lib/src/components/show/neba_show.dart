@@ -20,8 +20,8 @@ import 'package:neba/src/types.dart';
 /// that fetches or starts something does not run, and one that crosses the
 /// breakpoint is built afresh. A shown one is built where the `NebaShow` is,
 /// with nothing in between, so a `NebaShow` around a `NebaGrid` leaves the
-/// cell a cell; `NebaFlex` and `NebaGridContainer` leave a hidden one out
-/// entirely, gap and all.
+/// cell a cell; `NebaFlex`, `NebaGridContainer` and a `NebaHeader`'s slots
+/// leave a hidden one out entirely, gap and all.
 ///
 /// ```dart
 /// NebaShow(above: NebaBreakpoint.md, child: sidebar)
@@ -42,11 +42,14 @@ class NebaShow extends StatelessWidget implements NebaWidthGate {
   final Widget child;
 
   /// Whether [child] is shown in a window [width] logical pixels wide.
-  @override
   bool shownAt(double width) => nebaShownAt(width, above: above, below: below);
+
+  /// Whether [child] is shown in the window [context] is laid out in.
+  @override
+  bool shownIn(BuildContext context) => shownAt(MediaQuery.sizeOf(context).width);
 
   @override
   Widget build(BuildContext context) {
-    return shownAt(MediaQuery.sizeOf(context).width) ? child : const SizedBox.shrink();
+    return shownIn(context) ? child : const SizedBox.shrink();
   }
 }

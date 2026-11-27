@@ -73,7 +73,7 @@ Everything else an [IconButton](../inputs/icon-button) takes passes through. It 
 
 ::: fw flutter
 
-It is an [IconButton](../inputs/icon-button), and `onPressed` is called after the press has opened or closed the drawer. It has to be inside a PageLayout to have something to open; outside one it builds nothing, and inside one it builds nothing at and above the breakpoint.
+It is an [IconButton](../inputs/icon-button), and `onPressed` is called after the press has opened or closed the drawer. It has to be inside a PageLayout to have something to open; outside one it builds nothing, and inside one it builds nothing at and above the breakpoint, where a [Header](./header) leaves it out of its slot, gap and all.
 
 :::
 

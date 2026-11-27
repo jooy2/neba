@@ -55,6 +55,78 @@ void main() {
       expect(find.byType(Row), findsNWidgets(2));
     });
 
+    testWidgets('leaves a hidden NebaShow out of its slot, gap and all', (
+      WidgetTester tester,
+    ) async {
+      await pump(
+        tester,
+        const NebaHeader(
+          brand: <Widget>[
+            NebaShow(below: NebaBreakpoint.sm, child: Text('Menu')),
+            Text('Neba'),
+          ],
+          actions: <Widget>[
+            Text('Sign in'),
+            NebaShow(below: NebaBreakpoint.sm, child: Text('More')),
+          ],
+          children: <Widget>[
+            NebaShow(below: NebaBreakpoint.sm, child: Text('Home')),
+            Text('Docs'),
+          ],
+        ),
+      );
+
+      // At 800 pixels each hidden child is gone, and so is the gap beside it:
+      // the name starts at the gutter and the sign-in ends at it.
+      expect(find.text('Menu'), findsNothing);
+      expect(rectOf(tester, 'Neba').left, 16);
+      expect(rectOf(tester, 'Docs').left - rectOf(tester, 'Neba').right, 24);
+      expect(rectOf(tester, 'Sign in').right, 800 - 16);
+    });
+
+    testWidgets('leaves a sidebar trigger with no drawer to open out of its slot', (
+      WidgetTester tester,
+    ) async {
+      Future<void> pumpAt(double width) {
+        tester.view
+          ..physicalSize = Size(width, 600)
+          ..devicePixelRatio = 1;
+        addTearDown(tester.view.reset);
+
+        return tester.pumpWidget(
+          MediaQuery(
+            data: MediaQueryData(size: Size(width, 600)),
+            child: Directionality(
+              textDirection: TextDirection.ltr,
+              // The drawer the sidebar becomes opens into an overlay.
+              child: Overlay.wrap(
+                child: const NebaPageLayout(
+                  header: NebaHeader(brand: <Widget>[NebaSidebarTrigger(), Text('Neba')]),
+                  sidebar: NebaSidebar(child: Text('Nav')),
+                  child: Text('Page'),
+                ),
+              ),
+            ),
+          ),
+        );
+      }
+
+      // A column: the trigger builds nothing and takes no gap ahead of the
+      // name, which starts at the gutter.
+      await pumpAt(1024);
+
+      expect(find.byType(NebaIconButton), findsNothing);
+      expect(rectOf(tester, 'Neba').left, 16);
+
+      // A drawer: the trigger is there, a slot's gap ahead of the name.
+      await pumpAt(600);
+
+      final Rect trigger = tester.getRect(find.byType(NebaIconButton));
+
+      expect(trigger.left, 16);
+      expect(rectOf(tester, 'Neba').left - trigger.right, 12);
+    });
+
     testWidgets('spans the width it is given, on its height floor', (WidgetTester tester) async {
       await pump(tester, const NebaHeader(brand: <Widget>[Text('Neba')]));
 

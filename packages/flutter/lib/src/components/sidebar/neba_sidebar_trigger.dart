@@ -4,6 +4,7 @@ library;
 import 'package:flutter/widgets.dart';
 
 import 'package:neba/src/components/icon_button/neba_icon_button.dart';
+import 'package:neba/src/internal/breakpoint.dart';
 import 'package:neba/src/internal/glyphs.dart';
 import 'package:neba/src/internal/messages.dart';
 import 'package:neba/src/internal/page_layout.dart';
@@ -15,14 +16,15 @@ import 'package:neba/src/types.dart';
 ///
 /// It is there exactly while the sidebar is not: below the `NebaPageLayout`'s
 /// `collapseBelow`, and nothing at and above it. Put it in a `NebaHeader`'s
-/// `brand`, ahead of the logo, which is where readers look for it. Outside a
+/// `brand`, ahead of the logo, which is where readers look for it; while it
+/// is not there, the header leaves it out of the slot, gap and all. Outside a
 /// layout there is no sidebar it could be talking about, and it builds
 /// nothing.
 ///
 /// ```dart
 /// NebaHeader(brand: const <Widget>[NebaSidebarTrigger(), Text('Neba')])
 /// ```
-class NebaSidebarTrigger extends StatelessWidget {
+class NebaSidebarTrigger extends StatelessWidget implements NebaWidthGate {
   /// A button that opens and closes a layout's sidebar.
   const NebaSidebarTrigger({
     this.side = NebaSidebarSide.start,
@@ -90,11 +92,20 @@ class NebaSidebarTrigger extends StatelessWidget {
     ),
   ];
 
+  /// Whether it is there in the window [context] is laid out in: inside a
+  /// `NebaPageLayout` whose sidebar is a drawer at that width.
+  @override
+  bool shownIn(BuildContext context) {
+    final NebaPageLayoutScope? layout = NebaPageLayoutScope.maybeOf(context);
+
+    return layout != null && nebaCollapsed(context, collapseBelow ?? layout.collapseBelow);
+  }
+
   @override
   Widget build(BuildContext context) {
     final NebaPageLayoutScope? layout = NebaPageLayoutScope.maybeOf(context);
 
-    if (layout == null || !nebaCollapsed(context, collapseBelow ?? layout.collapseBelow)) {
+    if (layout == null || !shownIn(context)) {
       return const SizedBox.shrink();
     }
 

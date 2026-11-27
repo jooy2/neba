@@ -110,7 +110,7 @@ Without `render` the wrapper is `display: contents`, so a `Show` between a [Grid
 
 ::: fw flutter
 
-A shown NebaShow builds its child where it stands, with nothing in between, so one between a [GridContainer](./grid) and a [Grid](./grid) leaves the cell a cell. While it is hidden, `NebaFlex` and `NebaGridContainer` leave it out entirely, so it takes no cell and no gap; Flutter's own `Row` and `Column` give its empty box a gap like any other child.
+A shown NebaShow builds its child where it stands, with nothing in between, so one between a [GridContainer](./grid) and a [Grid](./grid) leaves the cell a cell. While it is hidden, `NebaFlex`, `NebaGridContainer` and the slots of a [Header](./header) leave it out entirely, so it takes no cell and no gap; Flutter's own `Row` and `Column` give its empty box a gap like any other child.
 
 :::
 
