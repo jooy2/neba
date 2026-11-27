@@ -104,6 +104,12 @@ const NebaSkeleton(lines: 3);
 
 :::
 
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/skeleton/swapping.dart
+
+:::
+
 </Demo>
 
 ### animated

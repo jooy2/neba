@@ -1,6 +1,7 @@
 ---
 title: Statistic
 order: 8
+flutter: true
 ---
 
 # Statistic
@@ -9,17 +10,46 @@ order: 8
 
 <Demo src="statistic/hero" />
 
+::: fw react
+
 ```tsx
 import { Statistic } from 'neba';
 
 <Statistic label="Monthly recurring revenue" value={48210} prefix="$" previousValue={42800} />;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+const NebaStatistic(
+  label: Text('Monthly recurring revenue'),
+  value: 48210,
+  prefix: Text(r'$'),
+  previousValue: 42800,
+);
+```
+
+:::
+
 ## Props
 
 <PropsTable name="Statistic" />
 
+::: fw react
+
 Every native `<div>` attribute passes through, along with every [Box](../surfaces/box) prop. The delta renders as a [Chip](../display/chip).
+
+:::
+
+::: fw flutter
+
+The sheet is a [Box](../surfaces/box), and its `variant`, `size`, `color`, `density`, `elevation`, `padded` and `transition` are passed to it. The delta renders as a [Chip](../display/chip). `label`, `prefix`, `unit`, `icon` and `caption` are widgets, usually a `Text`.
+
+:::
 
 ## Examples
 
@@ -31,7 +61,17 @@ Pass `previousValue` and the change against the current value is calculated and 
 
 <Demo src="statistic/comparison">
 
+::: fw react
+
 <<< @/.vitepress/demos/statistic/comparison.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/statistic/comparison.dart
+
+:::
 
 </Demo>
 
@@ -39,17 +79,29 @@ The delta changes shape as well as colour: a rising arrow, a falling one, a shor
 
 ### icon · unit · caption · align
 
-`icon` sits before the label and `unit` after the figure. `children` is the slot under the figure, for a [ProgressLinear](../feedback/progress-linear) against a target or a [Sparkline](./sparkline). `align="center"` is for a row of tiles laid out as one band.
+`icon` sits before the label and `unit` after the figure. <Fw react="`children`" flutter="`child`" /> is the slot under the figure, for a [ProgressLinear](../feedback/progress-linear) against a target or a [Sparkline](./sparkline). <Fw react='align="center"' flutter="align: NebaAlign.center" code /> is for a row of tiles laid out as one band.
 
 `prefix` and `unit` are separate props because they are typographically different: a currency symbol leads its number, a unit follows it.
 
 <Demo src="statistic/anatomy">
 
+::: fw react
+
 <<< @/.vitepress/demos/statistic/anatomy.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/statistic/anatomy.dart
+
+:::
 
 </Demo>
 
 ### format
+
+::: fw react
 
 `format` is passed straight through as `Intl.NumberFormat` options. Without it a number is only digit-grouped for the reader's locale. A string `value` is printed unformatted, so figures that are not numbers still work.
 
@@ -59,12 +111,35 @@ The delta changes shape as well as colour: a rising arrow, a falling one, a shor
 <Statistic label="Median build" value="3m 12s" />
 ```
 
+:::
+
+::: fw flutter
+
+`format` is a function that writes a number, and it writes the figure and an absolute change alike. Without it a number is digit-grouped by threes with a comma and has at most three digits after the point; the widgets layer has no `intl`, so a currency or another language's separators are the function's. A `String` or a widget `value` is drawn as it is and never compared, so figures that are not numbers still work.
+
+```dart
+NebaStatistic(label: const Text('Conversion'), value: 0.0423, format: (num v) => '${(v * 100).toStringAsFixed(1)}%');
+const NebaStatistic(label: Text('Median build'), value: '3m 12s');
+```
+
+:::
+
 A `previousValue` of `0` makes the proportion undefined, so the absolute difference is shown regardless of the `delta` setting.
 
 ### locale
+
+::: fw react
 
 `locale` decides which language the figure and its delta are written in. It is the same prop every chart takes, so one dashboard can set the same value on a Statistic and on the [LineChart](./line-chart) beside it. Without it the reader's own locale is used.
 
 ```tsx
 <Statistic label="Revenue" value={1234.5} locale="de-DE" format={{ minimumFractionDigits: 1 }} />
 ```
+
+:::
+
+::: fw flutter
+
+There is no `locale`: the default figure is written the same in every language, and a figure in another language is written by `format`, in whatever language the app chooses.
+
+:::

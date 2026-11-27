@@ -133,6 +133,38 @@ abstract final class NebaGlyphs {
     ),
   ];
 
+  /// A line climbing to the end, with its arrowhead: a figure that went up.
+  static final List<NebaGlyphPart> trendUp = <NebaGlyphPart>[
+    const NebaGlyphPart.stroke(
+      'M3 11 6.5 7.5 9 10l4-4',
+      width: 1.75,
+      cap: StrokeCap.round,
+      join: StrokeJoin.round,
+    ),
+    const NebaGlyphPart.stroke(
+      'M9.5 6h3.5v3.5',
+      width: 1.75,
+      cap: StrokeCap.round,
+      join: StrokeJoin.round,
+    ),
+  ];
+
+  /// A line falling to the end, with its arrowhead: a figure that went down.
+  static final List<NebaGlyphPart> trendDown = <NebaGlyphPart>[
+    const NebaGlyphPart.stroke(
+      'M3 5 6.5 8.5 9 6l4 4',
+      width: 1.75,
+      cap: StrokeCap.round,
+      join: StrokeJoin.round,
+    ),
+    const NebaGlyphPart.stroke(
+      'M9.5 10h3.5V6.5',
+      width: 1.75,
+      cap: StrokeCap.round,
+      join: StrokeJoin.round,
+    ),
+  ];
+
   /// The neutral severity: a note.
   static final List<NebaGlyphPart> note = <NebaGlyphPart>[
     NebaGlyphPart.stroke(_circle(8, 8, 6.25)),

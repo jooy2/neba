@@ -104,6 +104,12 @@ The three shapes are the three things a layout is made of. `line` is a run of te
 
 :::
 
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/skeleton/swapping.dart
+
+:::
+
 </Demo>
 
 ### animated

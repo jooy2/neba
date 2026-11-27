@@ -163,10 +163,14 @@ import 'package:neba_example/demos/show/transparent.dart';
 import 'package:neba_example/demos/skeleton/hero.dart';
 import 'package:neba_example/demos/skeleton/lines.dart';
 import 'package:neba_example/demos/skeleton/shapes.dart';
+import 'package:neba_example/demos/skeleton/swapping.dart';
 import 'package:neba_example/demos/stack/dealt.dart';
 import 'package:neba_example/demos/stack/depth.dart';
 import 'package:neba_example/demos/stack/direction.dart';
 import 'package:neba_example/demos/stack/hero.dart';
+import 'package:neba_example/demos/statistic/anatomy.dart';
+import 'package:neba_example/demos/statistic/comparison.dart';
+import 'package:neba_example/demos/statistic/hero.dart';
 import 'package:neba_example/demos/switch/hero.dart';
 import 'package:neba_example/demos/switch/placement.dart';
 import 'package:neba_example/demos/switch/sizes.dart';
@@ -370,10 +374,14 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'skeleton/hero': SkeletonHero.new,
   'skeleton/lines': SkeletonLines.new,
   'skeleton/shapes': SkeletonShapes.new,
+  'skeleton/swapping': SkeletonSwapping.new,
   'stack/dealt': StackDealt.new,
   'stack/depth': StackDepth.new,
   'stack/direction': StackDirection.new,
   'stack/hero': StackHero.new,
+  'statistic/anatomy': StatisticAnatomy.new,
+  'statistic/comparison': StatisticComparison.new,
+  'statistic/hero': StatisticHero.new,
   'switch/hero': SwitchHero.new,
   'switch/placement': SwitchPlacement.new,
   'switch/sizes': SwitchSizes.new,
