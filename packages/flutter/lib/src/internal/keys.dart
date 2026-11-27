@@ -3,9 +3,8 @@
 ///
 /// `NebaShortcut` draws `Mod+K` and a CommandPalette binds it, and both have
 /// to agree on which key a token means, or a key cap is drawn over a shortcut
-/// that never fires. The aliases here are the ones `NebaShortcut` folds its
-/// tokens with, written out once more because it keeps its own table; the two
-/// belong in this one module.
+/// that never fires; so both fold a token with [nebaCanonicalKey] here, and
+/// only what a key looks like stays with `NebaShortcut`.
 ///
 /// The library talking to itself: nothing here is exported.
 library;

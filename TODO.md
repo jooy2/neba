@@ -101,8 +101,6 @@ Still open from that session:
 
 - [ ] **`NebaTreeSelect` on the picker shell.** Its trigger and its popup sheet are drawn privately in `neba_tree_select.dart`, as React's TreeSelect draws on `PickerShell` and `pickerPopupClasses`; `lib/src/internal/picker.dart` (`NebaPickerField`) came in with `NebaDatePicker` beside it. Move TreeSelect onto `NebaPickerField` once the time and range pickers have landed on it, so the four share one shell.
 
-- [ ] **One table of key spellings.** `lib/src/internal/keys.dart` folds the tokens a `NebaCommandPalette` binds, as the React package's `internal/keys.ts` does, and `NebaShortcut` still folds the ones it draws with an alias table of its own, written out twice. `NebaShortcut` should read `keys.dart`'s, so the two can never disagree about which key a token means.
-
 - [ ] **The words a range slider's thumbs add to their values.** `NebaSlider.range` reads "20 start range" and "80 end range" in English, as Base UI writes them on the React side, where they are not in `internal/i18n.ts` either. Both packages should read them from a `slider` namespace once the React side has one; until then `thumbSemanticValue` (`getAriaValueText`) is the way to another language.
 
 - [ ] **Check whether a consumer of `neba/tailwind.css` loses the library's classes.** The docs did: Vite inlined the stylesheet's `@import`, and the `@source '.'` inside it stopped pointing at `src/` (fixed in the docs by naming `packages/react/src`). A consumer who runs Tailwind through `@tailwindcss/postcss` in Vite may meet the same thing; `@tailwindcss/vite` probably does not. Not verified either way.

@@ -4,6 +4,7 @@ library;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
+import 'package:neba/src/internal/keys.dart';
 import 'package:neba/src/internal/surface.dart';
 import 'package:neba/src/theme/scale.dart';
 import 'package:neba/src/theme/theme.dart';
@@ -227,32 +228,6 @@ class NebaShortcut extends StatelessWidget {
   };
 }
 
-/// Every spelling one key has, folded into the one the tables use, as the
-/// React package's `internal/keys.ts` folds them.
-const Map<String, String> _aliases = <String, String>{
-  'cmdorctrl': 'mod',
-  'commandorcontrol': 'mod',
-  'cmd': 'meta',
-  'command': 'meta',
-  'super': 'meta',
-  'win': 'meta',
-  'windows': 'meta',
-  'control': 'ctrl',
-  'option': 'alt',
-  'opt': 'alt',
-  'return': 'enter',
-  'esc': 'escape',
-  'del': 'delete',
-  'caps': 'capslock',
-  'spacebar': 'space',
-  'up': 'arrowup',
-  'down': 'arrowdown',
-  'left': 'arrowleft',
-  'right': 'arrowright',
-};
-
-final RegExp _foldable = RegExp(r'[\s_-]');
-
 List<String> _tokenize(Object keys) {
   final List<String> parts = keys is String ? keys.split('+') : keys as List<String>;
 
@@ -262,15 +237,8 @@ List<String> _tokenize(Object keys) {
   ];
 }
 
-String _canonical(String token) {
-  if (token == ' ') {
-    return 'space';
-  }
-
-  final String folded = token.toLowerCase().replaceAll(_foldable, '');
-
-  return _aliases[folded] ?? folded;
-}
+/// The key [token] means, by the one table the library binds keys with.
+String _canonical(String token) => nebaCanonicalKey(token);
 
 ({String symbol, String name}) _word(String text) => (symbol: text, name: text);
 
