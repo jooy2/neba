@@ -1,6 +1,7 @@
 ---
 title: WindowPane
 order: 14
+flutter: true
 ---
 
 # WindowPane
@@ -8,6 +9,8 @@ order: 14
 <p class="neba-lede">무엇이든 담아, 여덟 가지 운영체제 중 하나가 창을 그리는 방식으로 보여 줍니다. 제목표시줄은 끌리고 모서리는 크기가 바뀌며 버튼 세 개는 진짜 버튼이므로, 스크린샷이나 데모, 랜딩 페이지의 한 조각을 그림이 아니라 그것이 될 물건으로 보여 줄 수 있습니다.</p>
 
 <Demo src="window-pane/hero" minHeight="340" />
+
+::: fw react
 
 ```tsx
 import { WindowPane } from 'neba';
@@ -17,13 +20,41 @@ import { WindowPane } from 'neba';
 </WindowPane>;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+NebaWindowPane(
+  os: NebaWindowOs.macos,
+  title: const Text('Notes'),
+  width: 520,
+  height: 320,
+  child: const Editor(),
+);
+```
+
+:::
+
 진짜 창은 아닙니다. 바탕화면도, z 순서도, 페이지 바깥도 없습니다. 이 컴포넌트가 그리는 것은 창틀뿐이고, 안에 담기는 내용은 직접 넣습니다.
 
 ## Props
 
 <PropsTable name="WindowPane" />
 
+::: fw react
+
 `title`과 `onResize`를 빼면 나머지 `<div>` 속성은 그대로 루트에 전달됩니다. 여기서 `title`은 창의 이름이자 `ReactNode`이고, `onResize`는 DOM 이벤트가 아니라 픽셀 크기를 알려줍니다. 공용 축(`size` `color` `elevation` `position`)은 [prop 규약](../../design/prop-conventions)에 있습니다.
+
+:::
+
+::: fw flutter
+
+`title`은 위젯이며, `Text`이면 화면 낭독기에게 창의 이름이 되기도 합니다. 그 밖의 경우에는 `semanticLabel`이 이름을 줍니다. `onResize`는 `Size`를, `onOffsetChange`는 `Offset`을 알려줍니다. 공용 축(`size` `color` `elevation` `position`)은 [prop 규약](../../design/prop-conventions)에 있습니다.
+
+:::
 
 ## 예시
 
@@ -50,19 +81,39 @@ XP와 Aero는 헤어라인이 아니라 **띠**를 가진 둘이라, 내용이 �
 
 <Demo src="window-pane/os" minHeight="760">
 
+::: fw react
+
 <<< @/.vitepress/demos/window-pane/os.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/window_pane/os.dart
+
+:::
 
 </Demo>
 
 ### controls
 
-`true`는 버튼 셋 전부, `false`는 없음이며, 배열은 그 안에 이름을 적은 것만입니다. 순서는 배열이 아니라 시스템이 정하므로 `['close', 'minimize']`라 적어도 Windows에서는 닫기가 마지막에 옵니다.
+<Fw react="`true`는 버튼 셋 전부, `false`는 없음이며, 배열은 그 안에 이름을 적은 것만입니다. 순서는 배열이 아니라 시스템이 정하므로 `['close', 'minimize']`라 적어도 Windows에서는 닫기가 마지막에 옵니다." flutter="바에 둘 버튼의 집합입니다. 기본은 셋 전부이고, 빈 집합은 없음입니다. 순서는 집합이 아니라 시스템이 정하므로 `close`와 `minimize`만 담아도 Windows에서는 닫기가 마지막에 옵니다." />
 
-셋 다 제어/비제어 짝을 가집니다. `open`, `minimized`, `maximized`에 각각 `default*`와 `on*Change`가 있습니다. 비제어 창을 닫으면 아무것도 렌더링하지 않고, 최소화하면 제목표시줄만 남기고 말아 올립니다. 최대화는 창을 담고 있는 것을 채우며, 그것은 `position="absolute"`에서는 가장 가까운 positioned 조상이고 `fixed`에서는 뷰포트입니다. 제목표시줄을 더블클릭해도 최대화됩니다.
+셋 다 제어/비제어 짝을 가집니다. `open`, `minimized`, `maximized`에 각각 `default*`와 `on*Change`가 있습니다. 비제어 창을 닫으면 <Fw react="아무것도 렌더링하지 않고" flutter="서서히 흐려진 뒤 아무것도 그리지 않고" />, 최소화하면 제목표시줄만 남기고 말아 올립니다. 최대화는 창을 담고 있는 것을 채우며, 그것은 <Fw react="`absolute` 창에서는 가장 가까운 positioned 조상이고 `fixed` 창에서는 뷰포트입니다" flutter="`NebaWindowPanePosition.absolute`에서는 창을 담은 `Stack`이고 `fixed`에서는 화면입니다" />. 제목표시줄을 더블클릭해도 최대화됩니다.
 
 <Demo src="window-pane/controls" minHeight="400">
 
+::: fw react
+
 <<< @/.vitepress/demos/window-pane/controls.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/window_pane/controls.dart
+
+:::
 
 </Demo>
 
@@ -70,13 +121,33 @@ XP와 Aero는 헤어라인이 아니라 **띠**를 가진 둘이라, 내용이 �
 
 `draggable`은 제목표시줄로 창을 옮길 수 있게 하고, 어디로 갔는지를 `onOffsetChange`로 알려줍니다. `resizable`은 네 가장자리와 네 모서리 전부에 핸들을 답니다. `minWidth`와 `minHeight`가 한계를 정하고, 움직이는 동안 `onResize`가 픽셀 크기와 함께 호출됩니다.
 
+::: fw react
+
 둘 다 흐름 안에서도 동작하며, 이때 offset은 레이아웃이 놓아 준 자리에서 창을 옮깁니다. 직접 정한 상자를 기준으로 움직이려면 `position="absolute"`와 positioned 조상을, 뷰포트를 기준으로 하려면 `position="fixed"`를 주세요. fixed나 absolute 창은 제목표시줄이 그 상자 안에 남도록 붙잡히고, 크기를 바꾼 뒤 새로 준 `width`나 `height`는 손으로 정한 크기를 대신합니다.
 
 독자가 아무것도 하지 않았는데 `width`, `height`, `offset`이 바뀌면, 예를 들어 페이지를 불러온 뒤 저장소에서 위치와 크기를 복원하면, 창은 다른 변경과 똑같이 240ms에 걸쳐 새 값으로 움직이고 브라우저는 이 움직임을 layout shift로 셉니다. 저장해 둔 위치와 크기는 첫 렌더링부터 넘기세요. 위치는 `defaultOffset`으로, 크기는 창에 처음 주는 `width`와 `height`로 넘기면 됩니다.
 
+:::
+
+::: fw flutter
+
+둘 다 흐름 안에서도 동작하며, 이때 offset은 주변의 아무것도 옮기지 않고 레이아웃이 놓아 준 자리에서 창을 옮깁니다. 직접 정한 상자를 기준으로 움직이려면 `NebaWindowPanePosition.absolute`로 `Stack` 안에 두고, 화면을 기준으로 하려면 `fixed`로 가장 가까운 `Overlay`에 놓으세요. fixed나 absolute 창은 제목표시줄이 그 상자 안에 남도록 붙잡히고, 크기를 바꾼 뒤 새로 준 `width`나 `height`는 손으로 정한 크기를 대신합니다. 바는 포인터가 slop을 넘게 움직였을 때 끌기를 시작하므로, 바를 누르기만 하면 그대로 누르기입니다.
+
+:::
+
 <Demo src="window-pane/interactive" minHeight="400">
 
+::: fw react
+
 <<< @/.vitepress/demos/window-pane/interactive.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/window_pane/interactive.dart
+
+:::
 
 </Demo>
 
@@ -88,15 +159,27 @@ XP와 Aero는 헤어라인이 아니라 **띠**를 가진 둘이라, 내용이 �
 
 ### accent · transparency · active
 
-`accent`는 제목표시줄에 `color`를 입히며, `windows10`에서는 창의 테두리까지 함께 물들입니다. `transparency`는 크롬 너머로 페이지가 얼마나 비치는지를 `0`에서 `1` 사이로 정합니다. 제목표시줄과 본문의 바탕, 테두리에만 적용되고 그 위의 내용에는 적용되지 않으며, `0`보다 크면 창 뒤에 비치는 것이 흐려집니다. `active={false}`는 그 창을 다른 무엇보다 뒤에 고정해 둡니다.
+`accent`는 제목표시줄에 `color`를 입히며, `windows10`에서는 창의 테두리까지 함께 물들입니다. `transparency`는 크롬 너머로 페이지가 얼마나 비치는지를 `0`에서 `1` 사이로 정합니다. 제목표시줄과 본문의 바탕, 테두리에만 적용되고 그 위의 내용에는 적용되지 않으며, `0`보다 크면 창 뒤에 비치는 것이 흐려집니다. <Fw react="`active={false}`는" flutter="`active: false`는" /> 그 창을 다른 무엇보다 뒤에 고정해 둡니다.
 
 <Demo src="window-pane/appearance" minHeight="420">
 
+::: fw react
+
 <<< @/.vitepress/demos/window-pane/appearance.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/window_pane/appearance.dart
+
+:::
 
 </Demo>
 
 ## 접근성
+
+::: fw react
 
 - 루트는 자기 제목이 이름인 `role="group"`이므로, 스크린 리더는 내용보다 먼저 창의 이름을 읽습니다.
 - 제목표시줄의 버튼 셋은 `locale`에서 이름을 받는 진짜 `<button>`이며, 최대화 버튼은 창이 최대화된 동안 스스로 "이전 크기로 복원"으로 이름을 바꿉니다. macOS에서는 점 안의 글리프가 포인터가 올라올 때, 그중 하나에 키보드 focus가 있을 때, hover할 수 없는 화면에서는 늘 보이므로 세 점이 색만으로 구분되지 않습니다.
@@ -104,3 +187,16 @@ XP와 Aero는 헤어라인이 아니라 **띠**를 가진 둘이라, 내용이 �
 - 끌기도 포인터를 위한 것입니다. 포인터 없이도 옮겨야 하는 창이라면 `offset`을 직접 넘기세요.
 - 최소화한 창은 본문을 `inert` 상태로 잘라 문서에 남겨 두므로, 그 내용은 tab 순서와 접근성 트리에서 빠집니다.
 - 최대화, 복원, 최소화는 창의 위치와 크기를 옮기며 움직이고, 닫힌 창은 이미 `inert`가 된 채로 서서히 흐려집니다. 움직임을 줄여 달라고 한 사용자에게는 모두 즉시 일어납니다.
+
+:::
+
+::: fw flutter
+
+- 창은 `Text`인 제목이나 `semanticLabel`이 이름을 주는 semantics 노드 하나이므로, 화면 낭독기는 내용보다 먼저 창의 이름을 읽습니다.
+- 제목표시줄의 버튼 셋은 `locale`에서 이름을 받는 버튼이며, 최대화 버튼은 창이 최대화된 동안 스스로 "이전 크기로 복원"으로 이름을 바꿉니다. macOS에서는 점 안의 글리프가 포인터가 올라올 때, 그중 하나에 키보드 focus가 있을 때, 터치 화면에서는 늘 보이므로 세 점이 색만으로 구분되지 않습니다.
+- 리사이즈 핸들 중 하나(오른쪽 아래 모서리)는 focus 순서에 들어가고 방향키로 크기를 바꾸며, 그 방법이 hint로 붙어 있습니다. 나머지 일곱은 포인터를 위한 것이라 semantics 트리에서 빠져 있으며, 키보드 사용자는 `maximize`로 같은 범위를 얻습니다.
+- 끌기도 포인터를 위한 것입니다. 포인터 없이도 옮겨야 하는 창이라면 `offset`을 직접 넘기세요.
+- 최소화한 창은 본문을 빌드한 채 잘라 두고, focus 순서와 semantics 트리, 포인터에서 뺍니다.
+- 최대화, 복원, 최소화는 창의 위치와 크기를 옮기며 움직이고, 닫힌 창은 이미 닿을 수 없게 된 채로 서서히 흐려집니다. 움직임을 줄여 달라고 한 사용자에게는 모두 즉시 일어납니다.
+
+:::

@@ -1,6 +1,7 @@
 ---
 title: WindowPane
 order: 14
+flutter: true
 ---
 
 # WindowPane
@@ -8,6 +9,8 @@ order: 14
 <p class="neba-lede">Anything at all, drawn the way one of eight operating systems draws a window. The title bar drags, the corners resize and the three buttons are real buttons, so a screenshot, a demo or a piece of a landing page can be shown as the thing it will be rather than as a picture of it.</p>
 
 <Demo src="window-pane/hero" minHeight="340" />
+
+::: fw react
 
 ```tsx
 import { WindowPane } from 'neba';
@@ -17,13 +20,41 @@ import { WindowPane } from 'neba';
 </WindowPane>;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+NebaWindowPane(
+  os: NebaWindowOs.macos,
+  title: const Text('Notes'),
+  width: 520,
+  height: 320,
+  child: const Editor(),
+);
+```
+
+:::
+
 It is not a real window: there is no desktop, no z-order and nothing outside the page. What it draws is the frame, and what it holds is yours.
 
 ## Props
 
 <PropsTable name="WindowPane" />
 
+::: fw react
+
 Every other `<div>` attribute passes through to the root, except `title` (here it is the window's name and a `ReactNode`), and `onResize`, which reports pixels rather than a DOM event. The shared axes (`size` `color` `elevation` `position`) are defined in [prop conventions](../../design/prop-conventions).
+
+:::
+
+::: fw flutter
+
+`title` is a widget, and a `Text` also names the window for a screen reader; `semanticLabel` names it otherwise. `onResize` reports a `Size` and `onOffsetChange` an `Offset`. The shared axes (`size` `color` `elevation` `position`) are defined in [prop conventions](../../design/prop-conventions).
+
+:::
 
 ## Examples
 
@@ -50,19 +81,39 @@ A minimize button is drawn as a line, a maximize button as a box and a close but
 
 <Demo src="window-pane/os" minHeight="760">
 
+::: fw react
+
 <<< @/.vitepress/demos/window-pane/os.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/window_pane/os.dart
+
+:::
 
 </Demo>
 
 ### controls
 
-`true` is all three buttons, `false` is none, and an array is exactly the ones named. The order is the system's rather than the array's, so `['close', 'minimize']` still puts close last on Windows.
+<Fw react="`true` is all three buttons, `false` is none, and an array is exactly the ones named. The order is the system's rather than the array's, so `['close', 'minimize']` still puts close last on Windows." flutter="A set of the buttons the bar has: all three by default, and an empty set for none. The order is the system's rather than the set's, so a set of `close` and `minimize` still puts close last on Windows." />
 
-Each one is a controlled/uncontrolled pair: `open`, `minimized` and `maximized`, each with a `default*` and an `on*Change`. Closing an uncontrolled window renders nothing, and minimizing rolls it up to its title bar. Maximizing fills whatever is holding the window, which is the nearest positioned ancestor with `position="absolute"` and the viewport with `fixed`. A double click on the title bar maximizes too.
+Each one is a controlled/uncontrolled pair: `open`, `minimized` and `maximized`, each with a `default*` and an `on*Change`. Closing an uncontrolled window <Fw react="renders nothing" flutter="fades it out and then draws nothing" />, and minimizing rolls it up to its title bar. Maximizing fills whatever is holding the window, which is <Fw react="the nearest positioned ancestor for an `absolute` window and the viewport for a `fixed` one" flutter="the `Stack` it is placed in with `NebaWindowPanePosition.absolute` and the screen with `fixed`" />. A double click on the title bar maximizes too.
 
 <Demo src="window-pane/controls" minHeight="400">
 
+::: fw react
+
 <<< @/.vitepress/demos/window-pane/controls.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/window_pane/controls.dart
+
+:::
 
 </Demo>
 
@@ -70,13 +121,33 @@ Each one is a controlled/uncontrolled pair: `open`, `minimized` and `maximized`,
 
 `draggable` lets the title bar move the window, and `onOffsetChange` reports where it went. `resizable` puts a handle on all four edges and all four corners; `minWidth` and `minHeight` bound them, and `onResize` fires with the pixel size as they move.
 
+::: fw react
+
 Both work in the flow, where the offset moves the window from the place the layout gave it. To move it against a box of your own, give it `position="absolute"` and a positioned ancestor, or `position="fixed"` for the viewport. A fixed or absolute window is held so that its title bar stays inside that box, and a `width` or `height` passed after a resize replaces the size the resize gave it.
 
 A `width`, `height` or `offset` that changes without the reader doing anything, such as a geometry restored from storage once the page has loaded, travels to its new value over 240 ms like any other change, and the browser counts that move as layout shift. Restore a saved geometry on the first render instead: the position as `defaultOffset`, and the size as the first `width` and `height` the window is given.
 
+:::
+
+::: fw flutter
+
+Both work in the flow, where the offset moves the window from the place the layout gave it without moving anything around it. To move it against a box of your own, put it in a `Stack` with `NebaWindowPanePosition.absolute`, or give it `fixed` to place it on the screen in the nearest `Overlay`. A fixed or absolute window is held so that its title bar stays inside that box, and a `width` or `height` passed after a resize replaces the size the resize gave it. The bar starts a drag once the pointer has moved past the slop, so a press on it is still a press.
+
+:::
+
 <Demo src="window-pane/interactive" minHeight="400">
 
+::: fw react
+
 <<< @/.vitepress/demos/window-pane/interactive.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/window_pane/interactive.dart
+
+:::
 
 </Demo>
 
@@ -88,15 +159,27 @@ Being in front is drawn the way each system draws it, such as coloured traffic l
 
 ### accent, transparency, active
 
-`accent` dyes the title bar with `color`, and on `windows10` it dyes the window's border too. `transparency` is how much of the page shows through the chrome, from `0` to `1`. It applies to the title bar, the body's own fill and the border and never to the content on them, and anything above `0` also blurs what is behind the window. `active={false}` pins the window behind whatever else is on the page.
+`accent` dyes the title bar with `color`, and on `windows10` it dyes the window's border too. `transparency` is how much of the page shows through the chrome, from `0` to `1`. It applies to the title bar, the body's own fill and the border and never to the content on them, and anything above `0` also blurs what is behind the window. <Fw react="`active={false}`" flutter="`active: false`" /> pins the window behind whatever else is on the page.
 
 <Demo src="window-pane/appearance" minHeight="420">
 
+::: fw react
+
 <<< @/.vitepress/demos/window-pane/appearance.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/window_pane/appearance.dart
+
+:::
 
 </Demo>
 
 ## Accessibility
+
+::: fw react
 
 - The root is a `role="group"` labelled by its own title, so a screen reader reads the window's name before its contents.
 - The three title bar buttons are real `<button>`s with names from `locale`, and the maximize one renames itself to "Restore" while the window is maximized. On macOS the glyph inside each dot shows under the pointer, while one of them has the keyboard focus, and always on a screen that cannot hover, so the three are never told apart by colour alone.
@@ -104,3 +187,16 @@ Being in front is drawn the way each system draws it, such as coloured traffic l
 - Dragging is a pointer affordance as well. A window that must be movable without one should be given its `offset` by the caller.
 - A minimized window keeps its body in the document, `inert` and clipped, so its content is out of the tab order and the accessibility tree.
 - Maximizing, restoring and minimizing animate the window's position and size, and a closed window fades out while it is already `inert`. All of them are instant for a reader who has asked for reduced motion.
+
+:::
+
+::: fw flutter
+
+- The window is one semantics node named by a `Text` title or by `semanticLabel`, so a screen reader reads the window's name before its contents.
+- The three title bar buttons are buttons with names from `locale`, and the maximize one renames itself to "Restore" while the window is maximized. On macOS the glyph inside each dot shows under the pointer, while one of them has the keyboard focus, and always on a touch screen, so the three are never told apart by colour alone.
+- One resize handle (the bottom-right corner) is in the focus order and resizes with the arrow keys, which its hint says. The other seven are pointer affordances and are left out of the semantics tree; a keyboard reader has the same range through `maximize`.
+- Dragging is a pointer affordance as well. A window that must be movable without one should be given its `offset` by the caller.
+- A minimized window keeps its body built, clipped and out of the focus order, the semantics tree and the pointer's reach.
+- Maximizing, restoring and minimizing animate the window's position and size, and a closed window fades out while it is already out of reach. All of them are instant for a reader who has asked for reduced motion.
+
+:::

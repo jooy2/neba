@@ -328,6 +328,7 @@ import 'package:neba_example/demos/menu/state.dart';
 import 'package:neba_example/demos/menubar/hero.dart';
 import 'package:neba_example/demos/menubar/orientation.dart';
 import 'package:neba_example/demos/menubar/sizes.dart';
+import 'package:neba_example/demos/menubar/window.dart';
 import 'package:neba_example/demos/meter/hero.dart';
 import 'package:neba_example/demos/meter/sizes.dart';
 import 'package:neba_example/demos/meter/thresholds.dart';
@@ -526,6 +527,11 @@ import 'package:neba_example/demos/typography/hero.dart';
 import 'package:neba_example/demos/typography/scale.dart';
 import 'package:neba_example/demos/visually_hidden/hero.dart';
 import 'package:neba_example/demos/visually_hidden/skip_link.dart';
+import 'package:neba_example/demos/window_pane/appearance.dart';
+import 'package:neba_example/demos/window_pane/controls.dart';
+import 'package:neba_example/demos/window_pane/hero.dart';
+import 'package:neba_example/demos/window_pane/interactive.dart';
+import 'package:neba_example/demos/window_pane/os.dart';
 
 /// The demos, by key.
 const Map<String, Widget Function()> demos = <String, Widget Function()>{
@@ -851,6 +857,7 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'menubar/hero': MenubarHero.new,
   'menubar/orientation': MenubarOrientation.new,
   'menubar/sizes': MenubarSizes.new,
+  'menubar/window': MenubarWindow.new,
   'meter/hero': MeterHero.new,
   'meter/sizes': MeterSizes.new,
   'meter/thresholds': MeterThresholds.new,
@@ -1049,4 +1056,9 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'typography/scale': TypographyScale.new,
   'visually-hidden/hero': VisuallyHiddenHero.new,
   'visually-hidden/skip-link': VisuallyHiddenSkipLink.new,
+  'window-pane/appearance': WindowPaneAppearance.new,
+  'window-pane/controls': WindowPaneControls.new,
+  'window-pane/hero': WindowPaneHero.new,
+  'window-pane/interactive': WindowPaneInteractive.new,
+  'window-pane/os': WindowPaneOs.new,
 };

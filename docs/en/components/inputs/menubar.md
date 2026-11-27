@@ -127,6 +127,12 @@ Its own ladder, one rung below the control heights at every step: a menu bar is 
 
 :::
 
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/menubar/window.dart
+
+:::
+
 </Demo>
 
 ## Accessibility

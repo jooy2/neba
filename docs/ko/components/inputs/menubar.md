@@ -127,6 +127,12 @@ Menu가 담을 수 있는 것은 바 위의 메뉴도 담을 수 있습니다. �
 
 :::
 
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/menubar/window.dart
+
+:::
+
 </Demo>
 
 ## 접근성

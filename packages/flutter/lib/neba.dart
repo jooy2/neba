@@ -140,6 +140,7 @@ export 'src/components/tree_select/neba_tree_select.dart';
 export 'src/components/tree_view/neba_tree_view.dart';
 export 'src/components/typography/neba_typography.dart';
 export 'src/components/visually_hidden/neba_visually_hidden.dart';
+export 'src/components/window_pane/neba_window_pane.dart';
 export 'src/theme/scale.dart';
 export 'src/theme/theme.dart';
 export 'src/theme/tokens.dart';
