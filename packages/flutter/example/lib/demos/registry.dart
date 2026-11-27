@@ -79,6 +79,13 @@ import 'package:neba_example/demos/card/sizes.dart';
 import 'package:neba_example/demos/carousel/controlled.dart';
 import 'package:neba_example/demos/carousel/hero.dart';
 import 'package:neba_example/demos/carousel/options.dart';
+import 'package:neba_example/demos/chat_bubble/hero.dart';
+import 'package:neba_example/demos/chat_bubble/identity.dart';
+import 'package:neba_example/demos/chat_bubble/media.dart';
+import 'package:neba_example/demos/chat_bubble/preview.dart';
+import 'package:neba_example/demos/chat_bubble/sides.dart';
+import 'package:neba_example/demos/chat_bubble/status.dart';
+import 'package:neba_example/demos/chat_bubble/typing.dart';
 import 'package:neba_example/demos/checkbox/hero.dart';
 import 'package:neba_example/demos/checkbox/indeterminate.dart';
 import 'package:neba_example/demos/checkbox/sizes.dart';
@@ -416,6 +423,13 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'carousel/controlled': CarouselControlled.new,
   'carousel/hero': CarouselHero.new,
   'carousel/options': CarouselOptions.new,
+  'chat-bubble/hero': ChatBubbleHero.new,
+  'chat-bubble/identity': ChatBubbleIdentity.new,
+  'chat-bubble/media': ChatBubbleMedia.new,
+  'chat-bubble/preview': ChatBubblePreview.new,
+  'chat-bubble/sides': ChatBubbleSides.new,
+  'chat-bubble/status': ChatBubbleStatus.new,
+  'chat-bubble/typing': ChatBubbleTyping.new,
   'checkbox-group/hero': CheckboxGroupHero.new,
   'checkbox-group/orientation': CheckboxGroupOrientation.new,
   'checkbox-group/parent': CheckboxGroupParent.new,

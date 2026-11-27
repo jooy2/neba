@@ -234,6 +234,28 @@ abstract final class NebaGlyphs {
     ),
   ];
 
+  /// A clock face: something still on its way.
+  static final List<NebaGlyphPart> clock = <NebaGlyphPart>[
+    NebaGlyphPart.stroke(_circle(8, 8, 6.25)),
+    const NebaGlyphPart.stroke('M8 4.5V8l2.4 1.6', cap: StrokeCap.round, join: StrokeJoin.round),
+  ];
+
+  /// Two ticks, the second overlapping the first: delivered.
+  static final List<NebaGlyphPart> doubleCheck = <NebaGlyphPart>[
+    const NebaGlyphPart.stroke(
+      'm1.5 8.5 2.75 2.75L9.5 6',
+      width: 1.75,
+      cap: StrokeCap.round,
+      join: StrokeJoin.round,
+    ),
+    const NebaGlyphPart.stroke(
+      'M7 10.75 8.25 12l5.25-5.25',
+      width: 1.75,
+      cap: StrokeCap.round,
+      join: StrokeJoin.round,
+    ),
+  ];
+
   /// The neutral severity: a note.
   static final List<NebaGlyphPart> note = <NebaGlyphPart>[
     NebaGlyphPart.stroke(_circle(8, 8, 6.25)),
