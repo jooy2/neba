@@ -211,6 +211,23 @@ abstract final class NebaGlyphs {
     ),
   ];
 
+  /// Two bars: pause.
+  static final List<NebaGlyphPart> pause = <NebaGlyphPart>[
+    const NebaGlyphPart.fill(
+      'M5 3h.75a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z',
+    ),
+    const NebaGlyphPart.fill(
+      'M10.25 3H11a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1h-.75a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z',
+    ),
+  ];
+
+  /// A triangle pointing on: play.
+  static final List<NebaGlyphPart> play = <NebaGlyphPart>[
+    const NebaGlyphPart.fill(
+      'M5.5 3.6a1 1 0 0 1 1.53-.85l6.1 3.9a1.2 1.2 0 0 1 0 2.02l-6.1 3.9a1 1 0 0 1-1.53-.85V3.6Z',
+    ),
+  ];
+
   /// The neutral severity: a note.
   static final List<NebaGlyphPart> note = <NebaGlyphPart>[
     NebaGlyphPart.stroke(_circle(8, 8, 6.25)),

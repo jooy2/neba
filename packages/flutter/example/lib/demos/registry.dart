@@ -73,6 +73,9 @@ import 'package:neba_example/demos/card/form.dart';
 import 'package:neba_example/demos/card/hero.dart';
 import 'package:neba_example/demos/card/sections.dart';
 import 'package:neba_example/demos/card/sizes.dart';
+import 'package:neba_example/demos/carousel/controlled.dart';
+import 'package:neba_example/demos/carousel/hero.dart';
+import 'package:neba_example/demos/carousel/options.dart';
 import 'package:neba_example/demos/checkbox/hero.dart';
 import 'package:neba_example/demos/checkbox/indeterminate.dart';
 import 'package:neba_example/demos/checkbox/sizes.dart';
@@ -347,6 +350,9 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'card/hero': CardHero.new,
   'card/sections': CardSections.new,
   'card/sizes': CardSizes.new,
+  'carousel/controlled': CarouselControlled.new,
+  'carousel/hero': CarouselHero.new,
+  'carousel/options': CarouselOptions.new,
   'checkbox-group/hero': CheckboxGroupHero.new,
   'checkbox-group/orientation': CheckboxGroupOrientation.new,
   'checkbox-group/parent': CheckboxGroupParent.new,

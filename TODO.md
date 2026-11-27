@@ -64,6 +64,8 @@ Still open from that session:
   - `Panes`: the bar has no `pressTransitionClasses`, so a press is not instant on touch. `ScrollZone`'s `label` props row is stale. A solid `SegmentedButton` glows white on the segments that are not chosen.
   - Demos and pages: `popover/controlled`'s outside button cannot close an open popover with a pointer (the outside press closes it and the toggle reopens it); `tooltip/grouped`'s icon-only buttons have no `aria-label`; the OtpField page says a click lands on the first empty slot, where Base UI keeps the slot clicked while it is within the code; the DataList lede names `<dt>`/`<dd>`, which only the React half has.
 
+- [ ] **A Carousel that pauses its `autoPlay` while it is scrolled out of view**, as React's does through an `IntersectionObserver`. The Flutter one holds under the pointer, the focus and the app in the background, and not yet off screen; the measure `NebaAnchor` takes against its scroll view is the way to it.
+
 - [ ] **A page whose content is a lazily built list.** `NebaPageLayout` lays its `child` out whole inside the scroll view it owns, as a document is laid out, so a page whose content is a list of thousands of rows builds every row at once. It wants a sliver slot beside `child`, laid out in the band that holds the sidebars beside it.
 
 - [ ] **Selection handles and a copy-and-paste toolbar for the fields.** `NebaTextField` leaves `EditableText.selectionControls` null, because both are drawn by Material or Cupertino, which the package does not import. The pointer and the keyboard select and the keyboard copies and pastes, and on the web the browser's own menu does too, but a touch screen shows no handles and no Cut, Copy, Paste or Select all. It wants `TextSelectionControls` of the package's own, a handle and a toolbar on `NebaSheet`, shared by every field that holds an `EditableText`; the gestures in `neba_text_field.dart` would then stop skipping the toolbar.
@@ -104,7 +106,7 @@ Port in this order, because each group is built out of the ones before it: `Neba
 
 Some components have no single Flutter equivalent of what they are on the web, and their form is decided when they are reached, then written on their page: `NebaTextLink` (a callback rather than an `href`, since the package opens nothing itself), `NebaImage` and `NebaGallery` (an `ImageProvider` rather than a URL), `NebaCodeBlock` (no highlight.js; a tokenizer of its own or a caller-supplied one), and the page shell (`NebaPageLayout`, `NebaHeader`, `NebaFooter`, `NebaSidebar`) against a phone's safe areas.
 
-Demos that wait on a component not ported yet, to be added with it: `meter/thresholds` (`NebaSlider`), `popover/form` (`NebaSelect`), `drawer/hero`, `drawer/inline`, `drawer/scrolling` and the three `sidebar/*` demos (`NebaList`), the four `header/*` demos and `footer/hero` (`NebaAppLogo`), and the four `page-layout/*` demos (both). `chip/links` and `pagination/links` have no Flutter twin: the package opens nothing itself, so neither has an `href`. The React demos of per-breakpoint maps (`container/responsive`, `grid/responsive`) have no Flutter twin, because the Flutter widgets take no such map. A widget that draws a shape reads the ring of a pile it is in through `NebaRing`, as `NebaBox` does, so that `ring` follows it. `button/render` has no Flutter twin: a Flutter button has no element to swap.
+Demos that wait on a component not ported yet, to be added with it: `carousel/photos` (`NebaImage`), `meter/thresholds` (`NebaSlider`), `popover/form` (`NebaSelect`), `drawer/hero`, `drawer/inline`, `drawer/scrolling` and the three `sidebar/*` demos (`NebaList`), the four `header/*` demos and `footer/hero` (`NebaAppLogo`), and the four `page-layout/*` demos (both). `chip/links` and `pagination/links` have no Flutter twin: the package opens nothing itself, so neither has an `href`. The React demos of per-breakpoint maps (`container/responsive`, `grid/responsive`) have no Flutter twin, because the Flutter widgets take no such map. A widget that draws a shape reads the ring of a pile it is in through `NebaRing`, as `NebaBox` does, so that `ring` follows it. `button/render` has no Flutter twin: a Flutter button has no element to swap.
 
 ### Layout (15)
 
@@ -213,7 +215,7 @@ Demos that wait on a component not ported yet, to be added with it: `meter/thres
 - [x] `NebaAccordion`
 - [x] `NebaCollapsible`
 - [x] `NebaTabs`
-- [ ] `NebaCarousel`
+- [x] `NebaCarousel`
 - [ ] `NebaToolbar`
 - [ ] `NebaPill`
 - [ ] `NebaSpoiler`

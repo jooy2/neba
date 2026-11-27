@@ -35,6 +35,7 @@ export 'src/components/breadcrumb/neba_breadcrumb.dart';
 export 'src/components/button/neba_button.dart';
 export 'src/components/button_group/neba_button_group.dart';
 export 'src/components/card/neba_card.dart';
+export 'src/components/carousel/neba_carousel.dart';
 export 'src/components/checkbox/neba_checkbox.dart';
 export 'src/components/checkbox_group/neba_checkbox_group.dart';
 export 'src/components/chip/neba_chip.dart';
