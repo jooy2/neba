@@ -50,6 +50,10 @@ import 'package:neba_example/demos/animate_slide/edges.dart';
 import 'package:neba_example/demos/animate_slide/hero.dart';
 import 'package:neba_example/demos/animate_split/by.dart';
 import 'package:neba_example/demos/animate_split/hero.dart';
+import 'package:neba_example/demos/animate_typing/hero.dart';
+import 'package:neba_example/demos/animate_typing/loop.dart';
+import 'package:neba_example/demos/animate_typing/speed.dart';
+import 'package:neba_example/demos/animate_typing/terminal.dart';
 import 'package:neba_example/demos/animate_zoom/hero.dart';
 import 'package:neba_example/demos/animate_zoom/strength.dart';
 import 'package:neba_example/demos/animate_zoom/visible.dart';
@@ -658,6 +662,10 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'animate-slide/hero': AnimateSlideHero.new,
   'animate-split/by': AnimateSplitBy.new,
   'animate-split/hero': AnimateSplitHero.new,
+  'animate-typing/hero': AnimateTypingHero.new,
+  'animate-typing/loop': AnimateTypingLoop.new,
+  'animate-typing/speed': AnimateTypingSpeed.new,
+  'animate-typing/terminal': AnimateTypingTerminal.new,
   'animate-zoom/hero': AnimateZoomHero.new,
   'animate-zoom/strength': AnimateZoomStrength.new,
   'animate-zoom/visible': AnimateZoomVisible.new,

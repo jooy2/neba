@@ -1,6 +1,7 @@
 ---
 title: AnimateTyping
 order: 9
+flutter: true
 ---
 
 # AnimateTyping
@@ -9,19 +10,43 @@ order: 9
 
 <Demo src="animate-typing/hero" />
 
+::: fw react
+
 ```tsx
 import { AnimateTyping } from 'neba';
 
 <AnimateTyping speed={18}>디자인 시스템이 아니라 화면을 배포하세요.</AnimateTyping>;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+const NebaAnimateTyping(text: '디자인 시스템이 아니라 화면을 배포하세요.', speed: 18);
+```
+
+:::
+
 ## Props
 
 <PropsTable name="AnimateTyping" />
 
+::: fw react
+
 나머지 `<span>` 속성은 모두 루트로 전달됩니다. 모든 `Animate*`가 공유하는 설정은 [Prop 규약](../../design/prop-conventions)에 있습니다.
 
 타이핑되는 것은 텍스트뿐입니다. 문자열 하나 또는 여럿을 넘기세요. 자식 중 요소가 있으면 그 안의 글자만 쓰이고 마크업은 반영되지 않습니다. 링크의 절반을 정직하게 드러낼 방법이 없기 때문입니다. `text`는 같은 것을 prop으로 받는 것이고, 둘 다 주면 이쪽이 이깁니다.
+
+:::
+
+::: fw flutter
+
+줄은 `text`로 받고, 주변 `DefaultTextStyle` 위에 `style`을 얹어 쓰며 `textAlign`으로 정렬합니다. 모든 `Animate*`가 공유하는 설정은 [Prop 규약](../../design/prop-conventions)에 있습니다.
+
+:::
 
 ## 예시
 
@@ -31,7 +56,17 @@ import { AnimateTyping } from 'neba';
 
 <Demo src="animate-typing/speed">
 
+::: fw react
+
 <<< @/.vitepress/demos/animate-typing/speed.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/animate_typing/speed.dart
+
+:::
 
 </Demo>
 
@@ -41,21 +76,43 @@ import { AnimateTyping } from 'neba';
 
 <Demo src="animate-typing/loop">
 
+::: fw react
+
 <<< @/.vitepress/demos/animate-typing/loop.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/animate_typing/loop.dart
+
+:::
 
 </Demo>
 
 ### delay
 
-시작 전 대기 시간(밀리초)입니다. 줄마다 delay를 주면 여러 개의 타자기가 하나의 기록이 됩니다.
+<Fw react="시작 전 대기 시간(밀리초)입니다." flutter="첫 글자가 나오기 전까지 기다리는 시간입니다." /> 줄마다 delay를 주면 여러 개의 타자기가 하나의 기록이 됩니다.
 
 <Demo src="animate-typing/terminal">
 
+::: fw react
+
 <<< @/.vitepress/demos/animate-typing/terminal.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/animate_typing/terminal.dart
+
+:::
 
 </Demo>
 
 ### caret
+
+::: fw react
 
 글자 뒤의 커서로, 기본으로 켜져 있습니다. `caretChar`가 그 모양을 정합니다. `▌`, `_`, 무엇이든 됩니다. 문자열은 요소의 텍스트에 들어가지 않고 그려지기만 하며, element를 넘기면 그대로 렌더링됩니다.
 
@@ -65,11 +122,23 @@ import { AnimateTyping } from 'neba';
 </AnimateTyping>
 ```
 
+:::
+
+::: fw flutter
+
+글자 뒤의 커서로, 기본으로 켜져 있습니다. `caretChar`는 커서로 그릴 위젯입니다. 주지 않으면 글과 같은 스타일의 `|`이고, `Text('_')`든, speed 예시처럼 직접 그린 상자든 됩니다.
+
+```dart
+const NebaAnimateTyping(text: '커서 없음', caret: false);
+```
+
+:::
+
 ## 접근성
 
-- 전체 텍스트는 첫 프레임부터 잘린 상자 안에 들어 있고, 움직이는 사본은 `aria-hidden`입니다. 스크린 리더는 그 줄을 한 번 읽고 공연을 끝까지 지켜보지 않습니다.
-- 친 글자와 캐럿은 문서에 글자로 들어가지 않고 그려지기만 하므로, 요소의 텍스트에는 끝에 캐럿이 붙지 않은 그 줄이 한 번만 들어 있습니다.
+- <Fw react="전체 텍스트는 첫 프레임부터 잘린 상자 안에 들어 있고, 움직이는 사본은 `aria-hidden`입니다." flutter="스크린 리더에는 첫 프레임부터 전체 텍스트가 전달되고, 쳐지는 사본은 semantics 트리에서 빠집니다." /> 스크린 리더는 그 줄을 한 번 읽고 공연을 끝까지 지켜보지 않습니다.
+- <Fw react="친 글자와 캐럿은 문서에 글자로 들어가지 않고 그려지기만 하므로, 요소의 텍스트에는 끝에 캐럿이 붙지 않은 그 줄이 한 번만 들어 있습니다." flutter="캐럿은 그려지기만 하고 읽히지 않으므로, 스크린 리더가 듣는 것은 끝에 캐럿이 붙지 않은 그 줄입니다." />
 - 축소된 모션 설정에서는 문자열 전체가 즉시 보이고 타이핑은 일어나지 않습니다.
-- 캐럿은 줄을 다 친 뒤에도 페이지에 있는 동안 계속 깜박이고, `paused`로도 멈추지 않습니다. 독자가 읽어 나가는 글 옆에 둘 때는 `caret={false}`를 주세요.
+- 캐럿은 줄을 다 친 뒤에도 페이지에 있는 동안 계속 깜박이고, `paused`로도 멈추지 않습니다. 독자가 읽어 나가는 글 옆에 둘 때는 <Fw react="`caret={false}`를" flutter="`caret: false`를" /> 주세요.
 - 상자의 크기는 첫 프레임부터 문자열 전체로 정해지므로, 줄이 쳐지는 동안 주변 텍스트가 다시 배치되지 않습니다.
 - 글자는 code point가 아니라 grapheme 단위로 셉니다. `한`도 `👩‍👩‍👧`도 세 걸음이나 일곱 걸음이 아니라 한 걸음에 도착합니다.

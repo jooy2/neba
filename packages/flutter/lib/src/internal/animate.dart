@@ -625,9 +625,49 @@ Widget nebaAnimate(
  * Running one
  * ------------------------------------------------------------------------- */
 
+/// What a run hands a [NebaRunBuilder]: its clock, and where it stands.
+@immutable
+class NebaRunSnapshot {
+  /// The run as it stands.
+  const NebaRunSnapshot({
+    required this.clock,
+    required this.started,
+    required this.running,
+    required this.runs,
+    required this.reduced,
+  });
+
+  /// Milliseconds since the run was let go, held while it is held and back
+  /// to nothing when it is played again or restarted.
+  final ValueListenable<double> clock;
+
+  /// Whether it has been let go and not stopped since: the React package's
+  /// `started`. Until it is, a widget draws what it waits on.
+  final bool started;
+
+  /// Whether the clock is moving: let go, not held, and not an endless one
+  /// off the screen.
+  final bool running;
+
+  /// How many times it has been let go, which a replay counts up.
+  final int runs;
+
+  /// Whether the reader asked for less motion, so the widget draws where it
+  /// ends, before any trigger too. A finite clock is already at its end.
+  final bool reduced;
+}
+
+/// Draws a run's frames for a widget whose frame is not one effect on its
+/// child: a typewriter counting characters, a count, a light going round.
+/// It listens to [NebaRunSnapshot.clock] itself, so a tick rebuilds what
+/// moves and nothing else.
+typedef NebaRunBuilder = Widget Function(BuildContext context, NebaRunSnapshot run);
+
 /// Plays [effect] on [child], or on [children] laid out by [layoutBuilder]
 /// and, with a [stagger] or a [durationStep], on each of them in turn: an
-/// `Animate*` widget's run, and a `transition`'s.
+/// `Animate*` widget's run, and a `transition`'s. With a [builder], the
+/// builder draws every frame instead, from the same clock, trigger, hold and
+/// screen.
 ///
 /// [observes] is whether it watches where it is on the screen at all. An
 /// `Animate*` does, to start on [NebaAnimateTrigger.visible] and to hold an
@@ -636,8 +676,8 @@ Widget nebaAnimate(
 class NebaAnimateRun extends StatefulWidget {
   /// [effect] on [timing], started by [trigger].
   const NebaAnimateRun({
-    required this.effect,
     required this.timing,
+    this.effect = const NebaEffect(keyframe: NebaKeyframe.fade),
     this.curve,
     this.trigger = NebaAnimateTrigger.mount,
     this.play,
@@ -652,13 +692,16 @@ class NebaAnimateRun extends StatefulWidget {
     this.range = const NebaViewRange(),
     this.observes = true,
     this.restsUntilPlayed = false,
+    this.endless,
+    this.restart,
+    this.builder,
     this.layoutBuilder,
     this.children,
     this.child,
     super.key,
   });
 
-  /// What it looks like.
+  /// What it looks like. Left out, nothing: a fade from fully drawn.
   final NebaEffect effect;
 
   /// When it runs, for the whole of it or for the first of [children].
@@ -709,6 +752,20 @@ class NebaAnimateRun extends StatefulWidget {
   /// first runs: for content that arrives with the page and is only played
   /// again later.
   final bool restsUntilPlayed;
+
+  /// Whether it counts as endless: held while it is off the screen, and
+  /// stopped when the pointer leaves under [NebaAnimateTrigger.hover]. Left
+  /// out, it is whether [timing] repeats forever; a widget whose clock ends
+  /// but whose `repeat` says forever passes it.
+  final bool? endless;
+
+  /// A value whose change starts the clock over from nothing, without it
+  /// counting as another run: for content that changed under a run already
+  /// going, as a typewriter handed a new line types it from the start.
+  final Object? restart;
+
+  /// Draws every frame, in place of [effect] on [child] or [children].
+  final NebaRunBuilder? builder;
 
   /// See [NebaAnimateBase.layoutBuilder].
   final Widget Function(List<Widget> children)? layoutBuilder;
@@ -766,7 +823,7 @@ class _NebaAnimateRunState extends State<NebaAnimateRun> with SingleTickerProvid
   List<ScrollableState> _scrollables = const <ScrollableState>[];
   List<ScrollPosition> _positions = const <ScrollPosition>[];
 
-  bool get _infinite => widget.timing.repeat.isInfinite;
+  bool get _infinite => widget.endless ?? widget.timing.repeat.isInfinite;
 
   bool get _spread {
     return widget.children != null &&
@@ -870,7 +927,8 @@ class _NebaAnimateRunState extends State<NebaAnimateRun> with SingleTickerProvid
 
     // A new keyframe starts over, as a new animation name does in CSS. A new
     // duration on the same one does not, and a finished run stays finished.
-    if (oldWidget.effect.keyframe != widget.effect.keyframe) {
+    if (oldWidget.effect.keyframe != widget.effect.keyframe ||
+        oldWidget.restart != widget.restart) {
       _rewind();
     }
 
@@ -1166,9 +1224,21 @@ class _NebaAnimateRunState extends State<NebaAnimateRun> with SingleTickerProvid
   Widget build(BuildContext context) {
     final List<Widget>? children = widget.children;
     final Widget Function(List<Widget> children) layout = widget.layoutBuilder ?? _column;
+    final NebaRunBuilder? builder = widget.builder;
     final Widget content;
 
-    if (children == null) {
+    if (builder != null) {
+      content = builder(
+        context,
+        NebaRunSnapshot(
+          clock: _clock,
+          started: _started,
+          running: _running,
+          runs: _runs,
+          reduced: _reduced,
+        ),
+      );
+    } else if (children == null) {
       content = _piece(widget.child ?? const SizedBox.shrink(), widget.timing);
     } else if (_spread) {
       final List<NebaTiming> timings = _timings;
