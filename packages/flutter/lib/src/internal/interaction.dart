@@ -52,6 +52,31 @@ class NebaInteraction {
   int get hashCode => Object.hash(enabled, hovered, pressed, focusVisible);
 }
 
+/// What a press on the control below does as well as its own work: open the
+/// popover whose trigger it is.
+///
+/// Base UI merges a trigger's handlers onto the one element it is given, so a
+/// `<Button>` stays a button and opens the popup too. The nearest
+/// [NebaInteractive] below this is that element here: its tap, Enter and Space
+/// call [onPress] after the control's own callback, and a control that is
+/// disabled calls neither, as a disabled `<button>` fires no click. A popup's
+/// content is built outside the trigger, so nothing in it hears this.
+class NebaPressTrigger extends InheritedWidget {
+  /// Makes the control in [child] call [onPress] when it is pressed.
+  const NebaPressTrigger({required this.onPress, required super.child, super.key});
+
+  /// Called after the control's own callback.
+  final VoidCallback onPress;
+
+  /// The trigger the control in [context] belongs to, if any.
+  static NebaPressTrigger? maybeOf(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<NebaPressTrigger>();
+  }
+
+  @override
+  bool updateShouldNotify(NebaPressTrigger oldWidget) => onPress != oldWidget.onPress;
+}
+
 /// Builds a control from its [NebaInteraction] and the pointer's position on
 /// it, which is `null` while no pointer is over it.
 typedef NebaInteractiveBuilder =
@@ -120,6 +145,8 @@ class _NebaInteractiveState extends State<NebaInteractive> {
   bool _hovered = false;
   bool _pointerDown = false;
   bool _focusVisible = false;
+  // The popover this control opens as well, read on every build.
+  NebaPressTrigger? _trigger;
 
   static final Map<ShortcutActivator, Intent> _shortcuts = <ShortcutActivator, Intent>{
     const SingleActivator(LogicalKeyboardKey.enter): const ActivateIntent(),
@@ -182,12 +209,15 @@ class _NebaInteractiveState extends State<NebaInteractive> {
   void _activate() {
     if (widget.enabled) {
       widget.onTap?.call();
+      _trigger?.onPress();
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final bool enabled = widget.enabled;
+    _trigger = NebaPressTrigger.maybeOf(context);
+    final bool pressable = widget.onTap != null || _trigger != null;
     final NebaInteraction interaction = NebaInteraction(
       enabled: enabled,
       hovered: enabled && _hovered,
@@ -232,7 +262,7 @@ class _NebaInteractiveState extends State<NebaInteractive> {
           onExit: enabled ? (PointerExitEvent e) => _setHovered(false) : null,
           child: GestureDetector(
             behavior: HitTestBehavior.opaque,
-            onTap: enabled && widget.onTap != null ? _activate : null,
+            onTap: enabled && pressable ? _activate : null,
             child: widget.builder(context, interaction, _pointer),
           ),
         ),

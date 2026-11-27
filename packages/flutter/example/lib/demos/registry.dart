@@ -122,6 +122,8 @@ import 'package:neba_example/demos/panes/fixed.dart';
 import 'package:neba_example/demos/panes/hero.dart';
 import 'package:neba_example/demos/panes/orientation.dart';
 import 'package:neba_example/demos/panes/sizing.dart';
+import 'package:neba_example/demos/popover/controlled.dart';
+import 'package:neba_example/demos/popover/sides.dart';
 import 'package:neba_example/demos/portal/hero.dart';
 import 'package:neba_example/demos/progress_box/counts.dart';
 import 'package:neba_example/demos/progress_box/hero.dart';
@@ -333,6 +335,8 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'panes/hero': PanesHero.new,
   'panes/orientation': PanesOrientation.new,
   'panes/sizing': PanesSizing.new,
+  'popover/controlled': PopoverControlled.new,
+  'popover/sides': PopoverSides.new,
   'portal/hero': PortalHero.new,
   'progress-box/counts': ProgressBoxCounts.new,
   'progress-box/hero': ProgressBoxHero.new,

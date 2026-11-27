@@ -97,6 +97,11 @@ const props = defineProps({
    * reflows under the reader the moment a preview arrives. It stays applied
    * after mounting too: a reserve that is dropped once the content is there
    * moves the page a second time, which is the same jump twice.
+   *
+   * A Flutter preview's frame keeps it as a floor under the height the gallery
+   * reports. A popup the gallery opens is drawn inside the frame, where a
+   * React one is drawn over the page, so a preview that opens one asks for the
+   * room it needs here.
    */
   minHeight: { type: [Number, String], default: 40 }
 });
@@ -370,7 +375,7 @@ onBeforeUnmount(() => {
         class="neba-demo-frame"
         :src="frameUrl"
         :title="t(locale, 'flutterFrame')"
-        :style="{ height: frameHeight ? `${frameHeight}px` : reserve }"
+        :style="{ height: frameHeight ? `${frameHeight}px` : reserve, minHeight: reserve }"
       />
     </div>
     <div v-if="$slots.default" class="neba-demo-source">

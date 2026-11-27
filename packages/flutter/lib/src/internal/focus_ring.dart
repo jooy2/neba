@@ -35,8 +35,18 @@ const double focusRingOffset = 2;
 /// click brings the ring back, as a browser does.
 abstract final class NebaInputModality {
   static final ValueNotifier<bool> _pointer = ValueNotifier<bool>(false);
+  static PointerDeviceKind? _kind;
   static bool _hearsKeys = false;
   static bool _hearsPointers = false;
+
+  /// What the last pointer to go down was, `null` before any has. A popup a
+  /// finger opened takes the focus itself rather than giving it to the first
+  /// field inside, which would bring a phone's keyboard up over it.
+  static PointerDeviceKind? get lastPointerKind {
+    pointer;
+
+    return _kind;
+  }
 
   /// True once a pointer has gone down after the last key.
   static ValueListenable<bool> get pointer {
@@ -63,6 +73,7 @@ abstract final class NebaInputModality {
 
   static void _onPointer(PointerEvent event) {
     if (event is PointerDownEvent) {
+      _kind = event.kind;
       _pointer.value = true;
     }
   }
@@ -75,6 +86,7 @@ abstract final class NebaInputModality {
     HardwareKeyboard.instance.removeHandler(_onKey);
     _hearsKeys = false;
     _pointer.value = false;
+    _kind = null;
   }
 }
 

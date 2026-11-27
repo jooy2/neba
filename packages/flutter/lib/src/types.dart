@@ -157,6 +157,23 @@ enum NebaLabelPlacement {
   float,
 }
 
+/// How much of the page behind a popup is taken away while it is open: the
+/// React package's `modal`, `boolean | 'trap-focus'`, which a Popover, a
+/// Dialog, a Drawer and an Overlay share.
+enum NebaModal {
+  /// `false`: the page behind stays scrollable, pressable and reachable from
+  /// the keyboard, and Tab leaves the popup the way it came in.
+  off,
+
+  /// `true`: the page behind takes no pointer, and Tab goes round the popup
+  /// without leaving it.
+  on,
+
+  /// `'trap-focus'`: Tab goes round the popup without leaving it, and the
+  /// page behind still scrolls and takes a press.
+  trapFocus,
+}
+
 /// Whether the colours follow the platform's brightness or are pinned.
 enum NebaColorScheme {
   /// Follow `MediaQueryData.platformBrightness`.

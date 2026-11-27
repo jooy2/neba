@@ -1,6 +1,7 @@
 ---
 title: Popover
 order: 11
+flutter: true
 ---
 
 # Popover
@@ -8,6 +9,8 @@ order: 11
 <p class="neba-lede">자신을 연 컨트롤 옆에 열리는 시트입니다. Tooltip과 달리 그대로 떠 있고 포인터와 키보드로 닿을 수 있어서, 안의 내용을 누르고 입력할 수 있습니다.</p>
 
 <Demo src="popover/hero" align="center" minHeight="80" />
+
+::: fw react
 
 ```tsx
 import { Button, Popover, TextField } from 'neba';
@@ -17,13 +20,48 @@ import { Button, Popover, TextField } from 'neba';
 </Popover>;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+NebaPopover(
+  trigger: NebaButton(onPressed: () {}, variant: NebaVariant.outline, child: const Text('Share')),
+  title: const Text('Share this page'),
+  child: const NebaTextField(
+    size: NebaSize.sm,
+    label: Text('Link'),
+    initialValue: 'https://…',
+    readOnly: true,
+  ),
+);
+```
+
+:::
+
 ## Props
 
 <PropsTable name="Popover" />
 
+::: fw react
+
 `<div>`의 native 속성은 popup으로 전달됩니다. `color` · `title` · `children`만 위 표와 이름이 겹쳐 제외됩니다.
 
 `PopoverClose`는 Base UI의 `Popover.Close`를 그대로 내보낸 것입니다. `render` prop을 주면 어떤 요소든 자기가 속한 popup을 닫습니다: `<PopoverClose render={<Button>Apply</Button>} />`.
+
+:::
+
+::: fw flutter
+
+`trigger`는 자기 누름으로 popover를 열기 때문에 `NebaButton`이나 `onPressed`를 받은 `NebaChip` 같은 Neba 컨트롤이어야 합니다. 누르면 컨트롤이 자기 일을 하고, popover도 열거나 닫습니다. trigger 역할만 하는 버튼에는 `onPressed: () {}`를 줍니다. Flutter 버튼은 `onPressed`가 없으면 비활성이고, 비활성 버튼은 아무것도 열지 않습니다.
+
+`NebaPopoverClose`는 popup 안의 컨트롤에 popover를 닫는 콜백을 건넵니다. popover가 `dismissible`이 아닐 때도 통과합니다: `NebaPopoverClose(builder: (context, close) => NebaButton(onPressed: close, child: const Text('Apply')))`.
+
+popup은 앱의 root `Overlay`에 그려집니다. `MaterialApp`, `CupertinoApp`, route가 있는 `WidgetsApp`에는 모두 하나씩 있습니다. 없는 앱은 `Overlay.wrap`으로 자신을 감싸야 하며, 위에 overlay가 없는 popover는 열리는 순간 예외를 던집니다.
+
+:::
 
 공통 축은 [prop 규칙](../../design/prop-conventions)에서 설명합니다.
 
@@ -33,9 +71,19 @@ import { Button, Popover, TextField } from 'neba';
 
 `side`는 trigger의 어느 변에 popup이 놓일지, `align`은 그 변을 따라 어디에 놓일지입니다. 창에 자리가 없으면 반대쪽으로 자동으로 넘어갑니다. `sideOffset`으로 간격을, `alignOffset`으로 변을 따라 미는 거리를 조절합니다.
 
-<Demo src="popover/sides">
+<Demo src="popover/sides" minHeight="220">
+
+::: fw react
 
 <<< @/.vitepress/demos/popover/sides.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/popover/sides.dart
+
+:::
 
 </Demo>
 
@@ -45,7 +93,11 @@ popup은 focus를 받을 수 있는 내용을 담으므로, 필터 패널이나 
 
 <Demo src="popover/form">
 
+::: fw react
+
 <<< @/.vitepress/demos/popover/form.tsx
+
+:::
 
 </Demo>
 
@@ -53,9 +105,19 @@ popup은 focus를 받을 수 있는 내용을 담으므로, 필터 패널이나 
 
 `open`과 `onOpenChange`를 함께 넘기면 state의 주인은 caller가 되므로, 페이지의 다른 무엇이든 이 popup을 열고 닫을 수 있습니다. 넘기지 않으면 popover가 스스로 관리하고 `defaultOpen`이 초기 상태를 정합니다.
 
-<Demo src="popover/controlled">
+<Demo src="popover/controlled" minHeight="220">
+
+::: fw react
 
 <<< @/.vitepress/demos/popover/controlled.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/popover/controlled.dart
+
+:::
 
 </Demo>
 
@@ -63,16 +125,46 @@ popup은 focus를 받을 수 있는 내용을 담으므로, 필터 패널이나 
 
 `arrow`는 trigger를 가리키는 쐐기를 그립니다. 기본은 꺼짐입니다. 이 표면은 흐린 backdrop 위의 반투명이고, popup의 상자 밖으로 튀어나온 쐐기는 그 backdrop을 함께 가져갈 수 없기 때문입니다. trigger가 멀어서 popup이 무엇에 속하는지 말해야 할 때 켜세요.
 
+::: fw react
+
 ```tsx
 <Popover arrow trigger={<Button>Details</Button>}>
   Anchored to the button it came from.
 </Popover>
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+NebaPopover(
+  arrow: true,
+  trigger: NebaButton(onPressed: () {}, child: const Text('Details')),
+  child: const Text('Anchored to the button it came from.'),
+);
+```
+
+:::
+
 ## 접근성
+
+::: fw react
 
 - popup에 `role="dialog"`가 붙습니다. `title`이 이름이 되고 `description`이 설명이 되며 `aria-labelledby`와 `aria-describedby`로 연결됩니다. 둘 다 없는 popover에는 `aria-label`을 따로 주세요.
 - 열리면 focus가 popup 안으로 들어가고, 닫히면 trigger로 돌아갑니다.
 - Esc로 닫히고 바깥 클릭으로도 닫힙니다. `dismissible={false}`는 둘 다 취소하지만 `PopoverClose`는 통과하므로 갇히지 않습니다.
 - `modal`은 기본이 `false`이므로 뒤 페이지는 계속 스크롤되고 쓸 수 있습니다. 다른 것을 건드리기 전에 반드시 답해야 하는 popup에는 `modal`을 쓰세요. `'trap-focus'`는 focus만 안에 붙잡고 페이지는 스크롤하고 클릭할 수 있게 둡니다. `showClose`가 없는 modal popover에도 키보드 focus를 받을 때까지 숨겨진 닫기 버튼이 들어가므로, Escape 키가 없는 스크린 리더에도 나갈 길이 있습니다.
 - ×의 접근성 이름은 `locale`이 정합니다. `closeLabel`로 직접 쓸 수도 있습니다.
+
+:::
+
+::: fw flutter
+
+- 화면 낭독기에게 popup은 dialog이고, `Text`인 `title`이 그 이름이 됩니다. trigger는 펼쳐졌는지를 알립니다. `description`은 그려진 자리에서 읽힙니다.
+- 열리면 focus가 popup 안의 첫 컨트롤로 들어가고, 닫히면 trigger로 돌아갑니다. 손가락으로 열었을 때는 필드가 키보드를 띄우지 않도록 popup 자체가 focus를 받습니다.
+- Esc로 닫히고, 바깥을 누르거나 focus가 밖으로 나가도 닫힙니다. `dismissible: false`는 셋을 모두 취소하지만 ×와 `NebaPopoverClose`는 통과하므로 갇히지 않습니다.
+- `modal`은 기본이 `NebaModal.off`이므로 뒤 페이지는 계속 스크롤되고 쓸 수 있습니다. `NebaModal.on`은 페이지 위에 모든 누름을 받는 막을 깔고 Tab을 popup 안에 가둡니다. `NebaModal.trapFocus`는 Tab만 가두고 페이지는 누를 수 있게 둡니다. `showClose`가 없는 modal popover에도 키보드 focus를 받을 때까지 숨겨진 닫기 버튼이 들어가며, 화면 낭독기는 숨은 동안에도 이 버튼을 찾아 누를 수 있습니다.
+- ×의 접근성 이름은 `locale`이 정합니다. `closeLabel`로 직접 쓸 수도 있습니다.
+
+:::
