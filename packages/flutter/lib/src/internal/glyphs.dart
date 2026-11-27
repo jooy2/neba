@@ -88,6 +88,22 @@ abstract final class NebaGlyphs {
     ),
   ];
 
+  /// An arrow along the line of reading: what comes next.
+  static final List<NebaGlyphPart> arrowRight = <NebaGlyphPart>[
+    const NebaGlyphPart.stroke(
+      'M3 8h10m-3.5-3.5L13 8l-3.5 3.5',
+      cap: StrokeCap.round,
+      join: StrokeJoin.round,
+    ),
+  ];
+
+  /// Three dots: something folded away.
+  static final List<NebaGlyphPart> ellipsis = <NebaGlyphPart>[
+    NebaGlyphPart.fill(_circle(3.5, 8, 1.15)),
+    NebaGlyphPart.fill(_circle(8, 8, 1.15)),
+    NebaGlyphPart.fill(_circle(12.5, 8, 1.15)),
+  ];
+
   /// A minus.
   static final List<NebaGlyphPart> minus = <NebaGlyphPart>[
     const NebaGlyphPart.stroke('M3.5 8h9', width: 1.75, cap: StrokeCap.round),

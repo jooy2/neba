@@ -14,6 +14,8 @@ void main() {
     'close': NebaGlyphs.close,
     'chevron': NebaGlyphs.chevron,
     'check': NebaGlyphs.check,
+    'arrowRight': NebaGlyphs.arrowRight,
+    'ellipsis': NebaGlyphs.ellipsis,
     'minus': NebaGlyphs.minus,
     'plus': NebaGlyphs.plus,
     'dot': NebaGlyphs.dot,

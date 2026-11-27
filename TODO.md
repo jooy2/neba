@@ -129,7 +129,7 @@ Demos that wait on a component not ported yet, to be added with it: `meter/thres
 - [ ] `NebaDataTable`
 - [ ] `NebaCodeBlock`
 - [x] `NebaTimeline`
-- [ ] `NebaBreadcrumb`
+- [x] `NebaBreadcrumb`
 - [x] `NebaAnchor`
 - [ ] `NebaTreeView`
 - [x] `NebaVisuallyHidden`

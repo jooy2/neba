@@ -50,6 +50,11 @@ import 'package:neba_example/demos/box/hero.dart';
 import 'package:neba_example/demos/box/sizes.dart';
 import 'package:neba_example/demos/box/unpadded.dart';
 import 'package:neba_example/demos/box/variants.dart';
+import 'package:neba_example/demos/breadcrumb/collapse.dart';
+import 'package:neba_example/demos/breadcrumb/hero.dart';
+import 'package:neba_example/demos/breadcrumb/icons.dart';
+import 'package:neba_example/demos/breadcrumb/separators.dart';
+import 'package:neba_example/demos/breadcrumb/sizes.dart';
 import 'package:neba_example/demos/button/colors.dart';
 import 'package:neba_example/demos/button/density.dart';
 import 'package:neba_example/demos/button/elevation.dart';
@@ -300,6 +305,11 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'box/sizes': BoxSizes.new,
   'box/unpadded': BoxUnpadded.new,
   'box/variants': BoxVariants.new,
+  'breadcrumb/collapse': BreadcrumbCollapse.new,
+  'breadcrumb/hero': BreadcrumbHero.new,
+  'breadcrumb/icons': BreadcrumbIcons.new,
+  'breadcrumb/separators': BreadcrumbSeparators.new,
+  'breadcrumb/sizes': BreadcrumbSizes.new,
   'button-group/full-width': ButtonGroupFullWidth.new,
   'button-group/hero': ButtonGroupHero.new,
   'button-group/orientation': ButtonGroupOrientation.new,
