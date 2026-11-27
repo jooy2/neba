@@ -109,6 +109,14 @@ import 'package:neba_example/demos/divider/size.dart';
 import 'package:neba_example/demos/divider/vertical.dart';
 import 'package:neba_example/demos/drawer/rounded.dart';
 import 'package:neba_example/demos/drawer/sides.dart';
+import 'package:neba_example/demos/empty/action.dart';
+import 'package:neba_example/demos/empty/color.dart';
+import 'package:neba_example/demos/empty/hero.dart';
+import 'package:neba_example/demos/empty/icon.dart';
+import 'package:neba_example/demos/empty/locale.dart';
+import 'package:neba_example/demos/empty/size.dart';
+import 'package:neba_example/demos/empty/title.dart';
+import 'package:neba_example/demos/empty/variants.dart';
 import 'package:neba_example/demos/flex/alignment.dart';
 import 'package:neba_example/demos/flex/direction.dart';
 import 'package:neba_example/demos/flex/hero.dart';
@@ -400,6 +408,14 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'divider/vertical': DividerVertical.new,
   'drawer/rounded': DrawerRounded.new,
   'drawer/sides': DrawerSides.new,
+  'empty/action': EmptyAction.new,
+  'empty/color': EmptyColor.new,
+  'empty/hero': EmptyHero.new,
+  'empty/icon': EmptyIcon.new,
+  'empty/locale': EmptyLocale.new,
+  'empty/size': EmptySize.new,
+  'empty/title': EmptyTitle.new,
+  'empty/variants': EmptyVariants.new,
   'flex/alignment': FlexAlignment.new,
   'flex/direction': FlexDirection.new,
   'flex/hero': FlexHero.new,
