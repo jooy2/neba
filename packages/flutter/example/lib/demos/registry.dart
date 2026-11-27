@@ -430,6 +430,10 @@ import 'package:neba_example/demos/progress_circular/sizes.dart';
 import 'package:neba_example/demos/progress_linear/hero.dart';
 import 'package:neba_example/demos/progress_linear/sizes.dart';
 import 'package:neba_example/demos/progress_linear/values.dart';
+import 'package:neba_example/demos/prompt_input/hero.dart';
+import 'package:neba_example/demos/prompt_input/rows.dart';
+import 'package:neba_example/demos/prompt_input/submit_key.dart';
+import 'package:neba_example/demos/prompt_input/submitting.dart';
 import 'package:neba_example/demos/radio_group/descriptions.dart';
 import 'package:neba_example/demos/radio_group/hero.dart';
 import 'package:neba_example/demos/radio_group/orientation.dart';
@@ -1028,6 +1032,10 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'progress-linear/hero': ProgressLinearHero.new,
   'progress-linear/sizes': ProgressLinearSizes.new,
   'progress-linear/values': ProgressLinearValues.new,
+  'prompt-input/hero': PromptInputHero.new,
+  'prompt-input/rows': PromptInputRows.new,
+  'prompt-input/submit-key': PromptInputSubmitKey.new,
+  'prompt-input/submitting': PromptInputSubmitting.new,
   'radio-group/descriptions': RadioGroupDescriptions.new,
   'radio-group/hero': RadioGroupHero.new,
   'radio-group/orientation': RadioGroupOrientation.new,

@@ -349,6 +349,7 @@ class NebaFieldShell extends StatefulWidget {
     this.paddingEnd,
     this.keyboardRing = false,
     this.padding,
+    this.cornerSize,
     super.key,
   });
 
@@ -408,6 +409,10 @@ class NebaFieldShell extends StatefulWidget {
   /// buttons with room of their own, or whose content is a wrapping row of
   /// chips padded to stand a single row at the control's height.
   final EdgeInsetsGeometry? padding;
+
+  /// The step the corners are drawn at, in place of [size]'s: a prompt field
+  /// is tall, and takes the corners one step rounder.
+  final NebaSize? cornerSize;
 
   @override
   State<NebaFieldShell> createState() => _NebaFieldShellState();
@@ -496,7 +501,7 @@ class _NebaFieldShellState extends State<NebaFieldShell> {
     final bool lit = !disabled && !readOnly;
     final bool hovered = _hovered && !disabled;
     final NebaFieldNotch? notch = widget.notch;
-    final BorderRadius radius = BorderRadius.circular(tokens.radius[size]!);
+    final BorderRadius radius = BorderRadius.circular(tokens.radius[widget.cornerSize ?? size]!);
     final NebaFieldLook look = NebaFieldLook.of(
       tokens: tokens,
       roles: roles,
@@ -1053,6 +1058,8 @@ class NebaFieldEditable extends StatelessWidget {
     this.onKeyEvent,
     this.shortcuts,
     this.drawn = true,
+    this.maxRows,
+    this.onEditingComplete,
     super.key,
   });
 
@@ -1142,6 +1149,15 @@ class NebaFieldEditable extends StatelessWidget {
   /// screen reader.
   final bool drawn;
 
+  /// How many lines a [multiline] editable grows to before it scrolls; it
+  /// grows without a ceiling when left out.
+  final int? maxRows;
+
+  /// What the keyboard's action key does once [onSubmitted] has run, in place
+  /// of taking the focus away: a field that sends and stays open passes one
+  /// that does nothing.
+  final VoidCallback? onEditingComplete;
+
   @override
   Widget build(BuildContext context) {
     final NebaTokens tokens = NebaTheme.of(context);
@@ -1163,13 +1179,14 @@ class NebaFieldEditable extends StatelessWidget {
       enableSuggestions: suggestions,
       keyboardType: keyboardType ?? (multiline ? TextInputType.multiline : TextInputType.text),
       textInputAction: textInputAction,
-      maxLines: multiline ? null : 1,
+      maxLines: multiline ? maxRows : 1,
       minLines: multiline ? rows : null,
       autofocus: autofocus,
       autofillHints: autofillHints,
       inputFormatters: inputFormatters,
       onChanged: onChanged,
       onSubmitted: onSubmitted,
+      onEditingComplete: onEditingComplete,
       // The gestures are the field's, over its whole shell.
       rendererIgnoresPointer: true,
       enableInteractiveSelection: selectionEnabled,
