@@ -59,6 +59,20 @@ void main() {
     }
   }
 
+  // And once right to left, where a widget that places something by left and
+  // right rather than by start and end is laid out against the wrong edge, and
+  // one that does its own arithmetic along a row may overflow or throw.
+  for (final MapEntry<String, Widget Function()> demo in demos.entries) {
+    testWidgets('${demo.key} builds right to left', (WidgetTester tester) async {
+      await tester.pumpWidget(GalleryApp(query: <String, String>{'demo': demo.key, 'dir': 'rtl'}));
+      await tester.pump(const Duration(seconds: 1));
+
+      expect(tester.takeException(), isNull);
+
+      await tester.pumpWidget(const SizedBox());
+    });
+  }
+
   // And once at the narrowest phone's width, where a row that does not give
   // way overflows.
   for (final MapEntry<String, Widget Function()> demo in demos.entries) {

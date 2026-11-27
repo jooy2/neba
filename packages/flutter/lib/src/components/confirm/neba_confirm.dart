@@ -288,7 +288,7 @@ class _NebaConfirmProviderState extends State<NebaConfirmProvider> {
       // The sheet beside the app rather than around it, so that a sheet of
       // its own for the next question leaves the app where it is.
       child: Stack(
-        alignment: Alignment.topLeft,
+        alignment: AlignmentDirectional.topStart,
         fit: StackFit.passthrough,
         children: <Widget>[
           widget.child,

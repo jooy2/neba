@@ -12,8 +12,9 @@ const String galleryFont = 'Inter';
 /// `?demo=button/variants` shows that demo alone, which is how the
 /// documentation site embeds a Flutter preview: on the page's own backdrop,
 /// with its height reported to the page and its theme taken from it.
-/// `?theme=dark` or `?theme=light` pins the colour scheme, and `?align=center`
-/// centres the demo. Without a demo, the list.
+/// `?theme=dark` or `?theme=light` pins the colour scheme, `?dir=rtl` lays it
+/// out right to left, and `?align=center` centres the demo. Without a demo,
+/// the list.
 void main() {
   runApp(GalleryApp(query: Uri.base.queryParameters));
 }
@@ -84,6 +85,7 @@ class _GalleryAppState extends State<GalleryApp> {
         // the app has none of its own.
         return NebaProvider(
           colorScheme: _scheme,
+          textDirection: widget.query['dir'] == 'rtl' ? TextDirection.rtl : null,
           child: Overlay.wrap(child: body),
         );
       },
