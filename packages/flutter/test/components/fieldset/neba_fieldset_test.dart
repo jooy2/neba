@@ -253,6 +253,10 @@ void main() {
                 NebaColorPicker(label: const Text('Accent'), onOpenChange: (bool open) => hit()),
             find.byType(NebaColorPicker),
           ),
+          'NebaPromptInput': (
+            (VoidCallback hit) => const NebaPromptInput(placeholder: 'Ask anything'),
+            find.byType(EditableText),
+          ),
           'NebaTreeSelect': (
             (VoidCallback hit) => NebaTreeSelect<String>(
               label: const Text('Folder'),

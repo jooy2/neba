@@ -72,7 +72,7 @@ The one thing only a real `<fieldset>` can do: it reaches every control inside, 
 
 ::: fw flutter
 
-It reaches every Neba control inside, including ones a widget three levels down built and never heard of it, and wins over a control's own `disabled`. TextField, NumberField, OtpField, Select, Combobox, DatePicker, TimePicker, DateTimePicker, DateRangePicker, TreeSelect, ColorPicker, FilePicker, Checkbox, CheckboxGroup, RadioGroup, Switch, Slider, Rating, SegmentedButton, Toggle, ToggleGroup, [Button](./button) and IconButton are each drawn disabled inside it and take no input. A widget from outside the library does not hear it, since a widget tree has no `<fieldset>` to stop it.
+It reaches every Neba control inside, including ones a widget three levels down built and never heard of it, and wins over a control's own `disabled`. TextField, NumberField, OtpField, Select, Combobox, DatePicker, TimePicker, DateTimePicker, DateRangePicker, TreeSelect, ColorPicker, FilePicker, PromptInput, Checkbox, CheckboxGroup, RadioGroup, Switch, Slider, Rating, SegmentedButton, Toggle, ToggleGroup, [Button](./button) and IconButton are each drawn disabled inside it and take no input. A widget from outside the library does not hear it, since a widget tree has no `<fieldset>` to stop it.
 
 :::
 

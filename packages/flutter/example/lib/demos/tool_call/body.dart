@@ -32,14 +32,10 @@ class ToolCallBody extends StatelessWidget {
             name: const Text('write_file'),
             status: NebaRunStatus.success,
             duration: const Duration(milliseconds: 12),
-            // A NebaCodeBlock once the package has one; the monospaced face
-            // until then.
-            args: Text.rich(
-              const TextSpan(text: '{ "path": "src/index.ts", "mode": "append" }'),
-              style: TextStyle(
-                fontFamily: NebaScale.monoFonts.first,
-                fontFamilyFallback: NebaScale.monoFonts.sublist(1),
-              ),
+            args: const NebaCodeBlock(
+              size: NebaSize.sm,
+              language: 'json',
+              code: '{ "path": "src/index.ts", "mode": "append" }',
             ),
             result: const Text('18 bytes written'),
           ),
