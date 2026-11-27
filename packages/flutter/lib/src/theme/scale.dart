@@ -62,6 +62,39 @@ abstract final class NebaScale {
     NebaSize.xl: 28,
   };
 
+  /// The square a checkbox draws and the circle a radio draws.
+  ///
+  /// A ladder of its own rather than a step off [controlHeight], because a
+  /// tick is not a control a label goes inside: it is a mark beside one, sized
+  /// against the text next to it.
+  static const Map<NebaSize, double> tickSize = <NebaSize, double>{
+    NebaSize.xs: 14,
+    NebaSize.sm: 16,
+    NebaSize.md: 18,
+    NebaSize.lg: 20,
+    NebaSize.xl: 24,
+  };
+
+  /// A checkbox's corners: about 30% of [tickSize], so a checkbox never rounds
+  /// into a radio.
+  static const Map<NebaSize, double> tickRadius = <NebaSize, double>{
+    NebaSize.xs: 4,
+    NebaSize.sm: 5,
+    NebaSize.md: 6,
+    NebaSize.lg: 7,
+    NebaSize.xl: 8,
+  };
+
+  /// The dot inside a chosen radio: a whole, even number of pixels at every
+  /// step, so it sits on the same pixel grid as the ring around it.
+  static const Map<NebaSize, double> tickDot = <NebaSize, double>{
+    NebaSize.xs: 6,
+    NebaSize.sm: 6,
+    NebaSize.md: 8,
+    NebaSize.lg: 8,
+    NebaSize.xl: 10,
+  };
+
   /// A control's inline padding, per density. Density changes this and
   /// nothing else.
   static const Map<NebaDensity, Map<NebaSize, double>> paddingX =

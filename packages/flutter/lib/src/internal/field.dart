@@ -679,6 +679,11 @@ class NebaFieldAdornment extends StatelessWidget {
 /// A field's label, the field, its description and its error, one under the
 /// other, each a step below the control's text.
 ///
+/// A set of options, a radio group or a checkbox group, puts its description
+/// between the label and the options instead ([descriptionFirst]), because
+/// it describes the question and not one answer, and stands its parts at a
+/// gap of its own.
+///
 /// The parts [semantics] took the words of are left out of what a screen
 /// reader hears, since the field says them itself.
 class NebaFieldColumn extends StatelessWidget {
@@ -693,6 +698,8 @@ class NebaFieldColumn extends StatelessWidget {
     this.error,
     this.disabled = false,
     this.onLabelTap,
+    this.descriptionFirst = false,
+    this.spacing,
     super.key,
   });
 
@@ -724,6 +731,12 @@ class NebaFieldColumn extends StatelessWidget {
   /// `<label>` does.
   final VoidCallback? onLabelTap;
 
+  /// Whether the description stands between the label and the field.
+  final bool descriptionFirst;
+
+  /// Between the parts, [NebaScale.stackGap] at [size] when left out.
+  final double? spacing;
+
   @override
   Widget build(BuildContext context) {
     final NebaTokens tokens = NebaTheme.of(context);
@@ -742,11 +755,14 @@ class NebaFieldColumn extends StatelessWidget {
     final Widget? label = this.label;
     final Widget? description = this.description;
     final Widget? error = this.error;
+    final Widget? describing = description == null
+        ? null
+        : part(description, tokens.mutedFg, taken: semantics.descriptionTaken);
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      spacing: NebaScale.stackGap[size]!,
+      spacing: spacing ?? NebaScale.stackGap[size]!,
       children: <Widget>[
         if (label != null)
           GestureDetector(
@@ -761,9 +777,9 @@ class NebaFieldColumn extends StatelessWidget {
               weight: FontWeight.w500,
             ),
           ),
+        if (descriptionFirst) ?describing,
         field,
-        if (description != null)
-          part(description, tokens.mutedFg, taken: semantics.descriptionTaken),
+        if (!descriptionFirst) ?describing,
         if (error != null) part(error, errorColor, taken: semantics.errorTaken),
       ],
     );

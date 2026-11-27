@@ -1,6 +1,7 @@
 ---
 title: Checkbox
 order: 5
+flutter: true
 ---
 
 # Checkbox
@@ -9,17 +10,41 @@ order: 5
 
 <Demo src="checkbox/hero" />
 
+::: fw react
+
 ```tsx
 import { Checkbox } from 'neba';
 
 <Checkbox label="로그인 상태 유지" defaultChecked />;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+const NebaCheckbox(label: Text('로그인 상태 유지'), defaultChecked: true);
+```
+
+:::
+
 ## Props
 
 <PropsTable name="Checkbox" />
 
+::: fw react
+
 `label` · `description` · `error`는 `children`이 아니라 prop입니다. `children`은 받지 않습니다.
+
+:::
+
+::: fw flutter
+
+`label`과 `description`, `error`는 위젯이고 보통 `Text`를 넘기며, `child`는 없습니다. Flutter 체크박스에는 참여할 폼 전송이 없으므로 `name`과 `required`, 폼 값도 없습니다. 라벨이 없는 체크박스의 이름은 `semanticLabel`로 붙입니다. [CheckboxGroup](./checkbox-group) 안의 체크박스는 `size`와 `color`, `readOnly`를 자기 인자에서 먼저 찾고 그다음 그룹에서 찾으므로 이 셋은 nullable입니다.
+
+:::
 
 즉시 효력이 생기는 설정이라면 [Switch](./switch)를 쓰세요. Checkbox는 저장 버튼과 함께 제출되는 값입니다. 한 질문에 답하는 체크박스 여러 개는 [CheckboxGroup](./checkbox-group)에 넣으세요. 묶음 전체가 값 하나와 라벨을 갖고, 선택지끼리의 간격으로 놓입니다.
 
@@ -35,7 +60,17 @@ import { Checkbox } from 'neba';
 
 <Demo src="checkbox/states">
 
+::: fw react
+
 <<< @/.vitepress/demos/checkbox/states.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/checkbox/states.dart
+
+:::
 
 </Demo>
 
@@ -45,7 +80,17 @@ import { Checkbox } from 'neba';
 
 <Demo src="checkbox/indeterminate">
 
+::: fw react
+
 <<< @/.vitepress/demos/checkbox/indeterminate.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/checkbox/indeterminate.dart
+
+:::
 
 </Demo>
 
@@ -53,11 +98,23 @@ import { Checkbox } from 'neba';
 
 <Demo src="checkbox/sizes">
 
+::: fw react
+
 <<< @/.vitepress/demos/checkbox/sizes.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/checkbox/sizes.dart
+
+:::
 
 </Demo>
 
 ### classNames
+
+::: fw react
 
 `className`은 tick이 아니라 감싸는 field wrapper에 붙습니다. tick과 그 안의 표시는 `classNames`로 갑니다.
 
@@ -67,9 +124,34 @@ import { Checkbox } from 'neba';
 
 slot은 `label`, `control`, `indicator`, `description`, `error`입니다. `control`은 tick 자체(체크되면 채워지는 테두리 상자)이고 `indicator`는 그 안의 표시입니다. 넘긴 class가 컴포넌트 자신의 class와 어떻게 겨루는지는 [prop 규약](../../design/prop-conventions)을 보세요.
 
+:::
+
+::: fw flutter
+
+class 이름은 없습니다. 라벨과 설명, 오류는 위젯이라 각자 스타일을 받고, tick과 그 안의 표시는 체크박스가 그립니다.
+
+```dart
+const NebaCheckbox(label: Text('I agree', style: TextStyle(fontWeight: FontWeight.w500)));
+```
+
+:::
+
 ## 접근성
+
+::: fw react
 
 - `role="checkbox"`와 함께 숨은 `<input>`이 렌더링되므로 `name`을 주면 폼과 함께 제출됩니다.
 - 라벨이 컨트롤과 연결되어 있어 글자를 눌러도 토글됩니다.
 - `label`을 쓰지 않는다면 `aria-label`을 주세요.
 - `indeterminate`는 `aria-checked="mixed"`로 보고됩니다.
+
+:::
+
+::: fw flutter
+
+- 화면 낭독기에는 체크박스 하나로 들리며, 체크됨과 해제됨, 중간 상태 가운데 하나로 읽힙니다. `Text`로 준 라벨이 이름이 되고, `Text`로 준 설명과 오류는 그 뒤에 읽힙니다. `error`가 있으면 invalid로도 표시됩니다.
+- 라벨을 눌러도 체크되고, 라벨과 네모 사이의 간격을 눌러도 체크됩니다. 설명은 누름을 받지 않습니다.
+- `label`을 쓰지 않는다면 `semanticLabel`을 주세요. 누름은 네모 자신의 상자 안에서만 닿으므로, 라벨 없는 체크박스는 React보다 누를 자리가 작습니다. 표의 셀 안에 둔다면 여유를 주세요.
+- focus를 가진 동안 Space와 Enter로 체크됩니다. 읽기 전용 체크박스도 focus 순서에는 남습니다.
+
+:::

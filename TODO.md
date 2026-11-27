@@ -144,8 +144,8 @@ Demos that wait on a component not ported yet, to be added with it: `skeleton/sw
 - [ ] `NebaOtpField`
 - [ ] `NebaSelect`
 - [ ] `NebaCombobox`
-- [ ] `NebaCheckbox`
-- [ ] `NebaCheckboxGroup`
+- [x] `NebaCheckbox`
+- [x] `NebaCheckboxGroup`
 - [ ] `NebaRadioGroup`
 - [ ] `NebaSwitch`
 - [ ] `NebaSlider`

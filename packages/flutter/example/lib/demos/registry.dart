@@ -61,6 +61,15 @@ import 'package:neba_example/demos/card/form.dart';
 import 'package:neba_example/demos/card/hero.dart';
 import 'package:neba_example/demos/card/sections.dart';
 import 'package:neba_example/demos/card/sizes.dart';
+import 'package:neba_example/demos/checkbox/hero.dart';
+import 'package:neba_example/demos/checkbox/indeterminate.dart';
+import 'package:neba_example/demos/checkbox/sizes.dart';
+import 'package:neba_example/demos/checkbox/states.dart';
+import 'package:neba_example/demos/checkbox_group/hero.dart';
+import 'package:neba_example/demos/checkbox_group/orientation.dart';
+import 'package:neba_example/demos/checkbox_group/parent.dart';
+import 'package:neba_example/demos/checkbox_group/spacing.dart';
+import 'package:neba_example/demos/checkbox_group/states.dart';
 import 'package:neba_example/demos/chip/content.dart';
 import 'package:neba_example/demos/chip/hero.dart';
 import 'package:neba_example/demos/chip/interactive.dart';
@@ -234,6 +243,15 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'card/hero': CardHero.new,
   'card/sections': CardSections.new,
   'card/sizes': CardSizes.new,
+  'checkbox-group/hero': CheckboxGroupHero.new,
+  'checkbox-group/orientation': CheckboxGroupOrientation.new,
+  'checkbox-group/parent': CheckboxGroupParent.new,
+  'checkbox-group/spacing': CheckboxGroupSpacing.new,
+  'checkbox-group/states': CheckboxGroupStates.new,
+  'checkbox/hero': CheckboxHero.new,
+  'checkbox/indeterminate': CheckboxIndeterminate.new,
+  'checkbox/sizes': CheckboxSizes.new,
+  'checkbox/states': CheckboxStates.new,
   'chip/content': ChipContent.new,
   'chip/hero': ChipHero.new,
   'chip/interactive': ChipInteractive.new,
