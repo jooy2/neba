@@ -126,6 +126,12 @@ NebaAspectRatio(
 
 :::
 
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/aspect_ratio/reserving.dart
+
+:::
+
 </Demo>
 
 ### rounded

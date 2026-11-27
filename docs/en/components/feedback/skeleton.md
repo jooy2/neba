@@ -1,6 +1,7 @@
 ---
 title: Skeleton
 order: 9
+flutter: true
 ---
 
 # Skeleton
@@ -8,6 +9,8 @@ order: 9
 <p class="neba-lede">The shape of something that has not loaded yet. It reserves the space the real thing will take, so a card does not grow by 200px under the reader when its image arrives.</p>
 
 <Demo src="skeleton/hero" align="center" />
+
+::: fw react
 
 ```tsx
 import { Skeleton } from 'neba';
@@ -17,11 +20,35 @@ import { Skeleton } from 'neba';
 <Skeleton lines={3} />
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+const NebaSkeleton(shape: NebaSkeletonShape.circle, size: NebaSize.lg);
+const NebaSkeleton(shape: NebaSkeletonShape.rect, height: 120);
+const NebaSkeleton(lines: 3);
+```
+
+:::
+
 ## Props
 
 <PropsTable name="Skeleton" />
 
+::: fw react
+
 Native `<div>` attributes pass through, and `render` swaps the element. The shared axes are described in [prop conventions](../../design/prop-conventions).
+
+:::
+
+::: fw flutter
+
+The shared axes are described in [prop conventions](../../design/prop-conventions). A line and a block take the width they are given, and a disc keeps its size inside a wider box.
+
+:::
 
 ## Examples
 
@@ -31,7 +58,17 @@ The three shapes are the three things a layout is made of. `line` is a run of te
 
 <Demo src="skeleton/shapes">
 
+::: fw react
+
 <<< @/.vitepress/demos/skeleton/shapes.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/skeleton/shapes.dart
+
+:::
 
 </Demo>
 
@@ -41,32 +78,70 @@ The three shapes are the three things a layout is made of. `line` is a run of te
 
 <Demo src="skeleton/lines">
 
+::: fw react
+
 <<< @/.vitepress/demos/skeleton/lines.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/skeleton/lines.dart
+
+:::
 
 </Demo>
 
 ### width and height
 
-`width` and `height` take a number as pixels or a string as a CSS length. A line is full width unless told otherwise, which is what makes a heading placeholder a `width` away.
+`width` and `height` take <Fw react="a number as pixels or a string as a CSS length" flutter="logical pixels; a fraction of the room is a `FractionallySizedBox` around the skeleton" />. A line is full width unless told otherwise, which is what makes a heading placeholder a `width` away.
 
 <Demo src="skeleton/swapping">
 
+::: fw react
+
 <<< @/.vitepress/demos/skeleton/swapping.tsx
+
+:::
 
 </Demo>
 
 ### animated
 
-`animated` is the highlight travelling across the placeholder. Turn it off for a page holding dozens of them, or where the wait is long enough that motion becomes noise. The highlight holds still while the placeholder is scrolled out of view, so placeholders below the fold cost nothing.
+`animated` is the highlight travelling across the placeholder. Turn it off for a page holding dozens of them, or where the wait is long enough that motion becomes noise. <Fw react="The highlight holds still while the placeholder is scrolled out of view, so placeholders below the fold cost nothing." />
+
+::: fw react
 
 ```tsx
 <Skeleton animated={false} lines={4} />
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+const NebaSkeleton(animated: false, lines: 4)
+```
+
+:::
+
 This is not the accessibility switch: a reduced-motion preference already replaces the sweep with a colour pulse without being asked.
 
 ## Accessibility
 
+::: fw react
+
 - A skeleton is `aria-hidden` by default. A dozen placeholders each announcing themselves is worse than silence.
 - Give `label` to the **one** skeleton that stands for a whole region and it becomes a `status` holding the label as visually hidden text. It mounts with that text in it, so it is read when a reader reaches it and is not announced by every screen reader on arrival. Do not label every bar in a stack.
+
+:::
+
+::: fw flutter
+
+- A skeleton says nothing by default. A dozen placeholders each announcing themselves is worse than silence.
+- Give `semanticLabel` to the **one** skeleton that stands for a whole region and it becomes a live region holding the label. Do not label every bar in a stack.
+
+:::
+
 - Prefer a skeleton over a spinner where the layout is known. It is the only loading indicator that keeps the page from reflowing when the content arrives.

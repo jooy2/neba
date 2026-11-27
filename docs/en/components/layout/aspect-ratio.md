@@ -126,6 +126,12 @@ The proportion holds whether or not the content has arrived, so a [Skeleton](../
 
 :::
 
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/aspect_ratio/reserving.dart
+
+:::
+
 </Demo>
 
 ### rounded

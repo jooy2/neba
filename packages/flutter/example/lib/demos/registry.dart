@@ -9,6 +9,7 @@ import 'package:flutter/widgets.dart';
 import 'package:neba_example/demos/aspect_ratio/fit.dart';
 import 'package:neba_example/demos/aspect_ratio/hero.dart';
 import 'package:neba_example/demos/aspect_ratio/ratios.dart';
+import 'package:neba_example/demos/aspect_ratio/reserving.dart';
 import 'package:neba_example/demos/avatar/fallback.dart';
 import 'package:neba_example/demos/avatar/hero.dart';
 import 'package:neba_example/demos/avatar/initials.dart';
@@ -92,6 +93,9 @@ import 'package:neba_example/demos/show/hero.dart';
 import 'package:neba_example/demos/show/pair.dart';
 import 'package:neba_example/demos/show/range.dart';
 import 'package:neba_example/demos/show/transparent.dart';
+import 'package:neba_example/demos/skeleton/hero.dart';
+import 'package:neba_example/demos/skeleton/lines.dart';
+import 'package:neba_example/demos/skeleton/shapes.dart';
 import 'package:neba_example/demos/stack/dealt.dart';
 import 'package:neba_example/demos/stack/depth.dart';
 import 'package:neba_example/demos/stack/direction.dart';
@@ -120,6 +124,7 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'aspect-ratio/fit': AspectRatioFit.new,
   'aspect-ratio/hero': AspectRatioHero.new,
   'aspect-ratio/ratios': AspectRatioRatios.new,
+  'aspect-ratio/reserving': AspectRatioReserving.new,
   'avatar/fallback': AvatarFallback.new,
   'avatar/hero': AvatarHero.new,
   'avatar/initials': AvatarInitials.new,
@@ -203,6 +208,9 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'show/pair': ShowPair.new,
   'show/range': ShowRange.new,
   'show/transparent': ShowTransparent.new,
+  'skeleton/hero': SkeletonHero.new,
+  'skeleton/lines': SkeletonLines.new,
+  'skeleton/shapes': SkeletonShapes.new,
   'stack/dealt': StackDealt.new,
   'stack/depth': StackDepth.new,
   'stack/direction': StackDirection.new,

@@ -1,6 +1,7 @@
 ---
 title: Skeleton
 order: 9
+flutter: true
 ---
 
 # Skeleton
@@ -8,6 +9,8 @@ order: 9
 <p class="neba-lede">아직 불러오지 않은 것의 형태입니다. 실제 내용이 차지할 자리를 미리 잡아 두므로, 이미지가 도착했다고 해서 읽고 있던 카드가 갑자기 200px 자라지 않습니다.</p>
 
 <Demo src="skeleton/hero" align="center" />
+
+::: fw react
 
 ```tsx
 import { Skeleton } from 'neba';
@@ -17,11 +20,35 @@ import { Skeleton } from 'neba';
 <Skeleton lines={3} />
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+const NebaSkeleton(shape: NebaSkeletonShape.circle, size: NebaSize.lg);
+const NebaSkeleton(shape: NebaSkeletonShape.rect, height: 120);
+const NebaSkeleton(lines: 3);
+```
+
+:::
+
 ## Props
 
 <PropsTable name="Skeleton" />
 
+::: fw react
+
 `<div>`의 기본 속성은 그대로 전달되며, `render`로 요소를 바꿀 수 있습니다. 공통 축은 [prop 규칙](../../design/prop-conventions)에서 설명합니다.
+
+:::
+
+::: fw flutter
+
+공통 축은 [prop 규칙](../../design/prop-conventions)에서 설명합니다. 줄과 블록은 주어진 너비를 차지하고, 원은 더 넓은 상자 안에서도 제 크기를 지킵니다.
+
+:::
 
 ## 예시
 
@@ -31,7 +58,17 @@ import { Skeleton } from 'neba';
 
 <Demo src="skeleton/shapes">
 
+::: fw react
+
 <<< @/.vitepress/demos/skeleton/shapes.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/skeleton/shapes.dart
+
+:::
 
 </Demo>
 
@@ -41,32 +78,70 @@ import { Skeleton } from 'neba';
 
 <Demo src="skeleton/lines">
 
+::: fw react
+
 <<< @/.vitepress/demos/skeleton/lines.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/skeleton/lines.dart
+
+:::
 
 </Demo>
 
 ### width와 height
 
-`width`와 `height`는 숫자를 픽셀로, 문자열을 CSS 길이로 받습니다. 줄은 따로 말하지 않는 한 전체 너비를 차지하므로, 제목 자리 표시자는 `width` 하나 차이입니다.
+<Fw react="`width`와 `height`는 숫자를 픽셀로, 문자열을 CSS 길이로 받습니다." flutter="`width`와 `height`는 논리 픽셀이며, 남은 공간의 일부만큼 그리려면 skeleton을 `FractionallySizedBox`로 감쌉니다." /> 줄은 따로 말하지 않는 한 전체 너비를 차지하므로, 제목 자리 표시자는 `width` 하나 차이입니다.
 
 <Demo src="skeleton/swapping">
 
+::: fw react
+
 <<< @/.vitepress/demos/skeleton/swapping.tsx
+
+:::
 
 </Demo>
 
 ### animated
 
-`animated`는 자리 표시자 위를 지나가는 하이라이트입니다. 한 화면에 수십 개가 놓이거나, 기다림이 길어 움직임이 소음이 되는 곳에서는 끄세요. 자리 표시자가 화면 밖으로 스크롤되어 있는 동안에는 하이라이트가 멈추므로, 스크롤 아래쪽의 자리 표시자는 비용이 들지 않습니다.
+`animated`는 자리 표시자 위를 지나가는 하이라이트입니다. 한 화면에 수십 개가 놓이거나, 기다림이 길어 움직임이 소음이 되는 곳에서는 끄세요. <Fw react="자리 표시자가 화면 밖으로 스크롤되어 있는 동안에는 하이라이트가 멈추므로, 스크롤 아래쪽의 자리 표시자는 비용이 들지 않습니다." />
+
+::: fw react
 
 ```tsx
 <Skeleton animated={false} lines={4} />
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+const NebaSkeleton(animated: false, lines: 4)
+```
+
+:::
+
 이것은 접근성 스위치가 아닙니다. 축소된 모션 설정은 묻지 않고도 이미 이 하이라이트를 색 맥동으로 바꿉니다.
 
 ## 접근성
 
+::: fw react
+
 - Skeleton은 기본적으로 `aria-hidden`입니다. 자리 표시자 열둘이 저마다 자기를 알리는 것보다 침묵이 낫습니다.
 - 한 영역 전체를 대표하는 **하나**에만 `label`을 주면 그 label을 화면에 보이지 않는 글자로 담은 `status`가 됩니다. 그 글자를 담은 채 마운트되므로 읽는 사람이 그 자리에 오면 읽히지만, 나타나는 순간에 모든 screen reader가 알려 주지는 않습니다. 쌓인 막대마다 label을 붙이지 마세요.
+
+:::
+
+::: fw flutter
+
+- Skeleton은 기본적으로 아무것도 알리지 않습니다. 자리 표시자 열둘이 저마다 자기를 알리는 것보다 침묵이 낫습니다.
+- 한 영역 전체를 대표하는 **하나**에만 `semanticLabel`을 주면 그 말을 담은 live region이 됩니다. 쌓인 막대마다 label을 붙이지 마세요.
+
+:::
+
 - 레이아웃을 이미 알고 있다면 spinner보다 skeleton을 쓰세요. 내용이 도착할 때 페이지가 다시 흐르지 않게 해 주는 로딩 표시는 이것뿐입니다.
