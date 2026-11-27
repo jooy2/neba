@@ -23,6 +23,7 @@
 library;
 
 export 'src/components/accordion/neba_accordion.dart';
+export 'src/components/agent_steps/neba_agent_steps.dart';
 export 'src/components/alert/neba_alert.dart';
 export 'src/components/anchor/neba_anchor.dart';
 export 'src/components/animate_blink/neba_animate_blink.dart';

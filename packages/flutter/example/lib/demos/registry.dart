@@ -10,6 +10,10 @@ import 'package:neba_example/demos/accordion/behaviour.dart';
 import 'package:neba_example/demos/accordion/hero.dart';
 import 'package:neba_example/demos/accordion/sizes.dart';
 import 'package:neba_example/demos/accordion/variants.dart';
+import 'package:neba_example/demos/agent_steps/growing.dart';
+import 'package:neba_example/demos/agent_steps/hero.dart';
+import 'package:neba_example/demos/agent_steps/size.dart';
+import 'package:neba_example/demos/agent_steps/status.dart';
 import 'package:neba_example/demos/alert/colors.dart';
 import 'package:neba_example/demos/alert/dismissing.dart';
 import 'package:neba_example/demos/alert/hero.dart';
@@ -587,6 +591,10 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'accordion/hero': AccordionHero.new,
   'accordion/sizes': AccordionSizes.new,
   'accordion/variants': AccordionVariants.new,
+  'agent-steps/growing': AgentStepsGrowing.new,
+  'agent-steps/hero': AgentStepsHero.new,
+  'agent-steps/size': AgentStepsSize.new,
+  'agent-steps/status': AgentStepsStatus.new,
   'alert/colors': AlertColors.new,
   'alert/dismissing': AlertDismissing.new,
   'alert/hero': AlertHero.new,

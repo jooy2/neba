@@ -1,6 +1,7 @@
 ---
 title: AgentSteps
 order: 4
+flutter: true
 ---
 
 # AgentSteps
@@ -8,6 +9,8 @@ order: 4
 <p class="neba-lede">A chain of steps that grows as it runs. Each one carries a status, a time and whatever it did, and the one at the bottom is usually still going.</p>
 
 <Demo src="agent-steps/hero" />
+
+::: fw react
 
 ```tsx
 import { AgentStep, AgentSteps } from 'neba';
@@ -18,11 +21,44 @@ import { AgentStep, AgentSteps } from 'neba';
 </AgentSteps>;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+const NebaAgentSteps(
+  running: true,
+  runningTitle: Text('Writing the answer'),
+  children: <Widget>[
+    NebaAgentStep(title: Text('Read the request'), duration: Duration(milliseconds: 120)),
+    NebaAgentStep(
+      title: Text('Searched the documentation'),
+      meta: Text('4 hits'),
+      duration: Duration(milliseconds: 412),
+    ),
+  ],
+);
+```
+
+:::
+
 ## Props
 
 <PropsTable name="AgentSteps" />
 
+::: fw react
+
 Native `<ol>` attributes pass through to the root. Only `color` is excluded, since the table above spells it differently.
+
+:::
+
+::: fw flutter
+
+React's `running` takes either `true` or a node; here it is a `bool`, and the node is `runningTitle`. `labels` is a map keyed by status name.
+
+:::
 
 A [Timeline](../display/timeline) and a [HowToSteps](../surfaces/how-to-steps) draw a list that is known in advance: five stages of a checkout, four things to do in order. This one does not know how many items it has.
 
@@ -30,7 +66,17 @@ A [Timeline](../display/timeline) and a [HowToSteps](../surfaces/how-to-steps) d
 
 <PropsTable name="AgentStep" />
 
+::: fw react
+
 Native `<li>` attributes pass through. `color` and `title` are excluded.
+
+:::
+
+::: fw flutter
+
+`duration` is a `Duration`, and `showIcon: false` is React's `icon={false}`.
+
+:::
 
 ## Examples
 
@@ -38,11 +84,31 @@ Native `<li>` attributes pass through. `color` and `title` are excluded.
 
 Append steps as they happen. A step's place in the list is not a prop, so nothing has to be renumbered when one is inserted — the chain works out which one the rail stops at.
 
+::: fw react
+
 `running` draws one more marker under the last step, for the case the next step has no name yet. `true` gives it no label at all, because the turning ring has already said what it is and the status is read out either way; a node gives it one.
+
+:::
+
+::: fw flutter
+
+`running` draws one more marker under the last step, for the case the next step has no name yet. On its own it gives the marker no label at all, because the turning ring has already said what it is and the status is read out either way; `runningTitle` gives it one. Give each step a key when steps can be inserted anywhere but the end, so each keeps its own clock.
+
+:::
 
 <Demo src="agent-steps/growing">
 
+::: fw react
+
 <<< @/.vitepress/demos/agent-steps/growing.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/agent_steps/growing.dart
+
+:::
 
 </Demo>
 
@@ -54,17 +120,27 @@ Colour follows the status the same way: a failed step is `danger` and a finished
 
 <Demo src="agent-steps/status">
 
+::: fw react
+
 <<< @/.vitepress/demos/agent-steps/status.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/agent_steps/status.dart
+
+:::
 
 </Demo>
 
 ### What a step did
 
-`children` is the detail under the title — the query that was searched, the file that was read, or a whole [ToolCall](./tool-call). `meta` is for the short thing that belongs on the title line instead.
+<Fw react="children" flutter="child" code /> is the detail under the title — the query that was searched, the file that was read, or a whole [ToolCall](./tool-call). `meta` is for the short thing that belongs on the title line instead.
 
 ### duration
 
-Milliseconds, written at the end of the title line. Leave it out and a `running` step counts its own from the second it starts, exactly as a [ToolCall](./tool-call) does.
+<Fw react="Milliseconds" flutter="A Duration" />, written at the end of the title line. Leave it out and a `running` step counts its own from the second it starts, exactly as a [ToolCall](./tool-call) does.
 
 ### size · density
 
@@ -72,13 +148,36 @@ Milliseconds, written at the end of the title line. Leave it out and a `running`
 
 <Demo src="agent-steps/size">
 
+::: fw react
+
 <<< @/.vitepress/demos/agent-steps/size.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/agent_steps/size.dart
+
+:::
 
 </Demo>
 
 ## Accessibility
 
+::: fw react
+
 - An `<ol>` with `role="list"` spelled out, so Safari keeps the list semantics after Tailwind's reset takes the markers off.
 - Every step's status is written in words, which a screen reader reads when it reaches the step; the marks are `aria-hidden`.
 - A step changing status is not announced on its own. To have it heard as it happens, write it into a live region the app keeps on the page, such as a `role="status"` element.
 - The `running` step carries `aria-current="step"`.
+
+:::
+
+::: fw flutter
+
+- The chain is a list and each step an item of it, to a screen reader.
+- Every step's status is said in words before its title; the marks are drawn and not read.
+- A step changing status is not announced on its own. To have it heard as it happens, announce it from the app, through `SemanticsService` or a live region of its own.
+- The `running` step is marked selected, as the current step of a sequence is.
+
+:::
