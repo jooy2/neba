@@ -298,7 +298,15 @@ class _NebaToggleState extends State<NebaToggle> {
                         padding: EdgeInsets.symmetric(
                           horizontal: iconOnly ? 0 : NebaScale.paddingX[density]![size]!,
                         ),
-                        child: Center(widthFactor: widget.fullWidth ? null : 1, child: label),
+                        child: Center(
+                          widthFactor: widget.fullWidth ? null : 1,
+                          // A semantic label stands in for what is drawn, and
+                          // only for that: the node keeps its tap and focus.
+                          child: ExcludeSemantics(
+                            excluding: widget.semanticLabel != null,
+                            child: label,
+                          ),
+                        ),
                       ),
                       if (!disabled)
                         Positioned.fill(
@@ -329,7 +337,7 @@ class _NebaToggleState extends State<NebaToggle> {
       enabled: !disabled,
       selected: pressed,
       label: semanticLabel,
-      child: semanticLabel == null ? toggle : ExcludeSemantics(child: toggle),
+      child: toggle,
     );
   }
 }

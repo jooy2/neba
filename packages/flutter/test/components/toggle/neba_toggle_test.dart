@@ -59,6 +59,32 @@ void main() {
       semantics.dispose();
     });
 
+    testWidgets('can still be pressed and focused from a screen reader with a semanticLabel', (
+      WidgetTester tester,
+    ) async {
+      final SemanticsHandle semantics = tester.ensureSemantics();
+
+      await pump(
+        tester,
+        const NebaToggle(semanticLabel: 'Grid', startIcon: SizedBox.square(dimension: 10)),
+      );
+
+      expect(
+        tester.getSemantics(find.byType(NebaToggle)),
+        matchesSemantics(
+          label: 'Grid',
+          isButton: true,
+          isEnabled: true,
+          hasEnabledState: true,
+          hasSelectedState: true,
+          isFocusable: true,
+          hasTapAction: true,
+          hasFocusAction: true,
+        ),
+      );
+      semantics.dispose();
+    });
+
     testWidgets('goes square with no label', (WidgetTester tester) async {
       await pump(
         tester,
