@@ -1,6 +1,7 @@
 ---
 title: AnimateReveal
 order: 9
+flutter: true
 ---
 
 # AnimateReveal
@@ -8,6 +9,8 @@ order: 9
 <p class="neba-lede">Content uncovered by an edge travelling across it. Nothing moves and nothing changes colour: the content is already in place at full size, and what changes is how much of it has been let through.</p>
 
 <Demo src="animate-reveal/hero" />
+
+::: fw react
 
 ```tsx
 import { AnimateReveal } from 'neba';
@@ -17,13 +20,37 @@ import { AnimateReveal } from 'neba';
 </AnimateReveal>;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+const NebaAnimateReveal(
+  child: NebaTypography('Nothing moved. It was let through.', level: NebaTypographyLevel.h2),
+);
+```
+
+:::
+
 ## Props
 
 <PropsTable name="AnimateReveal" />
 
-Every other `<div>` attribute passes through to the root. The settings shared by every `Animate*` are defined in [prop conventions](../../design/prop-conventions).
+<Fw react="Every other `<div>` attribute passes through to the root." flutter="It wraps a `child`, or `children` laid out by `layoutBuilder`." /> The settings shared by every `Animate*` are defined in [prop conventions](../../design/prop-conventions).
+
+::: fw react
 
 It is a `clip-path`, so there is no wrapper and no `overflow` box: the element takes exactly the room it always took, and everything around it is laid out against the finished size from the first frame. That makes it the effect for a heading, a rule or a chart's plot area: anything whose position is part of the information.
+
+:::
+
+::: fw flutter
+
+It is a clip painted over the widget as it is laid out: the widget takes exactly the room it always took, and everything around it is laid out against the finished size from the first frame. That makes it the effect for a heading, a rule or a chart's plot area: anything whose position is part of the information.
+
+:::
 
 ## Examples
 
@@ -33,7 +60,17 @@ The edge the wipe travels **from**. `left` (the default) uncovers left to right.
 
 <Demo src="animate-reveal/sides" minHeight="260">
 
+::: fw react
+
 <<< @/.vitepress/demos/animate-reveal/sides.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/animate_reveal/sides.dart
+
+:::
 
 </Demo>
 
@@ -43,7 +80,7 @@ Fades as it wipes, from this opacity. `1` (the default) is a wipe and nothing el
 
 ### mode
 
-`mode="out"` runs the same edge backwards and holds it there, which covers the content up again.
+<Fw react='`mode="out"`' flutter="`NebaAnimateMode.exit`" /> runs the same edge backwards and holds it there, which covers the content up again.
 
 ### stagger
 
@@ -52,4 +89,4 @@ Fades as it wipes, from this opacity. `1` (the default) is a wipe and nothing el
 ## Accessibility
 
 - A reduced-motion preference cuts the animation to its last frame, and the content is drawn whole.
-- The content is in the document and in the accessibility tree the entire time. A clip hides pixels, not information.
+- The content is in the <Fw react="document and in the accessibility tree" flutter="semantics tree" /> the entire time. A clip hides pixels, not information.

@@ -29,6 +29,8 @@ import 'package:neba_example/demos/animate_fade/triggers.dart';
 import 'package:neba_example/demos/animate_grow/hero.dart';
 import 'package:neba_example/demos/animate_grow/origin.dart';
 import 'package:neba_example/demos/animate_grow/settling.dart';
+import 'package:neba_example/demos/animate_reveal/hero.dart';
+import 'package:neba_example/demos/animate_reveal/sides.dart';
 import 'package:neba_example/demos/animate_rotate/hero.dart';
 import 'package:neba_example/demos/animate_rotate/origin.dart';
 import 'package:neba_example/demos/animate_rotate/spin.dart';
@@ -449,6 +451,8 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'animate-grow/hero': AnimateGrowHero.new,
   'animate-grow/origin': AnimateGrowOrigin.new,
   'animate-grow/settling': AnimateGrowSettling.new,
+  'animate-reveal/hero': AnimateRevealHero.new,
+  'animate-reveal/sides': AnimateRevealSides.new,
   'animate-rotate/hero': AnimateRotateHero.new,
   'animate-rotate/origin': AnimateRotateOrigin.new,
   'animate-rotate/spin': AnimateRotateSpin.new,

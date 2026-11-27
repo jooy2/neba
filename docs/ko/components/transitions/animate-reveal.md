@@ -1,6 +1,7 @@
 ---
 title: AnimateReveal
 order: 9
+flutter: true
 ---
 
 # AnimateReveal
@@ -8,6 +9,8 @@ order: 9
 <p class="neba-lede">가장자리가 지나가며 내용을 드러냅니다. 아무것도 움직이지 않고 색도 변하지 않습니다. 내용은 이미 제자리에 온전한 크기로 있고, 바뀌는 것은 그중 얼마만큼이 통과되었는가입니다.</p>
 
 <Demo src="animate-reveal/hero" />
+
+::: fw react
 
 ```tsx
 import { AnimateReveal } from 'neba';
@@ -17,13 +20,37 @@ import { AnimateReveal } from 'neba';
 </AnimateReveal>;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+const NebaAnimateReveal(
+  child: NebaTypography('움직인 것이 아니라 통과된 것입니다', level: NebaTypographyLevel.h2),
+);
+```
+
+:::
+
 ## Props
 
 <PropsTable name="AnimateReveal" />
 
-나머지 `<div>` 속성은 루트로 그대로 전달됩니다. 모든 `Animate*`가 공유하는 설정은 [prop 규약](../../design/prop-conventions)에 있습니다.
+<Fw react="나머지 `<div>` 속성은 루트로 그대로 전달됩니다." flutter="`child` 하나를 감싸거나, `children`을 `layoutBuilder`로 배치합니다." /> 모든 `Animate*`가 공유하는 설정은 [prop 규약](../../design/prop-conventions)에 있습니다.
+
+::: fw react
 
 `clip-path`라서 래퍼도 `overflow` 상자도 없습니다. 요소는 늘 차지하던 자리를 그대로 차지하고, 주변은 첫 프레임부터 완성된 크기를 기준으로 배치됩니다. 그래서 제목, 구분선, 차트의 플롯 영역처럼 **위치 자체가 정보인** 것에 쓰기 좋습니다.
+
+:::
+
+::: fw flutter
+
+레이아웃이 놓은 위젯 위에 그리는 clip입니다. 위젯은 늘 차지하던 자리를 그대로 차지하고, 주변은 첫 프레임부터 완성된 크기를 기준으로 배치됩니다. 그래서 제목, 구분선, 차트의 플롯 영역처럼 **위치 자체가 정보인** 것에 쓰기 좋습니다.
+
+:::
 
 ## 예시
 
@@ -33,7 +60,17 @@ import { AnimateReveal } from 'neba';
 
 <Demo src="animate-reveal/sides" minHeight="260">
 
+::: fw react
+
 <<< @/.vitepress/demos/animate-reveal/sides.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/animate_reveal/sides.dart
+
+:::
 
 </Demo>
 
@@ -43,7 +80,7 @@ import { AnimateReveal } from 'neba';
 
 ### mode
 
-`mode="out"`은 같은 가장자리를 거꾸로 돌려 그 자리에서 멈춥니다. 내용을 다시 덮습니다.
+<Fw react='`mode="out"`은' flutter="`NebaAnimateMode.exit`은" /> 같은 가장자리를 거꾸로 돌려 그 자리에서 멈춥니다. 내용을 다시 덮습니다.
 
 ### stagger
 
@@ -52,4 +89,4 @@ import { AnimateReveal } from 'neba';
 ## 접근성
 
 - 모션 감소 설정에서는 애니메이션이 마지막 프레임으로 바로 넘어가고, 내용이 통째로 그려집니다.
-- 내용은 처음부터 끝까지 문서에도 접근성 트리에도 있습니다. clip은 픽셀을 가리는 것이지 정보를 가리는 것이 아닙니다.
+- 내용은 처음부터 끝까지 <Fw react="문서에도 접근성 트리에도" flutter="semantics 트리에" /> 있습니다. clip은 픽셀을 가리는 것이지 정보를 가리는 것이 아닙니다.
