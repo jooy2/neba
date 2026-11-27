@@ -29,6 +29,8 @@ import 'package:neba_example/demos/animate_appear/visible.dart';
 import 'package:neba_example/demos/animate_blink/counted.dart';
 import 'package:neba_example/demos/animate_blink/floor.dart';
 import 'package:neba_example/demos/animate_blink/hero.dart';
+import 'package:neba_example/demos/animate_counter/formats.dart';
+import 'package:neba_example/demos/animate_counter/hero.dart';
 import 'package:neba_example/demos/animate_fade/hero.dart';
 import 'package:neba_example/demos/animate_fade/mode.dart';
 import 'package:neba_example/demos/animate_fade/stagger.dart';
@@ -643,6 +645,8 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'animate-blink/counted': AnimateBlinkCounted.new,
   'animate-blink/floor': AnimateBlinkFloor.new,
   'animate-blink/hero': AnimateBlinkHero.new,
+  'animate-counter/formats': AnimateCounterFormats.new,
+  'animate-counter/hero': AnimateCounterHero.new,
   'animate-fade/hero': AnimateFadeHero.new,
   'animate-fade/mode': AnimateFadeMode.new,
   'animate-fade/stagger': AnimateFadeStagger.new,
