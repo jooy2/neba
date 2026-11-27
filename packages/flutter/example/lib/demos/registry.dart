@@ -116,6 +116,7 @@ import 'package:neba_example/demos/card/sizes.dart';
 import 'package:neba_example/demos/carousel/controlled.dart';
 import 'package:neba_example/demos/carousel/hero.dart';
 import 'package:neba_example/demos/carousel/options.dart';
+import 'package:neba_example/demos/carousel/photos.dart';
 import 'package:neba_example/demos/chat_bubble/actions.dart';
 import 'package:neba_example/demos/chat_bubble/hero.dart';
 import 'package:neba_example/demos/chat_bubble/identity.dart';
@@ -581,6 +582,7 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'carousel/controlled': CarouselControlled.new,
   'carousel/hero': CarouselHero.new,
   'carousel/options': CarouselOptions.new,
+  'carousel/photos': CarouselPhotos.new,
   'chat-bubble/actions': ChatBubbleActions.new,
   'chat-bubble/hero': ChatBubbleHero.new,
   'chat-bubble/identity': ChatBubbleIdentity.new,

@@ -86,7 +86,17 @@ A picture fills the frame, so there is nothing to pad in and the arrows sit over
 
 <Demo src="carousel/photos">
 
+::: fw react
+
 <<< @/.vitepress/demos/carousel/photos.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/carousel/photos.dart
+
+:::
 
 </Demo>
 
