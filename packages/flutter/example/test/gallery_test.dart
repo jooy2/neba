@@ -1,5 +1,6 @@
 // That every demo builds, in both themes and at a phone's width, without an
-// exception or an overflow.
+// exception or an overflow, and with semantics on at that width, where a role
+// the semantics tree refuses (two unnamed landmarks of one kind, say) throws.
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -35,6 +36,7 @@ void main() {
       tester.view.physicalSize = const Size(390, 844);
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.reset);
+      final SemanticsHandle semantics = tester.ensureSemantics();
 
       await tester.pumpWidget(GalleryApp(query: <String, String>{'demo': demo.key}));
       await tester.pump(const Duration(seconds: 1));
@@ -42,6 +44,7 @@ void main() {
       expect(tester.takeException(), isNull);
 
       await tester.pumpWidget(const SizedBox());
+      semantics.dispose();
     });
   }
 
