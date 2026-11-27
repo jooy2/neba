@@ -1,6 +1,7 @@
 ---
 title: AnimateZoom
 order: 9
+flutter: true
 ---
 
 # AnimateZoom
@@ -8,6 +9,8 @@ order: 9
 <p class="neba-lede">놓일 자리의 한가운데에서 다가오는 효과입니다. AnimateGrow와 같은 계산을 두 배 넘는 거리로, 언제나 중심을 기준으로 실행합니다. 화면에서 한 번은 시선을 끊어야 하는 그 하나를 위한 것입니다.</p>
 
 <Demo src="animate-zoom/hero" />
+
+::: fw react
 
 ```tsx
 import { AnimateZoom } from 'neba';
@@ -17,11 +20,25 @@ import { AnimateZoom } from 'neba';
 </AnimateZoom>;
 ```
 
+:::
+
+::: fw flutter
+
+```dart
+import 'package:neba/neba.dart';
+
+const NebaAnimateZoom(
+  child: NebaStatistic(label: Text('이번 분기 가동률'), value: 99.98, unit: Text('%')),
+);
+```
+
+:::
+
 ## Props
 
 <PropsTable name="AnimateZoom" />
 
-나머지 `<div>` 속성은 모두 루트로 전달됩니다. 모든 `Animate*`가 공유하는 설정은 [Prop 규약](../../design/prop-conventions)에 있습니다.
+<Fw react="나머지 `<div>` 속성은 모두 루트로 전달됩니다." flutter="`child` 하나를 감싸거나, `children`을 `layoutBuilder`로 배치합니다." /> 모든 `Animate*`가 공유하는 설정은 [Prop 규약](../../design/prop-conventions)에 있습니다.
 
 `origin`은 없습니다. 모서리에 고정된 zoom은 grow이고, 그것은 [AnimateGrow](./animate-grow)입니다.
 
@@ -33,7 +50,17 @@ import { AnimateZoom } from 'neba';
 
 <Demo src="animate-zoom/strength">
 
+::: fw react
+
 <<< @/.vitepress/demos/animate-zoom/strength.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/animate_zoom/strength.dart
+
+:::
 
 </Demo>
 
@@ -41,21 +68,53 @@ import { AnimateZoom } from 'neba';
 
 zoom이 가장 흔히 쓰이는 자리는 독자가 다다르는 순간 놓이는 수치입니다. `threshold`는 요소가 화면에 얼마나 들어와야 하는지를 `0`에서 `1` 사이로 정하고, 기본으로 켜져 있는 `once`가 페이지를 되돌릴 때마다 다시 재생되는 것을 막습니다.
 
+::: fw flutter
+
+기다리는 동안에는 첫 프레임처럼 줄어든 채가 아니라, 놓일 자리에 보이지 않게 그려집니다. 독자에게 보이는 등장은 같고, 화면 낭독기와 focus는 제자리에서 찾습니다.
+
+:::
+
 <Demo src="animate-zoom/visible">
 
+::: fw react
+
 <<< @/.vitepress/demos/animate-zoom/visible.tsx
+
+:::
+
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/animate_zoom/visible.dart
+
+:::
 
 </Demo>
 
 ### mode
 
-`out`은 다시 멀어지며 끝에서 멈춥니다.
+<Fw react="`out`은" flutter="`NebaAnimateMode.exit`은" /> 다시 멀어지며 끝에서 멈춥니다.
+
+::: fw react
 
 ```tsx
 <AnimateZoom mode="out" duration={240}>
   <Card title="닫힘">이 카드는 나가는 중입니다.</Card>
 </AnimateZoom>
 ```
+
+:::
+
+::: fw flutter
+
+```dart
+const NebaAnimateZoom(
+  mode: NebaAnimateMode.exit,
+  duration: Duration(milliseconds: 240),
+  child: NebaCard(title: Text('닫힘'), child: Text('이 카드는 나가는 중입니다.')),
+);
+```
+
+:::
 
 ### stagger
 

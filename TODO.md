@@ -274,7 +274,7 @@ Demos that wait on a component not ported yet, to be added with it: `carousel/ph
 
 - [x] `NebaAnimateFade`
 - [x] `NebaAnimateGrow`
-- [ ] `NebaAnimateZoom`
+- [x] `NebaAnimateZoom`
 - [ ] `NebaAnimateSlide`
 - [ ] `NebaAnimateRotate`
 - [ ] `NebaAnimateBlink`

@@ -26,6 +26,9 @@ import 'package:neba_example/demos/animate_fade/triggers.dart';
 import 'package:neba_example/demos/animate_grow/hero.dart';
 import 'package:neba_example/demos/animate_grow/origin.dart';
 import 'package:neba_example/demos/animate_grow/settling.dart';
+import 'package:neba_example/demos/animate_zoom/hero.dart';
+import 'package:neba_example/demos/animate_zoom/strength.dart';
+import 'package:neba_example/demos/animate_zoom/visible.dart';
 import 'package:neba_example/demos/app_logo/artwork.dart';
 import 'package:neba_example/demos/app_logo/hero.dart';
 import 'package:neba_example/demos/app_logo/link.dart';
@@ -434,6 +437,9 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'animate-grow/hero': AnimateGrowHero.new,
   'animate-grow/origin': AnimateGrowOrigin.new,
   'animate-grow/settling': AnimateGrowSettling.new,
+  'animate-zoom/hero': AnimateZoomHero.new,
+  'animate-zoom/strength': AnimateZoomStrength.new,
+  'animate-zoom/visible': AnimateZoomVisible.new,
   'app-logo/artwork': AppLogoArtwork.new,
   'app-logo/hero': AppLogoHero.new,
   'app-logo/link': AppLogoLink.new,
