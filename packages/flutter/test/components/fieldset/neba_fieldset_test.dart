@@ -233,6 +233,21 @@ void main() {
                 NebaDatePicker(label: const Text('Arrival'), onOpenChange: (bool open) => hit()),
             find.byType(NebaDatePicker),
           ),
+          'NebaTimePicker': (
+            (VoidCallback hit) =>
+                NebaTimePicker(label: const Text('Start'), onOpenChange: (bool open) => hit()),
+            find.byType(NebaTimePicker),
+          ),
+          'NebaDateTimePicker': (
+            (VoidCallback hit) =>
+                NebaDateTimePicker(label: const Text('When'), onOpenChange: (bool open) => hit()),
+            find.byType(NebaDateTimePicker),
+          ),
+          'NebaDateRangePicker': (
+            (VoidCallback hit) =>
+                NebaDateRangePicker(label: const Text('Stay'), onOpenChange: (bool open) => hit()),
+            find.byType(NebaDateRangePicker),
+          ),
           'NebaTreeSelect': (
             (VoidCallback hit) => NebaTreeSelect<String>(
               label: const Text('Folder'),

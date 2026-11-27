@@ -7,6 +7,7 @@ import 'package:neba/src/components/button/neba_button.dart';
 import 'package:neba/src/components/calendar/neba_date_names.dart';
 import 'package:neba/src/internal/calendar.dart';
 import 'package:neba/src/internal/date.dart';
+import 'package:neba/src/internal/fieldset.dart';
 import 'package:neba/src/internal/glyphs.dart';
 import 'package:neba/src/internal/picker.dart';
 import 'package:neba/src/theme/theme.dart';
@@ -243,6 +244,9 @@ class NebaTimePicker extends StatefulWidget {
 }
 
 class _NebaTimePickerState extends State<NebaTimePicker> {
+  /// Its own `disabled`, or a disabled `NebaFieldset` around it.
+  bool get _disabled => nebaFieldsetDisabled(context, widget.disabled);
+
   late DateTime? _value = widget.defaultValue;
   late bool _open = widget.defaultOpen;
 
@@ -268,7 +272,7 @@ class _NebaTimePickerState extends State<NebaTimePicker> {
   }
 
   void _setOpen(bool open) {
-    if (open && (widget.readOnly || widget.disabled)) {
+    if (open && (widget.readOnly || _disabled)) {
       return;
     }
 
@@ -445,11 +449,11 @@ class _NebaTimePickerState extends State<NebaTimePicker> {
       clearable: widget.clearable,
       clearLabel: words['clear']!,
       onClear: () => _commit(null),
-      open: _isOpen && !widget.disabled && !widget.readOnly,
+      open: _isOpen && !_disabled && !widget.readOnly,
       onOpenChange: _setOpen,
       popup: popup,
       fullWidth: widget.fullWidth,
-      disabled: widget.disabled,
+      disabled: _disabled,
       readOnly: widget.readOnly,
       semanticLabel: widget.semanticLabel,
       focusNode: widget.focusNode,

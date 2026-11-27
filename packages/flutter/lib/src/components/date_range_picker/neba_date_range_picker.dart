@@ -9,6 +9,7 @@ import 'package:neba/src/components/calendar/neba_date_names.dart';
 import 'package:neba/src/internal/calendar.dart';
 import 'package:neba/src/internal/date.dart';
 import 'package:neba/src/internal/field.dart';
+import 'package:neba/src/internal/fieldset.dart';
 import 'package:neba/src/internal/glyphs.dart';
 import 'package:neba/src/internal/picker.dart';
 import 'package:neba/src/internal/sizer.dart';
@@ -275,6 +276,9 @@ class NebaDateRangePicker extends StatefulWidget {
 }
 
 class _NebaDateRangePickerState extends State<NebaDateRangePicker> {
+  /// Its own `disabled`, or a disabled `NebaFieldset` around it.
+  bool get _disabled => nebaFieldsetDisabled(context, widget.disabled);
+
   late NebaDateRange _value = widget.defaultValue ?? const NebaDateRange();
   late bool _open = widget.defaultOpen;
   late DateTime _month = _monthToOpen;
@@ -311,7 +315,7 @@ class _NebaDateRangePickerState extends State<NebaDateRangePicker> {
   }
 
   void _setOpen(bool open) {
-    if (open && (widget.readOnly || widget.disabled)) {
+    if (open && (widget.readOnly || _disabled)) {
       return;
     }
 
@@ -608,11 +612,11 @@ class _NebaDateRangePickerState extends State<NebaDateRangePicker> {
       clearable: widget.clearable,
       clearLabel: words['clear']!,
       onClear: () => _commit(const NebaDateRange()),
-      open: _isOpen && !widget.disabled && !widget.readOnly,
+      open: _isOpen && !_disabled && !widget.readOnly,
       onOpenChange: _setOpen,
       popup: popup,
       fullWidth: widget.fullWidth,
-      disabled: widget.disabled,
+      disabled: _disabled,
       readOnly: widget.readOnly,
       semanticLabel: widget.semanticLabel,
       focusNode: widget.focusNode,
