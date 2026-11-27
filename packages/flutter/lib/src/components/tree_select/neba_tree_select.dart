@@ -10,6 +10,7 @@ import 'package:flutter/widgets.dart';
 
 import 'package:neba/src/components/tree_view/neba_tree_view.dart';
 import 'package:neba/src/internal/field.dart';
+import 'package:neba/src/internal/fieldset.dart';
 import 'package:neba/src/internal/floating.dart';
 import 'package:neba/src/internal/focus_ring.dart';
 import 'package:neba/src/internal/glyphs.dart';
@@ -303,6 +304,9 @@ const double _panelHeight = 320;
 const double _panelGap = 8;
 
 class _NebaTreeSelectState<T> extends State<NebaTreeSelect<T>> {
+  /// Its own `disabled`, or a disabled `NebaFieldset` around it.
+  bool get _disabled => nebaFieldsetDisabled(context, widget.disabled);
+
   final TextEditingController _search = TextEditingController();
   FocusNode? _ownNode;
   late List<T> _held = <T>[...?widget.defaultValue];
@@ -333,7 +337,7 @@ class _NebaTreeSelectState<T> extends State<NebaTreeSelect<T>> {
 
   bool get _isOpen => widget.open ?? _open;
 
-  bool get _inert => widget.disabled || widget.readOnly;
+  bool get _inert => _disabled || widget.readOnly;
 
   @override
   void initState() {
@@ -532,7 +536,7 @@ class _NebaTreeSelectState<T> extends State<NebaTreeSelect<T>> {
     final NebaLabelPlacement placement =
         widget.labelPlacement ?? defaults.labelPlacement ?? NebaLabelPlacement.top;
     final Locale? locale = widget.locale ?? defaults.locale;
-    final bool disabled = widget.disabled;
+    final bool disabled = _disabled;
     final bool readOnly = widget.readOnly && !disabled;
     final bool invalid = widget.invalid ?? widget.error != null;
     final NebaColor family = invalid ? NebaColor.danger : widget.color ?? NebaColor.primary;

@@ -7,6 +7,7 @@ import 'package:neba/src/components/button/neba_button.dart';
 import 'package:neba/src/components/calendar/neba_date_names.dart';
 import 'package:neba/src/internal/calendar.dart';
 import 'package:neba/src/internal/date.dart';
+import 'package:neba/src/internal/fieldset.dart';
 import 'package:neba/src/internal/glyphs.dart';
 import 'package:neba/src/internal/picker.dart';
 import 'package:neba/src/theme/theme.dart';
@@ -235,6 +236,9 @@ class NebaDatePicker extends StatefulWidget {
 }
 
 class _NebaDatePickerState extends State<NebaDatePicker> {
+  /// Its own `disabled`, or a disabled `NebaFieldset` around it.
+  bool get _disabled => nebaFieldsetDisabled(context, widget.disabled);
+
   late DateTime? _value = widget.defaultValue;
   late bool _open = widget.defaultOpen;
   late DateTime _month = _monthToOpen;
@@ -265,7 +269,7 @@ class _NebaDatePickerState extends State<NebaDatePicker> {
   void _setOpen(bool open) {
     // A read-only picker does not open: what it holds is something to read,
     // and a calendar of inert cells would be a menu of nothing.
-    if (open && (widget.readOnly || widget.disabled)) {
+    if (open && (widget.readOnly || _disabled)) {
       return;
     }
 
@@ -421,11 +425,11 @@ class _NebaDatePickerState extends State<NebaDatePicker> {
       clearable: widget.clearable,
       clearLabel: words['clear']!,
       onClear: () => _commit(null),
-      open: _isOpen && !widget.disabled && !widget.readOnly,
+      open: _isOpen && !_disabled && !widget.readOnly,
       onOpenChange: _setOpen,
       popup: popup,
       fullWidth: widget.fullWidth,
-      disabled: widget.disabled,
+      disabled: _disabled,
       readOnly: widget.readOnly,
       semanticLabel: widget.semanticLabel,
       focusNode: widget.focusNode,

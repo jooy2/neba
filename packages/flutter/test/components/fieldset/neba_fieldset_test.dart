@@ -228,6 +228,21 @@ void main() {
             ),
             find.byType(NebaSelect<String>),
           ),
+          'NebaDatePicker': (
+            (VoidCallback hit) =>
+                NebaDatePicker(label: const Text('Arrival'), onOpenChange: (bool open) => hit()),
+            find.byType(NebaDatePicker),
+          ),
+          'NebaTreeSelect': (
+            (VoidCallback hit) => NebaTreeSelect<String>(
+              label: const Text('Folder'),
+              onOpenChange: (bool open) => hit(),
+              items: const <NebaTreeSelectItem<String>>[
+                NebaTreeSelectItem<String>(value: 'docs', label: Text('Docs')),
+              ],
+            ),
+            find.byType(NebaTreeSelect<String>),
+          ),
           'NebaCheckbox': (
             (VoidCallback hit) =>
                 NebaCheckbox(label: const Text('Save it'), onCheckedChange: (bool _) => hit()),

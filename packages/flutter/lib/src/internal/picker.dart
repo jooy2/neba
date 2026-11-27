@@ -19,6 +19,7 @@ import 'package:flutter/widgets.dart';
 
 import 'package:neba/src/internal/calendar.dart';
 import 'package:neba/src/internal/field.dart';
+import 'package:neba/src/internal/fieldset.dart';
 import 'package:neba/src/internal/floating.dart';
 import 'package:neba/src/internal/motion.dart';
 import 'package:neba/src/internal/notch.dart';
@@ -151,13 +152,16 @@ class NebaPickerField extends StatefulWidget {
 }
 
 class _NebaPickerFieldState extends State<NebaPickerField> {
+  /// Its own `disabled`, or a disabled `NebaFieldset` around it.
+  bool get _disabled => nebaFieldsetDisabled(context, widget.disabled);
+
   FocusNode? _ownNode;
 
   FocusNode get _triggerNode {
     return widget.focusNode ?? (_ownNode ??= FocusNode(debugLabel: 'NebaPicker'));
   }
 
-  bool get _inert => widget.disabled || widget.readOnly;
+  bool get _inert => _disabled || widget.readOnly;
 
   @override
   void dispose() {
@@ -178,7 +182,7 @@ class _NebaPickerFieldState extends State<NebaPickerField> {
         key == LogicalKeyboardKey.numpadEnter ||
         key == LogicalKeyboardKey.space;
 
-    if (!activates || widget.disabled) {
+    if (!activates || _disabled) {
       return KeyEventResult.ignored;
     }
 
@@ -195,7 +199,7 @@ class _NebaPickerFieldState extends State<NebaPickerField> {
     final NebaVariant variant = widget.variant;
     final NebaSize size = widget.size;
     final NebaDensity density = widget.density;
-    final bool disabled = widget.disabled;
+    final bool disabled = _disabled;
     final bool readOnly = widget.readOnly && !disabled;
     final bool inert = disabled || readOnly;
     final bool invalid = widget.invalid ?? widget.error != null;
