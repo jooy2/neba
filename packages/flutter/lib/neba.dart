@@ -36,6 +36,7 @@ export 'src/components/divider/neba_divider.dart';
 export 'src/components/flex/neba_flex.dart';
 export 'src/components/grid/neba_grid.dart';
 export 'src/components/grid_container/neba_grid_container.dart';
+export 'src/components/highlight/neba_highlight.dart';
 export 'src/components/icon_button/neba_icon_button.dart';
 export 'src/components/panes/neba_panes.dart';
 export 'src/components/portal/neba_portal.dart';
