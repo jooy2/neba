@@ -65,6 +65,8 @@ class NebaPickerField extends StatefulWidget {
     this.semanticLabel,
     this.focusNode,
     this.autofocus = false,
+    this.display,
+    this.sizer,
     super.key,
   });
 
@@ -146,6 +148,17 @@ class NebaPickerField extends StatefulWidget {
 
   /// Whether the trigger takes the focus when it is first built.
   final bool autofocus;
+
+  /// What the trigger draws in place of [value] and [placeholder], a range's
+  /// two ends. Its text and glyphs take the placeholder's muted ink unless
+  /// they set their own, and while [value] is `null` it is hidden under a
+  /// resting label as a placeholder is. [value] is still what a screen
+  /// reader hears and what says whether the field holds anything.
+  final Widget? display;
+
+  /// What the trigger's width is measured from in place of [samples] and
+  /// [placeholder], for a [display] that holds its own widths.
+  final Widget? sizer;
 
   @override
   State<NebaPickerField> createState() => _NebaPickerFieldState();
@@ -235,8 +248,29 @@ class _NebaPickerFieldState extends State<NebaPickerField> {
 
     Widget content(BuildContext context, bool focused) {
       Widget shown;
+      final Widget? display = widget.display;
 
-      if (value != null) {
+      if (display != null) {
+        // Hidden under a resting label while it holds nothing, as a
+        // placeholder is.
+        final bool hidden = empty && rests && !focused && !open;
+
+        shown = TweenAnimationBuilder<Color?>(
+          tween: ColorTween(end: hidden ? tokens.mutedFg.withValues(alpha: 0) : tokens.mutedFg),
+          duration: nebaDuration(context, NebaScale.duration),
+          curve: NebaScale.ease,
+          builder: (BuildContext context, Color? color, Widget? child) {
+            return IconTheme.merge(
+              data: IconThemeData(color: color),
+              child: DefaultTextStyle.merge(
+                style: TextStyle(color: color),
+                child: child!,
+              ),
+            );
+          },
+          child: display,
+        );
+      } else if (value != null) {
         shown = Text(value, style: TextStyle(color: tokens.fg));
       } else if (placeholder != null) {
         // A resting label stands where the placeholder would be, so the
@@ -378,14 +412,24 @@ class _NebaPickerFieldState extends State<NebaPickerField> {
             start: padX + border + (startIcon == null ? 0 : text * 1.2 + gap),
             end: padX + border + (clears ? gap + removeWidth : 0),
           ),
-          child: NebaWidthSizer(
-            style: valueStyle,
-            samples: <Widget>[
-              for (final String sample in widget.samples) Text(sample),
-              ?placeholder,
-              if (rests) label,
-            ],
-          ),
+          child: switch (widget.sizer) {
+            null => NebaWidthSizer(
+              style: valueStyle,
+              samples: <Widget>[
+                for (final String sample in widget.samples) Text(sample),
+                ?placeholder,
+                if (rests) label,
+              ],
+            ),
+            final Widget sizer => Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                DefaultTextStyle.merge(style: valueStyle, child: sizer),
+                if (rests) NebaWidthSizer(style: valueStyle, samples: <Widget>[label]),
+              ],
+            ),
+          },
         ),
         if (notched)
           NebaNotchSizer(label: label, size: size, density: density, variant: variant)

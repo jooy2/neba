@@ -180,6 +180,10 @@ import 'package:neba_example/demos/date_picker/label_placement.dart';
 import 'package:neba_example/demos/date_picker/sizes.dart';
 import 'package:neba_example/demos/date_picker/states.dart';
 import 'package:neba_example/demos/date_picker/variants.dart';
+import 'package:neba_example/demos/date_range_picker/hero.dart';
+import 'package:neba_example/demos/date_range_picker/label_placement.dart';
+import 'package:neba_example/demos/date_range_picker/one_month.dart';
+import 'package:neba_example/demos/date_range_picker/presets.dart';
 import 'package:neba_example/demos/date_time_picker/bounds.dart';
 import 'package:neba_example/demos/date_time_picker/hero.dart';
 import 'package:neba_example/demos/date_time_picker/label_placement.dart';
@@ -688,6 +692,10 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'date-picker/sizes': DatePickerSizes.new,
   'date-picker/states': DatePickerStates.new,
   'date-picker/variants': DatePickerVariants.new,
+  'date-range-picker/hero': DateRangePickerHero.new,
+  'date-range-picker/label-placement': DateRangePickerLabelPlacement.new,
+  'date-range-picker/one-month': DateRangePickerOneMonth.new,
+  'date-range-picker/presets': DateRangePickerPresets.new,
   'date-time-picker/bounds': DateTimePickerBounds.new,
   'date-time-picker/hero': DateTimePickerHero.new,
   'date-time-picker/label-placement': DateTimePickerLabelPlacement.new,
