@@ -62,6 +62,12 @@ It draws nothing and takes no `className` or `style`. The five breakpoints are `
 
 :::
 
+::: fw flutter
+
+<<< @/../packages/flutter/example/lib/demos/show/pair.dart
+
+:::
+
 </Demo>
 
 ### Bounding a range

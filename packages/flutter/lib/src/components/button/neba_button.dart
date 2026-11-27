@@ -6,6 +6,7 @@ import 'dart:math' as math;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
+import 'package:neba/src/internal/button_group.dart';
 import 'package:neba/src/internal/focus_ring.dart';
 import 'package:neba/src/internal/glow.dart';
 import 'package:neba/src/internal/glyphs.dart';
@@ -42,7 +43,7 @@ class NebaButton extends StatelessWidget {
     this.endIcon,
     this.loading = false,
     this.readOnly = false,
-    this.disabled = false,
+    this.disabled,
     this.focusableWhenDisabled = false,
     this.fullWidth = false,
     this.semanticLabel,
@@ -60,23 +61,23 @@ class NebaButton extends StatelessWidget {
   /// icon and needs a [semanticLabel].
   final Widget? child;
 
-  /// The weight of the surface. Defaults to `NebaProvider`'s, then
-  /// [NebaVariant.solid].
+  /// The weight of the surface. Defaults to the `NebaButtonGroup`'s, then
+  /// `NebaProvider`'s, then [NebaVariant.solid].
   final NebaVariant? variant;
 
   /// The height and the type scale: 22, 26, 32, 40 or 48 logical pixels.
-  /// Defaults to `NebaProvider`'s, then [NebaSize.md].
+  /// Defaults to the group's, then `NebaProvider`'s, then [NebaSize.md].
   final NebaSize? size;
 
-  /// The colour family. Defaults to [NebaColor.primary].
+  /// The colour family. Defaults to the group's, then [NebaColor.primary].
   final NebaColor? color;
 
-  /// The inline padding, and nothing else. Defaults to `NebaProvider`'s, then
-  /// [NebaDensity.standard].
+  /// The inline padding, and nothing else. Defaults to the group's, then
+  /// `NebaProvider`'s, then [NebaDensity.standard].
   final NebaDensity? density;
 
   /// The drop shadow, from `0`, which is none, to `3`. Hovering adds a level
-  /// and pressing takes one away.
+  /// and pressing takes one away. Defaults to the group's, then `0`.
   final NebaElevation? elevation;
 
   /// Before the label, drawn at 1.2 times the label's size.
@@ -96,8 +97,8 @@ class NebaButton extends StatelessWidget {
 
   /// Drops the colour family for neutral grey and takes the button out of the
   /// focus order. The same as leaving [onPressed] out, for a button that keeps
-  /// its handler.
-  final bool disabled;
+  /// its handler. Defaults to the group's, then `false`.
+  final bool? disabled;
 
   /// Keeps a disabled button in the focus order, still unable to be pressed:
   /// for the Next that reaches the last page, where losing the focus would drop
@@ -121,14 +122,19 @@ class NebaButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final NebaTokens tokens = NebaTheme.of(context);
     final NebaDefaults defaults = NebaTheme.defaultsOf(context);
-    final NebaVariant variant = this.variant ?? defaults.variant ?? NebaVariant.solid;
-    final NebaSize size = this.size ?? defaults.size ?? NebaSize.md;
-    final NebaColor color = this.color ?? NebaColor.primary;
-    final NebaDensity density = this.density ?? defaults.density ?? NebaDensity.standard;
-    final NebaElevation elevation = this.elevation ?? 0;
+    // A group sets these once for the set; a button's own argument still
+    // wins, as a danger button in a group of secondary ones does.
+    final NebaButtonGroupScope? group = NebaButtonGroupScope.maybeOf(context);
+    final NebaVariant variant =
+        this.variant ?? group?.variant ?? defaults.variant ?? NebaVariant.solid;
+    final NebaSize size = this.size ?? group?.size ?? defaults.size ?? NebaSize.md;
+    final NebaColor color = this.color ?? group?.color ?? NebaColor.primary;
+    final NebaDensity density =
+        this.density ?? group?.density ?? defaults.density ?? NebaDensity.standard;
+    final NebaElevation elevation = this.elevation ?? group?.elevation ?? 0;
     final NebaColorRoles roles = tokens.roles(color);
 
-    final bool isDisabled = disabled || onPressed == null;
+    final bool isDisabled = (disabled ?? group?.disabled ?? false) || onPressed == null;
     // Loading and read-only stop the press without changing how the button is
     // drawn at rest; disabled changes both.
     final bool inert = loading || readOnly;
@@ -138,7 +144,10 @@ class NebaButton extends StatelessWidget {
 
     final double height = NebaScale.controlHeight[size]!;
     final double text = NebaScale.controlText[size]!;
-    final BorderRadius radius = BorderRadius.circular(tokens.radius[size]!);
+    // In a group, the corners that face a neighbour are squared off.
+    final BorderRadius radius = NebaJoinScope.of(
+      context,
+    ).corners(tokens.radius[size]!, Directionality.of(context));
 
     final MouseCursor cursor = isDisabled
         ? SystemMouseCursors.forbidden

@@ -29,6 +29,10 @@ import 'package:neba_example/demos/button/icons.dart';
 import 'package:neba_example/demos/button/sizes.dart';
 import 'package:neba_example/demos/button/states.dart';
 import 'package:neba_example/demos/button/variants.dart';
+import 'package:neba_example/demos/button_group/full_width.dart';
+import 'package:neba_example/demos/button_group/hero.dart';
+import 'package:neba_example/demos/button_group/orientation.dart';
+import 'package:neba_example/demos/button_group/shared.dart';
 import 'package:neba_example/demos/card/dividers.dart';
 import 'package:neba_example/demos/card/hero.dart';
 import 'package:neba_example/demos/card/sections.dart';
@@ -58,6 +62,7 @@ import 'package:neba_example/demos/scroll_area/hero.dart';
 import 'package:neba_example/demos/scroll_area/orientation.dart';
 import 'package:neba_example/demos/scroll_area/sizes.dart';
 import 'package:neba_example/demos/show/hero.dart';
+import 'package:neba_example/demos/show/pair.dart';
 import 'package:neba_example/demos/show/range.dart';
 import 'package:neba_example/demos/show/transparent.dart';
 import 'package:neba_example/demos/stack/dealt.dart';
@@ -86,6 +91,10 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'box/sizes': BoxSizes.new,
   'box/unpadded': BoxUnpadded.new,
   'box/variants': BoxVariants.new,
+  'button-group/full-width': ButtonGroupFullWidth.new,
+  'button-group/hero': ButtonGroupHero.new,
+  'button-group/orientation': ButtonGroupOrientation.new,
+  'button-group/shared': ButtonGroupShared.new,
   'button/colors': ButtonColors.new,
   'button/density': ButtonDensity.new,
   'button/elevation': ButtonElevation.new,
@@ -124,6 +133,7 @@ const Map<String, Widget Function()> demos = <String, Widget Function()>{
   'scroll-area/orientation': ScrollAreaOrientation.new,
   'scroll-area/sizes': ScrollAreaSizes.new,
   'show/hero': ShowHero.new,
+  'show/pair': ShowPair.new,
   'show/range': ShowRange.new,
   'show/transparent': ShowTransparent.new,
   'stack/dealt': StackDealt.new,

@@ -169,8 +169,12 @@ String _registry() {
 
   demos.sort((_Demo a, _Demo b) => a.key.compareTo(b.key));
 
-  final String imports = demos
-      .map((_Demo demo) => "import 'package:neba_example/demos/${demo.path}';")
+  // Sorted by path rather than by key: `button_group/` comes after `button/`
+  // as a path and before it as `button-group/`, and the analyser asks for the
+  // imports in path order.
+  final List<String> paths = demos.map((_Demo demo) => demo.path).toList()..sort();
+  final String imports = paths
+      .map((String path) => "import 'package:neba_example/demos/$path';")
       .join('\n');
   final String entries = demos
       .map((_Demo demo) => "  '${demo.key}': ${demo.className}.new,")

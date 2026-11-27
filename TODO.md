@@ -10,11 +10,10 @@ The Flutter package's first version is **1.21.0**, the same number as the React 
 
 The port lives on the branch **`flutter-port`**, pushed to GitHub and not merged. `main` on GitHub is still at `4f092a45`, from before the port began. Merging into `main` runs `publish-documentation.yml`, which deploys the site with the React/Flutter switch and the Flutter install instructions, so merge when the Flutter package is ready to be public, ideally together with its first pub.dev release.
 
-The last commit of that session is the `NebaButton` port. What comes next, in order:
+The last commit of that session is the `NebaButtonGroup` port, after `NebaChip`, `NebaAvatar` and `NebaCard`. What comes next, in order:
 
-1. `NebaChip`, `NebaAvatar` and `NebaCard`. Most of the demos waiting below need one of the three, so each port is also the moment to add those demos' Flutter twins.
-2. `NebaButtonGroup`, and with it the group's scope that `NebaButton` reads before `NebaProvider`: `variant`, `size`, `color`, `density`, `elevation` and `disabled`, as the React `ButtonGroupContext` does. `NebaButton` resolves argument, then provider, then default today, with no group step yet.
-3. The rest of the layout group (`NebaScrollZone`, `NebaPanes`, `NebaPortal`, the page shell), then the inputs, in the order of section 2.
+1. The rest of the layout group (`NebaScrollZone`, `NebaPanes`, `NebaPortal`, the page shell).
+2. The inputs, in the order of section 2, `NebaIconButton` first. `NebaToggle` and `NebaToggleGroup` read the same `NebaButtonGroupScope` and lay out on the same `NebaJoinedRun` that `NebaButtonGroup` does.
 
 To set up a machine (Flutter 3.50.1 stable and Node 26 were used; the package floor is Flutter 3.41):
 
@@ -77,7 +76,7 @@ Port in this order, because each group is built out of the ones before it: `Neba
 
 Some components have no single Flutter equivalent of what they are on the web, and their form is decided when they are reached, then written on their page: `NebaPortal` (an `Overlay` entry), `NebaVisuallyHidden` (a `Semantics` node), `NebaTextLink` (a callback rather than an `href`, since the package opens nothing itself), `NebaImage` and `NebaGallery` (an `ImageProvider` rather than a URL), `NebaCodeBlock` (no highlight.js; a tokenizer of its own or a caller-supplied one), and the page shell (`NebaPageLayout`, `NebaHeader`, `NebaFooter`, `NebaSidebar`) against a phone's safe areas.
 
-Demos that wait on a component not ported yet, to be added with it: `flex/direction` and `card/form` (`NebaTextField`), `show/pair` (`NebaButtonGroup`), `aspect-ratio/reserving` (`NebaSkeleton`), and `avatar/hero` and `avatar/status` (`NebaBadge`). `chip/links` has no Flutter twin: the package opens nothing itself, so a chip has no `href`. The React demos of per-breakpoint maps (`container/responsive`, `grid/responsive`) have no Flutter twin, because the Flutter widgets take no such map. A widget that draws a shape reads the ring of a pile it is in through `NebaRing`, as `NebaBox` does, so that `ring` follows it. `button/render` has no Flutter twin: a Flutter button has no element to swap.
+Demos that wait on a component not ported yet, to be added with it: `flex/direction` and `card/form` (`NebaTextField`), `aspect-ratio/reserving` (`NebaSkeleton`), and `avatar/hero` and `avatar/status` (`NebaBadge`). `chip/links` has no Flutter twin: the package opens nothing itself, so a chip has no `href`. The React demos of per-breakpoint maps (`container/responsive`, `grid/responsive`) have no Flutter twin, because the Flutter widgets take no such map. A widget that draws a shape reads the ring of a pile it is in through `NebaRing`, as `NebaBox` does, so that `ring` follows it. `button/render` has no Flutter twin: a Flutter button has no element to swap.
 
 ### Layout (15)
 
@@ -127,7 +126,7 @@ Demos that wait on a component not ported yet, to be added with it: `flex/direct
 
 - [x] `NebaButton`
 - [ ] `NebaIconButton`
-- [ ] `NebaButtonGroup`
+- [x] `NebaButtonGroup`
 - [ ] `NebaSegmentedButton`
 - [ ] `NebaToggle`
 - [ ] `NebaToggleGroup`

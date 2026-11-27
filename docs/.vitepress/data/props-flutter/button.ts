@@ -41,10 +41,11 @@ export default {
     }),
     from('Button', 'readOnly', { type: 'bool' }),
     from('Button', 'disabled', {
-      type: 'bool',
+      type: 'bool?',
+      default: 'false',
       description: {
-        ko: '사용할 수 없음. 색 계열을 버리고 중립 회색이 되며 focus 순서에서 빠집니다. onPressed를 생략한 것과 같습니다',
-        en: 'Unavailable. Drops the colour family for neutral grey and leaves the focus order: the same as leaving onPressed out'
+        ko: '사용할 수 없음. 색 계열을 버리고 중립 회색이 되며 focus 순서에서 빠집니다. onPressed를 생략한 것과 같고, 주지 않으면 ButtonGroup의 값을 따릅니다',
+        en: "Unavailable. Drops the colour family for neutral grey and leaves the focus order: the same as leaving onPressed out. Left out, it is the ButtonGroup's"
       }
     }),
     from('Button', 'focusableWhenDisabled', {

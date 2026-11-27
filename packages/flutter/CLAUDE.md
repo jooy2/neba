@@ -56,6 +56,7 @@ The React guide states each rule of [the design language](../../docs/ko/design/d
 | `focus_ring.dart` | `NebaFocusRing`: two pixels, two pixels off, eased in colour and never in width |
 | `ink.dart` | `NebaInk`: a label's and an icon's colour, eased with the fill |
 | `animate.dart` | `NebaEntrance`: what a `transition` plays, every effect on one tree of opacity, translation, transform and clip, and every pass of a repeat on one clock |
+| `button_group.dart` | `NebaButtonGroupScope`, which a button reads between its own argument and the provider; `NebaJoin` and `NebaJoinScope`, the sides of a control that face a neighbour; and `NebaJoinedRun`, the run that squares those corners, overlaps outline hairlines and paints the hovered or focused control on top |
 | `breakpoint.dart` | `nebaShownAt` and `NebaWidthGate`: whether a window width is in a range of breakpoints, and the children a container leaves out because a `NebaShow` among them is hidden. A container that lays out a list of children passes it through `nebaPresentChildren` |
 | `ring.dart` | `NebaRingScope` and `NebaRing`: the ring a ringed pile asks for, drawn by the first widget below it that draws a shape, around that shape. Every widget with a shape of its own wraps it in `NebaRing` |
 | `scroll_fade.dart` | `NebaEdgeFade`: a scrolling box's content masked out at each edge that has more beyond it, for ScrollArea and the Tabs bar |
